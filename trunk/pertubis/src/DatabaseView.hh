@@ -99,6 +99,7 @@ namespace pertubis
 		QAction*			m_acDeinstall;
 		QAction*			m_acEditUse;
 		QAction*			m_acMasking;
+		QAction*			m_acSelection;
 
 		SearchWindow*		m_windowSearch;
 		ReleaseEater*		m_filter;

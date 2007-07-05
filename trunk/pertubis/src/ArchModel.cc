@@ -53,42 +53,6 @@ QVariant pertubis::ArchModel::data ( const QModelIndex & index, int role) const
          return QVariant();
 }
 
-// int pertubis::ArchModel::classifyKeywords( QSet<QString> keywords, QString keyset)
-// {
-// 	QMap<QString,QSet<QString> >::const_iterator kset = m_stableKeywords.find(keyset);
-//
-// 	if ( kset == m_stableKeywords.constEnd() )
-// 	{
-// 		kset = m_stableKeywords.find("global");
-// 		if ( kset == m_stableKeywords.constEnd())
-// 		{
-// 			return -1;
-// 		}
-// 	}
-//
-// 	QSet<QString> test(*kset);
-// 	if ( test.intersect(keywords).size() != 0)
-// 	{
-// 		return 1;
-// 	}
-//
-// 	kset = m_unstableKeywords.find(keyset);
-//
-// 	if ( kset == m_unstableKeywords.constEnd() )
-// 	{
-// 		kset = m_unstableKeywords.find("global");
-// 		if (kset == m_unstableKeywords.constEnd())
-// 		{
-// 			return -1;
-// 		}
-// 	}
-//
-// 	test = *kset;
-// 	if (test.intersect(keywords).size() != 0)
-// 		return 0;
-// 	return -1;
-// }
-
 void pertubis::ArchModel::initKnownArches(QString path)
 {
 	QFile file(path);
@@ -108,4 +72,3 @@ void pertubis::ArchModel::initKnownArches(QString path)
         file.close();
 	}
 }
-

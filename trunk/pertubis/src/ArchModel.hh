@@ -28,11 +28,8 @@
 
 namespace pertubis
 {
-	/*! \brief model stores different keyword sets
-	* for views this datastructure seems to be a 3-level-tree
-	* unnamed_root
-	* -> keyword_set(s)
-	*   -> keyword(s)
+	/*!\brief model stores different system known keywords
+	*
 	*/
 
 	class ArchModel : public QAbstractItemModel
@@ -42,10 +39,8 @@ namespace pertubis
 			~ArchModel(){}
 
 			int classifyKeywords(QSet<QString> keywords, QString keyset);
-
 			int rowCount(const QModelIndex & parent = QModelIndex()) const;
 			int columnCount(const QModelIndex & parent = QModelIndex()) const;
-// 			QModelIndex index(int row, int column,const QModelIndex &parent = QModelIndex()) const;
 			QVariant data(const QModelIndex & parent,int role) const;
 			QVariant headerData(int section,Qt::Orientation orientation,int role) const;
 
@@ -53,7 +48,6 @@ namespace pertubis
 
 			QSet<QString> KeywordsAt(int offset) const;
 
-// 			void loadKeywords(QString path = QString("/etc/paludis/keywords.conf"));
 			void initKnownArches(QString path);
 
 			QString		m_header;

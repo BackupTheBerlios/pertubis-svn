@@ -223,28 +223,27 @@ void pertubis::PackageModel::slotSetRoot(Item* item)
 	if (m_root != 0)
 		delete m_root;
 	m_root = item;
-	joinData();
+	joinDataSources();
 	reset();
 }
 
-void pertubis::PackageModel::joinData()
+void pertubis::PackageModel::joinDataSources()
 {
 	Item* item;
 	foreach (item,m_root->m_children)
 	{
 		Item* version;
 		QVariantMap data;
-		int status = ps_masked;
+		Status status = ps_masked;
 		foreach (version,item->m_children)
 		{
 			QString cat,pack,ver,rep;
-// 			qDebug() << pack;
 			version->entryData(cat,pack,ver,rep);
 			Entry entry = genPackEntry(cat,pack,ver,rep);
 			QVariantMap optionsData = m_box->selectionData(entry);
 			version->setData(ph_selected,optionsData);
-			if (item->m_status < status)
-				status = item->m_status;
+			if (version->m_status < status)
+				status = version->m_status;
 			if (optionsData[tr("install")].toBool())
 				data.insert(tr("install"),true);
 			if (optionsData[tr("deinstall")].toBool())
@@ -252,7 +251,7 @@ void pertubis::PackageModel::joinData()
 		}
 
 		item->setData(ph_selected,data);
-		item->m_status = (Status) status;
+		item->m_status = status;
 	}
 }
 
@@ -265,4 +264,3 @@ void pertubis::PackageModel::slotAppendPackage(Item* item)
 		reset();
 	}
 }
-

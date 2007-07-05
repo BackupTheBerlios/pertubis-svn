@@ -27,8 +27,6 @@ namespace pertubis
 {
 	enum Status { ps_stable,ps_unstable,ps_masked };
 
-
-
 	class Item : public QObject
 	{
 		Q_OBJECT

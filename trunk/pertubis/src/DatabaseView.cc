@@ -182,18 +182,19 @@ void pertubis::DatabaseView::createMenuBar()
 
 void pertubis::DatabaseView::createToolBar()
 {
-
 	m_toolBar = addToolBar( tr("database toolbar") );
 	m_toolBar->addAction(m_acShowSideBar);
 
 	m_toolBar->addAction(m_acShowSideBar);
 	m_toolBar->addAction(m_acSearch);
+	m_toolBar->addAction(m_acSelection);
+
 // 	m_toolBar->addAction(m_acFinish);
 }
 
 void pertubis::DatabaseView::createActions()
 {
-	m_acShowSideBar = new QAction( tr("&Category Sidebar"),this );
+	m_acShowSideBar = new QAction( QPixmap(":catbar_32.xpm"),tr("&Category Sidebar"),this );
 	m_acShowSideBar->setShortcut( tr("F9"));
 	m_acShowSideBar->setStatusTip( tr("toggle category sidebar") );
 
@@ -204,7 +205,12 @@ void pertubis::DatabaseView::createActions()
 
 	m_acSearch = new QAction( QPixmap(":find_32.xpm"),tr("&Find") ,this);
 	m_acSearch->setShortcut( tr("CTRL+F"));
-	m_acSearch->setStatusTip( tr("toggle search window") );
+	m_acSearch->setToolTip( tr("toggle search window") );
+
+	m_acSelection = new QAction( QPixmap(":selections_32.xpm"),tr("F12") ,this);
+	m_acSelection->setShortcut( tr("CTRL+F12"));
+	m_acSelection->setStatusTip( tr("show selection") );
+	m_acSelection->setToolTip( tr("here you check the selections you made") );
 
 // 	QAction * ac_p = vmenu->addAction( tr("Selected &Packages") );
 // 	ac_p->setShortcut(tr("F5"));

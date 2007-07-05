@@ -40,7 +40,7 @@
 pertubis::UseFlagManager::UseFlagManager(QWidget* parent,std::tr1::shared_ptr<paludis::Environment> env) : QWidget(parent,Qt::Window),m_env(env)
 {
 	std::cout << __FUNCTION__ << "() - start\n";
-	QVBoxLayout* layout = new QVBoxLayout(this,0,0);
+	QVBoxLayout* layout = new QVBoxLayout(this);
 
 	QSplitter* hsplit = new QSplitter(Qt::Vertical,this);
 	layout->addWidget(hsplit,10);
@@ -69,9 +69,9 @@ pertubis::UseFlagManager::UseFlagManager(QWidget* parent,std::tr1::shared_ptr<pa
 // 	slotLoadTargetConfig(repo);
 // 	fillTable(m_useflags.firstChild());
 // 	slotSetsChanged();
-	setCaption(PROGNAME " :: Useflag Manager");
+	setWindowTitle("pertubis :: Useflag Manager");
 	QPixmap logoIcon( "/home/gensk/dev/paludis_gui/pix/logo.xpm" );
-	setIcon(logoIcon);
+	setWindowIcon(logoIcon);
 	resize(400,500);
 
 	connect(m_setView,
@@ -126,9 +126,6 @@ void pertubis::UseFlagManager::slotSetsChanged()
 
 std::string pertubis::UseFlagManager::getDescription(const std::string& repository,const std::string& ufset, const std::string& useflag)
 {
-// 	RepoSet::iterator rep = m_descriptions.find(repository);
-// 	if (rep != m_descriptions.end() )
-// 	{
 	DescSet::iterator fs = m_descriptions.find(ufset);
 	if (fs == m_descriptions.end() )
 		throw DescSetNotFound();
@@ -136,7 +133,6 @@ std::string pertubis::UseFlagManager::getDescription(const std::string& reposito
 	if (uf == fs->second.end() )
 		throw DescNotFound();
 	return uf->second;
-// 	}
 }
 
 bool pertubis::UseFlagManager::isUseExpandVariable(QString line)
@@ -145,7 +141,6 @@ bool pertubis::UseFlagManager::isUseExpandVariable(QString line)
 		return false;
 
 	bool res = (m_vset.find(line.remove(":").toLatin1()) != m_vset.end());
-	std::cout << line.toLatin1() << " " << res << " res of expand\n";
 	return res;
 }
 
@@ -165,15 +160,12 @@ void pertubis::UseFlagManager::getUseExpandVariables(const std::string& reposito
 		std::cout << "use_expand: " << (*it3).toLatin1() << "\n";
         m_vset.insert((*it3).toLatin1());
     }
-	std::cout << "size of vset " << m_vset.size() << "\n";
-
 }
 
 QStringList pertubis::UseFlagManager::expandVariable(QStringList& list)
 {
 	QString expandPrefix(list[0].remove(":").lower()+"_");
 	list.pop_front();
-	std::cout << "expandPrefix " << expandPrefix.toLatin1() << "\n";
 	QStringList::iterator it=list.begin();
 	++it;
 	while (it != list.end() )
@@ -196,7 +188,7 @@ void pertubis::UseFlagManager::getRepoVars(std::tr1::shared_ptr<const paludis::R
 	}
 	std::tr1::shared_ptr<const RepositoryInfo> info = repo->info(false);
 	QString path( (info->get_key_with_default("location","/usr/portage/gentoo")+"/profiles/base/make.defaults").c_str() );
-// 	std::cout << path.toLatin1() << "\n";
+
 	QFile file(path);
 	if ( !file.open(QIODevice::ReadOnly) )
 	{
@@ -217,7 +209,6 @@ void pertubis::UseFlagManager::getRepoVars(std::tr1::shared_ptr<const paludis::R
 		{
 			qFatal(QString("Repository Variable Parsing Error at line:\n%1\nat make.defaults").arg(line));
 		}
-// 		std::cout << list[0] << " " << list[1] << "\n";
 		vars->second.insert(std::pair<std::string,std::string>(list[0].toLatin1(),list[1].toLatin1()));
 	}
 	file.close();
@@ -256,7 +247,7 @@ void pertubis::UseFlagManager::slotLoadTargetConfig(std::tr1::shared_ptr<const p
 			ufset = "global";
 		else
 			ufset = (list.begin()->toLatin1() );
-// 		std::cout << "ufset " << *list.begin() << " " << ufset << "\n";
+
 		list.pop_front();
 
 		if (isUseExpandVariable(*list.begin()))
@@ -277,7 +268,6 @@ void pertubis::UseFlagManager::slotLoadTargetConfig(std::tr1::shared_ptr<const p
 
 void pertubis::UseFlagManager::slotFillTable(QListWidgetItem* ufset)
 {
-	std::cout << __FUNCTION__ << " - start\n";
 	std::string setname;
 	try
 	{
@@ -319,6 +309,4 @@ void pertubis::UseFlagManager::slotFillTable(QListWidgetItem* ufset)
 		}
 	}
 	m_table->adjustSize();
-	std::cout << __FUNCTION__ << " - done\n";
 }
-

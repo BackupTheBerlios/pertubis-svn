@@ -21,7 +21,9 @@ SET(PERTUBIS_SRCS
 	Workspace.cc
 	TaskBox.cc
 	OptionsDelegate.cc
-	main.cc)
+	main.cc
+# 	UseFlagManager.cc
+)
 
 SET(PERTUBIS_MOC_HDRS
 	CategoryModel.hh
@@ -31,11 +33,11 @@ SET(PERTUBIS_MOC_HDRS
 	TaskBox.hh
 	PackageModel.hh
 	DatabaseView.hh
-	PackageItem.hh
 	MainWindow.hh
 	SearchWindow.hh
 	Workspace.hh
 	Threads.hh
+# 	UseFlagManager.hh
 )
 
 SET( ../utils/images/picons/pertubis.qrc)

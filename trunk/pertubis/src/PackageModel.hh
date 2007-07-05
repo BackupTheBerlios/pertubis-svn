@@ -74,7 +74,7 @@ namespace pertubis
 
 		void setBox(TaskBox* t);
 
-		void joinData();
+		void joinDataSources();
 
 	private:
 
