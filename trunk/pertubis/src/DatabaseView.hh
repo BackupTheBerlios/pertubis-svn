@@ -20,12 +20,14 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H
 #define _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H
 
-#include "defines.hh"
+
 #include "SearchWindow.hh"
 #include "Threads.hh"
 #include <QMainWindow>
 #include <QEvent>
 #include <QTreeView>
+
+#include <tr1/memory>
 
 class QLabel;
 class QModelIndex;
@@ -38,6 +40,10 @@ class QToolBar;
 class QUrl;
 class QMenu;
 
+namespace paludis
+{
+	class Environment;
+}
 
 namespace pertubis
 {
@@ -45,7 +51,7 @@ namespace pertubis
 	class PackageDetails;
 	class PackageModel;
 	class ReleaseEater;
-	class Workspace;
+	class TaskBox;
 
 	class PackageView : public QTreeView
 	{
@@ -64,7 +70,8 @@ namespace pertubis
 
 	public:
 
-		DatabaseView(QWidget *parent,Workspace* w);
+		DatabaseView(QWidget *parent,
+					TaskBox* box);
 		~DatabaseView();
 
 	private:
@@ -86,9 +93,7 @@ namespace pertubis
 
 		void setTaskData(QString tname, bool state);
 
-// 		QMap<int,QColor>	m_colors;
-
-
+		TaskBox*			m_box;
 		CategoryModel*		m_catModel;
 		PackageModel*		m_packModel;
 		QAction*			m_acShowSideBar;
@@ -100,6 +105,7 @@ namespace pertubis
 		QAction*			m_acEditUse;
 		QAction*			m_acMasking;
 		QAction*			m_acSelection;
+		QAction*			m_acFinish;
 
 		SearchWindow*		m_windowSearch;
 		ReleaseEater*		m_filter;
@@ -112,8 +118,7 @@ namespace pertubis
 		PackageView*		m_packages;
 		QTextBrowser*		m_details;
 		PackageThread*		m_thread;
-		PackageDetails*     m_detailsThread;
-		Workspace*			m_workspace;
+
 		int					m_numTotalPacks;
 
 	private slots:
@@ -122,6 +127,7 @@ namespace pertubis
 		void slotSearchItem();
 		void slotDetailsChanged(const QModelIndex & index);
 		void slotInstallTask(bool state);
+		void slotRefreshCatModel();
 		void slotDeinstallTask(bool state);
 		void slotEditUseTask(bool state);
 		void slotShowDetails(QString details);

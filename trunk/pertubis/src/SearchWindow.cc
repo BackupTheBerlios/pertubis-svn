@@ -18,7 +18,7 @@
 */
 
 #include "SearchWindow.hh"
-#include "defines.hh"
+
 
 #include <iostream>
 #include <paludis/environment.hh>

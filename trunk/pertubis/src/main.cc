@@ -19,39 +19,37 @@
 
 #include "MainWindow.hh"
 #include "version.hh"
-#include "defines.hh"
 #include <iostream>
 #include <QApplication>
-#include <paludis/util/log.hh>
+
 
 int main( int argc, char **argv )
 {
+
+
 	Q_INIT_RESOURCE(pertubis);
-	using namespace pertubis;
-	paludis::Log::get_instance()->set_program_name("pertubis");
-	paludis::Log::get_instance()->set_log_level(paludis::ll_silent);
+
+	if (argc == 1)
+	{
+		QApplication a( argc, argv );
+		a.setApplicationName("pertubis");
+		pertubis::Pertubis* p = new pertubis::Pertubis();
+		a.setActiveWindow(p);
+		return  a.exec();
+	}
 
 	if (argc == 2 && strcmp(argv[1],"-v") == 0)
 	{
 		std::cout << "\n\033[32mpertubis version: " <<  VERSION << "\033[0m\n";
-		return 0;
 	}
 
 	if (argc == 2 && strcmp(argv[1],"-h") == 0)
 	{
 		std::cout << "\n\033[32musage:\n";
-		std::cout << argv[0] << "\n";
+		std::cout << argv[0] << "    = starting the application\n";
 		std::cout << argv[0] << " -h = help\n";
 		std::cout << argv[0] << " -v = version information\n\033[0m\n";
-		return 0;
 	}
 
-    QApplication a( argc, argv );
-	a.setOrganizationName(COMPANY);
-// 	a.setOrganizationDomain(DOMAIN);
-	a.setApplicationName("pertubis");
-	Pertubis* p = new Pertubis();
-	a.setActiveWindow(p);
-    return  a.exec();
+	return 0;
 }
-

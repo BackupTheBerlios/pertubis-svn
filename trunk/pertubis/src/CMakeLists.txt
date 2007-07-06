@@ -12,13 +12,11 @@ SET(PERTUBIS_SRCS
 	CategoryModel.cc
 	PackageItem.cc
 	KeywordManager.cc
-	PackageDetails.cc
 	PackageModel.cc
 	SearchWindow.cc
 	DatabaseView.cc
 	MainWindow.cc
 	Threads.cc
-	Workspace.cc
 	TaskBox.cc
 	OptionsDelegate.cc
 	main.cc
@@ -27,7 +25,6 @@ SET(PERTUBIS_SRCS
 
 SET(PERTUBIS_MOC_HDRS
 	CategoryModel.hh
-	PackageDetails.hh
 	PackageItem.hh
 	OptionsDelegate.hh
 	TaskBox.hh
@@ -35,7 +32,6 @@ SET(PERTUBIS_MOC_HDRS
 	DatabaseView.hh
 	MainWindow.hh
 	SearchWindow.hh
-	Workspace.hh
 	Threads.hh
 # 	UseFlagManager.hh
 )

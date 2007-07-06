@@ -23,7 +23,6 @@
 
 #include "UseFlagManager.hh"
 
-#include "defines.hh"
 #include <QFile>
 #include <QTextStream>
 #include <QString>
@@ -85,7 +84,6 @@ pertubis::UseFlagManager::UseFlagManager(QWidget* parent,std::tr1::shared_ptr<pa
 
 void pertubis::UseFlagManager::addDescription(const std::string& repository,const std::string& ufset, const std::string& useflag, const std::string& desc)
 {
-// 	std::cout << __FUNCTION__ << "\n";
 	std::pair<std::string,std::string>  uf(useflag,desc);
 	DescSet::iterator fset = m_descriptions.find(ufset);
 	if (fset != m_descriptions.end() )
@@ -100,7 +98,6 @@ void pertubis::UseFlagManager::addDescription(const std::string& repository,cons
 
 void pertubis::UseFlagManager::addUseflag(const std::string& repository,const std::string& ufset, const std::string& useflag, bool ison)
 {
-// 	std::cout << __FUNCTION__ << "\n";
 	std::pair<std::string,bool>  uf(useflag,ison);
 	UseFlagSet::iterator fset = m_useflags.find(ufset);
 	if (fset != m_useflags.end() )
@@ -297,9 +294,9 @@ void pertubis::UseFlagManager::slotFillTable(QListWidgetItem* ufset)
 			QTableWidgetItem* tmp1 = new QTableWidgetItem("");
 			QTableWidgetItem* tmp2 = new QTableWidgetItem("");
 
-			tmp->setFlags(Qt::ItemIsTristate);
-			tmp1->setFlags(Qt::ItemIsTristate);
-			tmp2->setFlags(Qt::ItemIsTristate);
+			tmp->setFlags(Qt::ItemIsCheckable);
+			tmp1->setFlags(Qt::ItemIsCheckable);
+			tmp2->setFlags(Qt::ItemIsCheckable);
 			tmp2->setCheckState( use->second ? Qt::Checked :Qt::Unchecked );
 			m_table->setItem(i,UPROFILE,tmp);
 			m_table->setItem(i,UPROG,tmp1);

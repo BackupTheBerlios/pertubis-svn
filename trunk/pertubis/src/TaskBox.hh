@@ -23,8 +23,6 @@
 #include <QString>
 #include <QAction>
 
-#include <paludis/package_database_entry.hh>
-
 #include <vector>
 #include <map>
 #include <set>
@@ -33,6 +31,7 @@
 namespace pertubis
 {
 	class Item;
+	class TaskBox;
 
 	class Entry
 	{

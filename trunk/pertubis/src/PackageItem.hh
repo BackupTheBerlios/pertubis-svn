@@ -25,7 +25,7 @@
 
 namespace pertubis
 {
-	enum Status { ps_stable,ps_unstable,ps_masked };
+
 
 	class Item : public QObject
 	{
@@ -33,10 +33,11 @@ namespace pertubis
 
 	public:
 
+		enum ItemStatus { is_stable, is_unstable, is_masked };
+		enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed};
+		enum ItemType { it_category,it_package,it_version};
 
-		enum Type { it_category,it_package,it_version};
-
-		Item(const QList<QVariant> &data, Item* parent,Type t);
+		Item(const QList<QVariant> &data, Item* parent,ItemType t);
 		virtual ~Item();
 
 		void appendChild(Item *child);
@@ -59,14 +60,14 @@ namespace pertubis
 		QList<Item*>	m_children;
 		QList<QVariant>	m_data;
 		Item* 			m_parent;
-		Status			m_status;
-		Type			m_rtti;
+		ItemStatus		m_status;
+		ItemType		m_rtti;
 
 	signals:
 		void taskChanged(Item* item,QString task,bool state);
 	};
 
-	QString status(int state);
+	QString status(Item::ItemStatus status);
 }
 
 #endif

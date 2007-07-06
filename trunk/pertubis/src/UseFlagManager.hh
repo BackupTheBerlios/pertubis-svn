@@ -63,20 +63,16 @@ namespace pertubis
 		void getRepoVars(std::tr1::shared_ptr<const paludis::Repository> repo);
 		QStringList expandVariable(QStringList& list);
 
-		/*! we must store per repository useflag sets.
+		/*! we must store n useflag sets.
 		* e.g. global useflags or specific ones for =x11-libs/qt-4.3.0
-		* so we have repository -> set -> useflag -> desc
+		* so we have a set -> useflag -> desc
 		*/
-
-
 
 		QListWidget*					m_setView;
 		QTableWidget* 					m_table;
 
 		std::set<std::string>			m_vset;
 		std::tr1::shared_ptr<paludis::Environment> m_env;
-
-
 
 	private slots:
 // 		void slotLoadUseFlagDescPackages();

@@ -20,22 +20,14 @@
 
 
 #include "MainWindow.hh"
-#include "Workspace.hh"
+#include "TaskBox.hh"
 #include "DatabaseView.hh"
-
 // #include "UseFlagManager.hh"
-#include "defines.hh"
 
-// #include <iomanip>
-#include <iostream>
-
-#include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/stringify.hh>
 
 #include <QApplication>
 #include <QCloseEvent>
-// #include <QDebug>
 #include <QFile>
 #include <QLabel>
 #include <QLayout>
@@ -49,10 +41,11 @@
 #include <QToolBar>
 #include <QToolButton>
 
+#include <paludis/environment.hh>
+#include <paludis/environments/environment_maker.hh>
+
 pertubis::Pertubis::Pertubis() : QMainWindow(0,Qt::Window), m_windowDatabaseView(0)
 {
-
-
 	setAttribute(Qt::WA_DeleteOnClose);
 	setAttribute(Qt::WA_QuitOnClose);
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
@@ -61,45 +54,42 @@ pertubis::Pertubis::Pertubis() : QMainWindow(0,Qt::Window), m_windowDatabaseView
 	QPixmap logoIcon( ":logo.xpm" );
 	setWindowIcon(logoIcon);
 
-	createWorkspace();
+	m_box = new pertubis::TaskBox(this);
+
 	createMenu();
 	createToolbox();
 	createDatabaseView();
 	loadSettings();
 
+
 	connect(qApp, SIGNAL(lastWindowClosed()), qApp, SLOT(quit()));
 	show();
-
 }
 
 pertubis::Pertubis::~Pertubis()
 {
 	saveSettings();
 	m_windowDatabaseView->close();
-// 	if (m_windowDatabaseView !=0);
-// 		delete m_windowDatabaseView;
+	if (m_windowDatabaseView !=0);
+		delete m_windowDatabaseView;
 }
 
 void pertubis::Pertubis::loadSettings()
 {
-
 	QSettings settings;
 	settings.beginGroup( "Pertubis" );
 		resize(settings.value("size",QVariant(sizeHint())).toSize());
 		move(settings.value("pos",QVariant(QPoint(0,0))).toPoint());
 	settings.endGroup();
-
 }
 
 void pertubis::Pertubis::saveSettings()
 {
-
 	QSettings settings;
 	settings.beginGroup( "Pertubis" );
 		settings.setValue( "size", size() );
 		settings.setValue( "pos", pos() );
 	settings.endGroup();
-
 }
 
 void pertubis::Pertubis::createMenu()
@@ -139,14 +129,9 @@ void pertubis::Pertubis::createMenu()
 	statusBar()->showMessage( tr("ready") );
 }
 
-void pertubis::Pertubis::createWorkspace()
-{
-	m_workspace = new Workspace(this);
-}
-
 void pertubis::Pertubis::createDatabaseView()
 {
-	m_windowDatabaseView = new DatabaseView(this,m_workspace);
+	m_windowDatabaseView = new DatabaseView(this,m_box);
 	QPixmap pic(":documents-2.0_32.xpm");
 	QAction * ac_browse = m_toolbar->addAction( pic, tr("&package window"));
 	ac_browse->setShortcut(tr("F9"));
@@ -161,7 +146,6 @@ void pertubis::Pertubis::createToolbox()
 {
 	m_toolbar = addToolBar( tr("pertubis tasks") );
 	QString dir = qApp->applicationDirPath();
-	std::cout << dir.toLatin1().data()<< "\n";
 	QPixmap p1(":reload-b-2.1_32.xpm");
 	QAction * ac_sync = m_toolbar->addAction( p1, tr("sync"));
 	ac_sync->setShortcut(tr("F9"));

@@ -24,12 +24,18 @@
 
 class QCloseEvent;
 
+#include <tr1/memory>
+
+namespace paludis
+{
+	class Environment;
+}
+
 namespace pertubis
 {
 	class DatabaseView;
 	class RepoConf;
-	class Workspace;
-	class DBTask;
+	class TaskBox;
 // 	class UseFlagManager;
 
 	class Pertubis : public QMainWindow
@@ -40,23 +46,19 @@ namespace pertubis
 		Pertubis();
 		~Pertubis();
 
-// 	protected:
-// 		void closeEvent( QCloseEvent* );
-
 	private:
 
 		void createMenu();
 		void createDatabaseView();
 		void createToolbox();
-		void createWorkspace();
 
 		void loadSettings();
 		void saveSettings();
 
+// 		std::tr1::shared_ptr<paludis::Environment> 	m_env;
 		DatabaseView* 			m_windowDatabaseView;
 		QToolBar* 				m_toolbar;
-		Workspace*				m_workspace;
-		DBTask* 				m_instTask;
+		TaskBox*				m_box;
 
 	private slots:
 

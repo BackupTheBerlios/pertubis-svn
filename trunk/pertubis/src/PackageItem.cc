@@ -18,28 +18,26 @@
 */
 
 #include "PackageItem.hh"
-#include "defines.hh"
-
 
 
 #include <QStringList>
 
-QString pertubis::status(int state)
+QString pertubis::status(Item::ItemStatus status)
 {
-	switch (state)
+	switch (status)
 	{
-		case ps_stable:
+		case Item::is_stable:
 			return "stable";
-		case ps_unstable:
+		case Item::is_unstable:
 			return "possibly unstable";
-		case ps_masked:
+		case Item::is_masked:
 			return "not avaliable since masked";
 		default:
 			return "unknown package status";
 	}
 }
 
-pertubis::Item::Item(const QList<QVariant> &data, Item *parent,Type t) : m_data(data),m_parent(parent),m_status(ps_stable),m_rtti(t)
+pertubis::Item::Item(const QList<QVariant> &data, Item *parent,ItemType t) : m_data(data),m_parent(parent),m_status(is_stable),m_rtti(t)
 {
 }
 
@@ -70,15 +68,15 @@ void pertubis::Item::setData(int column, QVariant data)
 
 void pertubis::Item::setSelectionData(QString task,bool state)
 {
-	QVariantMap m = m_data.value(ph_selected).toMap();
+	QVariantMap m = m_data.value(io_selected).toMap();
 	m[task]=state;
-	setData(ph_selected,m);
+	setData(io_selected,m);
 	emit taskChanged(this,task,state);
 }
 
 bool pertubis::Item::setPackageSelection(QString task,bool state)
 {
-	if (m_status ==ps_masked)
+	if (m_status ==is_masked)
 		return false;
 	if (state)
 	{
@@ -98,7 +96,7 @@ bool pertubis::Item::setPackageSelection(QString task,bool state)
 			bool inUse=false;
 			foreach (item,m_children)
 			{
-				if (item->data(ph_installed).toBool())
+				if (item->data(io_installed).toBool())
 				{
 					item->setSelectionData(task,true);
 					inUse=true;
@@ -129,19 +127,19 @@ bool pertubis::Item::entryData(QString& cat,QString& pack,QString& ver,QString& 
 	if (m_rtti == it_version)
 	{
 		Item* parent = m_parent;
-		cat = parent->data(ph_category).toString();
-		pack = parent->data(ph_package).toString();
-		ver = data(ph_package).toString();
-		rep = parent->data(ph_repository).toString();
+		cat = parent->data(io_category).toString();
+		pack = parent->data(io_package).toString();
+		ver = data(io_package).toString();
+		rep = parent->data(io_repository).toString();
 		return true;
 	}
 	else if (m_rtti == it_package)
 	{
 		Item* version = bestChild();
-		cat = data(ph_category).toString();
-		pack = data(ph_package).toString();
-		ver = version->data(ph_package).toString();
-		rep = data(ph_repository).toString();
+		cat = data(io_category).toString();
+		pack = data(io_package).toString();
+		ver = version->data(io_package).toString();
+		rep = data(io_repository).toString();
 		return true;
 	}
 	return false;
@@ -149,13 +147,13 @@ bool pertubis::Item::entryData(QString& cat,QString& pack,QString& ver,QString& 
 
 bool pertubis::Item::setVersionSelection(QString task,bool state)
 {
-	if (m_status ==ps_masked)
+	if (m_status ==is_masked)
 		return false;
 	if (state)
 	{
 		if (task == tr("install") )
 		{
-			if (m_status != ps_masked)
+			if (m_status != is_masked)
 			{
 				setSelectionData(task,state);
 				m_parent->setSelectionData(task,true);
@@ -164,7 +162,7 @@ bool pertubis::Item::setVersionSelection(QString task,bool state)
 		}
 		else if (task == tr("deinstall"))
 		{
-			if (data(ph_installed).toBool())
+			if (data(io_installed).toBool())
 			{
 				setSelectionData(task,true);
 				m_parent->setSelectionData(task,true);
@@ -179,7 +177,7 @@ bool pertubis::Item::setVersionSelection(QString task,bool state)
 		setSelectionData(task,state);
 		foreach (item,m_parent->m_children)
 		{
-			QVariantMap idata= item->data(ph_selected).toMap();
+			QVariantMap idata= item->data(io_selected).toMap();
 			QVariantMap::const_iterator it = idata.find(task);
 			if (it.value().toBool())
 				inUse=true;
@@ -202,7 +200,7 @@ pertubis::Item* pertubis::Item::bestChild() const
 		while (item.hasPrevious() )
 		{
 			Item* tmp = item.previous();
-			if ( tmp->m_status != ps_masked)
+			if ( tmp->m_status != is_masked)
 				return tmp;
 		}
 	}

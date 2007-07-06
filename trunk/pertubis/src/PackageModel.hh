@@ -34,7 +34,6 @@ namespace pertubis
 {
 	class Item;
 	class PackageItem;
-	class CategoryItem;
 	class VersionItem;
 	class TaskBox;
 

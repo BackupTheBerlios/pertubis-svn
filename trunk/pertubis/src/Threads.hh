@@ -22,7 +22,8 @@
 
 #include <QThread>
 
-#include "defines.hh"
+#include "PackageItem.hh"
+
 #include <tr1/memory>
 
 namespace paludis
@@ -32,9 +33,12 @@ namespace paludis
 
 class QMenu;
 
+
+#include <QStringList>
+
 namespace pertubis
 {
-	class Item;
+
 
 	class KeywordManager;
 
@@ -45,29 +49,40 @@ namespace pertubis
 
 	public:
 
-		PackageThread(QObject* parent,std::tr1::shared_ptr<paludis::Environment> env);
+		PackageThread(QObject* parent);
 
 		void run();
 
 		void searchItem(QString str,bool name,bool desc);
 		void searchPackages(QString str);
+		void searchCategories();
+		void searchDetails(QString cn,QString pn,QString ver,QString rep, Item::ItemStatus status);
 
 	private:
 
+		enum FetchState { fs_item,fs_package,fs_details,fs_categories};
+
 		void fetchItem();
 		void fetchPackages();
+		void fetchDetails();
+		void fetchCategories();
 
-		std::string									m_txt;
+		QString									m_txt1;
+		QString									m_txt2;
+		QString									m_txt3;
+		QString									m_txt4;
 		std::tr1::shared_ptr<paludis::Environment> 	m_env;
-
-		int											m_state;
+		KeywordManager*								m_keywords;
+		Item::ItemStatus							m_status;
+		FetchState									m_state;
 		bool										m_optName;
 		bool										m_optDesc;
-		KeywordManager*								m_keywords;
 
 	signals:
 		void itemResult(Item* root);
+		void categoriesResult(QStringList cl);
 		void packagesResult(Item* root);
+		void detailsResult(QString output);
 		void searchItemFinished();
 		void searchPackagesFinished();
 	};

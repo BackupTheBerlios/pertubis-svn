@@ -19,17 +19,11 @@
 
 #include "DatabaseView.hh"
 #include "CategoryModel.hh"
-#include "PackageDetails.hh"
 #include "PackageModel.hh"
 #include "PackageItem.hh"
-#include "Workspace.hh"
 #include "OptionsDelegate.hh"
-// #include "trackdelegate.h"
-
-#include "defines.hh"
-
+#include "TaskBox.hh"
 #include <QApplication>
-// #include <QDebug>
 #include <QFile>
 #include <QHeaderView>
 #include <QMenuBar>
@@ -85,21 +79,21 @@ void pertubis::PackageView::mousePressEvent(QMouseEvent* event)
 	QTreeView::mousePressEvent(event);
 }
 
-pertubis::DatabaseView::DatabaseView(QWidget *parent,Workspace* w)
+pertubis::DatabaseView::DatabaseView(QWidget *parent,TaskBox* box)
 	: QMainWindow(parent,Qt::Window),
+	m_box(box),
 	m_windowSearch(0),
 	m_filter(0),
 	m_vSplit(0),
 	m_categories(0),
 	m_packages(0),
 	m_details(0),
-	m_workspace(w),
 	m_numTotalPacks(0)
 {
 	m_hSplit = new QSplitter(Qt::Horizontal, this);
 	m_vSplit = new QSplitter(Qt::Vertical, this);
 
-	m_catModel = new CategoryModel(this,m_workspace->m_env);
+	m_catModel = new CategoryModel(this);
 
 	m_catModel->setHorizontalHeaderLabels(QStringList(tr("category")) );
 
@@ -111,7 +105,7 @@ pertubis::DatabaseView::DatabaseView(QWidget *parent,Workspace* w)
 	m_categories->setShowGrid(false);
 
 	m_packModel = new PackageModel(this);
-	m_packModel->setBox(m_workspace->m_box);
+	m_packModel->setBox(m_box);
 	m_packModel->setHorizontalHeaderLabels(QStringList() <<
 			tr("marked") <<
 			tr("package") <<
@@ -123,9 +117,8 @@ pertubis::DatabaseView::DatabaseView(QWidget *parent,Workspace* w)
 	m_packages->insertAction(0,new QAction(tr("install"),this));
 	m_packages->insertAction(0,new QAction(tr("edit useflags for this package(version)"),this));
 	m_packages->setContextMenuPolicy(Qt::CustomContextMenu);
-	m_packages->setItemDelegateForColumn(ph_selected,new OptionsDelegate(this));
-// 	m_packages->setIndentation(5);
-// 	m_packages->setEditTriggers(QAbstractItemView::AllEditTriggers);
+	m_packages->setItemDelegateForColumn(Item::io_selected,new OptionsDelegate(this));
+
 	m_packages->setModel(m_packModel);
 	m_packages->header()->setResizeMode(QHeaderView::Stretch);
 	m_packages->header()->setVisible(true);
@@ -139,9 +132,8 @@ pertubis::DatabaseView::DatabaseView(QWidget *parent,Workspace* w)
 
 	m_vSplit->addWidget(m_packages);
 	m_vSplit->addWidget(m_details);
-	m_thread = new PackageThread(this,m_workspace->m_env);
-	m_detailsThread = new PackageDetails(m_workspace->m_env,this);
-// 	m_searchThread = new Searcher(this,m_workspace->getEnv());
+	m_thread = new PackageThread(this);
+
 
 	createActions();
 	createToolBar();
@@ -158,7 +150,6 @@ pertubis::DatabaseView::DatabaseView(QWidget *parent,Workspace* w)
 	QPixmap logoIcon( ":logo.xpm" );
 	setWindowIcon(logoIcon);
 	setCentralWidget(m_hSplit);
-// 	m_details->hide();
 	statusBar()->showMessage( tr("ready") );
 	show();
 }
@@ -188,8 +179,7 @@ void pertubis::DatabaseView::createToolBar()
 	m_toolBar->addAction(m_acShowSideBar);
 	m_toolBar->addAction(m_acSearch);
 	m_toolBar->addAction(m_acSelection);
-
-// 	m_toolBar->addAction(m_acFinish);
+	m_toolBar->addAction(m_acFinish);
 }
 
 void pertubis::DatabaseView::createActions()
@@ -207,14 +197,15 @@ void pertubis::DatabaseView::createActions()
 	m_acSearch->setShortcut( tr("CTRL+F"));
 	m_acSearch->setToolTip( tr("toggle search window") );
 
-	m_acSelection = new QAction( QPixmap(":selections_32.xpm"),tr("F12") ,this);
-	m_acSelection->setShortcut( tr("CTRL+F12"));
+	m_acSelection = new QAction( QPixmap(":selections_32.xpm"),tr("F11") ,this);
+	m_acSelection->setShortcut( tr("CTRL+F11"));
 	m_acSelection->setStatusTip( tr("show selection") );
 	m_acSelection->setToolTip( tr("here you check the selections you made") );
 
-// 	QAction * ac_p = vmenu->addAction( tr("Selected &Packages") );
-// 	ac_p->setShortcut(tr("F5"));
-// 	ac_p->setStatusTip(tr("show my selected packages"));
+	m_acFinish = new QAction( QPixmap(":finish_32.xpm"),tr("F12") ,this);
+	m_acFinish->setShortcut( tr("CTRL+F12"));
+	m_acFinish->setStatusTip( tr("start") );
+	m_acFinish->setToolTip( tr("starts all pending tasks you selected") );
 }
 
 void pertubis::DatabaseView::createConnections()
@@ -244,6 +235,11 @@ void pertubis::DatabaseView::createConnections()
 			this,
 			SLOT(slotDetailsChanged( const QModelIndex& )) );
 
+	connect(m_thread,
+			SIGNAL(categoriesResult(QStringList)),
+			m_catModel,
+    		SLOT(slotPopulateModel(QStringList)));
+
 	connect(m_windowSearch,
 			SIGNAL(search()),
 			this,
@@ -269,8 +265,8 @@ void pertubis::DatabaseView::createConnections()
 			this,
     		SLOT(slotSearchItemFinished()));
 
-	connect(m_detailsThread,
-			SIGNAL(sendDetails(QString)),
+	connect(m_thread,
+			SIGNAL(detailsResult(QString)),
 			this,
 			SLOT(slotShowDetails(QString)));
 
@@ -278,12 +274,14 @@ void pertubis::DatabaseView::createConnections()
 			SIGNAL(clicked(const QModelIndex&)),
 			this,
 			SLOT(slotOptionsMenu(const QModelIndex&)));
+
+	m_thread->searchCategories();
 }
 
 void pertubis::DatabaseView::createTasks()
 {
-	m_workspace->m_box->addTask(tr("install"));
-	m_workspace->m_box->addTask( tr("deinstall") );
+	m_box->addTask(tr("install"));
+	m_box->addTask( tr("deinstall") );
 
 	m_acInstall= new QAction(tr("install"),this);
 	m_acInstall->setStatusTip( tr("install this package") );
@@ -344,6 +342,12 @@ void pertubis::DatabaseView::saveSettings()
 	settings.endGroup();
 }
 
+void pertubis::DatabaseView::slotRefreshCatModel()
+{
+	if (!m_thread->isRunning())
+		m_thread->searchCategories();
+}
+
 void pertubis::DatabaseView::slotSearchItemFinished()
 {
 	statusBar()->showMessage(QString(tr("%1 packages found")).arg(m_packModel->root()->childCount()));
@@ -384,7 +388,7 @@ void pertubis::DatabaseView::setTaskData(QString tname, bool state)
 // 	qDebug() << "slotSetSelectionData() - start";
 	QModelIndex index = m_packages->currentIndex();
 	m_packModel->setSelectionData(index,tname,state);
-	Item* item = static_cast<Item*>(index.internalPointer());
+
 // 	qDebug() << "slotSetSelectionData() - done";
 }
 
@@ -414,11 +418,10 @@ void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
 {
 // 	qDebug() << "DatabaseView::slotDetailsChanged()" << index;
 	Item* item = static_cast<Item*>(index.internalPointer());
-	if (m_detailsThread->isRunning() ||
+	if (m_thread->isRunning() ||
 		!index.isValid() ||
-		index.column() != ph_package ||
-	   (item->m_rtti == Item::it_package && item->m_status == ps_masked) )
-
+		index.column() != Item::io_package ||
+	   (item->m_rtti == Item::it_package && item->m_status == Item::is_masked) )
 		return;
 
 	QString cat,pack,ver,rep;
@@ -429,7 +432,7 @@ void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
 	   ver.isEmpty() || ver.isNull() ||
 	   rep.isEmpty() || rep.isNull() )
 		return;
-	m_detailsThread->search(cat,pack,ver,rep,item->m_status);
+	m_thread->searchDetails(cat,pack,ver,rep,item->m_status);
 }
 
 void pertubis::DatabaseView::slotSearchItem()
@@ -470,24 +473,24 @@ void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& index)
 	Item* item = static_cast<Item*>(index.internalPointer());
 	connect(item,
 			SIGNAL(taskChanged(Item*,QString,bool)),
-			m_workspace->m_box,
+			m_box,
    			SLOT(slotTaskChanged(Item*,QString,bool)));
-	if (index.column() != ph_selected ||  (item->m_rtti == Item::it_package && item->m_status == ps_masked) )
+	if (index.column() != Item::io_selected ||  (item->m_rtti == Item::it_package && item->m_status == Item::is_masked) )
 		return;
 	m_options->clear();
 	QString cat,pack,ver,rep;
 	item->entryData(cat,pack,ver,rep);
 	Entry entry = genPackEntry(cat,pack,ver,rep);
-	QVariantMap optionsData = m_workspace->m_box->selectionData(entry);
+	QVariantMap optionsData = m_box->selectionData(entry);
 	QVariantMap::const_iterator it = optionsData.constBegin();
 
-	if (item->m_status != ps_masked)
+	if (item->m_status != Item::is_masked)
 	{
 		m_options->addAction(m_acInstall);
 		m_acInstall->setChecked(optionsData[tr("install")].toBool() ? Qt::Checked : Qt::Unchecked);
 	}
 
-	if (item->data(ph_installed).toBool())
+	if (item->data(Item::io_installed).toBool())
 	{
 		m_options->addAction(m_acDeinstall);
 		m_acDeinstall->setChecked(optionsData[tr("deinstall")].toBool() ? Qt::Checked : Qt::Unchecked);

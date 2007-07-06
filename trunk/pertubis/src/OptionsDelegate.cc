@@ -30,7 +30,6 @@
 #include "PackageItem.hh"
 #include <QAction>
 
-#include "defines.hh"
 #include "OptionsDelegate.hh"
 
 pertubis::OptionsDelegate::OptionsDelegate(QWidget *parent) : QItemDelegate(parent)
@@ -48,13 +47,13 @@ void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
 	Item* item = static_cast<Item*>(index.internalPointer());
 	if (!item)
 		return;
-	QVariantMap map = item->data(ph_selected).toMap();
+	QVariantMap map = item->data(Item::io_selected).toMap();
 	QPixmap ins(":button_ok_16.xpm");
 	QPixmap dei(":button_cancel_16.xpm");
 
 	QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 	painter->setPen(pen);
-	if (item->m_status != ps_masked)
+	if (item->m_status != Item::is_masked)
 	{
 		painter->drawRect(option.rect.x(),option.rect.y()+3,13,13);
 		painter->drawRect(option.rect.x()+16,option.rect.y()+3,13,13);
@@ -73,7 +72,7 @@ QSize pertubis::OptionsDelegate::sizeHint(const QStyleOptionViewItem &option,
     QRect decorationRect = rect(option, index, Qt::DecorationRole);
 	QRect displayRect;
 	Item* item = static_cast<Item*>(index.internalPointer());
-	if (index.column() == ph_selected && item->m_rtti == Item::it_version)
+	if (index.column() == Item::io_selected && item->m_rtti == Item::it_version)
 		displayRect = QRect(QPoint(0,0),QPoint(32,16));
 	else
     	displayRect = rect(option, index, Qt::DisplayRole);

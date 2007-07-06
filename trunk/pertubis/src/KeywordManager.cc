@@ -19,7 +19,6 @@
 
 #include "KeywordManager.hh"
 #include "PackageItem.hh"
-#include "defines.hh"
 
 #include <QFile>
 #include <QTextStream>
@@ -69,7 +68,7 @@ int pertubis::KeywordManager::classifyKeywords(std::tr1::shared_ptr< const palud
 	{
 		if (keywords->find(paludis::KeywordName(*mykeyword)) != keywords->end())
 		{
-			return ps_stable;
+			return Item::is_stable;
 		}
 		++mykeyword;
 	}
@@ -79,10 +78,10 @@ int pertubis::KeywordManager::classifyKeywords(std::tr1::shared_ptr< const palud
 	{
 		if (keywords->find(paludis::KeywordName(*mykeyword)) != keywords->end())
 		{
-			return ps_unstable;
+			return Item::is_unstable;
 		}
 		++mykeyword;
 	}
 
-	return ps_masked;
+	return Item::is_masked;
 }

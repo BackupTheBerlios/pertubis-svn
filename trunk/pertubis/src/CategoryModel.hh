@@ -27,39 +27,15 @@
 
 #include <QStringList>
 
-namespace paludis
-{
-	class Environment;
-}
-
 namespace pertubis
 {
-	class CatFetch : public QThread
-	{
-		Q_OBJECT
-
-	public:
-
-		CatFetch(std::tr1::shared_ptr<paludis::Environment> env, QObject* parent) : QThread(parent), m_env(env) {}
-
-	protected:
-		void run();
-	private:
-
-		std::tr1::shared_ptr<paludis::Environment> m_env;
-
-	signals:
-		void newFetchResult(QStringList cl);
-	};
-
 	class CategoryModel : public QAbstractListModel
 	{
 		Q_OBJECT
 	public:
 
-		CategoryModel( QObject* parent,std::tr1::shared_ptr<paludis::Environment> env);
+		CategoryModel( QObject* parent);
 		~CategoryModel();
-		void refreshModel();
 
 		QStringList completeData() const { return m_data;}
 		QVariant headerData(int section, Qt::Orientation orientation, int role) const;
@@ -71,8 +47,6 @@ namespace pertubis
 
 		QStringList		m_data;
 		QStringList		m_header;
-		CatFetch*		m_thread;
-		std::tr1::shared_ptr<paludis::Environment> m_env;
 
 	public slots:
 		void slotPopulateModel(QStringList cl);

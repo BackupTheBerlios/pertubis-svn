@@ -20,8 +20,6 @@
 #include "PackageModel.hh"
 #include "PackageItem.hh"
 
-#include "Workspace.hh"
-
 // #include <QDebug>
 #include <QBrush>
 #include <QApplication>
@@ -89,10 +87,10 @@ Qt::ItemFlags pertubis::PackageModel::flags(const QModelIndex &index) const
 {
 	switch (index.column())
 	{
-		case ph_selected:
+		case Item::io_selected:
 			return Qt::ItemIsEditable;
 			break;
-		case ph_installed:
+		case Item::io_installed:
 			return Qt::ItemIsSelectable;
 			break;
 		default:
@@ -116,17 +114,17 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & index, int role) con
 
 	if (role == Qt::ForegroundRole)
 	{
-		if (index.column() == ph_installed)
+		if (index.column() == Item::io_installed)
 			return QBrush(QColor(0,0,255));
-		if (index.column() == ph_selected)
+		if (index.column() == Item::io_selected)
 			return QBrush(QColor(0,255,0));
-		if (index.column() == ph_package)
+		if (index.column() == Item::io_package)
 		{
-			if (item->m_status == ps_stable)
+			if (item->m_status == Item::is_stable)
 				return QBrush(QColor(0,255,0));
-			if (item->m_status == ps_unstable)
+			if (item->m_status == Item::is_unstable)
 				return QBrush(QColor(255,200,0));
-			if (item->m_status == ps_masked)
+			if (item->m_status == Item::is_masked)
 				return QBrush(QColor(255,0,0));
 		}
 	}
@@ -135,7 +133,7 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & index, int role) con
 	{
 		switch (index.column())
 		{
-			case ph_installed:
+			case Item::io_installed:
 				return item->data(index.column());
 			default:
 				return QVariant();
@@ -146,7 +144,7 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & index, int role) con
 	{
 		switch (index.column())
 		{
-			case ph_installed:
+			case Item::io_installed:
 				return QVariant();
 			default:
 				return item->data(index.column());
@@ -234,14 +232,14 @@ void pertubis::PackageModel::joinDataSources()
 	{
 		Item* version;
 		QVariantMap data;
-		Status status = ps_masked;
+		Item::ItemStatus status = Item::is_masked;
 		foreach (version,item->m_children)
 		{
 			QString cat,pack,ver,rep;
 			version->entryData(cat,pack,ver,rep);
 			Entry entry = genPackEntry(cat,pack,ver,rep);
 			QVariantMap optionsData = m_box->selectionData(entry);
-			version->setData(ph_selected,optionsData);
+			version->setData( Item::io_selected,optionsData);
 			if (version->m_status < status)
 				status = version->m_status;
 			if (optionsData[tr("install")].toBool())
@@ -250,7 +248,7 @@ void pertubis::PackageModel::joinDataSources()
 				data.insert(tr("deinstall"),true);
 		}
 
-		item->setData(ph_selected,data);
+		item->setData(Item::io_selected,data);
 		item->m_status = status;
 	}
 }

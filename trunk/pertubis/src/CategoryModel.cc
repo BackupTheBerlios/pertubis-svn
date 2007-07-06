@@ -23,46 +23,12 @@
 #include <QSet>
 #include <QString>
 
-#include <paludis/environment.hh>
-#include <paludis/util/iterator.hh>
-#include <paludis/util/stringify.hh>
-#include <paludis/package_database.hh>
-
-void pertubis::CatFetch::run()
+pertubis::CategoryModel::CategoryModel(QObject* parent) : QAbstractListModel(parent)
 {
-	using namespace paludis;
-	QSet<QString> cats;
-	for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository> r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;r != r_end ; ++r)
-	{
-		std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
-		for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
-		{
-			cats << stringify(*c).c_str();
-		}
-	}
-	emit newFetchResult(cats.toList());
-}
-
-pertubis::CategoryModel::CategoryModel(QObject* parent,std::tr1::shared_ptr<paludis::Environment> env) : QAbstractListModel(parent),m_env(env)
-{
-	m_thread = new CatFetch(m_env,this);
-	connect(m_thread,
-			SIGNAL(newFetchResult(QStringList)),
-			this,
-    		SLOT(slotPopulateModel(QStringList)));
-	refreshModel();
 }
 
 pertubis::CategoryModel::~CategoryModel()
 {
-	m_thread->terminate();
-	m_thread->wait();
-}
-
-void pertubis::CategoryModel::refreshModel()
-{
-	if (!m_thread->isRunning())
-		m_thread->start();
 }
 
 void pertubis::CategoryModel::setHorizontalHeaderLabels ( const QStringList & labels )
