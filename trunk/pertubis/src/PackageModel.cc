@@ -30,7 +30,7 @@
 
 bool ItemLessThan(const pertubis::Item* a,const pertubis::Item* b)
 {
-	return (a->m_data.begin()->toString() < b->m_data.begin()->toString() );
+	return (a->data(0).toString() < b->data(0).toString() );
 }
 
 pertubis::PackageModel::PackageModel(QObject* parent) : QAbstractItemModel(parent),m_root(0)
@@ -50,7 +50,7 @@ void pertubis::PackageModel::setBox(TaskBox* t)
 bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, const QString & task, bool state)
 {
 	Item* item = static_cast<Item*>(ix.internalPointer());
-	if (item->m_rtti == Item::it_package)
+	if (item->type() == Item::it_package)
 	{
 		item->setPackageSelection(task,state);
 		{
@@ -59,7 +59,7 @@ bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, const QSt
 		}
 	}
 
-	if (item->m_rtti == Item::it_version)
+	if (item->type() == Item::it_version)
 	{
 		if (item->setVersionSelection(task,state))
 		{
@@ -120,11 +120,11 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & index, int role) con
 			return QBrush(QColor(0,255,0));
 		if (index.column() == Item::io_package)
 		{
-			if (item->m_status == Item::is_stable)
+			if (item->status() == Item::is_stable)
 				return QBrush(QColor(0,255,0));
-			if (item->m_status == Item::is_unstable)
+			if (item->status() == Item::is_unstable)
 				return QBrush(QColor(255,200,0));
-			if (item->m_status == Item::is_masked)
+			if (item->status() == Item::is_masked)
 				return QBrush(QColor(255,0,0));
 		}
 	}
@@ -221,36 +221,7 @@ void pertubis::PackageModel::slotSetRoot(Item* item)
 	if (m_root != 0)
 		delete m_root;
 	m_root = item;
-	joinDataSources();
 	reset();
-}
-
-void pertubis::PackageModel::joinDataSources()
-{
-	Item* item;
-	foreach (item,m_root->m_children)
-	{
-		Item* version;
-		QVariantMap data;
-		Item::ItemStatus status = Item::is_masked;
-		foreach (version,item->m_children)
-		{
-			QString cat,pack,ver,rep;
-			version->entryData(cat,pack,ver,rep);
-			Entry entry = genPackEntry(cat,pack,ver,rep);
-			QVariantMap optionsData = m_box->selectionData(entry);
-			version->setData( Item::io_selected,optionsData);
-			if (version->m_status < status)
-				status = version->m_status;
-			if (optionsData[tr("install")].toBool())
-				data.insert(tr("install"),true);
-			if (optionsData[tr("deinstall")].toBool())
-				data.insert(tr("deinstall"),true);
-		}
-
-		item->setData(Item::io_selected,data);
-		item->m_status = status;
-	}
 }
 
 void pertubis::PackageModel::slotAppendPackage(Item* item)
@@ -258,7 +229,7 @@ void pertubis::PackageModel::slotAppendPackage(Item* item)
 	if (m_root != 0)
 	{
 		m_root->appendChild(item);
-		item->m_parent = m_root;
+		item->setParent(m_root);
 		reset();
 	}
 }

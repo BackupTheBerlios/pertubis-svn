@@ -21,24 +21,18 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H
 
 
-#include "SearchWindow.hh"
-#include "Threads.hh"
 #include <QMainWindow>
-#include <QEvent>
+#include <QSystemTrayIcon>
 #include <QTreeView>
 
-#include <tr1/memory>
-
-class QLabel;
+class QDockWidget;
+class QMenu;
 class QModelIndex;
-class QString;
 class QSplitter;
+class QString;
 class QTableView;
 class QTextBrowser;
 class QToolBar;
-
-class QUrl;
-class QMenu;
 
 namespace paludis
 {
@@ -48,10 +42,19 @@ namespace paludis
 namespace pertubis
 {
 	class CategoryModel;
+	class Item;
 	class PackageDetails;
 	class PackageModel;
 	class ReleaseEater;
+	class SearchWindow;
 	class TaskBox;
+	class ThreadFetchCategories;
+	class ThreadFetchDetails;
+	class ThreadFetchItem;
+	class ThreadFetchPackages;
+	class ThreadKeywordManager;
+	class UseFlagEditor;
+	class Settings;
 
 	class PackageView : public QTreeView
 	{
@@ -70,77 +73,89 @@ namespace pertubis
 
 	public:
 
-		DatabaseView(QWidget *parent,
-					TaskBox* box);
-		~DatabaseView();
+		DatabaseView();
+		virtual ~DatabaseView();
+
+	protected:
+
+		void closeEvent(QCloseEvent* event);
 
 	private:
 
-		enum { PACKAGE,CATEGORY,REPOSITORY,INSTALLED,SELECTED};
-
-		void createConnections();
 		void createActions();
 		void createOptionsMenu();
 		void createToolBar();
-		void createMenuBar();
 		void createWindowSearch();
 		void createTasks();
+		void createCatbar();
+		void createPackageView();
+		void createUseflagEditor();
+		void createTrayMenu();
 
 		void loadCategories();
 		void loadSettings();
 
 		void saveSettings();
 
-		void setTaskData(QString tname, bool state);
-
-		TaskBox*			m_box;
 		CategoryModel*		m_catModel;
+		Item*				m_current;
 		PackageModel*		m_packModel;
-		QAction*			m_acShowSideBar;
-		QAction*			m_acShowToolBar;
-		QAction*			m_acSearch;
-		QAction*			m_acSelected;
-		QAction*			m_acInstall;
+		PackageView*		m_packages;
 		QAction*			m_acDeinstall;
 		QAction*			m_acEditUse;
-		QAction*			m_acMasking;
-		QAction*			m_acSelection;
 		QAction*			m_acFinish;
-
-		SearchWindow*		m_windowSearch;
-		ReleaseEater*		m_filter;
-
+		QAction*			m_acInstall;
+		QAction*			m_acMasking;
+		QAction* 			m_acPref;
+		QAction* 			m_acQuit;
+		QAction*			m_acSelected;
+		QAction*			m_acSelection;
+		QAction* 			m_acSync;
+		QAction*			m_acToggleCatBar;
+		QAction*			m_acToggleMainWindow;
+		QAction*			m_acTogglePackageView;
+		QAction*			m_acToggleSearchWindow;
+		QAction*			m_acToggleUseBar;
+		QDockWidget*		m_dockCat;
+		QDockWidget*		m_dockUse;
 		QMenu*				m_options;
-		QSplitter* 			m_hSplit;
+		QMenu*				m_trayMenu;
 		QSplitter* 			m_vSplit;
-		QToolBar* 			m_toolBar;
 		QTableView*			m_categories;
-		PackageView*		m_packages;
 		QTextBrowser*		m_details;
-		PackageThread*		m_thread;
-
-		int					m_numTotalPacks;
+		QToolBar* 			m_toolBar;
+		ReleaseEater*		m_filter;
+		SearchWindow*		m_windowSearch;
+		Settings*			m_settings;
+		TaskBox*			m_box;
+		ThreadFetchCategories*	m_threadCategories;
+		ThreadFetchDetails*		m_threadDetails;
+		ThreadFetchItem*		m_threadItem;
+		ThreadFetchPackages*	m_threadPackages;
+		ThreadKeywordManager*	m_threadKeywords;
+		UseFlagEditor*			m_useflagEditor;
 
 	private slots:
 
 		void slotCategoryChanged(  const QModelIndex& index );
-		void slotSearchItem();
-		void slotDetailsChanged(const QModelIndex & index);
-		void slotInstallTask(bool state);
-		void slotRefreshCatModel();
 		void slotDeinstallTask(bool state);
-		void slotEditUseTask(bool state);
-		void slotShowDetails(QString details);
+		void slotDetailsChanged(const QModelIndex & index);
+		void slotEditUseTask();
+		void slotInstallTask(bool state);
+		void slotOpenSettings();
+		void slotOptionsMenu(const QModelIndex& index);
+		void slotQuit();
+		void slotRefreshCategories();
+		void slotSearchItem();
 		void slotSearchItemFinished();
 		void slotSearchPackagesFinished();
-		void slotOptionsMenu(const QModelIndex& index);
-		void slotToggleCatBar();
-		void slotToggleToolBar();
-		void slotToggleWindowSearch();
+		void slotShowDetails(QString details);
+		void slotSync();
+		void slotTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
+		void slotToggleMainWindow();
+		void slotTogglePackageView();
+		void slotToggleSearchWindow();
 	};
 }
+
 #endif
-
-
-
-

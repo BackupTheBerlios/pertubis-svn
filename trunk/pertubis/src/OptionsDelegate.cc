@@ -17,20 +17,14 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-
-// #include <QtGui>
-#include <QCheckBox>
-#include <QModelIndex>
-#include <QPen>
-#include <QComboBox>
-#include <QPalette>
-#include <QColor>
-#include <QPainter>
-#include <QMenu>
-#include "PackageItem.hh"
-#include <QAction>
-
 #include "OptionsDelegate.hh"
+#include "PackageItem.hh"
+#include <QColor>
+#include <QMenu>
+#include <QModelIndex>
+#include <QPainter>
+#include <QPalette>
+#include <QPen>
 
 pertubis::OptionsDelegate::OptionsDelegate(QWidget *parent) : QItemDelegate(parent)
 {
@@ -53,7 +47,7 @@ void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
 
 	QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 	painter->setPen(pen);
-	if (item->m_status != Item::is_masked)
+	if (item->status() != Item::is_masked)
 	{
 		painter->drawRect(option.rect.x(),option.rect.y()+3,13,13);
 		painter->drawRect(option.rect.x()+16,option.rect.y()+3,13,13);
@@ -72,7 +66,7 @@ QSize pertubis::OptionsDelegate::sizeHint(const QStyleOptionViewItem &option,
     QRect decorationRect = rect(option, index, Qt::DecorationRole);
 	QRect displayRect;
 	Item* item = static_cast<Item*>(index.internalPointer());
-	if (index.column() == Item::io_selected && item->m_rtti == Item::it_version)
+	if (index.column() == Item::io_selected && item->type() == Item::it_version)
 		displayRect = QRect(QPoint(0,0),QPoint(32,16));
 	else
     	displayRect = rect(option, index, Qt::DisplayRole);

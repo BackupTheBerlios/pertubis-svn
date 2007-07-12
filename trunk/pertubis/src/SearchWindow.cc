@@ -36,7 +36,6 @@
 #include <QVBoxLayout>
 #include <QDebug>
 
-
 pertubis::SearchWindow::SearchWindow( QWidget *parent) : QDialog(parent)
 {
 	qDebug() << "SearchWindow::SearchWindow() - start";
@@ -67,19 +66,10 @@ pertubis::SearchWindow::SearchWindow( QWidget *parent) : QDialog(parent)
 	optLayout->addWidget(m_chkDesc);
 	optLayout->addWidget(m_chkHomepage);
 	optLayout->addWidget(m_chkRegex);
-
-
 	layout->addLayout(leftLayout,0,0);
-
 	layout->addWidget(m_dbox,0,1);
-
 	leftLayout->addWidget(m_line);
-
-
 	leftLayout->addLayout(optLayout);
-
-
-// 	leftLayout->addStretch(1);
 	setLayout(layout);
 
 	QPushButton* bFind = new QPushButton(tr("&Start"));
@@ -100,9 +90,5 @@ pertubis::SearchWindow::SearchWindow( QWidget *parent) : QDialog(parent)
 	setWindowTitle(tr("Search Dialog"));
 	setWindowModality(Qt::WindowModal);
 	hide();
+	qDebug() << "SearchWindow::SearchWindow() - done";
 }
-
-pertubis::SearchWindow::~SearchWindow()
-{
-}
-

@@ -17,58 +17,44 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_PERTUBIS_H
-#define _PERTUBIS_ENTRY_PROTECTOR_PERTUBIS_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_DETAILS_H
+#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_DETAILS_H
 
-#include <QMainWindow>
+#include "ThreadBase.hh"
+#include "PackageItem.hh"
 
-class QCloseEvent;
-
-#include <tr1/memory>
-
-namespace paludis
-{
-	class Environment;
-}
+#include <QString>
 
 namespace pertubis
 {
-	class DatabaseView;
-	class RepoConf;
-	class TaskBox;
-// 	class UseFlagManager;
+	class KeywordManager;
 
-	class Pertubis : public QMainWindow
+	class ThreadFetchDetails : public ThreadBase
 	{
 		Q_OBJECT
 
 	public:
-		Pertubis();
-		~Pertubis();
 
-	private:
+		ThreadFetchDetails(QObject* parent, std::tr1::shared_ptr<paludis::Environment> env);
 
-		void createMenu();
-		void createDatabaseView();
-		void createToolbox();
+		void search(QString cn,QString pn,QString ver,QString rep, Item::ItemStatus status);
 
-		void loadSettings();
-		void saveSettings();
+	protected:
 
-// 		std::tr1::shared_ptr<paludis::Environment> 	m_env;
-		DatabaseView* 			m_windowDatabaseView;
-		QToolBar* 				m_toolbar;
-		TaskBox*				m_box;
+		void run();
 
-	private slots:
+	protected:
 
-		void slotAbout();
-		void slotAboutQt();
-		void slotOpenPreferences();
-		void slotToggleWindowDatabaseView();
-		void slotSync();
+		QString									m_cat;
+		QString									m_pack;
+		QString									m_version;
+		QString									m_repo;
+		Item::ItemStatus 						m_status;
 
+	signals:
+		void detailsResult(QString output);
 	};
 }
 #endif
+
 

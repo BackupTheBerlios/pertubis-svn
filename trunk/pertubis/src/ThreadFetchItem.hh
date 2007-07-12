@@ -17,33 +17,48 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H
-#define _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_ITEM_H
+#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_ITEM_H
 
-#include <QItemDelegate>
+#include "ThreadBase.hh"
 
-class QMenu;
-
-#include <QSize>
+#include <QString>
 
 namespace pertubis
 {
+	class Item;
+	class TaskBox;
+	class ThreadKeywordManager;
 
-	class OptionsDelegate : public QItemDelegate
+	class ThreadFetchItem : public ThreadBase
 	{
 		Q_OBJECT
 
 	public:
-		OptionsDelegate(QWidget *parent = 0);
 
-		void paint(QPainter* painter,const QStyleOptionViewItem& option,const QModelIndex& index) const;
-		QSize sizeHint(const QStyleOptionViewItem &option,const QModelIndex &index) const;
+		ThreadFetchItem(QObject* parent,
+						std::tr1::shared_ptr<paludis::Environment> env,
+	  					ThreadKeywordManager* keywords,
+						TaskBox* box);
+
+		void search(QString str,bool name,bool desc);
+
+	protected:
+
+		void run();
 
 	private:
 
-		QMenu*			m_menu;
+		QString									m_query;
+		bool									m_optName;
+		bool									m_optDesc;
+
+		ThreadKeywordManager*					m_keywords;
+		TaskBox*								m_box;
+
+	signals:
+		void itemResult(Item* root);
 	};
 }
 
 #endif
-

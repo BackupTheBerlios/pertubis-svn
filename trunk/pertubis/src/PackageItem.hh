@@ -31,43 +31,53 @@ namespace pertubis
 	{
 		Q_OBJECT
 
-	public:
+		public:
 
-		enum ItemStatus { is_stable, is_unstable, is_masked };
-		enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed};
-		enum ItemType { it_category,it_package,it_version};
+			enum ItemStatus { is_stable, is_unstable, is_masked };
+			enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed};
+			enum ItemType { it_category,it_package,it_version};
 
-		Item(const QList<QVariant> &data, Item* parent,ItemType t);
-		virtual ~Item();
+			Item() {}
+			Item(const QList<QVariant> &data, Item* parent,ItemType t);
+			virtual ~Item();
 
-		void appendChild(Item *child);
+			static QString status(Item::ItemStatus status);
 
-		bool setPackageSelection(QString task,bool state);
-		bool setVersionSelection(QString task,bool state);
-		void setSelectionData(QString task,bool state);
+			void appendChild(Item *child);
 
-		bool entryData(QString& cat,QString& pack,QString& ver,QString& rep) const;
+			ItemType type() const { return m_rtti;}
+			ItemStatus status() const { return m_status;}
+			void setStatus(ItemStatus s) { m_status = s;}
 
-		Item *child(int row) const;
-		Item *bestChild() const;
-		int childCount() const;
-		int columnCount() const;
-		QVariant data(int column) const;
-		void setData(int column,QVariant data);
-		int row() const;
-		Item *parent();
+			bool setPackageSelection(QString task,bool state);
+			bool setVersionSelection(QString task,bool state);
+			void setSelectionData(QString task,bool state);
 
-		QList<Item*>	m_children;
-		QList<QVariant>	m_data;
-		Item* 			m_parent;
-		ItemStatus		m_status;
-		ItemType		m_rtti;
+			bool entryData(QString& cat,QString& pack,QString& ver,QString& rep) const;
 
-	signals:
-		void taskChanged(Item* item,QString task,bool state);
+			Item *child(int row) const;
+			Item *bestChild() const;
+			int childCount() const;
+			int columnCount() const;
+			QVariant data(int column) const;
+			void setData(int column,QVariant data);
+			int row() const;
+			void setParent(Item* parent) { m_parent=parent;}
+			Item *parent();
+
+		private:
+
+			QList<Item*>	m_children;
+			QList<QVariant>	m_data;
+			Item* 			m_parent;
+			ItemStatus		m_status;
+			ItemType		m_rtti;
+
+		signals:
+			void taskChanged(Item* item,QString task,bool state);
 	};
 
-	QString status(Item::ItemStatus status);
+
 }
 
 #endif

@@ -17,25 +17,33 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "MainWindow.hh"
+#include "DatabaseView.hh"
 #include "version.hh"
 #include <iostream>
 #include <QApplication>
+#include <QTranslator>
 
+#include <QSettings>
 
 int main( int argc, char **argv )
 {
-
-
+// 	QResource::registerResource("/usr/lib/pertubis/pertubis.rcc");
 	Q_INIT_RESOURCE(pertubis);
 
 	if (argc == 1)
 	{
 		QApplication a( argc, argv );
 		a.setApplicationName("pertubis");
-		pertubis::Pertubis* p = new pertubis::Pertubis();
-		a.setActiveWindow(p);
-		return  a.exec();
+		a.setOrganizationName("pertubis");
+		QSettings settings;
+
+		QTranslator t;
+		t.load(settings.value("i18npage/language",":i18n/pertubis-de").toString());
+		a.installTranslator(&t);
+		pertubis::DatabaseView p;
+		p.show();
+		a.setActiveWindow(&p);
+		return a.exec();
 	}
 
 	if (argc == 2 && strcmp(argv[1],"-v") == 0)

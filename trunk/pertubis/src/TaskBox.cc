@@ -33,25 +33,20 @@ bool pertubis::operator<(const pertubis::Entry& a,const pertubis::Entry& b)
 		return true;
 	if (a.cat > b.cat)
 		return false;
-	else
-	{
-		if (a.pack < b.pack)
-			return true;
-		if (a.pack > b.pack)
-			return false;
-		else
-		{
-			if (a.version < b.version)
-				return true;
-			if (a.version > b.version)
-				return false;
-			else
-			{
-				if (a.rep < b.rep)
-					return true;
-			}
-		}
-	}
+
+	if (a.pack < b.pack)
+		return true;
+	if (a.pack > b.pack)
+		return false;
+
+	if (a.version < b.version)
+		return true;
+	if (a.version > b.version)
+		return false;
+
+	if (a.rep < b.rep)
+		return true;
+
 	return false;
 }
 
@@ -84,7 +79,7 @@ void pertubis::DBTask::changeEntry(const pertubis::Entry& entry,bool state)
 		m_data.erase(entry);
 }
 
-QVariantMap pertubis::TaskBox::selectionData(const pertubis::Entry& pack) const
+QVariantMap pertubis::TaskBox::selectionData(const pertubis::Entry& pack)
 {
 	QVariantMap map;
 	std::map<std::string,DBTask*>::const_iterator task = m_tasks.begin();
@@ -117,6 +112,18 @@ pertubis::DBTask* pertubis::TaskBox::task(QString name) const
 		res = it->second;
 	}
 	return res;
+}
+
+QVariantMap pertubis::TaskBox::tasks() const
+{
+	QVariantMap map;
+	std::map<std::string,DBTask*>::const_iterator it=m_tasks.begin();
+	while (it != m_tasks.end() )
+	{
+		map.insert(it->first.c_str(),false);
+		++it;
+	}
+	return map;
 }
 
 bool pertubis::TaskBox::hasTask(QString name) const

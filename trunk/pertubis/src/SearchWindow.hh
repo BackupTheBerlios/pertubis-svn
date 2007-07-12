@@ -29,7 +29,6 @@ class QLabel;
 class QCheckBox;
 class QDialogButtonBox;
 
-
 namespace pertubis
 {
 	class SearchWindow : public QDialog
@@ -38,7 +37,6 @@ namespace pertubis
 
 	public:
 		SearchWindow( QWidget *parent = 0);
-		virtual ~SearchWindow();
 
 		QLabel*				m_label;
 		QLineEdit*			m_line;

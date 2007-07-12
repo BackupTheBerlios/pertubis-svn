@@ -22,6 +22,7 @@
 
 #include <QString>
 #include <QAction>
+#include <QThread>
 
 #include <vector>
 #include <map>
@@ -31,7 +32,6 @@
 namespace pertubis
 {
 	class Item;
-	class TaskBox;
 
 	class Entry
 	{
@@ -71,15 +71,18 @@ namespace pertubis
 		std::set<Entry >	m_data;
 	};
 
-	class TaskBox : public QObject
+	class TaskBox : public QThread
 	{
 		Q_OBJECT
 	public:
-		TaskBox(QObject* parent) : QObject(parent) {}
+		TaskBox(QObject* parent) : QThread(parent) {}
 		DBTask* addTask(QString name);
 		DBTask* task(QString name) const;
 		bool hasTask(QString name) const;
-		QVariantMap selectionData(const pertubis::Entry& pack) const;
+		QVariantMap tasks() const;
+		QVariantMap selectionData(const pertubis::Entry& pack);
+
+		void run() {}
 
 	public slots:
 		void slotTaskChanged(Item* item, QString task, bool state);
@@ -88,4 +91,5 @@ namespace pertubis
 		std::map<std::string,DBTask*>				m_tasks;
 	};
 }
+
 #endif

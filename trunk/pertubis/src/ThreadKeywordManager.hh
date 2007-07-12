@@ -17,33 +17,38 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H
-#define _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_KEYWORD_MANAGER_H
+#define _PERTUBIS_ENTRY_PROTECTOR_KEYWORD_MANAGER_H
 
-#include <QItemDelegate>
 
-class QMenu;
-
-#include <QSize>
+#include <QSet>
+#include <QString>
+#include "ThreadBase.hh"
+#include <paludis/name.hh>
 
 namespace pertubis
 {
-
-	class OptionsDelegate : public QItemDelegate
+	class ThreadKeywordManager : public ThreadBase
 	{
 		Q_OBJECT
+		public:
+			ThreadKeywordManager(QObject* parent,
+								 std::tr1::shared_ptr<paludis::Environment> env);
+			virtual ~ThreadKeywordManager();
+			int classifyKeywords(QSet<QString> keywords) const;
+			int classifyKeywords(std::tr1::shared_ptr< const paludis::KeywordNameCollection > keywords) const;
 
-	public:
-		OptionsDelegate(QWidget *parent = 0);
+		protected:
 
-		void paint(QPainter* painter,const QStyleOptionViewItem& option,const QModelIndex& index) const;
-		QSize sizeHint(const QStyleOptionViewItem &option,const QModelIndex &index) const;
+			void run();
 
-	private:
+		private:
 
-		QMenu*			m_menu;
+			void loadKeywords();
+			QSet<QString>	m_stableKeywords;
+			QSet<QString>	m_unstableKeywords;
+
 	};
 }
 
 #endif
-

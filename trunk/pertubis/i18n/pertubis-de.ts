@@ -1,396 +1,421 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="de_DE">
+<defaultcodec></defaultcodec>
 <context>
     <name>pertubis::DatabaseView</name>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="100"/>
+        <location filename="../src/DatabaseView.cc~" line="206"/>
         <source>category</source>
-        <translation type="unfinished">Katogorie</translation>
+        <translation>Kategorie</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="98"/>
+        <location filename="../src/DatabaseView.cc~" line="204"/>
         <source>marked</source>
-        <translation type="unfinished">markiert</translation>
+        <translation>markiert</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="99"/>
+        <location filename="../src/DatabaseView.cc~" line="205"/>
         <source>package</source>
-        <translation type="unfinished">Paket</translation>
+        <translation>Paket</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="101"/>
+        <location filename="../src/DatabaseView.cc~" line="207"/>
         <source>repository</source>
-        <translation type="unfinished">Packetdepot</translation>
+        <translation>Packetdepot</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="101"/>
+        <location filename="../src/DatabaseView.cc~" line="207"/>
         <source>installed</source>
-        <translation type="unfinished">installiert</translation>
+        <translation>installiert</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="104"/>
+        <location filename="../src/DatabaseView.cc~" line="612"/>
         <source>install</source>
-        <translation type="unfinished">installiere</translation>
+        <translation>installiere</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="105"/>
-        <source>edit useflags for this package(version)</source>
-        <translation type="unfinished">bearbeite die useflags für dieses Paket bzw Paketversion</translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="153"/>
-        <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;Bearbeiten</translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="157"/>
-        <source>&amp;View</source>
-        <translation type="unfinished">&amp;Ansicht</translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="166"/>
+        <location filename="../src/DatabaseView.cc~" line="267"/>
         <source>database toolbar</source>
-        <translation type="unfinished">Datenbank Werkzeugleite</translation>
+        <translation>Datenbank Werkzeugleite</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="176"/>
-        <source>&amp;Category Sidebar</source>
-        <translation type="unfinished">&amp;Kategorienleiste</translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="177"/>
+        <location filename="../src/DatabaseView.cc~" line="193"/>
         <source>F9</source>
-        <translation type="unfinished">F9</translation>
+        <translation>F9</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="178"/>
-        <source>toggle category sidebar</source>
-        <translation type="unfinished">Kategorienleiste An/Aus</translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="180"/>
-        <source>&amp;Toolbar</source>
-        <translation type="unfinished">&amp;Werkzeugleiste</translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="183"/>
-        <source>toggle toolbar</source>
-        <translation type="unfinished">Werkzeugleiste An/Aus</translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="186"/>
+        <location filename="../src/DatabaseView.cc~" line="294"/>
         <source>CTRL+F</source>
-        <translation type="unfinished">STRG+F</translation>
+        <translation>STRG+F</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="187"/>
-        <source>toggle search window</source>
-        <translation type="unfinished">Suchfenster An/Aus</translation>
+        <location filename="../src/DatabaseView.cc~" line="401"/>
+        <source>Package Options</source>
+        <translation>Paketoptionen</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="566"/>
+        <source>Question</source>
+        <translation>Frage</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="583"/>
+        <source>searching for %1...</source>
+        <translation>suche nach %1...</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="475"/>
+        <source>%1 packages found</source>
+        <translation>%1 Pakete gefunden</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="480"/>
+        <source>%1 packages in category</source>
+        <translation>%1 Pakete in Kategorie</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="164"/>
+        <source>category list</source>
+        <translation>Kategorienliste</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="190"/>
+        <source>&amp;category sidebar</source>
+        <translation>&amp;Kategorienleiste</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="285"/>
+        <source>&amp;packages</source>
+        <translation>&amp;Paket</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="293"/>
+        <source>&amp;find</source>
+        <translation>&amp;Suchen</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="297"/>
+        <source>selections</source>
+        <translation>Auswahl</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="298"/>
+        <source>CTRL+F11</source>
+        <translation>STRG+F11</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="301"/>
+        <source>start</source>
+        <translation>starten</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="302"/>
+        <source>CTRL+F12</source>
+        <translation>STRG+F12</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="305"/>
+        <source>sync</source>
+        <translation>synchronisiere</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="618"/>
+        <source>deinstall</source>
+        <translation>deinstalliere</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="312"/>
+        <source>install this package</source>
+        <translation>installiere dieses Paket</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="316"/>
+        <source>deinstall this package</source>
+        <translation>deinstalliere dieses Paket</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="319"/>
+        <source>edit useflags</source>
+        <translation>editiere useflags</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="320"/>
+        <source>edit now the useflags for this package</source>
+        <translation>bearbeite jetzt die useflags für dieses Paket</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="322"/>
+        <source>(un)mask</source>
+        <translation>(de-)maskieren</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="323"/>
+        <source>toggle the masking for this package</source>
+        <translation>schalte dieses Paket frei oder blockiere es</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="387"/>
+        <source>useflag editor</source>
+        <translation>useflag Editor</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="395"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;useflag editor&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;here you can manage useflag settings&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;useflag Editor&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Hier können Sie Ihre useflag Einstellungen verwalten.&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="308"/>
+        <source>&amp;Quit</source>
+        <translation>&amp;Beenden</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="553"/>
+        <source>Sync</source>
+        <translation>Synchronisiere</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="295"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;toggle search window&lt;/p&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Suchfenster ein/ausschalten&lt;/p&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="299"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;here you check the selections you made&lt;/p&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Hier können Sie Ihre ausgewählten Pakte kontrollieren&lt;/p&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="303"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;starts all pending tasks you selected&lt;/p&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Startet alle ausgewählen Aufgaben&lt;/p&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="306"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;To get the latest releases and bugfixes it is neccessary to update the package database.&lt;/p&gt;&lt;p&gt;&lt;h2&gt;Note:&lt;/h2&gt;&lt;p&gt;It is sufficient to sync your repositories on a daily base&lt;/p&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Um die aktuellsten Pakete und Fehlerkorrekturen installieren zu können, ist es notwendig, die Paketdatenbänke zu aktualisieren.&lt;/p&gt;&lt;p&gt;&lt;h2&gt;Anmerkung:&lt;/h2&gt;&lt;p&gt;Es ist ausreichend, den Abgleich einmal am Tag durchzuführen!&lt;/p&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="567"/>
+        <source>Search is already running! Yes for starting the new one or no for waiting until the pending is finished?</source>
+        <translation>Suche läuft bereits! Ja drücken, um die aktuelle Suche zu starten oder nein, um auf Beendigung der Laufenden zu warten?</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="116"/>
+        <source>pertubis :: Main Window</source>
+        <translation>pertubis :: Hauptfenster</translation>
+    </message>
+    <message>
+        <location filename="../src/DatabaseView.cc~" line="194"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;enable/disable the category sidebar&lt;/p&gt;&lt;html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;öffne/schliesse die Kategorienleiste&lt;/p&gt;&lt;html&gt;</translation>
     </message>
     <message>
         <location filename="../src/DatabaseView.cc~" line="280"/>
-        <source>Package Options</source>
-        <translation type="unfinished">Paketoptionen</translation>
+        <source>&amp;main window</source>
+        <translation>&amp;Hauptfenster</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="185"/>
-        <source>&amp;Find</source>
-        <translation type="unfinished">&amp;Finde</translation>
+        <location filename="../src/DatabaseView.cc~" line="283"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;show/hide the pertubis main window&lt;/p&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;öffne/schliesse das pertubis Hauptfenster&lt;/p&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="390"/>
-        <source>Question</source>
-        <translation type="unfinished">Frage</translation>
+        <location filename="../src/DatabaseView.cc~" line="309"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;/h1&gt;&lt;p&gt;closing the pertubis suite.&lt;/p&gt;&lt;p&gt;&lt;b&gt;All unsaved changes will be lost!&lt;/b&gt;&lt;/p&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;/h1&gt;&lt;p&gt;schliesst die pertubis Anwendung&lt;/p&gt;&lt;p&gt;&lt;b&gt;alle ungesichterten Veränderungen werden nach dem Sschlieesen verloren sein !&lt;/b&gt;&lt;/p&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="391"/>
-        <source>Search already running! Yes for starting the new one or no for waiting until the pending is finished?</source>
-        <translation type="unfinished">Es wird noch gesucht! Drücke ja, um die neue Suche zu starten oder nein, um auf die alte zu warten?</translation>
+        <location filename="../src/DatabaseView.cc~" line="288"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;enable/disable the package window in the middle&lt;/p&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;öffne/schliesse das Paketfenster in der Mitte&lt;/p&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="407"/>
-        <source>searching for %1...</source>
-        <translation type="unfinished">suche nach %1...</translation>
+        <location filename="../src/DatabaseView.cc~" line="291"/>
+        <source>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;configure pertubis&lt;/p&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Konfiguriere pertubis&lt;/p&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="310"/>
-        <source>%1 packages found</source>
-        <translation type="unfinished">%1 Pakete gefunden</translation>
+        <location filename="../src/DatabaseView.cc~" line="290"/>
+        <source>&amp;Settings</source>
+        <translation>&amp;Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DatabaseView.cc~" line="137"/>
-        <source>pertubis :: Package Database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="142"/>
-        <source>ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DatabaseView.cc~" line="315"/>
-        <source>%1 packages in category</source>
-        <translation type="unfinished"></translation>
+        <location filename="../src/DatabaseView.cc~" line="628"/>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
     </message>
 </context>
 <context>
-    <name>pertubis::Pertubis</name>
+    <name>pertubis::I18NPage</name>
     <message>
-        <location filename="../src/MainWindow.cc~" line="88"/>
-        <source>&amp;File</source>
-        <translation type="unfinished">&amp;Datei</translation>
+        <location filename="../src/Settings.cc~" line="25"/>
+        <source>Language:</source>
+        <translation>Sprache:</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="89"/>
-        <source>&amp;Options</source>
-        <translation type="unfinished">&amp;Einstellungen</translation>
+        <location filename="../src/Settings.cc~" line="24"/>
+        <source>Language Settings</source>
+        <translation>Spracheinstellungen</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="90"/>
-        <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Hilfe</translation>
+        <location filename="../src/Settings.cc~" line="94"/>
+        <source>pertubis info</source>
+        <translation>pertubis Informationen</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="92"/>
-        <source>&amp;Quit</source>
-        <translation type="unfinished">&amp;Beenden</translation>
+        <location filename="../src/Settings.cc~" line="94"/>
+        <source>language setting changes will be applied after a restart</source>
+        <translation>Änderungen der Spracheinstellungen werden erst nach einem Neustart wirksam</translation>
+    </message>
+</context>
+<context>
+    <name>pertubis::Item</name>
+    <message>
+        <location filename="../src/PackageItem.cc~" line="156"/>
+        <source>install</source>
+        <translation>installiere</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="93"/>
-        <source>ALT+F4</source>
-        <translation type="unfinished">ALT+F4</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="94"/>
-        <source>closing the pertubis suite</source>
-        <translation type="unfinished">schliesse die pertubis-Anwendung</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="97"/>
-        <source>&amp;Preferences</source>
-        <translation type="unfinished">&amp;Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="98"/>
-        <source>ALT+P</source>
-        <translation type="unfinished">ALT+P</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="99"/>
-        <source>configure pertubis</source>
-        <translation type="unfinished">konfiguriere pertubis</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="179"/>
-        <source>&amp;About</source>
-        <translation type="unfinished">&amp;Über</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="106"/>
-        <source>F10</source>
-        <translation type="unfinished">F10</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="107"/>
-        <source>get program info</source>
-        <translation type="unfinished">Informationen über pertubis</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="113"/>
-        <source>About &amp;Qt</source>
-        <translation type="unfinished">Über &amp;QT</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="114"/>
-        <source>Show the Qt library&apos;s About box</source>
-        <translation type="unfinished">Zeige Informationen über QT an</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="120"/>
-        <source>ready</source>
-        <translation type="unfinished">bereit</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="137"/>
-        <source>&amp;package window</source>
-        <translation type="unfinished">&amp;Paketfenster</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="153"/>
-        <source>F9</source>
-        <translation type="unfinished">F9</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="139"/>
-        <source>browsing and searching</source>
-        <translation type="unfinished">selbst stöbern oder suchen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="152"/>
-        <source>sync</source>
-        <translation type="unfinished">synchronisiere</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="154"/>
-        <source>it is sufficient to sync your repositories on a daily base</source>
-        <translation type="unfinished">es ist ausreichend, einmal am Tag seine Paketdepots zu aktualisieren</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="148"/>
-        <source>pertubis tasks</source>
-        <translation type="unfinished">pertubis Aufgaben</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="173"/>
-        <source>Sync</source>
-        <translation type="unfinished">Synchronisiere</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="185"/>
-        <source>Preferences</source>
-        <translation type="unfinished">Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="191"/>
-        <source>About &amp;QT</source>
-        <translation type="unfinished">Über &amp;QT</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="41"/>
-        <source>pertubis :: Main Window</source>
-        <translation type="unfinished"></translation>
+        <location filename="../src/PackageItem.cc~" line="165"/>
+        <source>deinstall</source>
+        <translation>deinstalliere</translation>
     </message>
 </context>
 <context>
     <name>pertubis::SearchWindow</name>
     <message>
-        <location filename="../src/SearchWindow.cc~" line="31"/>
+        <location filename="../src/SearchWindow.cc" line="49"/>
         <source>&amp;Find</source>
-        <translation type="unfinished">&amp;Finde</translation>
+        <translation>&amp;Suchen</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc~" line="37"/>
+        <location filename="../src/SearchWindow.cc" line="55"/>
         <source>&amp;Name</source>
-        <translation type="unfinished">&amp;Name</translation>
+        <translation>&amp;Name</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc~" line="39"/>
+        <location filename="../src/SearchWindow.cc" line="57"/>
         <source>&amp;Description</source>
-        <translation type="unfinished">&amp;Beschreibung</translation>
+        <translation>&amp;Beschreibung</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc~" line="40"/>
+        <location filename="../src/SearchWindow.cc" line="58"/>
         <source>&amp;Homepage</source>
-        <translation type="unfinished">&amp;Webseite</translation>
+        <translation>&amp;Webseite</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc~" line="41"/>
+        <location filename="../src/SearchWindow.cc" line="59"/>
         <source>treat search string as &amp;regular expression</source>
-        <translation type="unfinished">behandle Suchtext als &amp;regulären Ausdruck</translation>
+        <translation>behandle Suchtext als &amp;regulären Ausdruck</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc~" line="66"/>
+        <location filename="../src/SearchWindow.cc" line="75"/>
         <source>&amp;Start</source>
-        <translation type="unfinished">&amp;Starte</translation>
+        <translation>&amp;Starte</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc~" line="81"/>
+        <location filename="../src/SearchWindow.cc" line="90"/>
         <source>Search Dialog</source>
-        <translation type="unfinished">Such Dialog</translation>
+        <translation>Such Dialog</translation>
     </message>
 </context>
 <context>
-    <name>pertubis::TaskBox</name>
+    <name>pertubis::Settings</name>
     <message>
-        <location filename="../src/TaskBox.cc" line="124"/>
+        <location filename="../src/Settings.cc~" line="121"/>
+        <source>Close</source>
+        <translation>Schliessen</translation>
+    </message>
+    <message>
+        <location filename="../src/Settings.cc~" line="154"/>
+        <source>pertubis :: settings</source>
+        <translation>pertubis :: Einstellungen</translation>
+    </message>
+    <message>
+        <location filename="../src/Settings.cc~" line="150"/>
+        <source>Configuration</source>
+        <translation>Konfiguration</translation>
+    </message>
+</context>
+<context>
+    <name>pertubis::ThreadFetchPackages</name>
+    <message>
+        <location filename="../src/ThreadFetchPackages.cc" line="140"/>
         <source>install</source>
-        <translation type="unfinished">installiere</translation>
+        <translation>installiere</translation>
     </message>
     <message>
-        <location filename="../src/TaskBox.cc" line="125"/>
-        <source>install this package</source>
-        <translation type="unfinished">installiere dieses Paket</translation>
-    </message>
-    <message>
-        <location filename="../src/TaskBox.cc" line="127"/>
+        <location filename="../src/ThreadFetchPackages.cc" line="142"/>
         <source>deinstall</source>
-        <translation type="unfinished">deinstalliere</translation>
-    </message>
-    <message>
-        <location filename="../src/TaskBox.cc" line="128"/>
-        <source>deinstall this package</source>
-        <translation type="unfinished">deinstalliere dieses Paket</translation>
-    </message>
-    <message>
-        <location filename="../src/TaskBox.cc" line="130"/>
-        <source>edit useflags</source>
-        <translation type="unfinished">editiere useflags</translation>
-    </message>
-    <message>
-        <location filename="../src/TaskBox.cc" line="131"/>
-        <source>edit the useflags for this package</source>
-        <translation type="unfinished">editiere die useflags für dieses Paket</translation>
+        <translation>deinstalliere</translation>
     </message>
 </context>
 <context>
-    <name>pertubis::UseFlagManager</name>
+    <name>pertubis::UseFlagEditor</name>
     <message>
-        <location filename="../src/UseFlagManager.cc" line="33"/>
+        <location filename="../src/UseFlagEditor.cc~" line="56"/>
         <source>Useflag</source>
-        <translation type="unfinished">Useflag</translation>
+        <translation>Useflag</translation>
     </message>
     <message>
-        <location filename="../src/UseFlagManager.cc" line="33"/>
+        <location filename="../src/UseFlagEditor.cc~" line="57"/>
         <source>Profile</source>
-        <translation type="unfinished">Profil</translation>
+        <translation>Profil</translation>
     </message>
     <message>
-        <location filename="../src/UseFlagManager.cc" line="33"/>
+        <location filename="../src/UseFlagEditor.cc~" line="58"/>
         <source>Progs</source>
-        <translation type="unfinished">Programme</translation>
+        <translation>Programme</translation>
     </message>
     <message>
-        <location filename="../src/UseFlagManager.cc" line="33"/>
+        <location filename="../src/UseFlagEditor.cc~" line="59"/>
         <source>User</source>
-        <translation type="unfinished">Benutzer</translation>
+        <translation>Benutzer</translation>
     </message>
     <message>
-        <location filename="../src/UseFlagManager.cc" line="33"/>
+        <location filename="../src/UseFlagEditor.cc~" line="60"/>
         <source>Description</source>
-        <translation type="unfinished">Beschreibung</translation>
-    </message>
-</context>
-<context>
-    <name>pertubis::Workspace</name>
-    <message>
-        <location filename="../src/Workspace.cc" line="89"/>
-        <source>install</source>
-        <translation type="obsolete">installiere</translation>
+        <translation>Beschreibung</translation>
     </message>
     <message>
-        <location filename="../src/Workspace.cc" line="90"/>
-        <source>install this package</source>
-        <translation type="obsolete">installiere dieses Paket</translation>
+        <location filename="../src/UseFlagEditor.cc~" line="91"/>
+        <source>useflag set</source>
+        <translation>Useflag Menge</translation>
     </message>
     <message>
-        <location filename="../src/Workspace.cc" line="92"/>
-        <source>deinstall</source>
-        <translation type="obsolete">deinstalliere</translation>
+        <location filename="../src/UseFlagEditor.cc~" line="103"/>
+        <source>useflag actions</source>
+        <translation>Useflag Aktionen</translation>
     </message>
     <message>
-        <location filename="../src/Workspace.cc" line="93"/>
-        <source>deinstall this package</source>
-        <translation type="obsolete">deinstalliere dieses Paket</translation>
+        <location filename="../src/UseFlagEditor.cc~" line="107"/>
+        <source>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Pertubis only loads automatically the useflag configuration on startup.&lt;/p&gt;&lt;p&gt;If you manually change these files pertubis is out of sync with your system.&lt;/p&gt;&lt;p&gt;Press this button to reload everything!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Pertubis lädt die Useflagkonfiguration nur beim Start des Programms automatisch.&lt;/p&gt;&lt;p&gt;Wenn Sie während des laufenden Betriebs manuell die Konfigurationsdateien ändern, befindet sich pertubis nicht mehr im selben Konfiguratonszustand.&lt;/p&gt;&lt;p&gt;Drücken Sie diesen Schalter, um alles neu zu laden!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Workspace.cc" line="95"/>
-        <source>edit useflags</source>
-        <translation type="obsolete">editiere useflags</translation>
+        <location filename="../src/UseFlagEditor.cc~" line="110"/>
+        <source>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;/p&gt;&lt;p&gt;Enable or disable the useflag set list for a better view on the useflags&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;/p&gt;&lt;p&gt;öffne/schliesse die Useflagmengenliste für eine bessere Sicht auf die Useflags&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/Workspace.cc" line="96"/>
-        <source>edit the useflags for this package</source>
-        <translation type="obsolete">editiere die useflags für dieses Paket</translation>
+        <location filename="../src/UseFlagEditor.cc~" line="113"/>
+        <source>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;You have to save your changes when you are finished. Otherwise all changes will be lost&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Sie müssen Änderungen speichern, wenn sie fertig sind . Andernfalls werden alle Änderungen verloren gehen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/UseFlagEditor.cc~" line="116"/>
+        <source>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Press this button to restore the former settings!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Drücken Sie diesen Knopf, wenn Sie die alten Einstellungen wieder herstellen wollen!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/UseFlagEditor.cc~" line="119"/>
+        <source>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;From time to time some useflags are added or deleted.
+You can delete these old, unknown or unused useflags.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Don&apos;t forget saving!&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;body&gt;&lt;h1&gt;&lt;u&gt;%1&lt;/u&gt;&lt;/h1&gt;&lt;p&gt;Von Zeit zu Zeit werden einige Useflags neu hinzugefügt und andere werden gelöscht.Sie können diese alten und unnötigen Useflags jetzt löschen.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Speichern nicht vergessen!&lt;/b&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/UseFlagEditor.cc~" line="63"/>
+        <source>pertubis :: Useflag Editor</source>
+        <translation>pertubis :: Useflag Editor</translation>
     </message>
 </context>
 </TS>

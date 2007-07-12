@@ -32,21 +32,23 @@ namespace pertubis
 	class CategoryModel : public QAbstractListModel
 	{
 		Q_OBJECT
-	public:
 
-		CategoryModel( QObject* parent);
-		~CategoryModel();
+		public:
 
-		QStringList completeData() const { return m_data;}
-		QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-		void setHorizontalHeaderLabels ( const QStringList & labels );
+			CategoryModel( QObject* parent);
+			~CategoryModel();
 
-		int rowCount( const QModelIndex & index ) const;
-		int columnCount( const QModelIndex & index ) const;
-		QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+			QStringList completeData() const { return m_data;}
+			QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+			void setHorizontalHeaderLabels ( const QStringList & labels );
 
-		QStringList		m_data;
-		QStringList		m_header;
+			int rowCount( const QModelIndex & index ) const;
+			int columnCount( const QModelIndex & index ) const;
+			QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+
+		private:
+			QStringList		m_data;
+			QStringList		m_header;
 
 	public slots:
 		void slotPopulateModel(QStringList cl);

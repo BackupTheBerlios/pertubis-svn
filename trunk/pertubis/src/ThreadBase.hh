@@ -17,27 +17,34 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_KEYWORD_MANAGER_H
-#define _PERTUBIS_ENTRY_PROTECTOR_THREADS_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_BASE_H
+#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_BASE_H
 
+#include <QThread>
 #include <tr1/memory>
-#include <map>
-#include <set>
-#include <string>
-#include <paludis/name.hh>
-#include <paludis/util/collection_concrete.hh>
+
+#include <paludis/environment.hh>
+
+namespace paludis
+{
+	class Environment;
+}
 
 namespace pertubis
 {
-	class KeywordManager
-	{
-		public:
-			KeywordManager() {loadKeywords(); }
-			int classifyKeywords(std::tr1::shared_ptr< const paludis::KeywordNameCollection > keywords);
-			void loadKeywords();
-			std::set<std::string> m_stableKeywords;
-			std::set<std::string> m_unstableKeywords;
-	};
+	class KeywordManager;
 
+	class ThreadBase : public QThread
+	{
+		Q_OBJECT
+
+	public:
+
+		ThreadBase(QObject* parent, std::tr1::shared_ptr<paludis::Environment> env);
+
+	protected:
+		std::tr1::shared_ptr<paludis::Environment> 	m_env;
+	};
 }
+
 #endif

@@ -26,8 +26,6 @@
 #include <QVariant>
 #include <tr1/memory>
 
-#include "Threads.hh"
-
 class QAction;
 
 namespace pertubis
@@ -72,8 +70,6 @@ namespace pertubis
 		const Item* root() const { return m_root;}
 
 		void setBox(TaskBox* t);
-
-		void joinDataSources();
 
 	private:
 

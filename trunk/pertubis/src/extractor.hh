@@ -36,8 +36,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_EXTRACTOR_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_EXTRACTOR_HH 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_EXTRACTOR_H
+#define _PERTUBIS_ENTRY_PROTECTOR_EXTRACTOR_H
 
 #include <string>
 #include <paludis/util/instantiation_policy.hh>

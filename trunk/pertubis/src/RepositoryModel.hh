@@ -27,7 +27,6 @@
 
 namespace pertubis
 {
-
 	class Repository
 	{
 	public:
