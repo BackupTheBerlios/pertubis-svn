@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="en_US">
+<defaultcodec></defaultcodec>
 <context>
     <name>pertubis::DatabaseView</name>
     <message>
@@ -253,17 +254,17 @@
     <message>
         <location filename="../src/Settings.cc~" line="24"/>
         <source>Language Settings</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/Settings.cc~" line="94"/>
         <source>pertubis info</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/Settings.cc~" line="94"/>
         <source>language setting changes will be applied after a restart</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -332,7 +333,7 @@
     <message>
         <location filename="../src/Settings.cc~" line="150"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>

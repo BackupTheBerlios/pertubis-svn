@@ -148,9 +148,9 @@ pertubis::DatabaseView::DatabaseView()
 
 pertubis::DatabaseView::~DatabaseView()
 {
-	qDebug() << "DatabaseView::~DatabaseView() - start";
+// 	qDebug() << "DatabaseView::~DatabaseView() - start";
 	saveSettings();
-	qDebug() << "DatabaseView::~DatabaseView() - done";
+// 	qDebug() << "DatabaseView::~DatabaseView() - done";
 }
 
 void pertubis::DatabaseView::closeEvent(QCloseEvent* event)

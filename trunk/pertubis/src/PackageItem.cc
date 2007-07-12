@@ -44,11 +44,9 @@ pertubis::Item::Item(const QList<QVariant> &data, Item *parent,ItemType t) : m_d
 
 pertubis::Item::~Item()
 {
-	qDebug() << "Item::~Item() - start";
 	m_parent=0;
 	qDeleteAll(m_children);
 	m_children.clear();
-	qDebug() << "Item::~Item() - done";
 }
 
 void pertubis::Item::appendChild(Item *item)

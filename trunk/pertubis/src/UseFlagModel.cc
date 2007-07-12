@@ -37,8 +37,6 @@ pertubis::UseFlagModel::UseFlagModel(QObject* parent,std::tr1::shared_ptr<paludi
 
 pertubis::UseFlagModel::~UseFlagModel()
 {
-	qDebug("UseFlagModel::~UseFlagModel() - start");
-	qDebug("UseFlagModel::~UseFlagModel() - done");
 }
 
 void pertubis::UseFlagModel::loadUseFlagDescGlobal(const paludis::Repository& repo)

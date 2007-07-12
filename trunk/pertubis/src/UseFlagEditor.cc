@@ -93,9 +93,7 @@ pertubis::UseFlagEditor::UseFlagEditor(QWidget* parent,
 
 pertubis::UseFlagEditor::~UseFlagEditor()
 {
-	qDebug("UseFlagEditor::~UseFlagEditor() - start");
 	saveSettings();
-	qDebug("UseFlagEditor::~UseFlagEditor() - done");
 }
 
 void pertubis::UseFlagEditor::createToolbar()

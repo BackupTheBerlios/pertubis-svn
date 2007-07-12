@@ -23,11 +23,13 @@ S="${WORKDIR}"/pertubis
 
 src_unpack() {
 	unpack ${A}
-	cd "${S}"
+	mkdir "${S}/build"
+
 }
 
 src_compile() {
 
+	cd "${S}/build"
 	local CMAKE_VARIABLES=""
 	CMAKE_VARIABLES="${CMAKE_VARIABLES} -DCMAKE_SKIP_RPATH:BOOL=YES"
 	CMAKE_VARIABLES="${CMAKE_VARIABLES} -DQT_WRAP_CPP:BOOL=ON"
@@ -37,10 +39,12 @@ src_compile() {
 	CMAKE_VARIABLES="${CMAKE_VARIABLES} -DQT_UIC_EXECUTABLE:FILEPATH=/usr/bin/uic"
 	CMAKE_VARIABLES="${CMAKE_VARIABLES} -DQT_INCLUDE_DIR:PATH=/usr/include/qt4"
 	CMAKE_VARIABLES="${CMAKE_VARIABLES} -DQT_QMAKE_EXECUTABLE:PATH=/usr/bin/qmake"
-	cmake ${CMAKE_VARIABLES} . || die "cmake configuration failed"
+	cmake ${CMAKE_VARIABLES} .. || die "cmake configuration failed"
 	emake -j1 || die "emake failed"
 }
 
 src_install() {
+
+	cd "${S}/build"
 	make DESTDIR=${D} install || die "make install failed"
 }
