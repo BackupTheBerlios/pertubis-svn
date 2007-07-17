@@ -33,6 +33,9 @@ namespace pertubis
 {
 	class Item;
 
+	/*! \brief Description inside pertubis of a discrete package "P" in category "C" at version "V" in repository "R"
+	*
+	*/
 	class Entry
 	{
 	public:
@@ -50,6 +53,9 @@ namespace pertubis
 
 	bool operator<(const Entry& a,const Entry& b);
 
+	/*! \brief convenience class around a set which holds Entry items
+	*
+	*/
 	class DBTask : public QObject
 	{
 		Q_OBJECT
@@ -71,6 +77,9 @@ namespace pertubis
 		std::set<Entry >	m_data;
 	};
 
+	/*! \brief manages the tasks pertubis knows about
+	*
+	*/
 	class TaskBox : public QThread
 	{
 		Q_OBJECT

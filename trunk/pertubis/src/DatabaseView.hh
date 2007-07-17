@@ -56,6 +56,10 @@ namespace pertubis
 	class UseFlagEditor;
 	class Settings;
 
+
+	/*! \brief This class only exists since we need correct mouse coordinates
+	*
+	*/
 	class PackageView : public QTreeView
 	{
 		Q_OBJECT
@@ -67,6 +71,11 @@ namespace pertubis
 		QPoint m_mousePos;
 	};
 
+	/*! \brief Our main window
+	*
+	* This class is our application configuration. It connects all modules pertubis consists of with
+	* the user.
+	*/
 	class DatabaseView : public QMainWindow
 	{
 		Q_OBJECT
@@ -96,6 +105,8 @@ namespace pertubis
 		void loadSettings();
 
 		void saveSettings();
+
+
 
 		CategoryModel*		m_catModel;
 		Item*				m_current;
@@ -151,7 +162,7 @@ namespace pertubis
 		void slotSearchPackagesFinished();
 		void slotShowDetails(QString details);
 		void slotSync();
-		void slotTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
+		void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
 		void slotToggleMainWindow();
 		void slotTogglePackageView();
 		void slotToggleSearchWindow();

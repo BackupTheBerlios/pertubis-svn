@@ -28,6 +28,9 @@ namespace pertubis
 {
 	class KeywordManager;
 
+	/*! \brief thread for fetching categories from repositories and returns a list of names
+	*
+	*/
 	class ThreadFetchCategories : public ThreadBase
 	{
 		Q_OBJECT

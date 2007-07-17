@@ -64,6 +64,9 @@
 
 namespace pertubis
 {
+	/*! \brief We only need press events and filter release events
+	*
+	*/
 	class ReleaseEater : public QObject
 	{
 
@@ -186,12 +189,11 @@ void pertubis::DatabaseView::createCatbar()
     		SLOT(slotPopulateModel(QStringList)));
 
 	m_acToggleCatBar = m_dockCat->toggleViewAction();
-	qDebug() << "----- 11";
-	m_acToggleCatBar->setText(tr("&category sidebar"));
-	qDebug() << "----- 12";
+
+	m_acToggleCatBar->setText(tr("category sidebar"));
 	m_acToggleCatBar->setIcon(QPixmap(":images/catbar_22.xpm"));
 	m_acToggleCatBar->setShortcut( tr("F9"));
-	m_acToggleCatBar->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the category sidebar</p><html>").arg(m_acToggleCatBar->text()) );
+	m_acToggleCatBar->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the category sidebar</p></html>").arg(m_acToggleCatBar->text()) );
 	slotRefreshCategories();
 }
 
@@ -277,20 +279,20 @@ void pertubis::DatabaseView::createToolBar()
 void pertubis::DatabaseView::createActions()
 {
 
-	m_acToggleMainWindow = new QAction( QPixmap(":images/logo.xpm"),tr("&main window"),this );
+	m_acToggleMainWindow = new QAction( QPixmap(":images/logo.xpm"),tr("main window"),this );
 	m_acToggleMainWindow->setCheckable(true);
 	m_acToggleMainWindow->setChecked(true);
 	m_acToggleMainWindow->setToolTip( tr("<html><h1><u>%1</u></h1><p>show/hide the pertubis main window</p></html>").arg(m_acToggleMainWindow->text()) );
 
-	m_acTogglePackageView = new QAction( QPixmap(":images/packages_22.xpm"),tr("&packages"),this );
+	m_acTogglePackageView = new QAction( QPixmap(":images/packages_22.xpm"),tr("packages"),this );
 	m_acTogglePackageView->setCheckable(true);
 	m_acTogglePackageView->setChecked(true);
 	m_acTogglePackageView->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the package window in the middle</p></html>").arg(m_acTogglePackageView->text()) );
 
-	m_acPref = new QAction( QPixmap(":images/settings_22.xpm"),tr( "&Settings"),this);
+	m_acPref = new QAction( QPixmap(":images/settings_22.xpm"),tr( "Settings"),this);
 	m_acPref->setToolTip(tr("<html><h1><u>%1</u></h1><p>configure pertubis</p></html>").arg(m_acPref->text()));
 
-	m_acToggleSearchWindow = new QAction( QPixmap(":images/find_22.xpm"),tr("&find") ,this);
+	m_acToggleSearchWindow = new QAction( QPixmap(":images/find_22.xpm"),tr("find") ,this);
 	m_acToggleSearchWindow->setShortcut( tr("CTRL+F"));
 	m_acToggleSearchWindow->setToolTip( tr("<html><h1><u>%1</u></h1><p>toggle search window</p></html>").arg(m_acToggleSearchWindow->text()) );
 
@@ -305,22 +307,22 @@ void pertubis::DatabaseView::createActions()
 	m_acSync = new QAction( QPixmap(":images/reload_22.xpm"), tr("sync"),this);
 	m_acSync->setToolTip(tr("<html><h1><u>%1</u></h1><p>To get the latest releases and bugfixes it is neccessary to update the package database.</p><p><h2>Note:</h2><p>It is sufficient to sync your repositories on a daily base</p></html>").arg(m_acSync->text()));
 
-	m_acQuit = new QAction( QPixmap(":images/quit_22.xpm"),tr("&Quit") ,this);
-	m_acQuit->setToolTip(tr("<html><h1><u>%1</u>/h1><p>closing the pertubis suite.</p><p><b>All unsaved changes will be lost!</b></p></html>").arg(m_acQuit->text()));
+	m_acQuit = new QAction( QPixmap(":images/quit_22.xpm"),tr("quit") ,this);
+	m_acQuit->setToolTip(tr("<html><h1><u>%1</u></h1><p>closing the pertubis suite.</p><p><b>All unsaved changes will be lost!</b></p></html>").arg(m_acQuit->text()));
 
 	m_acInstall= new QAction(tr("install"),this);
-	m_acInstall->setStatusTip( tr("install this package") );
+	m_acInstall->setStatusTip( tr("install this package"));
 	m_acInstall->setCheckable(true);
 
 	m_acDeinstall= new QAction(tr("deinstall"),this);
-	m_acDeinstall->setStatusTip( tr("deinstall this package") );
+	m_acDeinstall->setToolTip( tr("deinstall this package") );
 	m_acDeinstall->setCheckable(true);
 
 	m_acEditUse = new QAction(tr("edit useflags"),this);
-	m_acEditUse->setStatusTip( tr("edit now the useflags for this package") );
+	m_acEditUse->setToolTip( tr("opens a useflag editor for this item") );
 
 	m_acMasking = new QAction(tr("(un)mask"),this);
-	m_acMasking->setStatusTip( tr("toggle the masking for this package") );
+	m_acMasking->setToolTip( tr("toggle the masking for this package") );
 
 	connect(m_acSync,
 			SIGNAL(triggered()),
@@ -418,21 +420,6 @@ void pertubis::DatabaseView::createTrayMenu()
 	tray->show();
 }
 
-void pertubis::DatabaseView::slotTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-	switch (reason)
-	{
-		case QSystemTrayIcon::Trigger:
-			show();
-			break;
-		case QSystemTrayIcon::Context:
-			slotToggleMainWindow();
-			break;
-		default:
-			;
-	}
-}
-
 void pertubis::DatabaseView::loadSettings()
 {
 	QSettings settings;
@@ -485,10 +472,8 @@ void pertubis::DatabaseView::slotCategoryChanged( const QModelIndex& index )
 	if ( !index.isValid() || m_threadPackages->isRunning())
 		return;
 	QString cat = m_catModel->data(index).toString();
-	qDebug() << "slotCategoryChanged() - 1" << cat;
 	m_details->hide();
 	m_details->clear();
-	qDebug() << "slotCategoryChanged() - 2";
 	m_threadPackages->searchPackages(cat);
 }
 
@@ -586,7 +571,7 @@ void pertubis::DatabaseView::slotSearchItem()
 
 void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& index)
 {
-// 	qDebug() << "DatabaseView::slotOptionsMenu()" << index.column();
+// 	qDebug() << "DatabaseView::slotOptionsMenu()" << index;
 
 	Item* item = static_cast<Item*>(index.internalPointer());
 
@@ -648,6 +633,20 @@ void pertubis::DatabaseView::slotToggleSearchWindow()
 		m_windowSearch->hide();
 }
 
+void pertubis::DatabaseView::slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
+{
+	switch (reason)
+	{
+		case QSystemTrayIcon::Trigger:
+			show();
+			break;
+		case QSystemTrayIcon::Context:
+			slotToggleMainWindow();
+			break;
+		default:
+			;
+	}
+}
 
 void pertubis::DatabaseView::slotToggleMainWindow()
 {

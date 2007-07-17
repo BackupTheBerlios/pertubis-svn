@@ -35,6 +35,9 @@ namespace pertubis
 	class VersionItem;
 	class TaskBox;
 
+	/*! \brief holds package data fetched from paludis in a tree structure
+	*
+	*/
 	class PackageModel : public QAbstractItemModel
 	{
 		Q_OBJECT

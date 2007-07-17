@@ -29,6 +29,9 @@ class QMenu;
 namespace pertubis
 {
 
+	/*! \brief Used for presenting a customized selections display in PackageView
+	*
+	*/
 	class OptionsDelegate : public QItemDelegate
 	{
 		Q_OBJECT

@@ -27,6 +27,9 @@ namespace pertubis
 {
 
 
+	/*! \brief This node class holds important information for each package(-version).
+	*
+	*/
 	class Item : public QObject
 	{
 		Q_OBJECT

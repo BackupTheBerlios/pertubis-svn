@@ -37,6 +37,9 @@ namespace paludis
 namespace pertubis
 {
 
+	/*! \brief Holds system wide and package wise useflag settings for application use and editing.
+	*
+	*/
 	class UseFlagModel : public QObject
 	{
 		Q_OBJECT

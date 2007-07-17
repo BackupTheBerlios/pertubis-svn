@@ -43,6 +43,7 @@
 
 namespace pertubis
 {
+
     class TextMatcher : public Matcher
     {
         public:

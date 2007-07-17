@@ -61,7 +61,6 @@ pertubis::SearchWindow::SearchWindow( QWidget *parent) : QDialog(parent)
 	QHBoxLayout* optLayout = new QHBoxLayout;
 	optLayout->setMargin(0);
 
-
 	optLayout->addWidget(m_chkName);
 	optLayout->addWidget(m_chkDesc);
 	optLayout->addWidget(m_chkHomepage);

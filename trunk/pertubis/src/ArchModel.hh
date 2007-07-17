@@ -28,7 +28,7 @@
 
 namespace pertubis
 {
-	/*!\brief model stores different system known keywords
+	/*!\brief model stores all known keywords the gentoo system provides
 	*
 	*/
 

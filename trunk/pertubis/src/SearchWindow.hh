@@ -31,6 +31,9 @@ class QDialogButtonBox;
 
 namespace pertubis
 {
+	/*! \brief provides a text input and option checkboxes the user may select or deselect.
+	*
+	*/
 	class SearchWindow : public QDialog
 	{
 		Q_OBJECT

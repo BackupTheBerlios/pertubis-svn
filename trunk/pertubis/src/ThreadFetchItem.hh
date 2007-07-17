@@ -30,6 +30,9 @@ namespace pertubis
 	class TaskBox;
 	class ThreadKeywordManager;
 
+	/*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
+	*
+	*/
 	class ThreadFetchItem : public ThreadBase
 	{
 		Q_OBJECT

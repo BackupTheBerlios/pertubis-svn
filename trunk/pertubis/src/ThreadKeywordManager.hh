@@ -28,6 +28,9 @@
 
 namespace pertubis
 {
+	/*! \brief Retrieves and holds information about keywords the system uses and classifies it as stable/unstable.
+	*
+	*/
 	class ThreadKeywordManager : public ThreadBase
 	{
 		Q_OBJECT

@@ -19,28 +19,28 @@
 
 #include "DatabaseView.hh"
 #include "version.hh"
-#include <iostream>
 #include <QApplication>
 #include <QTranslator>
-
 #include <QSettings>
+#include <QSettings>
+#include <stdio.h>
 
 int main( int argc, char **argv )
 {
-// 	QResource::registerResource("/usr/lib/pertubis/pertubis.rcc");
 	Q_INIT_RESOURCE(pertubis);
 
 	if (argc == 1)
 	{
 		QApplication a( argc, argv );
+		QSettings settings;
+		QTranslator t;
+		pertubis::DatabaseView p;
+
 		a.setApplicationName("pertubis");
 		a.setOrganizationName("pertubis");
-		QSettings settings;
-
-		QTranslator t;
 		t.load(settings.value("i18npage/language",":i18n/pertubis-de").toString());
 		a.installTranslator(&t);
-		pertubis::DatabaseView p;
+
 		p.show();
 		a.setActiveWindow(&p);
 		return a.exec();
@@ -48,15 +48,12 @@ int main( int argc, char **argv )
 
 	if (argc == 2 && strcmp(argv[1],"-v") == 0)
 	{
-		std::cout << "\n\033[32mpertubis version: " <<  VERSION << "\033[0m\n";
+		printf("%s\n",VERSION);
 	}
-
-	if (argc == 2 && strcmp(argv[1],"-h") == 0)
+	else
 	{
-		std::cout << "\n\033[32musage:\n";
-		std::cout << argv[0] << "    = starting the application\n";
-		std::cout << argv[0] << " -h = help\n";
-		std::cout << argv[0] << " -v = version information\n\033[0m\n";
+		printf("usage: %s [OPTION]\n\n\
+  -v\t\tshow programm version\n",argv[0]);
 	}
 
 	return 0;

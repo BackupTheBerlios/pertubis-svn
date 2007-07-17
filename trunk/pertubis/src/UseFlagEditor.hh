@@ -36,6 +36,9 @@ namespace pertubis
 {
 	class UseFlagModel;
 
+	/*! \brief Presents the information we find in UseFlagModel and allows the user to add/change/delete it.
+	*
+	*/
 	class UseFlagEditor : public QWidget
 	{
 		Q_OBJECT

@@ -34,6 +34,9 @@ namespace pertubis
 {
 	class KeywordManager;
 
+	/*! \brief provides the paludis infrastructure we need for the threads
+	*
+	*/
 	class ThreadBase : public QThread
 	{
 		Q_OBJECT

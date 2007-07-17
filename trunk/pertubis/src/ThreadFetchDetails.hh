@@ -29,6 +29,9 @@ namespace pertubis
 {
 	class KeywordManager;
 
+	/*! \brief this thread asks pertubis for package details and returns preformatted text.
+	*
+	*/
 	class ThreadFetchDetails : public ThreadBase
 	{
 		Q_OBJECT

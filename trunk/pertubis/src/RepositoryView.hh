@@ -27,6 +27,9 @@ namespace pertubis
 
 	class RepositoryModel;
 
+	/*! \brief not finished
+	*
+	*/
 	class RepositoryView : public QTableView
 	{
 		Q_OBJECT

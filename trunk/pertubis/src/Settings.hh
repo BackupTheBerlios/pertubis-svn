@@ -34,6 +34,10 @@ namespace pertubis
 	QStringList findQmFiles();
 	QString languageName(const QString &qmFile);
 
+
+	/*! \brief This settings group handles language and localization specific options.
+	*
+	*/
 	class I18NPage : public QWidget
 	{
 		Q_OBJECT
@@ -54,6 +58,9 @@ namespace pertubis
 
 	};
 
+	/*! \brief Presents a settings window with different configuration groups.
+	*
+	*/
 	class Settings : public QDialog
 	{
 		Q_OBJECT

@@ -29,6 +29,9 @@
 
 namespace pertubis
 {
+	/*! \brief This qt model class holds all software categories of all repositories it is instructed to store.
+	*
+	*/
 	class CategoryModel : public QAbstractListModel
 	{
 		Q_OBJECT

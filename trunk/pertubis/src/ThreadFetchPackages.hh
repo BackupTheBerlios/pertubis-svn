@@ -20,11 +20,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_PACKAGES_H
 #define _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_PACKAGES_H
 
-
-
 #include "ThreadBase.hh"
-
-
 
 namespace paludis
 {
@@ -32,7 +28,6 @@ namespace paludis
 }
 
 class QMenu;
-
 
 #include <QStringList>
 
@@ -42,31 +37,34 @@ namespace pertubis
 	class Item;
 	class TaskBox;
 
+	/*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
+	*
+	*/
 	class ThreadFetchPackages : public ThreadBase
 	{
 		Q_OBJECT
 
-	public:
+		public:
 
-		ThreadFetchPackages(QObject* parent,
-							std::tr1::shared_ptr<paludis::Environment> env,
-							ThreadKeywordManager* keywords,
-						   TaskBox* box);
+			ThreadFetchPackages(QObject* parent,
+								std::tr1::shared_ptr<paludis::Environment> env,
+								ThreadKeywordManager* keywords,
+							TaskBox* box);
 
-		void run();
+			void run();
 
-		void searchPackages(QString str);
+			void searchPackages(QString str);
 
-	private:
+		private:
 
-		void fetchPackages();
+			void fetchPackages();
 
-		QString									m_query;
-		ThreadKeywordManager*					m_keywords;
-		TaskBox*								m_box;
+			QString									m_query;
+			ThreadKeywordManager*					m_keywords;
+			TaskBox*								m_box;
 
-	signals:
-		void packagesResult(Item* root);
+		signals:
+			void packagesResult(Item* root);
 	};
 }
 #endif
