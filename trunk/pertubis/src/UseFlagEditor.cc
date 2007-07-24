@@ -104,7 +104,7 @@ void pertubis::UseFlagEditor::createToolbar()
 	QAction * ac_reload = m_toolbar->addAction( QPixmap(":images/reload_22.xpm"),"reload");
 	ac_reload->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>Pertubis only loads automatically the useflag configuration on startup.</p><p>If you manually change these files pertubis is out of sync with your system.</p><p>Press this button to reload everything!</p></body></html>").arg(ac_reload->text()));
 
-	QAction * ac_setbar = m_toolbar->addAction( QPixmap(":images/setbar_22.xpm"),"setlist on/off");
+	QAction * ac_setbar = m_toolbar->addAction( QPixmap(":images/setbar_22.xpm"),"setlist");
 	ac_setbar->setToolTip(tr("<html><body><h1><u>%1</u></h1></p><p>Enable or disable the useflag set list for a better view on the useflags</p></body></html>").arg(ac_setbar->text()));
 
 	QAction * ac_accept = m_toolbar->addAction( QPixmap(":images/save_22.xpm"),"save changes");
@@ -149,13 +149,11 @@ void pertubis::UseFlagEditor::slotUseflagResult(QList<QVariantList> list)
 
 		QTableWidgetItem* i_profile = new QTableWidgetItem;
 		i_profile->setFlags(Qt::ItemIsSelectable);
-// 		i_profile->setForeground(QBrush(QColor(0,0,255)));
 		i_profile->setCheckState( static_cast<Qt::CheckState>(row->value(UseFlagModel::uo_profile).toInt()) );
 		m_table->setItem(i,UseFlagModel::uo_profile,i_profile);
 
 		QTableWidgetItem* i_prog = new QTableWidgetItem;
 		i_prog->setFlags(Qt::ItemIsSelectable);
-// 		i_prog->setForeground(QBrush(QColor(0,0,255)));
 		i_prog->setCheckState( static_cast<Qt::CheckState>(row->value(UseFlagModel::uo_prog).toInt()) );
 		m_table->setItem(i,UseFlagModel::uo_prog,i_prog);
 

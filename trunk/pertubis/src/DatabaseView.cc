@@ -190,7 +190,7 @@ void pertubis::DatabaseView::createCatbar()
 
 	m_acToggleCatBar = m_dockCat->toggleViewAction();
 
-	m_acToggleCatBar->setText(tr("category sidebar"));
+	m_acToggleCatBar->setText(tr("catbar"));
 	m_acToggleCatBar->setIcon(QPixmap(":images/catbar_22.xpm"));
 	m_acToggleCatBar->setShortcut( tr("F9"));
 	m_acToggleCatBar->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the category sidebar</p></html>").arg(m_acToggleCatBar->text()) );
@@ -589,7 +589,6 @@ void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& index)
 	item->entryData(cat,pack,ver,rep);
 	Entry entry = genPackEntry(cat,pack,ver,rep);
 	QVariantMap optionsData = m_box->selectionData(entry);
-	QVariantMap::const_iterator it = optionsData.constBegin();
 
 	if (item->status() != Item::is_masked)
 	{

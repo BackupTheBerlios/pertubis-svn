@@ -62,9 +62,7 @@ void pertubis::ThreadFetchPackages::searchPackages(QString str)
 void pertubis::ThreadFetchPackages::run()
 {
 	using namespace paludis;
-	qDebug() << "------- 1";
 	QVariantMap tasks = m_box->tasks();
-	qDebug() << "------- 2";
 	Item* root = new Item(QList<QVariant>() <<
 			tasks <<
 			"" <<
@@ -73,7 +71,7 @@ void pertubis::ThreadFetchPackages::run()
 			false,
 			0,
 	  		Item::it_category);
-	qDebug() << "------- 3";
+
 	RepositoryName ins("installed");
 	std::tr1::shared_ptr< Repository > vdb;
 	if (m_env->package_database()->has_repository_named(ins))

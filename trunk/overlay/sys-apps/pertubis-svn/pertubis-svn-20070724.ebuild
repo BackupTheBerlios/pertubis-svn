@@ -2,19 +2,26 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit eutils
+inherit subversion
+
+ESVN_REPO_URI="svn://svn.berlios.de/pertubis/trunk/pertubis/"
+ESVN_PROJECT="pertubis-svn"
+
+ESVN_STORE_DIR="${DISTDIR}/svn-src"
 
 DESCRIPTION="a graphical frontend for paludis using qt4"
-HOMEPAGE="http://www.pertubis.berlios.org"
+HOMEPAGE="http://www.pertubis.berlios.de"
+
+SRC_URI=""
 
 KEYWORDS="~amd64 ~x86"
-LICENSE="BSD"
+LICENSE="GPL-2"
+
 SLOT="0"
 IUSE=""
+
 RDEPEND="dev-libs/pcre++
 		>=x11-libs/qt-4.1.0"
-
-SRC_URI="http://www.pertubis.berlios.org/files/${P}.tar.bz2"
 
 DEPEND="${RDEPEND}
 		>=dev-util/cmake-2.2.3"
@@ -22,9 +29,11 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}"/pertubis
 
 src_unpack() {
-	unpack ${A}
+	ewarn
+	ewarn "This is an Subversion snapshot, so no functionality is"
+	ewarn "guaranteed!"
+	subversion_fetch
 	mkdir "${S}/build"
-
 }
 
 src_compile() {
