@@ -11,25 +11,21 @@ Below you see the packages you need to build and run pertubis.
 
 install via ebuild:
 
-    svn co svn://svn.berlios.de/pertubis/trunk/overlay/sys-apps/
+    svn co svn://svn.berlios.de/pertubis/trunk/overlay/sys-apps/pertubis-svn
 
-    <mv or move the pertubis directory to your portage overlay>
+    <cp or mv the pertubis directory to your portage overlay>
 
     paludis -i pertubis
 
-install manually:
+manual installation method:
 
 getting a tarball:
 
-    wget ftp://ftp.berlios.de/pub/pertubis/pertubis-<VERSION>.tar.bz2
+    svn co svn://svn.berlios.de/pertubis/trunk/pertubis
 
-unpack the tarball
+configuration:
 
-    tar -xvjpf pertubis-<VERSION>.tar.bz2
-    cd pertubis
-
-configuration
-
+	cd pertubis
     mkdir build
     cd build
     export CXXFLAGS="-march=<YOUR CPU> -O2 -pipe"
@@ -39,7 +35,7 @@ compilation
 
     make
 
-installation
+installation ( as root user )
 
     make install
 
@@ -47,6 +43,5 @@ Build options
 
     * Consider using ccmake in place of cmake. Then you get a curses based
       configuration menu for fine tuning
-    * you could both build pertubis using a out-of-source or a in-source build process.
-      Choose the one you prefer. The ebuild takes the in-source approach - I prefer the
-      other one for development.
+    * You could both build pertubis using a out-of-source or a in-source build process.
+      Choose the one you prefer.
