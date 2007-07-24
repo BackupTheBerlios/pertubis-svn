@@ -66,7 +66,9 @@ void pertubis::ThreadFetchItem::run()
 	using namespace paludis;
 	std::list<std::tr1::shared_ptr<Matcher> > matchers;
 	std::list<std::tr1::shared_ptr<Extractor> > extractors;
-	qDebug() << "run" << m_query << m_optName << m_optDesc;
+	qDebug() << "ThreadFetchItem::run() - query string:" << m_query;
+	qDebug() << "ThreadFetchItem::run() - searching for name:" << m_optName << m_optDesc;
+	qDebug() << "ThreadFetchItem::run() - searching for description: " << m_optDesc;
 	matchers.push_back( std::tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
 
 	if (m_optName )
@@ -82,16 +84,16 @@ void pertubis::ThreadFetchItem::run()
 	{
 		qFatal("cannot find database of installed packages!");
 	}
-	qDebug() << "item 2";
 
 	QVariantMap tasks = m_box->tasks();
 	vdb = m_env->package_database()->fetch_repository(ins);
-	qDebug() << "item 3";
+
 	for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
 			r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
 			r != r_end ; ++r)
 	{
-		qDebug() << "\n\nrep name" << stringify(r->name()).c_str() << stringify(r->format()).c_str();
+		qDebug() << "ThreadFetchItem::run() - repo name:" << stringify(r->name()).c_str();
+		qDebug() << "ThreadFetchItem::run() - repo format:" << stringify(r->format()).c_str() << "\n";
 		if (r->format() == "vdb" || r->format() == "installed_virtuals" || r->format() == "virtuals")
 			continue;
 		std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
@@ -111,13 +113,13 @@ void pertubis::ThreadFetchItem::run()
 					continue;
 				if (preferred_entries->empty())
 					preferred_entries = entries;
-// 				qDebug() << "item 5";
+
 				PackageDatabaseEntry display_entry(*preferred_entries->last());
 				for (PackageDatabaseEntryCollection::Iterator i(preferred_entries->begin()),
 						i_end(preferred_entries->end()) ; i != i_end ; ++i)
 					if (! (*m_env).mask_reasons(*i).any())
 						display_entry = *i;
-// 				qDebug() << "item 6";
+
 				bool match(false);
 				for (std::list<std::tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
 						x_end(extractors.end()) ; x != x_end && ! match ; ++x)
@@ -128,17 +130,17 @@ void pertubis::ThreadFetchItem::run()
 						if ((**m)(xx))
 							match = true;
 				}
-// 				qDebug() << "item 7";
+
 
 				if (! match)
 					continue;
 
 				PackageDepSpec dps(stringify(*p),pds_pm_eapi_0_strict);
-// 				qDebug() << "item 8";
+
 				std::tr1::shared_ptr< const VersionSpecCollection > instVer = vdb->version_specs(*p);
 				std::tr1::shared_ptr< const VersionSpecCollection > repVer = r->version_specs(*p);
 				Item* pack=0;
-				qDebug() << "item 9";
+
 
 				if (dps.version_requirements_ptr() || dps.slot_ptr() || dps.use_requirements_ptr() || dps.repository_ptr())
 				{
@@ -148,9 +150,9 @@ void pertubis::ThreadFetchItem::run()
 				{
 					pack = new Item(QList<QVariant>() << tasks << stringify(display_entry.name.package).c_str()<< stringify(display_entry.name.category).c_str() << stringify(r->name()).c_str() << Qt::Unchecked,0,Item::it_package) ;
 				}
-				qDebug() << "item 10";
+
 				VersionSpecCollection::Iterator version( repVer->begin() );
-				qDebug() << "item 11";
+
 				while (version != repVer->end() )
 				{
 					Item* ver = new Item(QList<QVariant>() << tasks <<stringify(*version).c_str() << "" << "" << vdb->has_version(display_entry.name,*version),pack,Item::it_version);

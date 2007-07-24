@@ -9,7 +9,7 @@ ESVN_PROJECT="pertubis-svn"
 
 ESVN_STORE_DIR="${DISTDIR}/svn-src"
 
-DESCRIPTION="a graphical frontend for paludis using qt4"
+DESCRIPTION="a graphical frontend for paludis using qt4 ( development version )"
 HOMEPAGE="http://www.pertubis.berlios.de"
 
 SRC_URI=""

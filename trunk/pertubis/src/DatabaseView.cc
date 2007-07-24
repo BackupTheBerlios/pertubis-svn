@@ -562,7 +562,8 @@ void pertubis::DatabaseView::slotSearchItem()
 	m_details->clear();
 	m_details->hide();
 	m_windowSearch->hide();
-	m_categories->hide();
+	m_acToggleCatBar->setChecked(!m_acToggleCatBar->isChecked());
+	m_dockCat->setVisible(m_acToggleCatBar->isChecked());
 	m_packModel->slotSetRoot(new Item(QList<QVariant>() << QVariantMap() << "" << "" << "" << Qt::Unchecked,0,Item::it_category));
 
 	statusBar()->showMessage(QString(tr("searching for %1...")).arg(m_windowSearch->m_line->text()) );
