@@ -101,19 +101,19 @@ void pertubis::UseFlagEditor::createToolbar()
 	m_toolbar = new QToolBar( tr("useflag actions"),this);
 	m_toolbar->layout()->setMargin(0);
 	m_toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
-	QAction * ac_reload = m_toolbar->addAction( QPixmap(":images/reload_22.xpm"),"reload");
+	QAction * ac_reload = m_toolbar->addAction( QPixmap(":images/reload_22.xpm"),tr("reload") );
 	ac_reload->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>Pertubis only loads automatically the useflag configuration on startup.</p><p>If you manually change these files pertubis is out of sync with your system.</p><p>Press this button to reload everything!</p></body></html>").arg(ac_reload->text()));
 
-	QAction * ac_setbar = m_toolbar->addAction( QPixmap(":images/setbar_22.xpm"),"setlist");
+	QAction * ac_setbar = m_toolbar->addAction( QPixmap(":images/setbar_22.xpm"),tr("setlist") );
 	ac_setbar->setToolTip(tr("<html><body><h1><u>%1</u></h1></p><p>Enable or disable the useflag set list for a better view on the useflags</p></body></html>").arg(ac_setbar->text()));
 
-	QAction * ac_accept = m_toolbar->addAction( QPixmap(":images/save_22.xpm"),"save changes");
+	QAction * ac_accept = m_toolbar->addAction( QPixmap(":images/save_22.xpm"),tr("save changes") );
 	ac_accept->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>You have to save your changes when you are finished. Otherwise all changes will be lost</p></body></html>").arg(ac_accept->text()));
 
-	QAction * ac_undo = m_toolbar->addAction( QPixmap(":images/undo_22.xpm"),"undo changes");
+	QAction * ac_undo = m_toolbar->addAction( QPixmap(":images/undo_22.xpm"),tr("undo changes") );
 	ac_undo->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>Press this button to restore the former settings!</p></body></html>").arg(ac_undo->text()));
 
-	QAction * ac_filter = m_toolbar->addAction( QPixmap(":images/cleanflags_22.xpm"),"clean useflags");
+	QAction * ac_filter = m_toolbar->addAction( QPixmap(":images/cleanflags_22.xpm"),tr("clean useflags") );
 	ac_filter->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>From time to time some useflags are added or deleted.\nYou can delete these old, unknown or unused useflags.</p><p><b>Don't forget saving!</b></p></body></html>").arg(ac_filter->text()));
 
 	connect(ac_setbar,

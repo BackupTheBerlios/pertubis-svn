@@ -68,29 +68,31 @@ void pertubis::UseFlagModel::loadUseFlagDescGlobal(const paludis::Repository& re
 
 void pertubis::UseFlagModel::loadUseFlagDescLocal(const paludis::Repository& repo)
 {
-
  	using namespace paludis;
 	std::tr1::shared_ptr<const RepositoryInfo> info = repo.info(false);
 	QString path(info->get_key_with_default("location","/usr/portage/gentoo").c_str() );
+	qDebug() << "loadUseFlagDescLocal - path" << path;
 	path.append("/profiles/use.local.desc");
-
+	qDebug() << "loadUseFlagDescLocal - path" << path;
 	QFile file(path);
-	QString spl(" - ");
+
 	if (file.open(QIODevice::ReadOnly) )
 	{
 		QTextStream stream( &file );
-        QString line;
 
         while ( !stream.atEnd() )
 		{
-            line = stream.readLine().trimmed();
+            QString line = stream.readLine().trimmed();
 
-			if (line.indexOf("#") == -1 && line != "")
-			{
-				QStringList list = line.split(":");
-				QStringList list2 = list.at(1).split(" - ");
-            	addDescription(stringify(repo.name()).c_str(),list.at(0),list2.at(0),list2.at(1));
-			}
+			if (line.indexOf('#') != -1 || line.isEmpty() || line.isNull() )
+				continue;
+			QStringList list = line.split(':');
+			if (list.count() != 2)
+				continue;
+			QString use = list.at(1).section('-',0,0).trimmed();
+			QString desc = list.at(1).section('-',1).trimmed();
+			qDebug() << "line" << use << desc;
+			addDescription(stringify(repo.name()).c_str(),list.at(0).trimmed(),use,desc);
         }
         file.close();
 	}
@@ -257,6 +259,8 @@ void pertubis::UseFlagModel::slotRefresh()
 		{
 			loadRepoVars(*r);
 			loadExpandVariables(stringify(r->name()).c_str());
+			loadUseFlagDescGlobal( (*r) );
+			loadUseFlagDescLocal( (*r) );
 		}
 	}
 	loadTargetConfig();

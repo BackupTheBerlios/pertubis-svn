@@ -72,7 +72,7 @@ void pertubis::I18NPage::loadSettings()
 		setVisible(settings.value( "visible",true).toBool());
 		resize(settings.value("size",QVariant(QSize(800,600))).toSize());
 		move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
-		m_currentLanguage=settings.value("language",":/i18n/pertubis-de").toString();
+		m_currentLanguage=settings.value("language",":i18n/pertubis-de").toString();
 	settings.endGroup();
 }
 
@@ -101,7 +101,7 @@ QString pertubis::languageName(const QString &qmFile)
 	if (prefix == "de")
 		return ("Deutsch");
 	if (prefix == "fr")
-		return ("Francais");
+		return ("français");
 	return ("English");
 }
 

@@ -23,6 +23,7 @@
 #include <QTranslator>
 #include <QSettings>
 #include <QSettings>
+#include <QDebug>
 #include <stdio.h>
 
 int main( int argc, char **argv )
@@ -32,15 +33,18 @@ int main( int argc, char **argv )
 	if (argc == 1)
 	{
 		QApplication a( argc, argv );
-		QSettings settings;
-		QTranslator t;
-		pertubis::DatabaseView p;
-
 		a.setApplicationName("pertubis");
 		a.setOrganizationName("pertubis");
-		t.load(settings.value("i18npage/language",":i18n/pertubis-de").toString());
-		a.installTranslator(&t);
+		QTranslator t;
 
+		QSettings settings;
+		settings.beginGroup( "i18npage" );
+		QString lang = settings.value("language").toString();
+		settings.endGroup();
+		qDebug() << "lang = " << lang.toLatin1().data();
+		t.load(lang);
+		a.installTranslator(&t);
+		pertubis::DatabaseView p;
 		p.show();
 		a.setActiveWindow(&p);
 		return a.exec();
