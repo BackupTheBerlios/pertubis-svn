@@ -1,0 +1,47 @@
+pertubis installation description
+
+You can build pertubis manual via cmake or using the ebuild we provide here
+Below you see the packages you need to build and run pertubis.
+
+    * gentoo linux
+    * >=sys-apps/paludis-0.24.2
+    * >=dev-libs/pcre++
+    * >=x11-libs/qt-4.3
+    * >=dev-util/cmake-2.4.6-r1
+
+install via ebuild:
+
+    svn co svn://svn.berlios.de/pertubis/trunk/overlay/sys-apps/pertubis-svn
+
+    <cp or mv the pertubis directory to your portage overlay>
+
+    paludis -i pertubis
+
+manual installation method:
+
+getting a tarball:
+
+    svn co svn://svn.berlios.de/pertubis/trunk/pertubis
+
+configuration:
+
+	cd pertubis
+    mkdir build
+    cd build
+    export CXXFLAGS="-march=<YOUR CPU> -O2 -pipe"
+    cmake ..
+
+compilation
+
+    make
+
+installation ( as root user )
+
+    make install
+
+Build options
+
+    * Consider using ccmake in place of cmake. Then you get a curses based
+      configuration menu for fine tuning
+    * You could both build pertubis using a out-of-source or a in-source build process.
+      Choose the one you prefer.
