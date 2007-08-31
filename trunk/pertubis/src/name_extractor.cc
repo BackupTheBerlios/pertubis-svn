@@ -39,13 +39,13 @@
 #include "name_extractor.hh"
 
 
-pertubis::NameExtractor::NameExtractor(std::tr1::shared_ptr<paludis::Environment> env) : Extractor(env)
+pertubis::NameExtractor::NameExtractor(const paludis::Environment * const env) : Extractor(env)
 {
 }
 
-std::string pertubis::NameExtractor::operator() (const paludis::PackageDatabaseEntry & p) const
-{
-    return stringify(p.name);
-}
+// std::string pertubis::NameExtractor::operator() (const paludis::PackageDatabaseEntry & p) const
+// {
+//     return stringify(p.name);
+// }
 
 

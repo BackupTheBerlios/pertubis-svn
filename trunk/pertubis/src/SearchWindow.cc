@@ -36,12 +36,12 @@
 #include <QVBoxLayout>
 #include <QDebug>
 
-pertubis::SearchWindow::SearchWindow( QWidget *parent) : QDialog(parent)
+pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
 {
 	qDebug() << "SearchWindow::SearchWindow() - start";
 	setObjectName("m_windowSearch");
-	QGridLayout* layout = new QGridLayout;
-	layout->setObjectName("layout");
+	QGridLayout* main_layout = new QGridLayout;
+	main_layout->setObjectName("layout");
 	QVBoxLayout* leftLayout = new QVBoxLayout;
 
 	m_line = new QLineEdit(this);
@@ -65,11 +65,11 @@ pertubis::SearchWindow::SearchWindow( QWidget *parent) : QDialog(parent)
 	optLayout->addWidget(m_chkDesc);
 	optLayout->addWidget(m_chkHomepage);
 	optLayout->addWidget(m_chkRegex);
-	layout->addLayout(leftLayout,0,0);
-	layout->addWidget(m_dbox,0,1);
+	main_layout->addLayout(leftLayout,0,0);
+	main_layout->addWidget(m_dbox,0,1);
 	leftLayout->addWidget(m_line);
 	leftLayout->addLayout(optLayout);
-	setLayout(layout);
+	setLayout(main_layout);
 
 	QPushButton* bFind = new QPushButton(tr("&Start"));
 	bFind->setDefault(true);

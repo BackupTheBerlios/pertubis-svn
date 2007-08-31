@@ -27,7 +27,7 @@
 #include <QSet>
 #include <QStringList>
 #include <QVariant>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {

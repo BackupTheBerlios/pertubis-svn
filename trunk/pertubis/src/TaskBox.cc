@@ -27,67 +27,44 @@
 
 #include <paludis/util/stringify.hh>
 
-bool pertubis::operator<(const pertubis::Entry& a,const pertubis::Entry& b)
-{
-	if (a.cat < b.cat)
-		return true;
-	if (a.cat > b.cat)
-		return false;
-
-	if (a.pack < b.pack)
-		return true;
-	if (a.pack > b.pack)
-		return false;
-
-	if (a.version < b.version)
-		return true;
-	if (a.version > b.version)
-		return false;
-
-	if (a.rep < b.rep)
-		return true;
-
-	return false;
-}
-
-pertubis::DBTask::DBTask(QObject* parent) : QObject(parent)
+pertubis::DBTask::DBTask(QObject* pobj) : QObject(pobj)
 {
 }
 
-void pertubis::DBTask::addEntry(const pertubis::Entry& entry)
+void pertubis::DBTask::addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
-	m_data.insert(entry);
+	m_data.insert(id);
 }
 
-bool pertubis::DBTask::hasEntry(QString pack,QString cat,QString ver,QString rep)
+// bool pertubis::DBTask::hasEntry(QString pack,QString cat,QString ver,QString rep)
+// {
+// 	pertubis::Entry p = genPackEntry(pack,cat,ver,rep);
+// 	return hasEntry(p);
+// }
+
+bool pertubis::DBTask::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
-	pertubis::Entry p = genPackEntry(pack,cat,ver,rep);
-	return hasEntry(p);
+	return (m_data.find(id) != m_data.end());
 }
 
-bool pertubis::DBTask::hasEntry(const pertubis::Entry& spec)
+void pertubis::DBTask::changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id,bool state)
 {
-	return (m_data.find(spec) != m_data.end());
-}
-
-void pertubis::DBTask::changeEntry(const pertubis::Entry& entry,bool state)
-{
-	std::set<Entry >::const_iterator it = m_data.find(entry);
+	std::set<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator it = m_data.find(id);
 	if (state)
-		addEntry(entry);
+		addEntry(id);
 	else
-		m_data.erase(entry);
+		m_data.erase(id);
 }
 
-QVariantMap pertubis::TaskBox::selectionData(const pertubis::Entry& pack)
+QVariantMap pertubis::TaskBox::selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> sid)
 {
 	QVariantMap map;
-	std::map<std::string,DBTask*>::const_iterator task = m_tasks.begin();
-	while (task != m_tasks.end())
+	std::map<std::string,DBTask*>::const_iterator mytask = m_tasks.begin();
+	while (mytask != m_tasks.end())
 	{
-		bool res = task->second->hasEntry(pack);
-		map.insert(QString(task->first.c_str()),res);
-		++task;
+		bool res = mytask->second->hasEntry(sid);
+		map.insert(QString(mytask->first.c_str()),res);
+		++mytask;
 	}
 // 	qDebug() << "TaskBox::selectionData()" << map;
 	return map;
@@ -137,12 +114,10 @@ bool pertubis::TaskBox::hasTask(QString name) const
 void pertubis::TaskBox::slotTaskChanged(Item* item,QString tname,bool state)
 {
 	qDebug() << "TaskBox::slotTaskChanged" << item << tname << state;
-	QString cat,pack,ver,rep;
-	item->entryData(cat,pack,ver,rep);
-	Entry entry = genPackEntry(cat,pack,ver,rep);
+
 	DBTask* t = task(tname);
 	if(t == 0)
 		return;
-	t->changeEntry(entry,state);
+	t->changeEntry(item->ID(),state);
 	item->disconnect(this);
 }

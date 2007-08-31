@@ -33,7 +33,7 @@ bool ItemLessThan(const pertubis::Item* a,const pertubis::Item* b)
 	return (a->data(0).toString() < b->data(0).toString() );
 }
 
-pertubis::PackageModel::PackageModel(QObject* parent) : QAbstractItemModel(parent),m_root(0)
+pertubis::PackageModel::PackageModel(QObject* pobj) : QAbstractItemModel(pobj),m_root(0)
 {
 	m_root = new Item(QList<QVariant>() << "root",0,Item::it_category);
 }
@@ -83,9 +83,9 @@ bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orient
 	return false;
 }
 
-Qt::ItemFlags pertubis::PackageModel::flags(const QModelIndex &index) const
+Qt::ItemFlags pertubis::PackageModel::flags(const QModelIndex &mix) const
 {
-	switch (index.column())
+	switch (mix.column())
 	{
 		case Item::io_selected:
 			return Qt::ItemIsEditable;
@@ -105,20 +105,20 @@ QVariant pertubis::PackageModel::headerData(int section, Qt::Orientation orienta
 	return *(m_header.begin() + section);
 }
 
-QVariant pertubis::PackageModel::data ( const QModelIndex & index, int role) const
+QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
 {
-	if (!index.isValid() || index.column() >= m_header.count())
+	if (!ix.isValid() || ix.column() >= m_header.count())
 		return QVariant();
 
-	Item* item = static_cast<Item*>(index.internalPointer());
+	Item* item = static_cast<Item*>(ix.internalPointer());
 
 	if (role == Qt::ForegroundRole)
 	{
-		if (index.column() == Item::io_installed)
+		if (ix.column() == Item::io_installed)
 			return QBrush(QColor(0,0,255));
-		if (index.column() == Item::io_selected)
+		if (ix.column() == Item::io_selected)
 			return QBrush(QColor(0,255,0));
-		if (index.column() == Item::io_package)
+		if (ix.column() == Item::io_package)
 		{
 			if (item->status() == Item::is_stable)
 				return QBrush(QColor(0,255,0));
@@ -131,10 +131,10 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & index, int role) con
 
 	if (role == Qt::CheckStateRole )
 	{
-		switch (index.column())
+		switch (ix.column())
 		{
 			case Item::io_installed:
-				return item->data(index.column());
+				return item->data(ix.column());
 			default:
 				return QVariant();
 		}
@@ -142,31 +142,31 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & index, int role) con
 
 	if (role == Qt::DisplayRole )
 	{
-		switch (index.column())
+		switch (ix.column())
 		{
 			case Item::io_installed:
 				return QVariant();
 			default:
-				return item->data(index.column());
+				return item->data(ix.column());
 		}
 	}
 
 	return QVariant();
 }
 
-QModelIndex pertubis::PackageModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex pertubis::PackageModel::index(int row, int column, const QModelIndex &pmi) const
 {
- 	if (!hasIndex(row, column, parent))
+ 	if (!hasIndex(row, column, pmi))
 		return QModelIndex();
 
-	Item *parentItem;
+	Item *pmiItem;
 
-	if (!parent.isValid())
-		parentItem = m_root;
+	if (!pmi.isValid())
+		pmiItem = m_root;
 	else
-		parentItem = static_cast<Item*>(parent.internalPointer());
+		pmiItem = static_cast<Item*>(pmi.internalPointer());
 
-	Item *childItem = parentItem->child(row);
+	Item *childItem = pmiItem->child(row);
 	if (childItem)
 		return QAbstractItemModel::createIndex(row, column, childItem);
 	else
@@ -178,12 +178,12 @@ void pertubis::PackageModel::setHorizontalHeaderLabels ( const QStringList & lab
 	m_header = labels;
 }
 
-QModelIndex pertubis::PackageModel::parent(const QModelIndex &index) const
+QModelIndex pertubis::PackageModel::parent(const QModelIndex &mix) const
 {
-	if (!index.isValid())
+	if (!mix.isValid())
 		return QModelIndex();
 
-	Item *childItem = static_cast<Item*>(index.internalPointer());
+	Item *childItem = static_cast<Item*>(mix.internalPointer());
 	Item *parentItem = childItem->parent();
 
 	if (parentItem == m_root)
@@ -192,24 +192,24 @@ QModelIndex pertubis::PackageModel::parent(const QModelIndex &index) const
 	return QAbstractItemModel::createIndex(parentItem->row(), 0, parentItem);
 }
 
-int pertubis::PackageModel::rowCount(const QModelIndex &parent) const
+int pertubis::PackageModel::rowCount(const QModelIndex &pmi) const
 {
 	Item *parentItem;
-	if (parent.column() > 0)
+	if (pmi.column() > 0)
 		return 0;
 
-	if (!parent.isValid())
+	if (!pmi.isValid())
 		parentItem = m_root;
 	else
-		parentItem = static_cast<Item*>(parent.internalPointer());
+		parentItem = static_cast<Item*>(pmi.internalPointer());
 
 	return parentItem->childCount();
 }
 
-int pertubis::PackageModel::columnCount(const QModelIndex &parent) const
+int pertubis::PackageModel::columnCount(const QModelIndex &pmi) const
 {
-	if (parent.isValid())
-         return static_cast<Item*>(parent.internalPointer())->columnCount();
+	if (pmi.isValid())
+         return static_cast<Item*>(pmi.internalPointer())->columnCount();
 	else if (m_root != 0)
 		return m_root->columnCount();
 	else

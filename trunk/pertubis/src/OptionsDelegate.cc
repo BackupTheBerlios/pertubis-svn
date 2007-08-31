@@ -26,7 +26,7 @@
 #include <QPalette>
 #include <QPen>
 
-pertubis::OptionsDelegate::OptionsDelegate(QWidget *parent) : QItemDelegate(parent)
+pertubis::OptionsDelegate::OptionsDelegate(QWidget *pobj) : QItemDelegate(pobj)
 {
 }
 

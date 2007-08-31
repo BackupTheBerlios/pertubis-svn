@@ -18,8 +18,8 @@
 #include <QPushButton>
 #include <QLocale>
 
-pertubis::I18NPage::I18NPage(QWidget *parent)
-     : QWidget(parent)
+pertubis::I18NPage::I18NPage(QWidget *pobj)
+     : QWidget(pobj)
 {
 	QGroupBox *packagesGroup = new QGroupBox(tr("Language Settings"));
 	QLabel *nameLabel = new QLabel(tr("Language:"));
@@ -105,7 +105,7 @@ QString pertubis::languageName(const QString &qmFile)
 	return ("English");
 }
 
-pertubis::Settings::Settings(QWidget* parent) : QDialog(parent)
+pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj)
 {
 	contentsWidget = new QListWidget;
 	contentsWidget->setViewMode(QListView::IconMode);

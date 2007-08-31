@@ -22,7 +22,7 @@
 
 #include <QAbstractListModel>
 
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 #include <QThread>
 
 #include <QStringList>

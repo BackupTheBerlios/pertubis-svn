@@ -24,34 +24,41 @@
 #include <QAction>
 #include <QThread>
 
+#include <paludis/util/tr1_memory.hh>
+
 #include <vector>
 #include <map>
 #include <set>
 #include <string>
 
+namespace paludis
+{
+	class PackageID;
+}
+
 namespace pertubis
 {
 	class Item;
 
-	/*! \brief Description inside pertubis of a discrete package "P" in category "C" at version "V" in repository "R"
+	/* \brief Description inside pertubis of a discrete package "P" in category "C" at version "V" in repository "R"
 	*
 	*/
-	class Entry
-	{
-	public:
-		Entry(const char* c, const char* p,const char* v,const char* r) : cat(c),pack(p),version(v),rep(r) {}
-		std::string cat;
-		std::string pack;
-		std::string version;
-		std::string rep;
-	};
+// 	class Entry
+// 	{
+// 	public:
+// 		Entry(const char* c, const char* p,const char* v,const char* r) : cat(c),pack(p),version(v),rep(r) {}
+// 		std::string cat;
+// 		std::string pack;
+// 		std::string version;
+// 		std::string rep;
+// 	};
 
-	inline Entry genPackEntry(QString cat,QString pack,QString ver,QString rep)
-	{
-		return Entry(cat.toLatin1().data(),pack.toLatin1().data(),ver.toLatin1().data(),rep.toLatin1().data());
-	}
+// 	inline Entry genPackEntry(QString cat,QString pack,QString ver,QString rep)
+// 	{
+// 		return Entry(cat.toLatin1().data(),pack.toLatin1().data(),ver.toLatin1().data(),rep.toLatin1().data());
+// 	}
 
-	bool operator<(const Entry& a,const Entry& b);
+// 	bool operator<(const Entry& a,const Entry& b);
 
 	/*! \brief convenience class around a set which holds Entry items
 	*
@@ -62,19 +69,18 @@ namespace pertubis
 
 	public:
 
-		DBTask(QObject* parent);
+		DBTask(QObject* pobject);
 
-		void addEntry(const Entry&);
-
-		bool hasEntry(const Entry&);
-		bool hasEntry(QString pack,QString cat,QString ver,QString rep);
+		void addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+		bool hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+// 		bool hasEntry(QString pack,QString cat,QString ver,QString rep);
 
 	public slots:
 
-		void changeEntry(const Entry&,bool);
+		void changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id,bool);
 
 	private:
-		std::set<Entry >	m_data;
+		std::set<paludis::tr1::shared_ptr<const paludis::PackageID> >	m_data;
 	};
 
 	/*! \brief manages the tasks pertubis knows about
@@ -84,12 +90,12 @@ namespace pertubis
 	{
 		Q_OBJECT
 	public:
-		TaskBox(QObject* parent) : QThread(parent) {}
+		TaskBox(QObject* pobject) : QThread(pobject) {}
 		DBTask* addTask(QString name);
 		DBTask* task(QString name) const;
 		bool hasTask(QString name) const;
 		QVariantMap tasks() const;
-		QVariantMap selectionData(const pertubis::Entry& pack);
+		QVariantMap selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id);
 
 		void run() {}
 

@@ -22,8 +22,9 @@
 
 #include <QSet>
 #include <QString>
+#include <QDebug>
 
-pertubis::CategoryModel::CategoryModel(QObject* parent) : QAbstractListModel(parent)
+pertubis::CategoryModel::CategoryModel(QObject* pobj) : QAbstractListModel(pobj)
 {
 }
 
@@ -54,26 +55,26 @@ void pertubis::CategoryModel::slotPopulateModel(QStringList cl)
 	reset();
 }
 
-int pertubis::CategoryModel::rowCount( const QModelIndex & parent ) const
+int pertubis::CategoryModel::rowCount( const QModelIndex & pobj ) const
 {
-	return parent.isValid() ? 0 : m_data.count();
+	return pobj.isValid() ? 0 : m_data.count();
 }
 
-int pertubis::CategoryModel::columnCount( const QModelIndex & parent ) const
+int pertubis::CategoryModel::columnCount( const QModelIndex & pobj ) const
 {
-	return parent.isValid() ? 0 : m_header.count();
+	return pobj.isValid() ? 0 : m_header.count();
 }
 
-QVariant pertubis::CategoryModel::data ( const QModelIndex & index, int role) const
+QVariant pertubis::CategoryModel::data ( const QModelIndex & m_index, int role) const
 {
-	if (!index.isValid())
+	if (!m_index.isValid())
          return QVariant();
 
-     if (index.row() >= m_data.size())
+     if (m_index.row() >= m_data.size())
          return QVariant();
 
      if (role == Qt::DisplayRole)
-         return m_data.at(index.row());
+         return m_data.at(m_index.row());
      else
          return QVariant();
 }

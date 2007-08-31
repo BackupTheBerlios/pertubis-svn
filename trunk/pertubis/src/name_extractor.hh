@@ -46,9 +46,9 @@ namespace pertubis
     class NameExtractor : public Extractor
     {
         public:
-            NameExtractor(std::tr1::shared_ptr<paludis::Environment> env);
+            NameExtractor(const paludis::Environment * const env);
 
-            std::string operator() (const paludis::PackageDatabaseEntry & p) const;
+//             std::string operator() (const paludis::PackageDatabaseEntry & p) const;
     };
 }
 

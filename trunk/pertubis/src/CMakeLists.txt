@@ -8,7 +8,6 @@ SET(PERTUBIS_SRCS
 	description_extractor.cc
 	extractor.cc
 	main.cc
-
 	matcher.cc
 	name_extractor.cc
 	OptionsDelegate.cc
@@ -24,9 +23,9 @@ SET(PERTUBIS_SRCS
 	ThreadFetchDetails.cc
 	ThreadFetchItem.cc
 	ThreadFetchPackages.cc
-	ThreadKeywordManager.cc
-	UseFlagEditor.cc
-	UseFlagModel.cc
+# 	ThreadKeywordManager.cc
+# 	UseFlagEditor.cc
+# 	UseFlagModel.cc
 )
 
 SET(PERTUBIS_MOC_HDRS
@@ -44,9 +43,9 @@ SET(PERTUBIS_MOC_HDRS
 	ThreadFetchDetails.hh
 	ThreadFetchItem.hh
 	ThreadFetchPackages.hh
-	ThreadKeywordManager.hh
-	UseFlagEditor.hh
-	UseFlagModel.hh
+# 	ThreadKeywordManager.hh
+# 	UseFlagEditor.hh
+# 	UseFlagModel.hh
 )
 
 EXEC_PROGRAM("/bin/sh"
@@ -57,18 +56,27 @@ EXEC_PROGRAM("/bin/sh"
 FIND_LIBRARY(PCRE_LIB NAMES pcre++
 	PATHS  /usr/lib /usr/local/lib)
 
-FIND_LIBRARY(PCRE_LIB NAMES pcre++
-	PATHS  /usr/lib /usr/local/lib)
-
 FIND_LIBRARY(PALUDIS_LIB NAMES paludis
-	PATHS  /usr/lib /usr/local/lib)
+	PATHS  /usr/local/lib
+	NO_DEFAULT_PATH
+	NO_CMAKE_ENVIRONMENT_PATH
+	NO_SYSTEM_ENVIRONMENT_PATH
+	NO_CMAKE_SYSTEM_PATH)
 
 FIND_LIBRARY(PALUDIS_ENV_LIB NAMES paludisenvironments
-	PATHS  /usr/lib /usr/local/lib)
+	PATHS  /usr/local/lib
+	NO_DEFAULT_PATH
+	NO_CMAKE_ENVIRONMENT_PATH
+	NO_SYSTEM_ENVIRONMENT_PATH
+	NO_CMAKE_SYSTEM_PATH)
 
 QT4_WRAP_CPP(PERTUBIS_MOC_SRCS ${PERTUBIS_MOC_HDRS} )
 
 QT4_ADD_RESOURCES(PERTUBIS_RCCS_SRCS ${PERTUBIS_RCCS} )
+
+ADD_DEFINITIONS(-DPALUDIS_TR1_MEMORY_IS_STD_TR1=1 -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1)
+SET (CMAKE_INCLUDE_PATH /usr/local/include/paludis-0.25)
+INCLUDE_DIRECTORIES(BEFORE /usr/local/include/paludis-0.25)
 
 ADD_EXECUTABLE (pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
 

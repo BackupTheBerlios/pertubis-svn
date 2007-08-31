@@ -38,7 +38,11 @@ QString pertubis::Item::status(Item::ItemStatus status)
 	}
 }
 
-pertubis::Item::Item(const QList<QVariant> &data, Item *parent,ItemType t) : m_data(data),m_parent(parent),m_status(is_stable),m_rtti(t)
+pertubis::Item::Item(const QList<QVariant> &dats, Item *pitem,ItemType t) : m_data(dats),m_parent(pitem),m_status(is_stable),m_rtti(t)
+{
+}
+
+pertubis::Item::Item(const QList<QVariant> &dats, Item *pitem,ItemType t, const paludis::tr1::shared_ptr<const paludis::PackageID>& id) : m_data(dats),m_parent(pitem),m_status(is_stable),m_rtti(t)
 {
 }
 
@@ -54,16 +58,16 @@ void pertubis::Item::appendChild(Item *item)
 	m_children.append(item);
 }
 
-pertubis::Item* pertubis::Item::child(int row) const
+pertubis::Item* pertubis::Item::child(int rindex) const
 {
-	return m_children.value(row);
+	return m_children.value(rindex);
 }
 
-void pertubis::Item::setData(int column, QVariant data)
+void pertubis::Item::setData(int column, QVariant dats)
 {
 	if (column < m_data.count() )
 	{
-		m_data.replace(column, data);
+		m_data.replace(column, dats);
 	}
 }
 
@@ -127,11 +131,10 @@ bool pertubis::Item::entryData(QString& cat,QString& pack,QString& ver,QString& 
 {
 	if (m_rtti == it_version)
 	{
-		Item* parent = m_parent;
-		cat = parent->data(io_category).toString();
-		pack = parent->data(io_package).toString();
+		cat = m_parent->data(io_category).toString();
+		pack = m_parent->data(io_package).toString();
 		ver = data(io_package).toString();
-		rep = parent->data(io_repository).toString();
+		rep = m_parent->data(io_repository).toString();
 		return true;
 	}
 	else if (m_rtti == it_package)

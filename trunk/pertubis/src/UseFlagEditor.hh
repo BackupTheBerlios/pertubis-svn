@@ -23,8 +23,7 @@
 #include <QTableWidget>
 #include <QVariant>
 
-
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 #include <paludis/environment.hh>
 

@@ -27,10 +27,10 @@ namespace pertubis
     class DescriptionExtractor : public Extractor
     {
         public:
-            DescriptionExtractor(std::tr1::shared_ptr<paludis::Environment>);
+            DescriptionExtractor(const paludis::Environment * const env);
             virtual ~DescriptionExtractor();
 
-            std::string operator() (const paludis::PackageDatabaseEntry &) const;
+//             std::string operator() (const paludis::PackageDatabaseEntry &) const;
 
     };
 }

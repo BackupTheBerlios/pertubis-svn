@@ -27,10 +27,14 @@
 #include "ThreadFetchCategories.hh"
 #include "ThreadFetchDetails.hh"
 #include "ThreadFetchPackages.hh"
-#include "ThreadKeywordManager.hh"
-#include "UseFlagEditor.hh"
-#include "UseFlagModel.hh"
+// #include "ThreadKeywordManager.hh"
+// #include "UseFlagEditor.hh"
+// #include "UseFlagModel.hh"
 
+
+#include <paludis/package_id.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/name.hh>
 #include "PackageItem.hh"
 #include "PackageModel.hh"
 #include <QApplication>
@@ -60,7 +64,7 @@
 
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/util/log.hh>
-// #include <tr1/memory>
+
 
 namespace pertubis
 {
@@ -71,7 +75,7 @@ namespace pertubis
 	{
 
 	public:
-		ReleaseEater(QObject* parent) : QObject(parent) {}
+		ReleaseEater(QObject* pobj) : QObject(pobj) {}
 	protected:
 
 
@@ -90,27 +94,27 @@ namespace pertubis
 	};
 }
 
-pertubis::PackageView::PackageView(QWidget* parent) : QTreeView(parent)
+pertubis::PackageView::PackageView(QWidget* pWidget) : QTreeView(pWidget)
 {
-
 }
 
-void pertubis::PackageView::mousePressEvent(QMouseEvent* event)
+void pertubis::PackageView::mousePressEvent(QMouseEvent* ev)
 {
-	m_mousePos = event->pos();
-	QTreeView::mousePressEvent(event);
+	m_mousePos = ev->pos();
+	QTreeView::mousePressEvent(ev);
 }
 
 pertubis::DatabaseView::DatabaseView()
 {
 	m_settings = new Settings(this);
-// 	setAttribute(Qt::WA_DeleteOnClose);
-	paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
-    paludis::Log::get_instance()->set_program_name("pertubis");
-   	std::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
+//	setAttribute(Qt::WA_DeleteOnClose);
+	paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
+	paludis::Log::get_instance()->set_program_name("pertubis");
+	paludis::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
 
-	m_threadKeywords = new ThreadKeywordManager(this,env);
-	m_threadKeywords->start();
+// 	m_threadKeywords = new ThreadKeywordManager(this,env);
+	m_threadKeywords = 0;
+// 	m_threadKeywords->start();
 	m_vSplit = new QSplitter(Qt::Vertical, this);
 	m_details = new QTextBrowser(this);
 	m_filter = new ReleaseEater(this);
@@ -140,7 +144,7 @@ pertubis::DatabaseView::DatabaseView()
 	createTrayMenu();
 
 	createToolBar();
-	m_useflagEditor = new UseFlagEditor(this,env);
+// 	m_useflagEditor = new UseFlagEditor(this,env);
 
 	createUseflagEditor();
 	createOptionsMenu();
@@ -156,10 +160,10 @@ pertubis::DatabaseView::~DatabaseView()
 // 	qDebug() << "DatabaseView::~DatabaseView() - done";
 }
 
-void pertubis::DatabaseView::closeEvent(QCloseEvent* event)
+void pertubis::DatabaseView::closeEvent(QCloseEvent* ev)
 {
 	hide();
-	event->ignore();
+	ev->ignore();
 }
 
 void pertubis::DatabaseView::createCatbar()
@@ -171,6 +175,7 @@ void pertubis::DatabaseView::createCatbar()
 	m_catModel->setHorizontalHeaderLabels(QStringList(tr("category")) );
 	m_categories = new QTableView(this);
 	m_categories->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+	m_categories->horizontalHeader()->setVisible(false);
 	m_categories->verticalHeader()->setVisible(false);
 	m_categories->setModel(m_catModel);
 	m_categories->setShowGrid(false);
@@ -186,7 +191,7 @@ void pertubis::DatabaseView::createCatbar()
 	connect(m_threadCategories,
 			SIGNAL(categoriesResult(QStringList)),
 			m_catModel,
-    		SLOT(slotPopulateModel(QStringList)));
+			SLOT(slotPopulateModel(QStringList)));
 
 	m_acToggleCatBar = m_dockCat->toggleViewAction();
 
@@ -194,6 +199,7 @@ void pertubis::DatabaseView::createCatbar()
 	m_acToggleCatBar->setIcon(QPixmap(":images/catbar_22.xpm"));
 	m_acToggleCatBar->setShortcut( tr("F9"));
 	m_acToggleCatBar->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the category sidebar</p></html>").arg(m_acToggleCatBar->text()) );
+	m_categories->setRowHidden(0,false);
 	slotRefreshCategories();
 }
 
@@ -347,7 +353,7 @@ void pertubis::DatabaseView::createActions()
 	connect(m_acInstall,
 			SIGNAL(toggled(bool)),
 			this,
-    		SLOT(slotInstallTask(bool)));
+			SLOT(slotInstallTask(bool)));
 
 	connect(m_acDeinstall,
 			SIGNAL(toggled(bool)),
@@ -389,7 +395,7 @@ void pertubis::DatabaseView::createUseflagEditor()
 	m_dockUse = new QDockWidget(tr("useflag editor"),this);
 	m_dockUse->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-	m_dockUse->setWidget(m_useflagEditor);
+// 	m_dockUse->setWidget(m_useflagEditor);
 	addDockWidget(Qt::RightDockWidgetArea, m_dockUse);
 
 	m_acToggleUseBar = m_dockUse->toggleViewAction();
@@ -471,10 +477,13 @@ void pertubis::DatabaseView::slotCategoryChanged( const QModelIndex& index )
 {
 	if ( !index.isValid() || m_threadPackages->isRunning())
 		return;
+	qDebug() << "slotCategoryChanged() - 1";
 	QString cat = m_catModel->data(index).toString();
 	m_details->hide();
 	m_details->clear();
+	qDebug() << "slotCategoryChanged() - 2";
 	m_threadPackages->searchPackages(cat);
+	qDebug() << "slotCategoryChanged() - 3";
 }
 
 void pertubis::DatabaseView::slotInstallTask(bool state)
@@ -496,7 +505,7 @@ void pertubis::DatabaseView::slotEditUseTask()
 		QString cat,pack,ver,rep;
 		m_current->entryData(cat,pack,ver,rep);
 		qDebug() << cat << pack << ver << rep;
-		m_useflagEditor->model()->slotEditItemFlags(cat,pack,ver,rep);
+// 		m_useflagEditor->model()->slotEditItemFlags(cat,pack,ver,rep);
 	}
 }
 
@@ -521,22 +530,13 @@ void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
 		index.column() != Item::io_package ||
 	   (item->type() == Item::it_package && item->status() == Item::is_masked) )
 		return;
-
-	QString cat,pack,ver,rep;
-	item->entryData(cat,pack,ver,rep);
-
-	if (cat.isEmpty() || cat.isNull() ||
-	   pack.isEmpty() || pack.isNull() ||
-	   ver.isEmpty() || ver.isNull() ||
-	   rep.isEmpty() || rep.isNull() )
-		return;
-	m_threadDetails->search(cat,pack,ver,rep,item->status());
+	qDebug() << "ID =" << stringify(item->ID()->name()).c_str();
+	m_threadDetails->search(item->ID());
 }
 
 void pertubis::DatabaseView::slotSync()
 {
-	QMessageBox::information( this, tr("Sync"),
-                        "Must be implemented!");
+	QMessageBox::information( this, tr("Sync"),"Must be implemented!");
 }
 
 void pertubis::DatabaseView::slotSearchItem()
@@ -588,7 +588,7 @@ void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& index)
 	m_options->clear();
 	QString cat,pack,ver,rep;
 	item->entryData(cat,pack,ver,rep);
-	Entry entry = genPackEntry(cat,pack,ver,rep);
+	paludis::tr1::shared_ptr<const paludis::PackageID> entry(item->ID());
 	QVariantMap optionsData = m_box->selectionData(entry);
 
 	if (item->status() != Item::is_masked)

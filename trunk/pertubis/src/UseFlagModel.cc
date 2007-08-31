@@ -29,6 +29,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/repository.hh>
+#include <paludis/repository_info.hh>
 
 pertubis::UseFlagModel::UseFlagModel(QObject* parent,std::tr1::shared_ptr<paludis::Environment> env) : QObject(parent),m_env(env)
 {
@@ -250,19 +251,19 @@ void pertubis::UseFlagModel::slotRefresh()
 	m_descriptions.clear();
 	m_environVariables.clear();
 
-	for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryIterator, const paludis::Repository>
-			r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
-			r != r_end ; ++r)
-	{
-
-		if (r->format() == "ebuild")
-		{
-			loadRepoVars(*r);
-			loadExpandVariables(stringify(r->name()).c_str());
-			loadUseFlagDescGlobal( (*r) );
-			loadUseFlagDescLocal( (*r) );
-		}
-	}
+// 	for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryIterator, const paludis::Repository>
+// 			r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
+// 			r != r_end ; ++r)
+// 	{
+//
+// 		if (r->format() == "ebuild")
+// 		{
+// 			loadRepoVars(*r);
+// 			loadExpandVariables(stringify(r->name()).c_str());
+// 			loadUseFlagDescGlobal( (*r) );
+// 			loadUseFlagDescLocal( (*r) );
+// 		}
+// 	}
 	loadTargetConfig();
 }
 

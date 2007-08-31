@@ -39,7 +39,7 @@ namespace pertubis
 		Q_OBJECT
 
 	public:
-		SearchWindow( QWidget *parent = 0);
+		SearchWindow( QWidget *pwid = 0);
 
 		QLabel*				m_label;
 		QLineEdit*			m_line;

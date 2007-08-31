@@ -21,7 +21,7 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_THREAD_BASE_H
 
 #include <QThread>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 #include <paludis/environment.hh>
 
@@ -43,7 +43,7 @@ namespace pertubis
 
 	public:
 
-		ThreadBase(QObject* parent, std::tr1::shared_ptr<paludis::Environment> env);
+		ThreadBase(QObject* parent, paludis::tr1::shared_ptr<paludis::Environment> env);
 
 	protected:
 		std::tr1::shared_ptr<paludis::Environment> 	m_env;

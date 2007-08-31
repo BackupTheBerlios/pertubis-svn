@@ -24,7 +24,7 @@
 #include <QList>
 #include <QStringList>
 #include <QVariant>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 class QAction;
 
@@ -64,8 +64,6 @@ namespace pertubis
 
 		int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
 
-// 		bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
-
 		bool setSelectionData( const QModelIndex & ix, const QString & task, bool state);
 
 		void setHorizontalHeaderLabels ( const QStringList & labels );
@@ -74,24 +72,24 @@ namespace pertubis
 
 		void setBox(TaskBox* t);
 
-	private:
-
-		QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
-
-		Item*										m_root;
-		QStringList									m_header;
-
-		QAction*									m_toggleInstall;
-		QAction*									m_toggleDeinstall;
-		QAction*									m_toggleSlot;
-		TaskBox*									m_box;
-
 	public slots:
 
 		void slotAppendPackage(Item* item);
 		void slotSetRoot(Item* item);
+
+	private:
+
+		QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
+
+		Item*			m_root;
+		QStringList		m_header;
+
+		QAction*		m_toggleInstall;
+		QAction*		m_toggleDeinstall;
+		QAction*		m_toggleSlot;
+		TaskBox*		m_box;
+
 	};
 }
 
 #endif
-

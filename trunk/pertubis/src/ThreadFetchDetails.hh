@@ -38,26 +38,24 @@ namespace pertubis
 
 	public:
 
-		ThreadFetchDetails(QObject* parent, std::tr1::shared_ptr<paludis::Environment> env);
-
-		void search(QString cn,QString pn,QString ver,QString rep, Item::ItemStatus status);
+		ThreadFetchDetails(QObject* pobj, paludis::tr1::shared_ptr<paludis::Environment> env);
+		void search(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+		void appendOutput(QString text);
 
 	protected:
 
 		void run();
 
-	protected:
+	private:
 
-		QString									m_cat;
-		QString									m_pack;
-		QString									m_version;
-		QString									m_repo;
-		Item::ItemStatus 						m_status;
+		paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
+		mutable QString	m_output;
 
 	signals:
 		void detailsResult(QString output);
 	};
 }
+
 #endif
 
 

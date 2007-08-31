@@ -40,7 +40,7 @@
 
 
 
-pertubis::Extractor::Extractor(std::tr1::shared_ptr<paludis::Environment> env) : m_env(env)
+pertubis::Extractor::Extractor(const paludis::Environment * const env) : m_env(env)
 {
 }
 

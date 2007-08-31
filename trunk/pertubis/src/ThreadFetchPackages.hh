@@ -47,7 +47,7 @@ namespace pertubis
 		public:
 
 			ThreadFetchPackages(QObject* parent,
-								std::tr1::shared_ptr<paludis::Environment> env,
+								paludis::tr1::shared_ptr<paludis::Environment> env,
 								ThreadKeywordManager* keywords,
 							TaskBox* box);
 

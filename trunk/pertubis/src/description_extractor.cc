@@ -22,7 +22,7 @@
 #include <paludis/package_database.hh>
 
 
-pertubis::DescriptionExtractor::DescriptionExtractor(std::tr1::shared_ptr<paludis::Environment> env) : Extractor(env)
+pertubis::DescriptionExtractor::DescriptionExtractor(const paludis::Environment * const env) : Extractor(env)
 {
 }
 
@@ -30,8 +30,9 @@ pertubis::DescriptionExtractor::~DescriptionExtractor()
 {
 }
 
-std::string pertubis::DescriptionExtractor::operator() (const paludis::PackageDatabaseEntry & p) const
-{
-    return m_env->package_database()->fetch_repository(p.repository)->
-        version_metadata(p.name, p.version)->description;
-}
+// std::string pertubis::DescriptionExtractor::operator() (const paludis::PackageDatabaseEntry & p) const
+// {
+//     return m_env->package_database()->fetch_repository(p.repository)->
+//         version_metadata(p.name, p.version)->description;
+// 	return "";
+// }

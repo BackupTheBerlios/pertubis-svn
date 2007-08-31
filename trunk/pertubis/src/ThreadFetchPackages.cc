@@ -19,22 +19,26 @@
 
 #include "ThreadFetchPackages.hh"
 
-#include "ThreadKeywordManager.hh"
+// #include "ThreadKeywordManager.hh"
 #include "TaskBox.hh"
 #include <paludis/util/log.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 
 #include <paludis/environment.hh>
 
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/query.hh>
 #include <QDebug>
 #include <QVariant>
+#include <paludis/mask.hh>
+#include <paludis/metadata_key.hh>
 
-#include <paludis/repositories/gentoo/ebuild.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
-
 
 #include "pcre_matcher.hh"
 #include "PackageItem.hh"
@@ -43,11 +47,12 @@
 #include "name_extractor.hh"
 
 #include <set>
+#include <map>
 
-pertubis::ThreadFetchPackages::ThreadFetchPackages(QObject* parent,
-		std::tr1::shared_ptr<paludis::Environment> env,
+pertubis::ThreadFetchPackages::ThreadFetchPackages(QObject* pobject,
+		paludis::tr1::shared_ptr<paludis::Environment> env,
 		ThreadKeywordManager* keywords,
-		TaskBox* box) : ThreadBase(parent,env),
+		TaskBox* box) : ThreadBase(pobject,env),
 		m_keywords(keywords),
 		m_box(box)
 {
@@ -55,99 +60,125 @@ pertubis::ThreadFetchPackages::ThreadFetchPackages(QObject* parent,
 
 void pertubis::ThreadFetchPackages::searchPackages(QString str)
 {
+	qDebug() << "ThreadFetchPackages::searchPackages() - 1";
 	m_query = str;
+	qDebug() << "ThreadFetchPackages::searchPackages() - 2";
 	start();
+	qDebug() << "ThreadFetchPackages::searchPackages() - 3";
 }
 
 void pertubis::ThreadFetchPackages::run()
 {
 	using namespace paludis;
-	QVariantMap tasks = m_box->tasks();
+	qDebug() << "ThreadFetchPackages::run() - 1";
+	QVariantMap p_data = m_box->tasks();
+	qDebug() << "ThreadFetchPackages::run() - 2";
 	Item* root = new Item(QList<QVariant>() <<
-			tasks <<
+			p_data <<
 			"" <<
 			"" <<
 			"" <<
 			false,
 			0,
 	  		Item::it_category);
+// 	qDebug() << "ThreadFetchPackages::run() - 3";
 
-	RepositoryName ins("installed");
-	std::tr1::shared_ptr< Repository > vdb;
-	if (m_env->package_database()->has_repository_named(ins))
-	{
-		vdb = m_env->package_database()->fetch_repository(ins);
-	}
-
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository> r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;r != r_end ; ++r)
+	for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+		r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
+		r != r_end ; ++r)
     {
+// 		qDebug() << "ThreadFetchPackages::run() - 4";
 		if (r->format() == "vdb" || r->format() == "installed_virtuals")
 			continue;
-        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
-		for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;c != c_end ; ++c)
+        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+		for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;c != c_end ; ++c)
         {
 			CategoryNamePart cat(m_query.toLatin1().data());
 
 			if (cat != *c )
 				continue;
 
-			std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
-			QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end());
+			std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+			QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end());
 			while (	p != p_end)
 			{
-				std::tr1::shared_ptr< const VersionSpecCollection > instVer = vdb->version_specs(*p);
-				std::tr1::shared_ptr< const VersionSpecCollection > repVer = r->version_specs(*p);
-				VersionSpecCollection::Iterator version( (*repVer).begin() );
+				tr1::shared_ptr<const PackageIDSequence> packIds(
+            	r->package_ids(*p));
 
-				Item* pack = new Item(QList<QVariant>() <<
-						tasks <<
+				Item* p_item = new Item(QList<QVariant>() <<
+						p_data <<
 						stringify(p->package).c_str() <<
 						stringify(p->category).c_str() <<
 						stringify(r->name()).c_str() <<
 						Qt::Unchecked,
 	  					root,
 						Item::it_package);
-				root->appendChild(pack);
+				root->appendChild(p_item);
 				int mp=0;
-				QVariantMap data=tasks;
-				while (version != repVer->end() )
+				int ip=0;
+				PackageIDSequence::Iterator vstart(packIds->begin()),vend(packIds->end());
+				while (vstart != vend )
 				{
-					Entry entry(stringify(*p).c_str(),stringify(*version).c_str(),stringify(r->name()).c_str(),stringify(r->name()).c_str());
-					QVariantMap optionsData = m_box->selectionData(entry);
-					Item* ver = new Item(QList<QVariant>() <<
-							optionsData	<<
-							stringify(*version).c_str() <<
-							"" <<
-							"" <<
-							( vdb->has_version(*p,*version) ? Qt::Checked : Qt::Unchecked),
-							pack,
-		  					Item::it_version);
-					if ( m_env->mask_reasons(PackageDatabaseEntry(*p,*version,r->name())).any() )
+					tr1::shared_ptr<const PackageIDSequence> ci(
+					m_env->package_database()->query(
+						query::InstalledAtRoot(m_env->root()) &
+						query::Matches(PackageDepSpec(
+								tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName( (*vstart)->name())),
+								tr1::shared_ptr<CategoryNamePart>(),
+								tr1::shared_ptr<PackageNamePart>(),
+								tr1::shared_ptr<VersionRequirements>(make_equal_to_version_requirements( (*vstart)->version())),
+								vr_and,
+								tr1::shared_ptr<SlotName>(new SlotName((*vstart)->slot())))),
+						qo_order_by_version));
+
+					QVariantMap v_data = m_box->selectionData(*vstart);
+					std::string mr_string;
+					bool prefer_default = true;
+					for (PackageID::MasksIterator mstart((*vstart)->begin_masks()), mend((*vstart)->end_masks()) ;
+					mstart != mend ; ++mstart)
 					{
-						ver->setStatus(Item::is_masked);
+						prefer_default = false;
+						if (! mr_string.empty())
+							mr_string.append(", ");
+
+						mr_string.append((*mstart)->description());
+					}
+					Item* v_item = new Item(QList<QVariant>() <<
+							v_data	<<
+							stringify((*vstart)->version()).c_str() <<
+							"" <<
+							"" <<
+							( ( !ci->empty() ) ? Qt::Checked : Qt::Unchecked ) <<
+							mr_string.c_str(),
+							p_item,
+		  					Item::it_version,
+							*vstart);
+					if (!prefer_default)
+					{
+						v_item->setStatus(Item::is_masked);
 						++mp;
 					}
-					else
-					{
-						std::tr1::shared_ptr< const  KeywordNameCollection > keys = r->version_metadata(*p,*version)->ebuild_interface->keywords();
-						ver->setStatus(static_cast<Item::ItemStatus>(m_keywords->classifyKeywords(keys)));
-					}
-					if (ver->status() < pack->status())
-						pack->setStatus(ver->status());
-					if (optionsData[tr("install")].toBool())
-						data[tr("install")] = true;
-					if (optionsData[tr("deinstall")].toBool())
-						data[tr("deinstall")] = true;
+// 					else
+// 					{
+// 						std::tr1::shared_ptr< const  KeywordNameCollection > keys = r->version_metadata(*p,*version)->ebuild_interface->keywords();
+// 						ver->setStatus(static_cast<Item::ItemStatus>(m_keywords->classifyKeywords(keys)));
+// 					}
+					if ( !ci->empty() )
+						++ip;
+					if (v_item->status() < p_item->status())
+						p_item->setStatus(v_item->status());
+					if (v_data[tr("install")].toBool())
+						p_data[tr("install")] = true;
+					if (v_data[tr("deinstall")].toBool())
+						p_data[tr("deinstall")] = true;
 
-					pack->appendChild(ver);
-					++version;
+					p_item->appendChild(v_item);
+					++vstart;
 				}
-				if ( repVer->size() == instVer->size() )
-					pack->setData(Item::io_installed,Qt::Checked);
-				else if (instVer->size() > 0)
-					pack->setData(Item::io_installed,Qt::Checked);
-				if (mp==pack->childCount())
-					pack->setStatus(Item::is_masked);
+				if ( ip > 0 )
+ 					p_item->setData(Item::io_installed,Qt::Checked);
+				if (mp == p_item->childCount())
+					p_item->setStatus(Item::is_masked);
 				++p;
 			}
 		}

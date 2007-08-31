@@ -39,16 +39,16 @@ QVariant pertubis::ArchModel::headerData(int section, Qt::Orientation orientatio
 	return m_header;
 }
 
-QVariant pertubis::ArchModel::data ( const QModelIndex & index, int role) const
+QVariant pertubis::ArchModel::data ( const QModelIndex & m_index, int role) const
 {
-	if (!index.isValid())
+	if (!m_index.isValid())
          return QVariant();
 
-     if (index.row() >= m_knownArches.size())
+     if (m_index.row() >= m_knownArches.size())
          return QVariant();
 
      if (role == Qt::DisplayRole)
-         return m_knownArches.at(index.row());
+         return m_knownArches.at(m_index.row());
      else
          return QVariant();
 }

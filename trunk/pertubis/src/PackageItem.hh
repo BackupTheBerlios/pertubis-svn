@@ -22,11 +22,15 @@
 
 #include <QList>
 #include <QVariant>
+#include <paludis/util/tr1_memory.hh>
+
+namespace paludis
+{
+	class PackageID;
+}
 
 namespace pertubis
 {
-
-
 	/*! \brief This node class holds important information for each package(-version).
 	*
 	*/
@@ -41,7 +45,14 @@ namespace pertubis
 			enum ItemType { it_category,it_package,it_version};
 
 			Item() {}
-			Item(const QList<QVariant> &data, Item* parent,ItemType t);
+			Item(const QList<QVariant> &data,
+				Item* parent,
+	 			ItemType t);
+
+   			Item(const QList<QVariant> &data,
+				Item* parent,
+	 			ItemType t,
+				const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 			virtual ~Item();
 
 			static QString status(Item::ItemStatus status);
@@ -65,11 +76,13 @@ namespace pertubis
 			QVariant data(int column) const;
 			void setData(int column,QVariant data);
 			int row() const;
-			void setParent(Item* parent) { m_parent=parent;}
+			void setParent(Item* pitem) { m_parent=pitem;}
 			Item *parent();
+			paludis::tr1::shared_ptr<const paludis::PackageID> ID() { return m_id; }
 
 		private:
 
+			paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
 			QList<Item*>	m_children;
 			QList<QVariant>	m_data;
 			Item* 			m_parent;
@@ -79,8 +92,6 @@ namespace pertubis
 		signals:
 			void taskChanged(Item* item,QString task,bool state);
 	};
-
-
 }
 
 #endif

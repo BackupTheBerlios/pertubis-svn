@@ -36,7 +36,7 @@ namespace pertubis
 		Q_OBJECT
 		public:
 			ThreadKeywordManager(QObject* parent,
-								 std::tr1::shared_ptr<paludis::Environment> env);
+								 paludis::tr1::shared_ptr<paludis::Environment> env);
 			virtual ~ThreadKeywordManager();
 			int classifyKeywords(QSet<QString> keywords) const;
 			int classifyKeywords(std::tr1::shared_ptr< const paludis::KeywordNameCollection > keywords) const;

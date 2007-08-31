@@ -21,32 +21,48 @@
 
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/dep_spec.hh>
-
-#include <QDebug>
-
+#include <paludis/package_id.hh>
+#include <paludis/query.hh>
+#include <paludis/mask.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/visitor.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
-
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/util/sequence.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include "name_extractor.hh"
-
+#include <QDebug>
 #include <QSet>
 
-pertubis::ThreadFetchCategories::ThreadFetchCategories(QObject* parent, std::tr1::shared_ptr<paludis::Environment> env) : ThreadBase(parent,env)
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <map>
+#include <algorithm>
+
+pertubis::ThreadFetchCategories::ThreadFetchCategories(QObject* pobj, paludis::tr1::shared_ptr<paludis::Environment> env) : ThreadBase(pobj,env)
 {
 }
 
 void pertubis::ThreadFetchCategories::run()
 {
 	using namespace paludis;
+	qDebug() << "ThreadFetchCategories.run() - starting";
 	QSet<QString> cats;
-	for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository> r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;r != r_end ; ++r)
-	{
-		std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
-		for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
+	for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+            r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+    {
+		tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+		for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
 		{
+// 			qDebug() << stringify(*c).c_str();
 			cats << stringify(*c).c_str();
 		}
 	}
 	emit categoriesResult(cats.toList());
+	qDebug() << "ThreadFetchCategories.run() - done";
 }

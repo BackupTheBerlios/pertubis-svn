@@ -20,7 +20,6 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H
 #define _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H
 
-
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include <QTreeView>
@@ -106,8 +105,6 @@ namespace pertubis
 
 		void saveSettings();
 
-
-
 		CategoryModel*		m_catModel;
 		Item*				m_current;
 		PackageModel*		m_packModel;
@@ -144,7 +141,7 @@ namespace pertubis
 		ThreadFetchItem*		m_threadItem;
 		ThreadFetchPackages*	m_threadPackages;
 		ThreadKeywordManager*	m_threadKeywords;
-		UseFlagEditor*			m_useflagEditor;
+//		UseFlagEditor*			m_useflagEditor;
 
 	private slots:
 
