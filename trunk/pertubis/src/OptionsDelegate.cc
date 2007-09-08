@@ -31,45 +31,65 @@ pertubis::OptionsDelegate::OptionsDelegate(QWidget *pobj) : QItemDelegate(pobj)
 }
 
 void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
-										const QStyleOptionViewItem& option,
-		  								const QModelIndex& index) const
+                                        const QStyleOptionViewItem& option,
+                                          const QModelIndex& index) const
 {
-	if (!index.isValid())
-		return;
-	painter->save();
+    if (!index.isValid())
+        return;
+    painter->save();
 
-	Item* item = static_cast<Item*>(index.internalPointer());
-	if (!item)
-		return;
-	QVariantMap map = item->data(Item::io_selected).toMap();
-	QPixmap ins(":button_ok_16.xpm");
-	QPixmap dei(":button_cancel_16.xpm");
+    Item* item = static_cast<Item*>(index.internalPointer());
+    if (!item)
+        return;
+    QVariantList selections = item->data(Item::io_selected).toList();
+    QPixmap in(":images/pack_in.xpm");
+    QPixmap out(":images/pack_out.xpm");
+    QPixmap inFull(":images/pack_in_all.xpm");
+    QPixmap outFull(":images/pack_out_all.xpm");
 
-	QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-	painter->setPen(pen);
-	if (item->status() != Item::is_masked)
-	{
-		painter->drawRect(option.rect.x(),option.rect.y()+3,13,13);
-		painter->drawRect(option.rect.x()+16,option.rect.y()+3,13,13);
-		if (map.contains("install") && map.value("install").toBool())
-			painter->drawPixmap(option.rect.x(),option.rect.y()+3, ins);
-		if (map.contains("deinstall") && map.value("deinstall").toBool())
-			painter->drawPixmap(option.rect.x()+16,option.rect.y()+3, dei);
-	}
+    QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    painter->setPen(pen);
+    if (item->state() != Item::is_masked)
+    {
+        painter->drawRect(option.rect.x(),option.rect.y(),16,16);
+        painter->drawRect(option.rect.x()+18,option.rect.y(),16,16);
+        switch (selections.value(0).toInt() )
+        {
+            case Qt::PartiallyChecked:
+                painter->drawPixmap(option.rect.x(),option.rect.y(), in);
+                break;
+            case Qt::Checked:
+                painter->drawPixmap(option.rect.x(),option.rect.y(), inFull);
+                break;
+            default:
+                ;
+        }
+        switch (selections.value(1).toInt() )
+        {
+            case Qt::PartiallyChecked:
+                painter->drawPixmap(option.rect.x()+16,option.rect.y(), out);
+                break;
+            case Qt::Checked:
+                painter->drawPixmap(option.rect.x()+16,option.rect.y(), outFull);
+                break;
+            default:
+                ;
+        }
+    }
 
-	painter->restore();
+    painter->restore();
 }
 
 QSize pertubis::OptionsDelegate::sizeHint(const QStyleOptionViewItem &option,
                               const QModelIndex &index) const
 {
     QRect decorationRect = rect(option, index, Qt::DecorationRole);
-	QRect displayRect;
-	Item* item = static_cast<Item*>(index.internalPointer());
-	if (index.column() == Item::io_selected && item->type() == Item::it_version)
-		displayRect = QRect(QPoint(0,0),QPoint(32,16));
-	else
-    	displayRect = rect(option, index, Qt::DisplayRole);
+    QRect displayRect;
+//     Item* item = static_cast<Item*>(index.internalPointer());
+    if (index.column() == Item::io_selected)
+        displayRect = QRect(QPoint(0,0),QPoint(32,16));
+    else
+        displayRect = rect(option, index, Qt::DisplayRole);
     QRect checkRect = rect(option, index, Qt::CheckStateRole);
 
     doLayout(option, &checkRect, &decorationRect, &displayRect, true);

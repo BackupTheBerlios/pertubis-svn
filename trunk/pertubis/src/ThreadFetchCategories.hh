@@ -26,27 +26,27 @@
 
 namespace pertubis
 {
-	class KeywordManager;
+    class KeywordManager;
 
-	/*! \brief thread for fetching categories from repositories and returns a list of names
-	*
-	*/
-	class ThreadFetchCategories : public ThreadBase
-	{
-		Q_OBJECT
+    /*! \brief thread for fetching categories from repositories and returns a list of names
+    *
+    */
+    class ThreadFetchCategories : public ThreadBase
+    {
+        Q_OBJECT
 
-	public:
+    public:
 
-		ThreadFetchCategories(QObject* parent, paludis::tr1::shared_ptr<paludis::Environment> env);
+        ThreadFetchCategories(QObject* parent, paludis::tr1::shared_ptr<paludis::Environment> env);
 
-	protected:
+    protected:
 
-		void run();
+        void run();
 
-	signals:
+    signals:
 
-		void categoriesResult(QStringList cl);
-	};
+        void categoriesResult(QStringList cl);
+    };
 }
 
 #endif

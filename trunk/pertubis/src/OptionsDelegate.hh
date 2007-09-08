@@ -29,23 +29,23 @@ class QMenu;
 namespace pertubis
 {
 
-	/*! \brief Used for presenting a customized selections display in PackageView
-	*
-	*/
-	class OptionsDelegate : public QItemDelegate
-	{
-		Q_OBJECT
+    /*! \brief Used for presenting a customized selections display in PackageView
+    *
+    */
+    class OptionsDelegate : public QItemDelegate
+    {
+        Q_OBJECT
 
-	public:
-		OptionsDelegate(QWidget *parent = 0);
+    public:
+        OptionsDelegate(QWidget *parent = 0);
 
-		void paint(QPainter* painter,const QStyleOptionViewItem& option,const QModelIndex& index) const;
-		QSize sizeHint(const QStyleOptionViewItem &option,const QModelIndex &index) const;
+        void paint(QPainter* painter,const QStyleOptionViewItem& option,const QModelIndex& index) const;
+        QSize sizeHint(const QStyleOptionViewItem &option,const QModelIndex &index) const;
 
-	private:
+    private:
 
-		QMenu*			m_menu;
-	};
+        QMenu*            m_menu;
+    };
 }
 
 #endif

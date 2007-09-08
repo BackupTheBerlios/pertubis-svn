@@ -49,20 +49,20 @@ pertubis::ThreadFetchCategories::ThreadFetchCategories(QObject* pobj, paludis::t
 
 void pertubis::ThreadFetchCategories::run()
 {
-	using namespace paludis;
-	qDebug() << "ThreadFetchCategories.run() - starting";
-	QSet<QString> cats;
-	for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    using namespace paludis;
+    qDebug() << "ThreadFetchCategories.run() - starting";
+    QSet<QString> cats;
+    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
             r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
-		tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-		for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
-		{
-// 			qDebug() << stringify(*c).c_str();
-			cats << stringify(*c).c_str();
-		}
-	}
-	emit categoriesResult(cats.toList());
-	qDebug() << "ThreadFetchCategories.run() - done";
+        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
+        {
+//             qDebug() << stringify(*c).c_str();
+            cats << stringify(*c).c_str();
+        }
+    }
+    emit categoriesResult(cats.toList());
+    qDebug() << "ThreadFetchCategories.run() - done";
 }

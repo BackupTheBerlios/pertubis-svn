@@ -34,5 +34,5 @@ pertubis::DescriptionExtractor::~DescriptionExtractor()
 // {
 //     return m_env->package_database()->fetch_repository(p.repository)->
 //         version_metadata(p.name, p.version)->description;
-// 	return "";
+//     return "";
 // }

@@ -20,78 +20,53 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_ITEM_H
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_ITEM_H
 
+#include "Item.hh"
 #include <QList>
 #include <QVariant>
 #include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
-	class PackageID;
+    class PackageID;
 }
 
 namespace pertubis
 {
-	/*! \brief This node class holds important information for each package(-version).
-	*
-	*/
-	class Item : public QObject
-	{
-		Q_OBJECT
+    class PackageItem : public Item
+    {
+        Q_OBJECT
 
-		public:
+        public:
 
-			enum ItemStatus { is_stable, is_unstable, is_masked };
-			enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed};
-			enum ItemType { it_category,it_package,it_version};
+            PackageItem() {}
 
-			Item() {}
-			Item(const QList<QVariant> &data,
-				Item* parent,
-	 			ItemType t);
+            PackageItem(const QList<QVariant> &data);
 
-   			Item(const QList<QVariant> &data,
-				Item* parent,
-	 			ItemType t,
-				const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
-			virtual ~Item();
+            PackageItem(const paludis::tr1::shared_ptr<const paludis::PackageID>& id,
+                        const QList<QVariant> &data);
 
-			static QString status(Item::ItemStatus status);
+            PackageItem(const paludis::tr1::shared_ptr<const paludis::PackageID>& id,
+                        QString    catname,
+                          QString    packname,
+                        QVariantList selections,
+                        const QList<QVariant> &data);
 
-			void appendChild(Item *child);
+            ~PackageItem();
 
-			ItemType type() const { return m_rtti;}
-			ItemStatus status() const { return m_status;}
-			void setStatus(ItemStatus s) { m_status = s;}
+            bool available() const;
 
-			bool setPackageSelection(QString task,bool state);
-			bool setVersionSelection(QString task,bool state);
-			void setSelectionData(QString task,bool state);
+            UpdateRange updateRange() const;
 
-			bool entryData(QString& cat,QString& pack,QString& ver,QString& rep) const;
+            paludis::tr1::shared_ptr<const paludis::PackageID> ID() const;
 
-			Item *child(int row) const;
-			Item *bestChild() const;
-			int childCount() const;
-			int columnCount() const;
-			QVariant data(int column) const;
-			void setData(int column,QVariant data);
-			int row() const;
-			void setParent(Item* pitem) { m_parent=pitem;}
-			Item *parent();
-			paludis::tr1::shared_ptr<const paludis::PackageID> ID() { return m_id; }
+        private:
 
-		private:
+            paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
 
-			paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
-			QList<Item*>	m_children;
-			QList<QVariant>	m_data;
-			Item* 			m_parent;
-			ItemStatus		m_status;
-			ItemType		m_rtti;
+    };
 
-		signals:
-			void taskChanged(Item* item,QString task,bool state);
-	};
+    QString stateDescription(Item::ItemState status);
 }
+
 
 #endif

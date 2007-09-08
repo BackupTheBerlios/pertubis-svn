@@ -33,46 +33,46 @@ class QCloseEvent;
 
 namespace pertubis
 {
-	class UseFlagModel;
+    class UseFlagModel;
 
-	/*! \brief Presents the information we find in UseFlagModel and allows the user to add/change/delete it.
-	*
-	*/
-	class UseFlagEditor : public QWidget
-	{
-		Q_OBJECT
+    /*! \brief Presents the information we find in UseFlagModel and allows the user to add/change/delete it.
+    *
+    */
+    class UseFlagEditor : public QWidget
+    {
+        Q_OBJECT
 
-		public:
+        public:
 
-			UseFlagEditor(QWidget* parent,
-						  std::tr1::shared_ptr<paludis::Environment> env);
-			~UseFlagEditor();
+            UseFlagEditor(QWidget* parent,
+                          std::tr1::shared_ptr<paludis::Environment> env);
+            ~UseFlagEditor();
 
-			void saveSettings();
-			void loadSettings();
+            void saveSettings();
+            void loadSettings();
 
-			void createToolbar();
-			void setModel(UseFlagModel* model) { m_model = model;}
+            void createToolbar();
+            void setModel(UseFlagModel* model) { m_model = model;}
 
-			UseFlagModel* model() { return m_model;}
+            UseFlagModel* model() { return m_model;}
 
-		private:
+        private:
 
-			QTableWidget*		m_setView;
-			QTableWidget*		m_table;
-			QSplitter*			m_hSplit;
-			UseFlagModel*		m_model;
-			QToolBar*			m_toolbar;
+            QTableWidget*        m_setView;
+            QTableWidget*        m_table;
+            QSplitter*            m_hSplit;
+            UseFlagModel*        m_model;
+            QToolBar*            m_toolbar;
 
-			std::tr1::shared_ptr<paludis::Environment> m_env;
+            std::tr1::shared_ptr<paludis::Environment> m_env;
 
-		private slots:
+        private slots:
 
-			void slotUseflagsChanged(QTableWidgetItem * current, QTableWidgetItem * previous );
-			void slotSetResult(QStringList list);
-			void slotUseflagResult(QList<QVariantList> list);
-			void slotToggleSetTable();
-	};
+            void slotUseflagsChanged(QTableWidgetItem * current, QTableWidgetItem * previous );
+            void slotSetResult(QStringList list);
+            void slotUseflagResult(QList<QVariantList> list);
+            void slotToggleSetTable();
+    };
 };
 
 #endif

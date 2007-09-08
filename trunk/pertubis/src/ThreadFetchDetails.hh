@@ -27,33 +27,33 @@
 
 namespace pertubis
 {
-	class KeywordManager;
+    class KeywordManager;
 
-	/*! \brief this thread asks pertubis for package details and returns preformatted text.
-	*
-	*/
-	class ThreadFetchDetails : public ThreadBase
-	{
-		Q_OBJECT
+    /*! \brief this thread asks pertubis for package details and returns preformatted text.
+    *
+    */
+    class ThreadFetchDetails : public ThreadBase
+    {
+        Q_OBJECT
 
-	public:
+    public:
 
-		ThreadFetchDetails(QObject* pobj, paludis::tr1::shared_ptr<paludis::Environment> env);
-		void search(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
-		void appendOutput(QString text);
+        ThreadFetchDetails(QObject* pobj, paludis::tr1::shared_ptr<paludis::Environment> env);
+        void search(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+        void appendOutput(QString text);
 
-	protected:
+    protected:
 
-		void run();
+        void run();
 
-	private:
+    private:
 
-		paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
-		mutable QString	m_output;
+        paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
+        mutable QString    m_output;
 
-	signals:
-		void detailsResult(QString output);
-	};
+    signals:
+        void detailsResult(QString output);
+    };
 }
 
 #endif

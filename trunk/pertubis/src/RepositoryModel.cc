@@ -21,26 +21,26 @@
 
 namespace pertubis
 {
-	/*! \brief not finished
-	*
-	*/
-	class RepositoryThread : public QThread
-	{
-		public:
-			RepositoryThread(QObject* parent) : QThread(parent) {}
-			void run()
-			{
-				for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
-					r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
-					r != r_end ; ++r)
-				{
-					std::tr1::shared_ptr<const RepositoryInfo> info = r->info();
+    /*! \brief not finished
+    *
+    */
+    class RepositoryThread : public QThread
+    {
+        public:
+            RepositoryThread(QObject* parent) : QThread(parent) {}
+            void run()
+            {
+                for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+                    r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
+                    r != r_end ; ++r)
+                {
+                    std::tr1::shared_ptr<const RepositoryInfo> info = r->info();
 
-				}
-			}
-		private:
-			std::tr1::shared_ptr<paludis::Environment> 		m_env;
-	};
+                }
+            }
+        private:
+            std::tr1::shared_ptr<paludis::Environment>         m_env;
+    };
 }
 
 pertubis::RepositoryModel::RepositoryModel(QObject* parent) : QAbstractListModel(parent)

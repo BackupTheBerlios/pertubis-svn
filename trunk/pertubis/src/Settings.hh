@@ -31,55 +31,55 @@ class QTranslator;
 
 namespace pertubis
 {
-	QStringList findQmFiles();
-	QString languageName(const QString &qmFile);
+    QStringList findQmFiles();
+    QString languageName(const QString &qmFile);
 
 
-	/*! \brief This settings group handles language and localization specific options.
-	*
-	*/
-	class I18NPage : public QWidget
-	{
-		Q_OBJECT
+    /*! \brief This settings group handles language and localization specific options.
+    *
+    */
+    class I18NPage : public QWidget
+    {
+        Q_OBJECT
 
-		public:
-			I18NPage(QWidget *parent = 0);
-			~I18NPage();
+        public:
+            I18NPage(QWidget *parent = 0);
+            ~I18NPage();
 
-			void loadSettings();
-			void saveSettings();
+            void loadSettings();
+            void saveSettings();
 
 
-			QMap<QString,QString> langToTranslation;
-			QString				m_currentLanguage;
+            QMap<QString,QString> langToTranslation;
+            QString                m_currentLanguage;
 
-		public slots:
-			void languageChanged(const QString& language);
+        public slots:
+            void languageChanged(const QString& language);
 
-	};
+    };
 
-	/*! \brief Presents a settings window with different configuration groups.
-	*
-	*/
-	class Settings : public QDialog
-	{
-		Q_OBJECT
+    /*! \brief Presents a settings window with different configuration groups.
+    *
+    */
+    class Settings : public QDialog
+    {
+        Q_OBJECT
 
-		public:
+        public:
 
-			Settings(QWidget* parent);
+            Settings(QWidget* parent);
 
-			const QString& currentLang() const { return m_i18n->m_currentLanguage;}
+            const QString& currentLang() const { return m_i18n->m_currentLanguage;}
 
-		public slots:
-     		void changePage(QListWidgetItem *current, QListWidgetItem *previous);
+        public slots:
+             void changePage(QListWidgetItem *current, QListWidgetItem *previous);
 
-		private:
+        private:
 
-			QListWidget *contentsWidget;
-     		QStackedWidget *pagesWidget;
-			I18NPage*		m_i18n;
-	};
+            QListWidget *contentsWidget;
+             QStackedWidget *pagesWidget;
+            I18NPage*        m_i18n;
+    };
 }
 
 #endif

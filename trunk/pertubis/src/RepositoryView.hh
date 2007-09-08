@@ -25,22 +25,22 @@
 namespace pertubis
 {
 
-	class RepositoryModel;
+    class RepositoryModel;
 
-	/*! \brief not finished
-	*
-	*/
-	class RepositoryView : public QTableView
-	{
-		Q_OBJECT
+    /*! \brief not finished
+    *
+    */
+    class RepositoryView : public QTableView
+    {
+        Q_OBJECT
 
-	public:
+    public:
 
-		RepositoryView(QWidget* parent);
-	// 	~RepositoryView(QObject* parent)
-	private:
-		RepositoryModel*   m_model;
-	};
+        RepositoryView(QWidget* parent);
+    //     ~RepositoryView(QObject* parent)
+    private:
+        RepositoryModel*   m_model;
+    };
 }
 
 #endif

@@ -28,31 +28,31 @@
 
 namespace pertubis
 {
-	/*!\brief model stores all known keywords the gentoo system provides
-	*
-	*/
+    /*!\brief model stores all known keywords the gentoo system provides
+    *
+    */
 
-	class ArchModel : public QAbstractItemModel
-	{
-		public:
-			ArchModel(){}
-			~ArchModel(){}
+    class ArchModel : public QAbstractItemModel
+    {
+        public:
+            ArchModel(){}
+            ~ArchModel(){}
 
-			int classifyKeywords(QSet<QString> keywords, QString keyset);
-			int rowCount(const QModelIndex & parent = QModelIndex()) const;
-			int columnCount(const QModelIndex & parent = QModelIndex()) const;
-			QVariant data(const QModelIndex & parent,int role) const;
-			QVariant headerData(int section,Qt::Orientation orientation,int role) const;
+            int classifyKeywords(QSet<QString> keywords, QString keyset);
+            int rowCount(const QModelIndex & parent = QModelIndex()) const;
+            int columnCount(const QModelIndex & parent = QModelIndex()) const;
+            QVariant data(const QModelIndex & parent,int role) const;
+            QVariant headerData(int section,Qt::Orientation orientation,int role) const;
 
-		private:
+        private:
 
-			QSet<QString> KeywordsAt(int offset) const;
+            QSet<QString> KeywordsAt(int offset) const;
 
-			void initKnownArches(QString path);
+            void initKnownArches(QString path);
 
-			QString		m_header;
-			QStringList m_knownArches;
-	};
+            QString        m_header;
+            QStringList m_knownArches;
+    };
 }
 
 #endif

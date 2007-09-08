@@ -30,66 +30,66 @@ class QAction;
 
 namespace pertubis
 {
-	class Item;
-	class PackageItem;
-	class VersionItem;
-	class TaskBox;
+    class Item;
+    class PackageItem;
+    class VersionItem;
+    class TaskBox;
 
-	/*! \brief holds package data fetched from paludis in a tree structure
-	*
-	*/
-	class PackageModel : public QAbstractItemModel
-	{
-		Q_OBJECT
+    /*! \brief holds package data fetched from paludis in a tree structure
+    *
+    */
+    class PackageModel : public QAbstractItemModel
+    {
+        Q_OBJECT
 
-	public:
+    public:
 
-		PackageModel(QObject* parent);
+        PackageModel(QObject* parent);
 
-		~PackageModel();
+        ~PackageModel();
 
-		int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
+        int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
 
-		QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+        QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
 
-		Qt::ItemFlags flags(const QModelIndex &index) const;
+        Qt::ItemFlags flags(const QModelIndex &index) const;
 
-		QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+        QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-		bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role = Qt::EditRole );
+        bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role = Qt::EditRole );
 
-		QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
+        QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
 
-		QModelIndex parent ( const QModelIndex & index ) const;
+        QModelIndex parent ( const QModelIndex & index ) const;
 
-		int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
+        int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
 
-		bool setSelectionData( const QModelIndex & ix, const QString & task, bool state);
+        bool setSelectionData( const QModelIndex & ix, int taskid, bool mystate);
 
-		void setHorizontalHeaderLabels ( const QStringList & labels );
+        void setHorizontalHeaderLabels ( const QStringList & labels );
 
-		const Item* root() const { return m_root;}
+        const Item* root() const { return m_root;}
 
-		void setBox(TaskBox* t);
+        void setBox(TaskBox* t);
 
-	public slots:
+    public slots:
 
-		void slotAppendPackage(Item* item);
-		void slotSetRoot(Item* item);
+        void slotAppendPackage(Item* item);
+        void slotSetRoot(Item* item);
 
-	private:
+    private:
 
-		QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
+        QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
 
-		Item*			m_root;
-		QStringList		m_header;
+        Item*            m_root;
+        QStringList        m_header;
 
-		QAction*		m_toggleInstall;
-		QAction*		m_toggleDeinstall;
-		QAction*		m_toggleSlot;
-		TaskBox*		m_box;
+        QAction*        m_toggleInstall;
+        QAction*        m_toggleDeinstall;
+        QAction*        m_toggleSlot;
+        TaskBox*        m_box;
 
-	};
+    };
 }
 
 #endif

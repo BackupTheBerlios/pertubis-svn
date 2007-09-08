@@ -28,37 +28,64 @@
 
 int main( int argc, char **argv )
 {
-	Q_INIT_RESOURCE(pertubis);
+    Q_INIT_RESOURCE(pertubis);
 
-	if (argc == 1)
-	{
-		QApplication a( argc, argv );
-		a.setApplicationName("pertubis");
-		a.setOrganizationName("pertubis");
-		QTranslator t;
+    if (argc == 1)
+    {
+        QApplication a( argc, argv );
+        a.setApplicationName("pertubis");
+        a.setOrganizationName("pertubis");
+        QTranslator t;
 
-		QSettings settings;
-		settings.beginGroup( "i18npage" );
-		QString lang = settings.value("language").toString();
-		settings.endGroup();
-		qDebug() << "lang = " << lang.toLatin1().data();
-		t.load(lang);
-		a.installTranslator(&t);
-		pertubis::DatabaseView p;
-		p.show();
-		a.setActiveWindow(&p);
-		return a.exec();
-	}
+        QSettings settings;
+        settings.beginGroup( "i18npage" );
+        QString lang = settings.value("language").toString();
+        settings.endGroup();
+        qDebug() << "lang = " << lang.toLatin1().data();
+        t.load(lang);
+        a.installTranslator(&t);
+        pertubis::DatabaseView p;
+        p.show();
+        a.setActiveWindow(&p);
+        return a.exec();
+    }
 
-	if (argc == 2 && strcmp(argv[1],"-v") == 0)
-	{
-		printf("%s\n",VERSION);
-	}
-	else
-	{
-		printf("usage: %s [OPTION]\n\n\
+    if (argc == 2 && strcmp(argv[1],"-v") == 0)
+    {
+        printf("%s\n",VERSION);
+    }
+    else
+    {
+        printf("usage: %s [OPTION]\n\n\
   -v\t\tshow programm version\n",argv[0]);
-	}
+    }
 
-	return 0;
+    return 0;
 }
+
+
+// #include "PackageItem.hh"
+// #include <QList>
+// #include <QVariant>
+//
+// int main( int argc, char **argv )
+// {
+//     QApplication a( argc, argv );
+//     QVariantList reslist;
+//     QVariantMap resmap;
+//     reslist << true << false;
+//     resmap.insert("1",true);
+//     resmap.insert("2",false);
+//
+//     QVariantList bl;
+//     bl << reslist << 1 << 2 << 3 << "4";
+//     QVariantList bm;
+//     bm << resmap << 1 << 2 << 3 << "4";
+//     QVariant iter;
+//     foreach (iter,bl)
+//         qDebug() << iter;
+//     qDebug() << "\n\n";
+//     foreach (iter,bm)
+//         qDebug() << iter;
+//     return 0;
+// }

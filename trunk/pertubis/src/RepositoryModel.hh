@@ -27,28 +27,28 @@
 
 namespace pertubis
 {
-	/*! \brief not finished
-	*
-	*/
-	class Repository
-	{
-	public:
-		QList<QMap<QString,QString> > m_sections;
-	};
+    /*! \brief not finished
+    *
+    */
+    class Repository
+    {
+    public:
+        QList<QMap<QString,QString> > m_sections;
+    };
 
-	/*! \brief not finished
-	*
-	*/
-	class RepositoryModel : public QAbstractListModel
-	{
-		Q_OBJECT
+    /*! \brief not finished
+    *
+    */
+    class RepositoryModel : public QAbstractListModel
+    {
+        Q_OBJECT
 
-	public:
-		RepositoryModel(QObject* parent);
+    public:
+        RepositoryModel(QObject* parent);
 
-	private:
-		QList<Repository>	m_repos;
-	};
+    private:
+        QList<Repository>    m_repos;
+    };
 
 }
 

@@ -52,7 +52,7 @@ namespace pertubis
 
             bool operator() (const std::string &) const;
 
-			std::string		m_pattern;
+            std::string        m_pattern;
     };
 }
 

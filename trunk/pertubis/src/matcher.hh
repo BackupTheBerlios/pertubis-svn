@@ -48,7 +48,7 @@ namespace pertubis
     {
         public:
 
-			Matcher();
+            Matcher();
 
             virtual ~Matcher();
 
@@ -57,8 +57,8 @@ namespace pertubis
 
     };
 
-	class TextMatcher;
-	class PCREMatcher;
+    class TextMatcher;
+    class PCREMatcher;
 }
 
 #endif

@@ -49,8 +49,8 @@
 
 namespace paludis
 {
-	class Environment;
-// 	class PackageDatabaseEntry;
+    class Environment;
+//     class PackageDatabaseEntry;
 }
 
 namespace pertubis
@@ -58,12 +58,12 @@ namespace pertubis
     class Extractor
     {
         public:
-			Extractor(const paludis::Environment * const env);
+            Extractor(const paludis::Environment * const env);
             virtual ~Extractor();
 
 //             virtual std::string operator() (const paludis::PackageDatabaseEntry& p) const = 0;
 
-			const paludis::Environment * const m_env;
+            const paludis::Environment * const m_env;
     };
 }
 

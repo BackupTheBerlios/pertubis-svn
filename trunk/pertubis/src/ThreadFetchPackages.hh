@@ -22,50 +22,56 @@
 
 #include "ThreadBase.hh"
 
+
 namespace paludis
 {
-	class Environment;
+    class Environment;
 }
 
 class QMenu;
 
 #include <QStringList>
+#include <set>
 
 namespace pertubis
 {
-	class ThreadKeywordManager;
-	class Item;
-	class TaskBox;
+    class ThreadKeywordManager;
+    class ThreadFetchVersions;
+    class Item;
+    class TaskBox;
 
-	/*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
-	*
-	*/
-	class ThreadFetchPackages : public ThreadBase
-	{
-		Q_OBJECT
+    /*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
+    *
+    */
+    class ThreadFetchPackages : public ThreadBase
+    {
+        Q_OBJECT
 
-		public:
+        public:
 
-			ThreadFetchPackages(QObject* parent,
-								paludis::tr1::shared_ptr<paludis::Environment> env,
-								ThreadKeywordManager* keywords,
-							TaskBox* box);
+            ThreadFetchPackages(QObject* parent,
+                                paludis::tr1::shared_ptr<paludis::Environment> env,
+                                ThreadKeywordManager* keywords,
+                            TaskBox* box);
 
-			void run();
+            ~ThreadFetchPackages();
 
-			void searchPackages(QString str);
+            void run();
 
-		private:
+            void makePackageItems() const;
+            void searchPackages(QString str);
 
-			void fetchPackages();
+        private:
 
-			QString									m_query;
-			ThreadKeywordManager*					m_keywords;
-			TaskBox*								m_box;
+            void fetchPackages();
 
-		signals:
-			void packagesResult(Item* root);
-	};
+            QString                                    m_query;
+            ThreadKeywordManager*                    m_keywords;
+            TaskBox*                                m_box;
+
+        signals:
+            void packagesResult(Item* root);
+    };
 }
 #endif
 

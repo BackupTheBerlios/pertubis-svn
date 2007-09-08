@@ -31,30 +31,30 @@ class QDialogButtonBox;
 
 namespace pertubis
 {
-	/*! \brief provides a text input and option checkboxes the user may select or deselect.
-	*
-	*/
-	class SearchWindow : public QDialog
-	{
-		Q_OBJECT
+    /*! \brief provides a text input and option checkboxes the user may select or deselect.
+    *
+    */
+    class SearchWindow : public QDialog
+    {
+        Q_OBJECT
 
-	public:
-		SearchWindow( QWidget *pwid = 0);
+    public:
+        SearchWindow( QWidget *pwid = 0);
 
-		QLabel*				m_label;
-		QLineEdit*			m_line;
-		QCheckBox*			m_chkDesc;
-		QCheckBox*			m_chkName;
-		QCheckBox*			m_chkRegex;
-		QDialogButtonBox*	m_dbox;
+        QLabel*                m_label;
+        QLineEdit*            m_line;
+        QCheckBox*            m_chkDesc;
+        QCheckBox*            m_chkName;
+        QCheckBox*            m_chkRegex;
+        QDialogButtonBox*    m_dbox;
 
-	protected:
-		void initCategories();
+    protected:
+        void initCategories();
 
-		QCheckBox*			m_chkHomepage;
-	signals:
-		void				search();
-	};
+        QCheckBox*            m_chkHomepage;
+    signals:
+        void                search();
+    };
 }
 #endif
 

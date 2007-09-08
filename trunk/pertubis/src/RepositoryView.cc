@@ -24,6 +24,6 @@
 
 pertubis::RepositoryView::RepositoryView(QWidget* parent) : QTableView( parent)
 {
-	QGridLayout* box = new QGridLayout(this);
+    QGridLayout* box = new QGridLayout(this);
 }
 

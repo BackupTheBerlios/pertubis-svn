@@ -24,24 +24,24 @@
 
 int pertubis::ArchModel::rowCount(const QModelIndex &/* parent*/) const
 {
-	return m_knownArches.count();
+    return m_knownArches.count();
 }
 
 int pertubis::ArchModel::columnCount(const QModelIndex &/* parent*/) const
 {
-	return 1;
+    return 1;
 }
 
 QVariant pertubis::ArchModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (role != Qt::DisplayRole || orientation == Qt::Vertical || section != 1 )
-		return QVariant();
-	return m_header;
+    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section != 1 )
+        return QVariant();
+    return m_header;
 }
 
 QVariant pertubis::ArchModel::data ( const QModelIndex & m_index, int role) const
 {
-	if (!m_index.isValid())
+    if (!m_index.isValid())
          return QVariant();
 
      if (m_index.row() >= m_knownArches.size())
@@ -55,20 +55,20 @@ QVariant pertubis::ArchModel::data ( const QModelIndex & m_index, int role) cons
 
 void pertubis::ArchModel::initKnownArches(QString path)
 {
-	QFile file(path);
-	if (file.open(QIODevice::ReadOnly) )
-	{
-		QTextStream stream( &file );
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly) )
+    {
+        QTextStream stream( &file );
         QString line;
 
         while ( !stream.atEnd() )
-		{
+        {
             line = stream.readLine();
-			if (!line.isEmpty() && !line.isNull())
-			{
-				m_knownArches << line;
-			}
+            if (!line.isEmpty() && !line.isNull())
+            {
+                m_knownArches << line;
+            }
         }
         file.close();
-	}
+    }
 }

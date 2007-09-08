@@ -26,42 +26,42 @@
 
 namespace pertubis
 {
-	class Item;
-	class TaskBox;
-	class ThreadKeywordManager;
+    class Item;
+    class TaskBox;
+    class ThreadKeywordManager;
 
-	/*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
-	*
-	*/
-	class ThreadFetchItem : public ThreadBase
-	{
-		Q_OBJECT
+    /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
+    *
+    */
+    class ThreadFetchItem : public ThreadBase
+    {
+        Q_OBJECT
 
-	public:
+    public:
 
-		ThreadFetchItem(QObject* parent,
-						paludis::tr1::shared_ptr<paludis::Environment> env,
-	  					ThreadKeywordManager* keywords,
-						TaskBox* box);
+        ThreadFetchItem(QObject* parent,
+                        paludis::tr1::shared_ptr<paludis::Environment> env,
+                          ThreadKeywordManager* keywords,
+                        TaskBox* box);
 
-		void search(QString str,bool name,bool desc);
+        void search(QString str,bool name,bool desc);
 
-	protected:
+    protected:
 
-		void run();
+        void run();
 
-	private:
+    private:
 
-		QString									m_query;
-		bool									m_optName;
-		bool									m_optDesc;
+        QString                                    m_query;
+        bool                                    m_optName;
+        bool                                    m_optDesc;
 
-		ThreadKeywordManager*					m_keywords;
-		TaskBox*								m_box;
+        ThreadKeywordManager*                    m_keywords;
+        TaskBox*                                m_box;
 
-	signals:
-		void itemResult(Item* root);
-	};
+    signals:
+        void itemResult(Item* root);
+    };
 }
 
 #endif

@@ -34,40 +34,40 @@ pertubis::CategoryModel::~CategoryModel()
 
 void pertubis::CategoryModel::setHorizontalHeaderLabels ( const QStringList & labels )
 {
-	m_header = labels;
+    m_header = labels;
 }
 
 QVariant pertubis::CategoryModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count() )
-		return QVariant();
-	return *(m_header.begin() + section);
+    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count() )
+        return QVariant();
+    return *(m_header.begin() + section);
 }
 
 void pertubis::CategoryModel::slotPopulateModel(QStringList cl)
 {
-	QString cat;
-	foreach (cat,cl)
-	{
-		m_data << cat;
-	}
-	m_data.sort();
-	reset();
+    QString cat;
+    foreach (cat,cl)
+    {
+        m_data << cat;
+    }
+    m_data.sort();
+    reset();
 }
 
 int pertubis::CategoryModel::rowCount( const QModelIndex & pobj ) const
 {
-	return pobj.isValid() ? 0 : m_data.count();
+    return pobj.isValid() ? 0 : m_data.count();
 }
 
 int pertubis::CategoryModel::columnCount( const QModelIndex & pobj ) const
 {
-	return pobj.isValid() ? 0 : m_header.count();
+    return pobj.isValid() ? 0 : m_header.count();
 }
 
 QVariant pertubis::CategoryModel::data ( const QModelIndex & m_index, int role) const
 {
-	if (!m_index.isValid())
+    if (!m_index.isValid())
          return QVariant();
 
      if (m_index.row() >= m_data.size())

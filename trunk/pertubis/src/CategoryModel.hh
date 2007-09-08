@@ -29,33 +29,33 @@
 
 namespace pertubis
 {
-	/*! \brief This qt model class holds all software categories of all repositories it is instructed to store.
-	*
-	*/
-	class CategoryModel : public QAbstractListModel
-	{
-		Q_OBJECT
+    /*! \brief This qt model class holds all software categories of all repositories it is instructed to store.
+    *
+    */
+    class CategoryModel : public QAbstractListModel
+    {
+        Q_OBJECT
 
-		public:
+        public:
 
-			CategoryModel( QObject* parent);
-			~CategoryModel();
+            CategoryModel( QObject* parent);
+            ~CategoryModel();
 
-			QStringList completeData() const { return m_data;}
-			QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-			void setHorizontalHeaderLabels ( const QStringList & labels );
+            QStringList completeData() const { return m_data;}
+            QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+            void setHorizontalHeaderLabels ( const QStringList & labels );
 
-			int rowCount( const QModelIndex & index ) const;
-			int columnCount( const QModelIndex & index ) const;
-			QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+            int rowCount( const QModelIndex & index ) const;
+            int columnCount( const QModelIndex & index ) const;
+            QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
 
-		private:
-			QStringList		m_data;
-			QStringList		m_header;
+        private:
+            QStringList        m_data;
+            QStringList        m_header;
 
-	public slots:
-		void slotPopulateModel(QStringList cl);
-	};
+    public slots:
+        void slotPopulateModel(QStringList cl);
+    };
 }
 #endif
 

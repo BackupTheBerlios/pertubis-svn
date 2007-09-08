@@ -28,30 +28,30 @@
 
 namespace pertubis
 {
-	/*! \brief Retrieves and holds information about keywords the system uses and classifies it as stable/unstable.
-	*
-	*/
-	class ThreadKeywordManager : public ThreadBase
-	{
-		Q_OBJECT
-		public:
-			ThreadKeywordManager(QObject* parent,
-								 paludis::tr1::shared_ptr<paludis::Environment> env);
-			virtual ~ThreadKeywordManager();
-			int classifyKeywords(QSet<QString> keywords) const;
-			int classifyKeywords(std::tr1::shared_ptr< const paludis::KeywordNameCollection > keywords) const;
+    /*! \brief Retrieves and holds information about keywords the system uses and classifies it as stable/unstable.
+    *
+    */
+    class ThreadKeywordManager : public ThreadBase
+    {
+        Q_OBJECT
+        public:
+            ThreadKeywordManager(QObject* parent,
+                                 paludis::tr1::shared_ptr<paludis::Environment> env);
+            virtual ~ThreadKeywordManager();
+            int classifyKeywords(QSet<QString> keywords) const;
+            int classifyKeywords(std::tr1::shared_ptr< const paludis::KeywordNameCollection > keywords) const;
 
-		protected:
+        protected:
 
-			void run();
+            void run();
 
-		private:
+        private:
 
-			void loadKeywords();
-			QSet<QString>	m_stableKeywords;
-			QSet<QString>	m_unstableKeywords;
+            void loadKeywords();
+            QSet<QString>    m_stableKeywords;
+            QSet<QString>    m_unstableKeywords;
 
-	};
+    };
 }
 
 #endif

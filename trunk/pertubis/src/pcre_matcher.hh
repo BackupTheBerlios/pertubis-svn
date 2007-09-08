@@ -53,7 +53,7 @@ namespace pertubis
 
             bool operator() (const std::string &) const;
 
-			mutable pcrepp::Pcre::Pcre m_pattern;
+            mutable pcrepp::Pcre::Pcre m_pattern;
     };
 }
 

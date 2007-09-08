@@ -38,56 +38,56 @@
 
 pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
 {
-	qDebug() << "SearchWindow::SearchWindow() - start";
-	setObjectName("m_windowSearch");
-	QGridLayout* main_layout = new QGridLayout;
-	main_layout->setObjectName("layout");
-	QVBoxLayout* leftLayout = new QVBoxLayout;
+    qDebug() << "SearchWindow::SearchWindow() - start";
+    setObjectName("m_windowSearch");
+    QGridLayout* main_layout = new QGridLayout;
+    main_layout->setObjectName("layout");
+    QVBoxLayout* leftLayout = new QVBoxLayout;
 
-	m_line = new QLineEdit(this);
+    m_line = new QLineEdit(this);
 
-	m_label = new QLabel(tr("&Find"));
-	m_label->setBuddy(m_line);
+    m_label = new QLabel(tr("&Find"));
+    m_label->setBuddy(m_line);
 
 
-	m_dbox = new QDialogButtonBox(QDialogButtonBox::Close,Qt::Vertical);
+    m_dbox = new QDialogButtonBox(QDialogButtonBox::Close,Qt::Vertical);
 
-	m_chkName = new QCheckBox(tr("&Name"));
-	m_chkName->setChecked(true);
-	m_chkDesc = new QCheckBox(tr("&Description"));
-	m_chkHomepage = new QCheckBox(tr("&Homepage"));
-	m_chkRegex = new QCheckBox(tr("treat search string as &regular expression"));
+    m_chkName = new QCheckBox(tr("&Name"));
+    m_chkName->setChecked(true);
+    m_chkDesc = new QCheckBox(tr("&Description"));
+    m_chkHomepage = new QCheckBox(tr("&Homepage"));
+    m_chkRegex = new QCheckBox(tr("treat search string as &regular expression"));
 
-	QHBoxLayout* optLayout = new QHBoxLayout;
-	optLayout->setMargin(0);
+    QHBoxLayout* optLayout = new QHBoxLayout;
+    optLayout->setMargin(0);
 
-	optLayout->addWidget(m_chkName);
-	optLayout->addWidget(m_chkDesc);
-	optLayout->addWidget(m_chkHomepage);
-	optLayout->addWidget(m_chkRegex);
-	main_layout->addLayout(leftLayout,0,0);
-	main_layout->addWidget(m_dbox,0,1);
-	leftLayout->addWidget(m_line);
-	leftLayout->addLayout(optLayout);
-	setLayout(main_layout);
+    optLayout->addWidget(m_chkName);
+    optLayout->addWidget(m_chkDesc);
+    optLayout->addWidget(m_chkHomepage);
+    optLayout->addWidget(m_chkRegex);
+    main_layout->addLayout(leftLayout,0,0);
+    main_layout->addWidget(m_dbox,0,1);
+    leftLayout->addWidget(m_line);
+    leftLayout->addLayout(optLayout);
+    setLayout(main_layout);
 
-	QPushButton* bFind = new QPushButton(tr("&Start"));
-	bFind->setDefault(true);
-	m_dbox->addButton(bFind, QDialogButtonBox::ActionRole);
-	QPushButton* bClose = m_dbox->button(QDialogButtonBox::Close);
+    QPushButton* bFind = new QPushButton(tr("&Start"));
+    bFind->setDefault(true);
+    m_dbox->addButton(bFind, QDialogButtonBox::ActionRole);
+    QPushButton* bClose = m_dbox->button(QDialogButtonBox::Close);
 
-	connect(bClose,
-			SIGNAL(clicked()),
-			this,
-   			SLOT(hide()));
+    connect(bClose,
+            SIGNAL(clicked()),
+            this,
+               SLOT(hide()));
 
-	connect(bFind,
-			SIGNAL(clicked()),
-			this,
-   			SIGNAL(search()));
+    connect(bFind,
+            SIGNAL(clicked()),
+            this,
+               SIGNAL(search()));
 
-	setWindowTitle(tr("Search Dialog"));
-	setWindowModality(Qt::WindowModal);
-	hide();
-	qDebug() << "SearchWindow::SearchWindow() - done";
+    setWindowTitle(tr("Search Dialog"));
+    setWindowModality(Qt::WindowModal);
+    hide();
+    qDebug() << "SearchWindow::SearchWindow() - done";
 }

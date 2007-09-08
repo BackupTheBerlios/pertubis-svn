@@ -27,27 +27,27 @@
 
 namespace paludis
 {
-	class Environment;
+    class Environment;
 }
 
 namespace pertubis
 {
-	class KeywordManager;
+    class KeywordManager;
 
-	/*! \brief provides the paludis infrastructure we need for the threads
-	*
-	*/
-	class ThreadBase : public QThread
-	{
-		Q_OBJECT
+    /*! \brief provides the paludis infrastructure we need for the threads
+    *
+    */
+    class ThreadBase : public QThread
+    {
+        Q_OBJECT
 
-	public:
+    public:
 
-		ThreadBase(QObject* parent, paludis::tr1::shared_ptr<paludis::Environment> env);
+        ThreadBase(QObject* parent, paludis::tr1::shared_ptr<paludis::Environment> env);
 
-	protected:
-		std::tr1::shared_ptr<paludis::Environment> 	m_env;
-	};
+    protected:
+        std::tr1::shared_ptr<paludis::Environment>     m_env;
+    };
 }
 
 #endif
