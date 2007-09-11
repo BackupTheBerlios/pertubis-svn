@@ -21,6 +21,36 @@
 #include <QLayout>
 #include <QColor>
 #include <QTextEdit>
+#include <QTextDocument>
+
+#include <paludis/util/system.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/pstream.hh>
+
+#include <iostream>
+#include <cstdlib>
+#include <fcntl.h>
+
+pertubis::Digger::Digger() : m_doIt(false)
+{
+    m_ostream.reset(new std::ostringstream() );
+    paludis::Log::get_instance()->set_log_stream(m_ostream.get());
+}
+
+void pertubis::Digger::run()
+{
+    setPriority(QThread::LowPriority);
+    while (m_doIt)
+    {
+        if (!m_ostream->eof() )
+        {
+            m_ostream->flush();
+            QString text(QString::fromStdString(m_ostream->str());
+            emit newText(text);
+        }
+        msleep(500);
+    }
+}
 
 pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget)
 {
@@ -29,15 +59,31 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget)
     setLayout(mylayout);
     m_output = new QTextEdit(this);
     m_output->setReadOnly(true);
-    mylayout->addWidget(m_output);
+//     m_output->setFontPointSize(12);
+    m_output->document()->setMaximumBlockCount(100);
     QPalette p(m_output->palette());
-    QColor c(0,0,0);
-    p.setColor(QPalette::Base,c);
+    p.setColor(QPalette::Base,QColor(0,0,0)); // background color  = black
+    p.setColor(QPalette::Text,QColor(255,255,255)); // text color  = white
     m_output->setPalette(p);
     m_output->setAutoFillBackground(true);
+    mylayout->addWidget(m_output);
+    m_thread.reset(new Digger());
+    connect(m_thread.get(),
+            SIGNAL(newText(QString)),
+            this,
+            SLOT(printText(QString)));
     show();
+    m_thread->start();
 }
 
 pertubis::MessageOutput::~MessageOutput()
 {
+    paludis::Log::get_instance()->set_log_stream(&std::cerr);
+    m_thread->terminate();
+    m_thread->wait(2000);
+}
+
+void pertubis::MessageOutput::printText(QString text)
+{
+    m_output->append(text);
 }

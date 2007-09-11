@@ -29,7 +29,6 @@ bool pertubis::InstallTask::available(Item* item) const
 
 bool pertubis::InstallTask::changeParentStates(Item* item, bool newState)
 {
-    Qt::CheckState oldState  = static_cast<Qt::CheckState>(item->data(Item::io_selected).toList().value(m_taskid).toInt());
     QList<Item*>::iterator iStart(item->childBegin());
     QList<Item*>::iterator iEnd(item->childEnd());
     if (newState)
@@ -53,11 +52,9 @@ bool pertubis::InstallTask::changeParentStates(Item* item, bool newState)
 
 bool pertubis::InstallTask::changeChildStates(Item* item, bool newState)
 {
-    qDebug() << "InstallTask::changeChildStates() - start";
-    Qt::CheckState oldState  = static_cast<Qt::CheckState>(item->data(Item::io_selected).toList().value(m_taskid).toInt());
     QList<Item*>::iterator iStart(item->parent()->childBegin());
     QList<Item*>::iterator iEnd(item->parent()->childEnd());
-    uint i=0;
+    int i=0;
     if (newState)
     {
         changeEntry(item->ID().get(),true);

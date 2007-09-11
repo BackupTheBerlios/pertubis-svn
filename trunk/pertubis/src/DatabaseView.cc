@@ -19,32 +19,24 @@
 
 #include "CategoryModel.hh"
 #include "DatabaseView.hh"
-
-#include "OptionsDelegate.hh"
-#include "Settings.hh"
-#include "InstallTask.hh"
 #include "DeinstallTask.hh"
+#include "InstallTask.hh"
 #include "MessageOutput.hh"
-
-#include "ThreadFetchItem.hh"
-#include "ThreadFetchCategories.hh"
-#include "ThreadFetchDetails.hh"
-#include "ThreadFetchPackages.hh"
-// #include "ThreadKeywordManager.hh"
-// #include "UseFlagEditor.hh"
-// #include "UseFlagModel.hh"
-
-
-#include <paludis/package_id.hh>
-#include <paludis/util/stringify.hh>
-#include <paludis/name.hh>
+#include "OptionsDelegate.hh"
 #include "PackageItem.hh"
 #include "PackageModel.hh"
+#include <paludis/environments/environment_maker.hh>
+#include <paludis/name.hh>
+#include <paludis/package_id.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
+
 #include <QApplication>
-#include <QFile>
+#include <QCheckBox>
 #include <QDebug>
 #include <QDockWidget>
-#include <QCheckBox>
+#include <QDockWidget>
+#include <QFile>
 #include <QHeaderView>
 #include <QLayout>
 #include <QMenuBar>
@@ -55,19 +47,20 @@
 #include <QSettings>
 #include <QSplitter>
 #include <QStatusBar>
-#include <QTabWidget>
+#include <QSystemTrayIcon>
 #include <QTableView>
+#include <QTabWidget>
 #include <QTextBrowser>
 #include <QTextStream>
-#include <QSystemTrayIcon>
 #include <QToolBar>
+
 #include "SearchWindow.hh"
+#include "Settings.hh"
 #include "TaskBox.hh"
-
-#include <QDockWidget>
-
-#include <paludis/environments/environment_maker.hh>
-#include <paludis/util/log.hh>
+#include "ThreadFetchCategories.hh"
+#include "ThreadFetchDetails.hh"
+#include "ThreadFetchItem.hh"
+#include "ThreadFetchPackages.hh"
 
 namespace pertubis
 {
@@ -110,7 +103,7 @@ pertubis::DatabaseView::DatabaseView()
 {
     m_settings = new Settings(this);
 
-    paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
+    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
     paludis::Log::get_instance()->set_program_name("pertubis");
     paludis::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
 
@@ -128,7 +121,7 @@ pertubis::DatabaseView::DatabaseView()
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
     installEventFilter(m_filter);
     setWindowTitle( tr("pertubis :: Main Window") );
-    QPixmap logoIcon( ":logo.xpm" );
+    QPixmap logoIcon( ":images/logo.xpm" );
     setWindowIcon(logoIcon);
 
     setCentralWidget(m_vSplit);
@@ -137,9 +130,7 @@ pertubis::DatabaseView::DatabaseView()
     createTasks();
 
     m_threadItem = new ThreadFetchItem(this,env,m_threadKeywords,m_box);
-
     m_threadCategories = new ThreadFetchCategories(this,env);
-
     m_threadPackages = new ThreadFetchPackages(this,env,m_threadKeywords,m_box);
     m_threadDetails = new ThreadFetchDetails(this,env);
 
@@ -153,7 +144,7 @@ pertubis::DatabaseView::DatabaseView()
     createUseflagEditor();
     createOptionsMenu();
     createWindowSearch();
-
+    statusBar()->showMessage(tr("ready"));
     loadSettings();
 }
 
@@ -289,18 +280,8 @@ void pertubis::DatabaseView::createToolBar()
 
 void pertubis::DatabaseView::createOutput()
 {
-//     m_dockOut = new QDockWidget(tr("Messages"),this);
-//     m_dockOut->layout()->setMargin(0);
-//     m_dockOut->setAllowedAreas(Qt::BottomDockWidgetArea);
     m_output = new MessageOutput(this);
-//     m_dockOut->setWidget(m_output);
-//     addDockWidget(Qt::BottomDockWidgetArea, m_dockOut);
     m_tabs->addTab(m_output,tr("Messages"));
-//     m_acToggleOutput = m_dockOut->toggleViewAction();
-//     m_acToggleOutput->setText(tr("Messages"));
-//     m_acToggleOutput->setIcon(QPixmap(":images/catbar_22.xpm"));
-//     m_acToggleOutput->setShortcut( tr("F10"));
-//     m_acToggleOutput->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the message window</p></html>").arg(m_acToggleOutput->text()) );
 }
 
 void pertubis::DatabaseView::createDetails()

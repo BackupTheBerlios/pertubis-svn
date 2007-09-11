@@ -23,7 +23,6 @@
 #include <QMenu>
 #include <QModelIndex>
 #include <QPainter>
-#include <QPalette>
 #include <QPen>
 
 pertubis::OptionsDelegate::OptionsDelegate(QWidget *pobj) : QItemDelegate(pobj)

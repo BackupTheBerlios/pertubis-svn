@@ -33,7 +33,7 @@ QVariantList pertubis::TaskBox::selectionData(const paludis::PackageID* id)
         map.push_back( ((*mytask)->hasEntry(id ) ) ? Qt::Checked : Qt::Unchecked);
         ++mytask;
     }
-    qDebug() << "TaskBox::selectionData()" << map;
+//     qDebug() << "TaskBox::selectionData()" << map;
     return map;
 }
 
@@ -70,12 +70,12 @@ bool pertubis::TaskBox::hasTask(int taskid) const
 
 void pertubis::TaskBox::slotTaskChanged(const paludis::PackageID* id,int taskid, bool mystate)
 {
-    qDebug() << "TaskBox::slotTaskChanged - start" << taskid << mystate;
+//     qDebug() << "TaskBox::slotTaskChanged - start" << taskid << mystate;
 
     Task* t = task(taskid);
     if(t == 0)
         return;
     t->changeEntry(id,mystate);
 
-    qDebug() << "TaskBox::slotTaskChanged - done";
+//     qDebug() << "TaskBox::slotTaskChanged - done";
 }

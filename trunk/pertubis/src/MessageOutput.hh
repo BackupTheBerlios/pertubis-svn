@@ -21,11 +21,46 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_MESSAGE_OUTPUT_H
 
 #include <QTextEdit>
+#include <QThread>
+#include <paludis/util/tr1_memory.hh>
+#include <sstream>
 
 class QTextEdit;
 
+// namespace paludis
+// {
+//     class FDOutputStream;
+// }
+// #include <paludis/util/fd_output_stream.hh>
+
 namespace pertubis
 {
+    /*! \brief This thread checks from time to time possible information and output from paludis and injects it into MessageOutput
+    *
+    */
+    class Digger : public QThread
+    {
+        Q_OBJECT
+        public:
+            Digger();
+            ~Digger() {}
+
+        protected:
+
+            void setDoIt(bool yo) { m_doIt = yo;}
+            void run();
+
+        private:
+            paludis::tr1::shared_ptr<std::ostringstream>      m_ostream;
+            bool                                              m_doIt;
+        signals:
+            void newText(QString text);
+    };
+
+
+    /*! \brief terminak like output window for status messages from paludis
+    *
+    */
     class MessageOutput : public QWidget
     {
         Q_OBJECT
@@ -33,13 +68,22 @@ namespace pertubis
         public:
 
             MessageOutput(QWidget* mywidget);
+//             void set_capture_output_options();
             ~MessageOutput();
 
+        private slots:
+
+            void printText(QString text);
 
         private:
 
-            QTextEdit*        m_output;
+            QTextEdit*                                  m_output;
+
+            paludis::tr1::shared_ptr<Digger>            m_thread;
+            int                                         m_master_fd;
+            int                                         m_slave_fd;
     };
 }
 
 #endif
+

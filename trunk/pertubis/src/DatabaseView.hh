@@ -126,13 +126,11 @@ namespace pertubis
         QAction*                m_acSync;
         QAction*                m_acToggleCatBar;
         QAction*                m_acToggleMainWindow;
-//         QAction*                m_acToggleOutput;
         QAction*                m_acTogglePackageView;
         QAction*                m_acToggleSearchWindow;
         QAction*                m_acToggleUseBar;
         QDockWidget*            m_dockCat;
         QDockWidget*            m_dockDetails;
-//         QDockWidget*            m_dockOut;
         QDockWidget*            m_dockUse;
         QMenu*                  m_options;
         QMenu*                  m_trayMenu;

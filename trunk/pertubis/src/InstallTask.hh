@@ -24,6 +24,9 @@
 
 namespace pertubis
 {
+    /*! \brief stores the PackageIDs and bundles information what must be done with packages which are about to be installed
+
+    */
     class InstallTask : public Task
     {
         Q_OBJECT
