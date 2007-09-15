@@ -21,7 +21,7 @@
 #include "PackageItem.hh"
 #include "TaskBox.hh"
 
-#include <paludis/util/log.hh>
+
 
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/environment.hh>

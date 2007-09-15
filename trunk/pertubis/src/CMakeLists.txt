@@ -9,6 +9,7 @@ SET(PERTUBIS_SRCS
     description_extractor.cc
     extractor.cc
     InstallTask.cc
+    basic_qtstreambuf.hh
     Item.cc
     matcher.cc
     MessageOutput.cc

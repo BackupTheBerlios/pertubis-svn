@@ -21,7 +21,7 @@
 
 #include "TaskBox.hh"
 #include "Task.hh"
-#include <paludis/util/log.hh>
+
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/package_id.hh>

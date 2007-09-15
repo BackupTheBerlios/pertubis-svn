@@ -19,8 +19,6 @@
 
 #include "ThreadFetchDetails.hh"
 
-#include <paludis/util/log.hh>
-
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>

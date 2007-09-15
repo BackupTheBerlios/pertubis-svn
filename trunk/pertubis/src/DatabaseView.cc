@@ -28,7 +28,7 @@
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/log.hh>
+// #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 
 #include <QApplication>
@@ -103,8 +103,8 @@ pertubis::DatabaseView::DatabaseView()
 {
     m_settings = new Settings(this);
 
-    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
-    paludis::Log::get_instance()->set_program_name("pertubis");
+    m_tabs = new QTabWidget(this);
+    createOutput();
     paludis::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
 
 //     m_threadKeywords = new ThreadKeywordManager(this,env);
@@ -114,7 +114,7 @@ pertubis::DatabaseView::DatabaseView()
 
     m_filter = new ReleaseEater(this);
     m_box = new TaskBox(this);
-    m_tabs=new QTabWidget(this);
+
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -136,7 +136,7 @@ pertubis::DatabaseView::DatabaseView()
 
     createCatbar();
     createDetails();
-    createOutput();
+
     createPackageView();
     createTrayMenu();
     createToolBar();

@@ -24,7 +24,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/query.hh>
 #include <paludis/mask.hh>
-#include <paludis/util/log.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator.hh>
