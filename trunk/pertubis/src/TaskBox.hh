@@ -34,6 +34,7 @@ namespace paludis
 namespace pertubis
 {
     class Task;
+    class Item;
 
     /*! \brief manages the tasks pertubis knows about
     *
@@ -49,6 +50,7 @@ namespace pertubis
         bool hasTask(int taskid) const;
         QVariantList tasks() const;
         QVariantList selectionData(const paludis::PackageID* id);
+        void setItemTasks(Item* item);
         QVector<Task*>::const_iterator taskBegin() { return QVector<Task*>::iterator(m_tasks.constBegin());}
         QVector<Task*>::const_iterator taskEnd() { return QVector<Task*>::iterator(m_tasks.constEnd());}
         void run() {}

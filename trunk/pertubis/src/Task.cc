@@ -65,7 +65,7 @@ void pertubis::Task::fillAction(Item* item)
 
 void pertubis::Task::changeEntry(const paludis::PackageID* id,bool mystate)
 {
-    qDebug() << "Task::changeEntry() - start" << mystate;
+    qDebug() << "Task::changeEntry() - start" << m_name << mystate;
 
     if (mystate)
         addEntry(id);

@@ -108,11 +108,9 @@ void pertubis::Item::setState(ItemState s)
 
 void pertubis::Item::setTaskState(int taskid, Qt::CheckState mystate)
 {
-    qDebug() << "Item::setTaskState() - start" << taskid << mystate << data(io_selected);
     QVariantList states = data(io_selected).toList();
     states[taskid] = mystate;
     setData(io_selected,states);
-    qDebug() << "Item::setTaskState() - done";
 }
 
 paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::RootItem::ID() const

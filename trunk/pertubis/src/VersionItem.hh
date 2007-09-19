@@ -58,6 +58,10 @@ namespace pertubis
         private:
             paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
     };
+
+//     Item* makeVersionItem( paludis::tr1::shared_ptr<const paludis::PackageID> id,
+//                            QString cat,
+//                             QString pack);
 }
 
 #endif

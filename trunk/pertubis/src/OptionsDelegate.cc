@@ -20,6 +20,7 @@
 #include "OptionsDelegate.hh"
 #include "PackageItem.hh"
 #include <QColor>
+#include <QBrush>
 #include <QMenu>
 #include <QModelIndex>
 #include <QPainter>
@@ -41,10 +42,8 @@ void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
     if (!item)
         return;
     QVariantList selections = item->data(Item::io_selected).toList();
-    QPixmap in(":images/pack_in.xpm");
-    QPixmap out(":images/pack_out.xpm");
-    QPixmap inFull(":images/pack_in_all.xpm");
-    QPixmap outFull(":images/pack_out_all.xpm");
+    QBrush in(QColor(0,255,0));
+    QBrush out(QColor(255,0,0));
 
     QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     painter->setPen(pen);
@@ -55,21 +54,16 @@ void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
         switch (selections.value(0).toInt() )
         {
             case Qt::PartiallyChecked:
-                painter->drawPixmap(option.rect.x(),option.rect.y(), in);
-                break;
             case Qt::Checked:
-                painter->drawPixmap(option.rect.x(),option.rect.y(), inFull);
+                painter->fillRect(option.rect.x(),option.rect.y(),16,16,in);
                 break;
-            default:
-                ;
+            default:                ;
         }
         switch (selections.value(1).toInt() )
         {
             case Qt::PartiallyChecked:
-                painter->drawPixmap(option.rect.x()+16,option.rect.y(), out);
-                break;
             case Qt::Checked:
-                painter->drawPixmap(option.rect.x()+16,option.rect.y(), outFull);
+                painter->fillRect(option.rect.x()+18,option.rect.y(),16,16,out);
                 break;
             default:
                 ;

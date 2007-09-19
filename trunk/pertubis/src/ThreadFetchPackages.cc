@@ -113,7 +113,9 @@ void pertubis::ThreadFetchPackages::run()
             while (    p != p_end)
             {
                 QList<QVariant> data;
-                data << QVariant(m_main->taskbox()->tasks()) <<
+                QVariantList tasks = m_main->taskbox()->tasks();
+
+                data << QVariant(tasks) <<
                     stringify(p->package).c_str() <<
                     stringify(p->category).c_str() <<
                     stringify(r->name()).c_str() <<
@@ -129,13 +131,14 @@ void pertubis::ThreadFetchPackages::run()
                 while (vstart != vend )
                 {
                     QList<QVariant> vdata;
-                    QVariantList vtasks(m_main->taskbox()->selectionData(vstart->get()));
-                    vdata << QVariant() <<
+                    vdata << QVariant(m_main->taskbox()->tasks()) <<
                     stringify((*vstart)->version()).c_str() <<
                     stringify(p->category).c_str() <<
                     stringify(r->name()).c_str() <<
                     (m_main->taskbox()->task(m_main->tidInstall())->hasEntry(vstart->get()) ? Qt::Checked : Qt::Unchecked );
                     Item* v_item = new VersionItem(*vstart,vdata);
+                    p_item->appendChild(v_item);
+                    m_main->taskbox()->setItemTasks(v_item);
 
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
                     {
@@ -144,8 +147,6 @@ void pertubis::ThreadFetchPackages::run()
                     }
                     else
                         p_item->setBestChild(v_item);
-
-                    p_item->appendChild(v_item);
                     ++vstart;
                 }
 

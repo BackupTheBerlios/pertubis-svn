@@ -79,3 +79,26 @@ void pertubis::TaskBox::slotTaskChanged(const paludis::PackageID* id,int taskid,
 
 //     qDebug() << "TaskBox::slotTaskChanged - done";
 }
+
+void pertubis::TaskBox::setItemTasks(Item* item)
+{
+    QVariantList list = selectionData(item->ID().get());
+    QList<QVariant>::iterator mystate = list.begin();
+    for (QVector<Task*>::iterator mytask = m_tasks.begin(),
+        taskend = m_tasks.end();
+        mytask != taskend;
+        ++mytask,
+        ++mystate)
+    {
+        Item::UpdateRange range = item->updateRange();
+        switch (range)
+        {
+            case Item::ur_parent:
+                (*mytask)->changeParentStates(item, mystate->toBool());
+            case Item::ur_child:
+                (*mytask)->changeChildStates(item,mystate->toBool());
+            default:
+                ;
+        }
+    }
+}
