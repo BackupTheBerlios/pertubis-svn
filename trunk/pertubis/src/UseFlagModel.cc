@@ -26,7 +26,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/environments/environment_maker.hh>
-#include <paludis/util/log.hh>
+
 #include <paludis/util/stringify.hh>
 #include <paludis/repository.hh>
 #include <paludis/repository_info.hh>

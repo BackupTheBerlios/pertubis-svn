@@ -107,11 +107,8 @@ pertubis::DatabaseView::DatabaseView()
     createOutput();
     paludis::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
 
-//     m_threadKeywords = new ThreadKeywordManager(this,env);
     m_threadKeywords = 0;
-//     m_threadKeywords->start();
     m_vSplit = new QSplitter(Qt::Vertical, this);
-
     m_filter = new ReleaseEater(this);
     m_box = new TaskBox(this);
 
@@ -123,9 +120,7 @@ pertubis::DatabaseView::DatabaseView()
     setWindowTitle( tr("pertubis :: Main Window") );
     QPixmap logoIcon( ":images/logo.xpm" );
     setWindowIcon(logoIcon);
-
     setCentralWidget(m_vSplit);
-
     createActions();
     createTasks();
 
@@ -150,9 +145,7 @@ pertubis::DatabaseView::DatabaseView()
 
 pertubis::DatabaseView::~DatabaseView()
 {
-//     qDebug() << "DatabaseView::~DatabaseView() - start";
     saveSettings();
-//     qDebug() << "DatabaseView::~DatabaseView() - done";
 }
 
 void pertubis::DatabaseView::closeEvent(QCloseEvent* ev)
@@ -275,7 +268,6 @@ void pertubis::DatabaseView::createToolBar()
     m_toolBar->addAction(m_acSelection);
     m_toolBar->addAction(m_acFinish);
     m_toolBar->addAction(m_acPref);
-//     m_toolBar->addAction(m_acToggleOutput);
 }
 
 void pertubis::DatabaseView::createOutput()
@@ -286,13 +278,8 @@ void pertubis::DatabaseView::createOutput()
 
 void pertubis::DatabaseView::createDetails()
 {
-//     m_dockDetails = new QDockWidget(tr("Messages"),this);
-//     m_dockDetails->layout()->setMargin(0);
-//     m_dockDetails->setAllowedAreas(Qt::BottomDockWidgetArea);
     m_details = new QTextBrowser(this);
-    m_tabs->addTab(m_details,"Details");
-//     m_dockDetails->setWidget(m_details);
-//     addDockWidget(Qt::BottomDockWidgetArea, m_dockDetails);
+    m_tabs->insertTab(0,m_details,"Details");
 }
 
 void pertubis::DatabaseView::createActions()
@@ -400,10 +387,8 @@ void pertubis::DatabaseView::createWindowSearch()
 
 void pertubis::DatabaseView::createUseflagEditor()
 {
-
     m_dockUse = new QDockWidget(tr("useflag editor"),this);
     m_dockUse->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
 //     m_dockUse->setWidget(m_useflagEditor);
     addDockWidget(Qt::RightDockWidgetArea, m_dockUse);
 
@@ -439,7 +424,7 @@ void pertubis::DatabaseView::loadSettings()
 {
     QSettings settings;
     settings.beginGroup( "DatabaseView" );
-        setVisible(settings.value( "visible",true).toBool());
+        setVisible(settings.value("visible",true).toBool());
         resize(settings.value("size",QVariant(QSize(800,600))).toSize());
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
         m_acToggleCatBar->setChecked(settings.value("cat_visible",true ).toBool()  );
@@ -486,13 +471,8 @@ void pertubis::DatabaseView::slotCategoryChanged( const QModelIndex& index )
 {
     if ( !index.isValid() || m_threadPackages->isRunning())
         return;
-    qDebug() << "slotCategoryChanged() - 1";
     QString cat = m_catModel->data(index).toString();
-    m_details->hide();
-    m_details->clear();
-    qDebug() << "slotCategoryChanged() - 2";
     m_threadPackages->searchPackages(cat);
-    qDebug() << "slotCategoryChanged() - 3";
 }
 
 void pertubis::DatabaseView::slotInstallTask(bool mystate)
@@ -538,16 +518,16 @@ void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
 
 void pertubis::DatabaseView::slotShowDetails(QString details)
 {
-    if (details.isNull() or details.isEmpty())
+    if (!details.isEmpty())
     {
-        m_dockDetails->hide();
-        m_details->clear();
-        return;
+        m_details->setText(details);
+        m_tabs->setCurrentIndex(m_tabs->indexOf(m_details));
     }
-    m_details->setText(details);
-    m_dockDetails->show();
+    else
+    {
+        m_details->clear();
+    }
 }
-
 
 void pertubis::DatabaseView::slotSelectedPackages()
 {
