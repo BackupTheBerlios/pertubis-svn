@@ -48,3 +48,4 @@ pertubis::Item::UpdateRange pertubis::VersionItem::updateRange() const
 {
     return Item::ur_child;
 }
+

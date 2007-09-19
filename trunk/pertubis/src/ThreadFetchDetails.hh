@@ -28,8 +28,6 @@
 
 namespace pertubis
 {
-    class KeywordManager;
-
     /*! \brief this thread asks pertubis for package details and returns preformatted text.
     *
     */
@@ -39,7 +37,8 @@ namespace pertubis
 
     public:
 
-        ThreadFetchDetails(QObject* pobj, paludis::tr1::shared_ptr<paludis::Environment> env);
+        ThreadFetchDetails(QObject* pobj,
+                           DatabaseView* main);
         void search(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
         void appendOutput(QString text);
 

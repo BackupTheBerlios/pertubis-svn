@@ -22,14 +22,13 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_ITEM_H
 
 #include "ThreadBase.hh"
+#include "DatabaseView.hh"
 
 #include <QString>
 
 namespace pertubis
 {
     class Item;
-    class TaskBox;
-    class ThreadKeywordManager;
 
     /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
     *
@@ -41,9 +40,7 @@ namespace pertubis
     public:
 
         ThreadFetchItem(QObject* parent,
-                        paludis::tr1::shared_ptr<paludis::Environment> env,
-                          ThreadKeywordManager* keywords,
-                        TaskBox* box);
+                        DatabaseView* main);
 
         void search(QString str,bool name,bool desc);
 
@@ -56,9 +53,6 @@ namespace pertubis
         QString                                    m_query;
         bool                                    m_optName;
         bool                                    m_optDesc;
-
-        ThreadKeywordManager*                    m_keywords;
-        TaskBox*                                m_box;
 
     signals:
         void itemResult(Item* root);

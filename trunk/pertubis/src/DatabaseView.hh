@@ -24,6 +24,7 @@
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include <QTreeView>
+#include <paludis/util/tr1_memory.hh>
 
 class QDockWidget;
 class QMenu;
@@ -34,6 +35,7 @@ class QTableView;
 class QTextBrowser;
 class QToolBar;
 class QTabWidget;
+class QUrl;
 
 namespace paludis
 {
@@ -44,20 +46,19 @@ namespace pertubis
 {
     class CategoryModel;
     class Item;
+    class MessageOutput;
     class PackageDetails;
     class PackageModel;
     class ReleaseEater;
     class SearchWindow;
+    class Settings;
     class TaskBox;
-    class MessageOutput;
     class ThreadFetchCategories;
     class ThreadFetchDetails;
     class ThreadFetchItem;
     class ThreadFetchPackages;
     class ThreadKeywordManager;
     class UseFlagEditor;
-    class Settings;
-
 
     /*! \brief This class only exists since we need correct mouse coordinates
     *
@@ -87,6 +88,10 @@ namespace pertubis
         DatabaseView();
         virtual ~DatabaseView();
 
+        int tidInstall() const { return m_tidInstall;}
+        paludis::tr1::shared_ptr<paludis::Environment> getEnv() const { return m_env;}
+        TaskBox* taskbox() const { return m_box;}
+
     protected:
 
         void closeEvent(QCloseEvent* event);
@@ -94,22 +99,21 @@ namespace pertubis
     private:
 
         void createActions();
-        void createOptionsMenu();
-        void createToolBar();
-        void createWindowSearch();
-        void createTasks();
-        void createOutput();
-        void createDetails();
         void createCatbar();
+        void createDetails();
+        void createOptionsMenu();
+        void createOutput();
         void createPackageView();
-        void createUseflagEditor();
+        void createTasks();
+        void createToolBar();
         void createTrayMenu();
-
+        void createUseflagEditor();
+        void createWindowSearch();
         void loadCategories();
         void loadSettings();
-
         void saveSettings();
 
+        paludis::tr1::shared_ptr<paludis::Environment> m_env;
         CategoryModel*          m_catModel;
         Item*                   m_current;
         MessageOutput*          m_output;
@@ -150,7 +154,6 @@ namespace pertubis
         ThreadFetchPackages*    m_threadPackages;
         ThreadKeywordManager*   m_threadKeywords;
 
-
         int                     m_tidInstall;
         int                     m_tidDeinstall;
 //         UseFlagEditor*          m_useflagEditor;
@@ -163,6 +166,7 @@ namespace pertubis
         void slotEditUseTask();
         void slotInstallTask(bool mystate);
         void slotOpenSettings();
+        void slotOpenURL(const QUrl&);
         void slotOptionsMenu(const QModelIndex& index);
         void slotQuit();
         void slotRefreshCategories();

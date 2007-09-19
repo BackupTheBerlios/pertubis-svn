@@ -27,8 +27,7 @@
 #include <QRegExp>
 
 pertubis::ThreadKeywordManager::ThreadKeywordManager(QObject* parent,
-        paludis::tr1::shared_ptr<paludis::Environment> env) :
-        ThreadBase(parent,env)
+        DatabaseView* main) : ThreadBase(pobj,main)
 {
 }
 

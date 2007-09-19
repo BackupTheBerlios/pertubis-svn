@@ -58,6 +58,7 @@ namespace pertubis
 
     private:
         QVector<Task*>    m_tasks;
+        QMap<QString,int> m_index;
     };
 }
 

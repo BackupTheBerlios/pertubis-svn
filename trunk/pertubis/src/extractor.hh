@@ -40,17 +40,13 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_EXTRACTOR_H
 
 #include <string>
-#include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/virtual_constructor.hh>
 #include <paludis/environment.hh>
-// #include <paludis/package_database_entry.hh>
-
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
     class Environment;
-//     class PackageDatabaseEntry;
+    class PackageID;
 }
 
 namespace pertubis
@@ -61,7 +57,7 @@ namespace pertubis
             Extractor(const paludis::Environment * const env);
             virtual ~Extractor();
 
-//             virtual std::string operator() (const paludis::PackageDatabaseEntry& p) const = 0;
+            virtual std::string operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const = 0;
 
             const paludis::Environment * const m_env;
     };

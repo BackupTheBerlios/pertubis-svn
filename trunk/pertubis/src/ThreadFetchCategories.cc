@@ -18,6 +18,7 @@
 */
 
 #include "ThreadFetchCategories.hh"
+#include "DatabaseView.hh"
 
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
@@ -42,7 +43,8 @@
 #include <map>
 #include <algorithm>
 
-pertubis::ThreadFetchCategories::ThreadFetchCategories(QObject* pobj, paludis::tr1::shared_ptr<paludis::Environment> env) : ThreadBase(pobj,env)
+pertubis::ThreadFetchCategories::ThreadFetchCategories(QObject* pobj,
+        DatabaseView* main) : ThreadBase(pobj,main)
 {
 }
 
@@ -52,7 +54,7 @@ void pertubis::ThreadFetchCategories::run()
     qDebug() << "ThreadFetchCategories.run() - starting";
     QSet<QString> cats;
     for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
-            r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
+         r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());

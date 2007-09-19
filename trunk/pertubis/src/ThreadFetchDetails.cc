@@ -18,6 +18,7 @@
 */
 
 #include "ThreadFetchDetails.hh"
+#include "DatabaseView.hh"
 
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/environment.hh>
@@ -39,10 +40,6 @@
 #include "name_extractor.hh"
 
 #include <set>
-
-pertubis::ThreadFetchDetails::ThreadFetchDetails(QObject* pobj, paludis::tr1::shared_ptr<paludis::Environment> env) : ThreadBase(pobj,env)
-{
-}
 
 namespace pertubis
 {
@@ -114,7 +111,7 @@ namespace pertubis
                 {
                     if (paludis::stringify(k.human_name()) == "Homepage")
                     {
-                        thread->appendOutput(QString("<tr>\n<td>%1</td>\n<td><a href=\"%2\">%3</a></td>\n</tr>\n").arg(paludis::stringify(k.human_name()).c_str()).arg(k.pretty_print().c_str()).arg(k.pretty_print().c_str()));
+                        thread->appendOutput(QString("<tr>\n<td>%1</td>\n<td><a href=\"%2\">%3</a></td>\n</tr>\n").arg(paludis::stringify(k.human_name()).c_str()).arg(k.pretty_print_flat().c_str()).arg(k.pretty_print().c_str()));
                     }
                     else
                     {
@@ -218,6 +215,11 @@ namespace pertubis
     };
 }
 
+pertubis::ThreadFetchDetails::ThreadFetchDetails(QObject* pobj,
+        DatabaseView* main) : ThreadBase(pobj,main)
+{
+}
+
 void pertubis::ThreadFetchDetails::appendOutput(QString text)
 {
     m_output.append(text);
@@ -246,9 +248,9 @@ void pertubis::ThreadFetchDetails::run()
 "            </tr>\n"
             "            <tbody >\n").arg(paludis::stringify(m_id->name()).c_str()).arg(paludis::stringify(m_id->version()).c_str());
 
-    Displayer ds(this,m_env.get(),m_id,paludis::mkt_significant);
-    Displayer dn(this,m_env.get(),m_id,paludis::mkt_normal);
-    Displayer dp(this,m_env.get(),m_id,paludis::mkt_dependencies);
+    Displayer ds(this,m_main->getEnv().get(),m_id,paludis::mkt_significant);
+    Displayer dn(this,m_main->getEnv().get(),m_id,paludis::mkt_normal);
+    Displayer dp(this,m_main->getEnv().get(),m_id,paludis::mkt_dependencies);
     std::for_each(paludis::indirect_iterator(m_id->begin_metadata()), paludis::indirect_iterator(m_id->end_metadata()), paludis::accept_visitor(ds));
     std::for_each(paludis::indirect_iterator(m_id->begin_metadata()), paludis::indirect_iterator(m_id->end_metadata()), paludis::accept_visitor(dn));
     std::for_each(paludis::indirect_iterator(m_id->begin_metadata()), paludis::indirect_iterator(m_id->end_metadata()), paludis::accept_visitor(dp));

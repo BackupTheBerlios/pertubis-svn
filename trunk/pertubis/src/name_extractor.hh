@@ -49,7 +49,7 @@ namespace pertubis
         public:
             NameExtractor(const paludis::Environment * const env);
 
-//             std::string operator() (const paludis::PackageDatabaseEntry & p) const;
+            std::string operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const;
     };
 }
 

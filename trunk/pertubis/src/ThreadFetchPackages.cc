@@ -46,15 +46,12 @@
 #include "text_matcher.hh"
 #include "description_extractor.hh"
 #include "name_extractor.hh"
+#include "DatabaseView.hh"
 
 #include <map>
 
-pertubis::ThreadFetchPackages::ThreadFetchPackages(QObject* pobject,
-        paludis::tr1::shared_ptr<paludis::Environment> env,
-        ThreadKeywordManager* keywords,
-        TaskBox* box) : ThreadBase(pobject,env),
-        m_keywords(keywords),
-        m_box(box)
+pertubis::ThreadFetchPackages::ThreadFetchPackages( QObject* pobject,
+                                                    DatabaseView* main) : ThreadBase(pobject,main)
 {
 }
 
@@ -70,8 +67,8 @@ void pertubis::ThreadFetchPackages::searchPackages(QString str)
 
 void pertubis::ThreadFetchPackages::makePackageItems() const
 {
-    QVector<Task*>::const_iterator tStart(m_box->taskBegin());
-    QVector<Task*>::const_iterator tEnd(m_box->taskEnd());
+    QVector<Task*>::const_iterator tStart(m_main->taskbox()->taskBegin());
+    QVector<Task*>::const_iterator tEnd(m_main->taskbox()->taskEnd());
     while (tStart != tEnd)
     {
         Item* root = new RootItem();
@@ -80,7 +77,7 @@ void pertubis::ThreadFetchPackages::makePackageItems() const
         while (idStart != idEnd)
         {
             root->appendChild(new PackageItem(QVariantList() <<
-                QVariant(m_box->selectionData(*idStart)) <<
+                    QVariant(m_main->taskbox()->selectionData(*idStart)) <<
                 paludis::stringify((*idStart)->name().package).c_str() <<
                 paludis::stringify((*idStart)->name().category).c_str() <<
                 paludis::stringify((*idStart)->repository()->name()).c_str() <<
@@ -97,7 +94,7 @@ void pertubis::ThreadFetchPackages::run()
     Item* root = new RootItem();
 
     for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
-        r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
+        r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
         r != r_end ; ++r)
     {
         if (r->format() == "vdb" || r->format() == "installed_virtuals")
@@ -111,12 +108,12 @@ void pertubis::ThreadFetchPackages::run()
             if (cat != *c )
                 continue;
 
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            paludis::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end());
             while (    p != p_end)
             {
                 QList<QVariant> data;
-                data << QVariant(m_box->tasks()) <<
+                data << QVariant(m_main->taskbox()->tasks()) <<
                     stringify(p->package).c_str() <<
                     stringify(p->category).c_str() <<
                     stringify(r->name()).c_str() <<
@@ -132,11 +129,12 @@ void pertubis::ThreadFetchPackages::run()
                 while (vstart != vend )
                 {
                     QList<QVariant> vdata;
-                    vdata << QVariant(m_box->selectionData(vstart->get())) <<
+                    QVariantList vtasks(m_main->taskbox()->selectionData(vstart->get()));
+                    vdata << QVariant() <<
                     stringify((*vstart)->version()).c_str() <<
                     stringify(p->category).c_str() <<
                     stringify(r->name()).c_str() <<
-                    Qt::Unchecked;
+                    (m_main->taskbox()->task(m_main->tidInstall())->hasEntry(vstart->get()) ? Qt::Checked : Qt::Unchecked );
                     Item* v_item = new VersionItem(*vstart,vdata);
 
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )

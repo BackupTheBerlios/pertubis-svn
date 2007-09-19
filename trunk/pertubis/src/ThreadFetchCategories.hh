@@ -38,7 +38,7 @@ namespace pertubis
 
     public:
 
-        ThreadFetchCategories(QObject* parent, paludis::tr1::shared_ptr<paludis::Environment> env);
+        ThreadFetchCategories(QObject* parent, DatabaseView* main);
 
     protected:
 

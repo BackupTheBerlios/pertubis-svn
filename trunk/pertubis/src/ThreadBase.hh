@@ -34,6 +34,7 @@ namespace paludis
 namespace pertubis
 {
     class KeywordManager;
+    class DatabaseView;
 
     /*! \brief provides the paludis infrastructure we need for the threads
     *
@@ -44,10 +45,11 @@ namespace pertubis
 
     public:
 
-        ThreadBase(QObject* parent, paludis::tr1::shared_ptr<paludis::Environment> env);
+        ThreadBase(QObject* parent,
+                   DatabaseView* main);
 
     protected:
-        std::tr1::shared_ptr<paludis::Environment>     m_env;
+        DatabaseView*     m_main;
     };
 }
 

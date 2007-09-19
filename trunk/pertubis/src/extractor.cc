@@ -38,8 +38,6 @@
 
 #include "extractor.hh"
 
-
-
 pertubis::Extractor::Extractor(const paludis::Environment * const env) : m_env(env)
 {
 }

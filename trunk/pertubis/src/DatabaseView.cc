@@ -31,8 +31,10 @@
 // #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 
+
 #include <QApplication>
 #include <QCheckBox>
+#include <QDesktopServices>
 #include <QDebug>
 #include <QDockWidget>
 #include <QDockWidget>
@@ -44,6 +46,7 @@
 #include <QModelIndex>
 #include <QMouseEvent>
 #include <QPixmap>
+#include <QProcess>
 #include <QSettings>
 #include <QSplitter>
 #include <QStatusBar>
@@ -53,6 +56,7 @@
 #include <QTextBrowser>
 #include <QTextStream>
 #include <QToolBar>
+#include <QUrl>
 
 #include "SearchWindow.hh"
 #include "Settings.hh"
@@ -105,7 +109,7 @@ pertubis::DatabaseView::DatabaseView()
 
     m_tabs = new QTabWidget(this);
     createOutput();
-    paludis::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
+    m_env = paludis::EnvironmentMaker::get_instance()->make_from_spec("");
 
     m_threadKeywords = 0;
     m_vSplit = new QSplitter(Qt::Vertical, this);
@@ -124,10 +128,10 @@ pertubis::DatabaseView::DatabaseView()
     createActions();
     createTasks();
 
-    m_threadItem = new ThreadFetchItem(this,env,m_threadKeywords,m_box);
-    m_threadCategories = new ThreadFetchCategories(this,env);
-    m_threadPackages = new ThreadFetchPackages(this,env,m_threadKeywords,m_box);
-    m_threadDetails = new ThreadFetchDetails(this,env);
+    m_threadItem = new ThreadFetchItem(this,this);
+    m_threadCategories = new ThreadFetchCategories(this,this);
+    m_threadPackages = new ThreadFetchPackages(this,this);
+    m_threadDetails = new ThreadFetchDetails(this,this);
 
     createCatbar();
     createDetails();
@@ -274,12 +278,18 @@ void pertubis::DatabaseView::createOutput()
 {
     m_output = new MessageOutput(this);
     m_tabs->addTab(m_output,tr("Messages"));
+
 }
 
 void pertubis::DatabaseView::createDetails()
 {
     m_details = new QTextBrowser(this);
     m_tabs->insertTab(0,m_details,"Details");
+    m_details->setOpenLinks(false);
+    connect(m_details,
+            SIGNAL(anchorClicked(const QUrl&)),
+            this,
+            SLOT(slotOpenURL(const QUrl&)));
 }
 
 void pertubis::DatabaseView::createActions()
@@ -298,7 +308,7 @@ void pertubis::DatabaseView::createActions()
     m_acPref->setToolTip(tr("<html><h1><u>%1</u></h1><p>configure pertubis</p></html>").arg(m_acPref->text()));
 
     m_acToggleSearchWindow = new QAction( QPixmap(":images/find_22.xpm"),tr("find") ,this);
-    m_acToggleSearchWindow->setShortcut( tr("CTRL+F"));
+    m_acToggleSearchWindow->setShortcut( tr("CTRL+f"));
     m_acToggleSearchWindow->setToolTip( tr("<html><h1><u>%1</u></h1><p>toggle search window</p></html>").arg(m_acToggleSearchWindow->text()) );
 
     m_acSelection = new QAction( QPixmap(":images/selections_22.xpm"),tr("selections") ,this);
@@ -559,11 +569,9 @@ void pertubis::DatabaseView::slotSearchItem()
             m_threadItem->terminate();
     }
 
-    m_details->clear();
-    m_details->hide();
     m_windowSearch->hide();
-    m_acToggleCatBar->setChecked(!m_acToggleCatBar->isChecked());
-    m_dockCat->setVisible(m_acToggleCatBar->isChecked());
+//     m_acToggleCatBar->setChecked(false);
+    m_dockCat->setVisible(false);
     m_packModel->slotSetRoot(new RootItem());
 
     statusBar()->showMessage(QString(tr("searching for %1...")).arg(m_windowSearch->m_line->text()) );
@@ -601,6 +609,16 @@ void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& index)
 void pertubis::DatabaseView::slotOpenSettings()
 {
     m_settings->exec();
+}
+
+void pertubis::DatabaseView::slotOpenURL(const QUrl& url)
+{
+//     QDesktopServices::openUrl(url);
+    QString program = "/usr/bin/xdg-open";
+    QStringList arguments;
+    arguments << url.toString();
+    QProcess *myProcess = new QProcess(this);
+    myProcess->start(program, arguments);
 }
 
 void pertubis::DatabaseView::slotQuit()

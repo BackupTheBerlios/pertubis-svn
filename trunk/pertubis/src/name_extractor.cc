@@ -37,15 +37,18 @@
  */
 
 #include "name_extractor.hh"
+#include <paludis/package_id.hh>
+#include <paludis/name.hh>
+#include <paludis/util/stringify.hh>
 
 
 pertubis::NameExtractor::NameExtractor(const paludis::Environment * const env) : Extractor(env)
 {
 }
 
-// std::string pertubis::NameExtractor::operator() (const paludis::PackageDatabaseEntry & p) const
-// {
-//     return stringify(p.name);
-// }
+std::string pertubis::NameExtractor::operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const
+{
+    return paludis::stringify(id->name());
+}
 
 

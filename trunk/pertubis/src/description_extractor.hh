@@ -30,7 +30,7 @@ namespace pertubis
             DescriptionExtractor(const paludis::Environment * const env);
             virtual ~DescriptionExtractor();
 
-//             std::string operator() (const paludis::PackageDatabaseEntry &) const;
+            std::string operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const;
 
     };
 }

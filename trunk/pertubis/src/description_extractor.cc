@@ -19,7 +19,8 @@
  */
 
 #include "description_extractor.hh"
-#include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 
 
 pertubis::DescriptionExtractor::DescriptionExtractor(const paludis::Environment * const env) : Extractor(env)
@@ -30,9 +31,9 @@ pertubis::DescriptionExtractor::~DescriptionExtractor()
 {
 }
 
-// std::string pertubis::DescriptionExtractor::operator() (const paludis::PackageDatabaseEntry & p) const
-// {
-//     return m_env->package_database()->fetch_repository(p.repository)->
-//         version_metadata(p.name, p.version)->description;
-//     return "";
-// }
+std::string pertubis::DescriptionExtractor::operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const
+{
+    if (id->short_description_key())
+        return id->short_description_key()->value();
+    return "";
+}

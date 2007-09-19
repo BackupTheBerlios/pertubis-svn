@@ -36,10 +36,7 @@ class QMenu;
 
 namespace pertubis
 {
-    class ThreadKeywordManager;
-    class ThreadFetchVersions;
     class Item;
-    class TaskBox;
 
     /*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
     *
@@ -51,9 +48,7 @@ namespace pertubis
         public:
 
             ThreadFetchPackages(QObject* parent,
-                                paludis::tr1::shared_ptr<paludis::Environment> env,
-                                ThreadKeywordManager* keywords,
-                            TaskBox* box);
+                                DatabaseView* main);
 
             ~ThreadFetchPackages();
 
@@ -67,8 +62,6 @@ namespace pertubis
             void fetchPackages();
 
             QString                                    m_query;
-            ThreadKeywordManager*                    m_keywords;
-            TaskBox*                                m_box;
 
         signals:
             void packagesResult(Item* root);
