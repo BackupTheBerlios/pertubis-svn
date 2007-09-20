@@ -29,7 +29,7 @@ bool pertubis::InstallTask::available(Item* item) const
 
 bool pertubis::InstallTask::changeParentStates(Item* item, bool newState)
 {
-    qDebug() << "InstallTask::changeParentStates - start" <<  newState;
+//     qDebug() << "InstallTask::changeParentStates - start" <<  newState;
     QList<Item*>::iterator iStart(item->childBegin());
     QList<Item*>::iterator iEnd(item->childEnd());
     if (newState)
@@ -49,13 +49,13 @@ bool pertubis::InstallTask::changeParentStates(Item* item, bool newState)
             ++iStart;
         }
     }
-    qDebug() << "InstallTask::changeParentStates - done";
+//     qDebug() << "InstallTask::changeParentStates - done";
     return true;
 }
 
 bool pertubis::InstallTask::changeChildStates(Item* item, bool newState)
 {
-    qDebug() << "InstallTask::changeChildStates - start" <<  newState;
+//     qDebug() << "InstallTask::changeChildStates - start" <<  newState;
     QList<Item*>::iterator iStart(item->parent()->childBegin());
     QList<Item*>::iterator iEnd(item->parent()->childEnd());
     int i=0;
@@ -90,6 +90,6 @@ bool pertubis::InstallTask::changeChildStates(Item* item, bool newState)
         else
             item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
     }
-    qDebug() << "InstallTask::changeChildStates - done";
+//     qDebug() << "InstallTask::changeChildStates - done";
     return true;
 }

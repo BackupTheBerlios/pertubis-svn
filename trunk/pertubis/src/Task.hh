@@ -27,8 +27,7 @@
 #include <QVector>
 
 #include <paludis/util/tr1_memory.hh>
-#include <set>
-
+#include <list>
 
 namespace paludis
 {
@@ -54,9 +53,9 @@ namespace pertubis
             QAction* action,
             QString name);
 
-        void addEntry(const paludis::PackageID* id);
+        void addEntry(paludis::tr1::shared_ptr<const paludis::PackageID*> id);
 
-        void deleteEntry(const paludis::PackageID* id);
+        void deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID*> id);
 
         /*! \brief only for internal use
         */
@@ -72,14 +71,13 @@ namespace pertubis
 
         QAction* action() const {return m_action;}
 
+        std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >& data() { return m_data;}
+
         int taskid() const { return m_taskid;}
 
         bool hasEntry(const paludis::PackageID* id) const;
 
         QString name() const { return m_name;}
-
-        std::set<const paludis::PackageID* >::const_iterator idsBegin() const { return m_data.begin();}
-        std::set<const paludis::PackageID* >::const_iterator idsEnd() const { return m_data.end();}
 
         virtual bool available(Item* item) const = 0;
 
@@ -103,11 +101,11 @@ namespace pertubis
     protected:
 
         QAction*        m_action;
-        QString            m_name;
+        QString         m_name;
         int             m_taskid;
 
     private:
-        std::set<const paludis::PackageID* >    m_data;
+        std::list<paludis::tr1::shared_ptr<const paludis::PackageID> > m_data;
     };
 
     inline bool operator!=(const Task& a,const Task& b) { return a.name() != b.name();}

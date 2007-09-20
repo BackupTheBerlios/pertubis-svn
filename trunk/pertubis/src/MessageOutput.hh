@@ -27,9 +27,18 @@
 
 class QTextEdit;
 
+namespace paludis
+{
+    class FDOutputStream;
+}
+
+class Thread;
+
 namespace pertubis
 {
+    class QTOutputStreamBuf;
     class QTOutputStream;
+
 
     /*! \brief output window for messages from paludis
     *
@@ -43,10 +52,22 @@ namespace pertubis
             MessageOutput(QWidget* mywidget);
             ~MessageOutput();
 
+            void append(QString text) { m_output->append(text);}
+            QTextEdit* output() const { return m_output;}
+            void redirectOutput_Simple();
+            void redirectOutput_Paludis();
+            void redirectOutput_Combined();
+
         private:
 
             QTextEdit*                                  m_output;
+            Thread*                                     m_thread;
+            paludis::tr1::shared_ptr<QTOutputStreamBuf> m_cout;
             paludis::tr1::shared_ptr<QTOutputStream>    m_input;
+            paludis::tr1::shared_ptr<paludis::FDOutputStream> messages_stream;
+            int                                         master_fd;
+            int                                         slave_fd;
+            int                                         copy_fd;
     };
 }
 

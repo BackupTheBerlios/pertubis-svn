@@ -20,8 +20,7 @@
 #include "Task.hh"
 #include "PackageItem.hh"
 #include <paludis/package_id.hh>
-
-
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <QDebug>
 
 pertubis::Task::Task(QObject* pobj,
@@ -39,16 +38,26 @@ void pertubis::Task::setTaskid(int id)
     m_taskid = id;
 }
 
-void pertubis::Task::addEntry(const paludis::PackageID* id)
+void pertubis::Task::addEntry(paludis::tr1::shared_ptr<const paludis::PackageID*> id)
 {
-    m_data.insert(id );
+    m_data.push_back(id);
 }
 
-void pertubis::Task::deleteEntry(const paludis::PackageID* id)
+void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID*> id)
 {
-    std::set<const paludis::PackageID* >::iterator iter = m_data.find(id);
-    if (iter != m_data.end() )
-        m_data.erase(iter);
+    std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator res;
+    for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator idIter(m_data.begin()),
+         idEnd(m_data.end());
+         idIter != idEnd;
+         ++idIter)
+    {
+        if ( (*idIter) == (*id.get()) )
+        {
+            res = idIter;
+            break;
+        }
+    }
+    m_data.erase(res);
 }
 
 bool pertubis::Task::hasEntry(const paludis::PackageID* id) const
@@ -58,18 +67,18 @@ bool pertubis::Task::hasEntry(const paludis::PackageID* id) const
 
 void pertubis::Task::fillAction(Item* item)
 {
-    qDebug() << "Task::fillAction() - start" << m_action->text();
+//     qDebug() << "Task::fillAction() - start" << m_action->text();
     m_action->setChecked( (hasEntry(item->ID().get())) ? Qt::Checked : Qt::Unchecked);
-    qDebug() << "Task::fillAction() - done";
+//     qDebug() << "Task::fillAction() - done";
 }
 
 void pertubis::Task::changeEntry(const paludis::PackageID* id,bool mystate)
 {
-    qDebug() << "Task::changeEntry() - start" << m_name << mystate;
+//     qDebug() << "Task::changeEntry() - start" << m_name << mystate;
 
     if (mystate)
         addEntry(id);
     else
         deleteEntry(id);
-    qDebug() << "Task::changeEntry() - done";
+//     qDebug() << "Task::changeEntry() - done";
 }

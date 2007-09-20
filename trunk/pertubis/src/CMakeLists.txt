@@ -23,11 +23,13 @@ SET(PERTUBIS_SRCS
     TaskBox.cc
     Task.cc
     text_matcher.cc
+    SyncTask.cc
     ThreadBase.cc
     ThreadFetchCategories.cc
     ThreadFetchDetails.cc
     ThreadFetchItem.cc
     ThreadFetchPackages.cc
+    ThreadShowSelections.cc
     VersionItem.cc)
 
 SET(PERTUBIS_MAIN_SRCS
@@ -51,6 +53,7 @@ SET(PERTUBIS_MOC_HDRS
     ThreadFetchCategories.hh
     ThreadFetchDetails.hh
     ThreadFetchItem.hh
+    ThreadShowSelections.hh
     ThreadFetchPackages.hh
     VersionItem.hh)
 
@@ -63,14 +66,14 @@ QT4_WRAP_CPP(PERTUBIS_MOC_SRCS ${PERTUBIS_MOC_HDRS} )
 
 QT4_ADD_RESOURCES(PERTUBIS_RCCS_SRCS ${PERTUBIS_RCCS} )
 
-ADD_DEFINITIONS(-DPALUDIS_TR1_MEMORY_IS_STD_TR1=1 -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1)
+ADD_DEFINITIONS(-DPALUDIS_TR1_MEMORY_IS_STD_TR1=1 -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1 -DPALUDIS_TR1_FUNCTIONAL_IS_STD_TR1=1)
 SET (CMAKE_INCLUDE_PATH /usr/local/include/paludis-0.25)
 INCLUDE_DIRECTORIES(BEFORE /usr/local/include/paludis-0.25)
 
 
 ADD_EXECUTABLE (pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
 
-TARGET_LINK_LIBRARIES(pertubis ${PALUDISENV_LIB} ${PALUDIS_ENV_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
+TARGET_LINK_LIBRARIES(pertubis ${PALUDISENV_LIB} ${PALUDIS_ENV_LIB} ${PALUDIS_TASK_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
 
 ######################################################
 # install

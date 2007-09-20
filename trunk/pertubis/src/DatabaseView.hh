@@ -51,11 +51,13 @@ namespace pertubis
     class PackageModel;
     class ReleaseEater;
     class SearchWindow;
+    class OurSyncTask;
     class Settings;
     class TaskBox;
     class ThreadFetchCategories;
     class ThreadFetchDetails;
     class ThreadFetchItem;
+    class ThreadShowSelections;
     class ThreadFetchPackages;
     class ThreadKeywordManager;
     class UseFlagEditor;
@@ -113,7 +115,7 @@ namespace pertubis
         void loadSettings();
         void saveSettings();
 
-        paludis::tr1::shared_ptr<paludis::Environment> m_env;
+        paludis::tr1::shared_ptr<paludis::Environment>  m_env;
         CategoryModel*          m_catModel;
         Item*                   m_current;
         MessageOutput*          m_output;
@@ -153,6 +155,8 @@ namespace pertubis
         ThreadFetchItem*        m_threadItem;
         ThreadFetchPackages*    m_threadPackages;
         ThreadKeywordManager*   m_threadKeywords;
+        ThreadShowSelections*   m_threadShowSel;
+        OurSyncTask*            m_syncTask;
 
         int                     m_tidInstall;
         int                     m_tidDeinstall;
@@ -173,7 +177,7 @@ namespace pertubis
         void slotSearchItem();
         void slotSearchItemFinished();
         void slotSearchPackagesFinished();
-        void slotSelectedPackages();
+        void slotShowSelectedPackages();
         void slotShowDetails(QString details);
         void slotSync();
         void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
@@ -182,6 +186,8 @@ namespace pertubis
         void slotTogglePackageView();
         void slotToggleSearchWindow();
     };
+
+    bool rootTest();
 }
 
 #endif

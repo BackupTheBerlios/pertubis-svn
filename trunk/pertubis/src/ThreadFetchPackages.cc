@@ -109,8 +109,9 @@ void pertubis::ThreadFetchPackages::run()
                 continue;
 
             paludis::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end());
-            while (    p != p_end)
+            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end());
+                 p != p_end;
+                 ++p;)
             {
                 QList<QVariant> data;
                 QVariantList tasks = m_main->taskbox()->tasks();
@@ -127,8 +128,9 @@ void pertubis::ThreadFetchPackages::run()
                 int ip=0;
 
                 tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
-                PackageIDSequence::Iterator vstart(versionIds->begin()),vend(versionIds->end());
-                while (vstart != vend )
+                for (PackageIDSequence::Iterator vstart(versionIds->begin()),vend(versionIds->end());
+                     vstart != vend;
+                     ++vstart)
                 {
                     QList<QVariant> vdata;
                     vdata << QVariant(m_main->taskbox()->tasks()) <<
@@ -147,14 +149,12 @@ void pertubis::ThreadFetchPackages::run()
                     }
                     else
                         p_item->setBestChild(v_item);
-                    ++vstart;
                 }
 
                 if ( ip > 0 )
                     p_item->setData(Item::io_installed,Qt::Checked);
                 if (mp == p_item->childCount())
                     p_item->setState(Item::is_masked);
-                ++p;
             }
         }
     }

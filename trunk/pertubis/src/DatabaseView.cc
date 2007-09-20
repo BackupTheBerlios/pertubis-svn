@@ -24,13 +24,13 @@
 #include "MessageOutput.hh"
 #include "OptionsDelegate.hh"
 #include "PackageItem.hh"
+#include "SyncTask.hh"
 #include "PackageModel.hh"
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
 // #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
-
 
 #include <QApplication>
 #include <QCheckBox>
@@ -65,6 +65,9 @@
 #include "ThreadFetchDetails.hh"
 #include "ThreadFetchItem.hh"
 #include "ThreadFetchPackages.hh"
+#include "ThreadShowSelections.hh"
+
+#include <iostream>
 
 namespace pertubis
 {
@@ -93,6 +96,13 @@ namespace pertubis
     };
 }
 
+bool pertubis::rootTest()
+{
+    if (0 == getuid() )
+        return true;
+    return false;
+}
+
 pertubis::PackageView::PackageView(QWidget* pWidget) : QTreeView(pWidget)
 {
 }
@@ -105,6 +115,7 @@ void pertubis::PackageView::mousePressEvent(QMouseEvent* ev)
 
 pertubis::DatabaseView::DatabaseView()
 {
+    qRegisterMetaType<QTextCursor>("QTextCursor");
     m_settings = new Settings(this);
 
     m_tabs = new QTabWidget(this);
@@ -128,10 +139,13 @@ pertubis::DatabaseView::DatabaseView()
     createActions();
     createTasks();
 
+    // "this,this" seems stupid, but the first this will only be accessible
+    // as a const reference via "const QObject& QObject::parent()"
     m_threadItem = new ThreadFetchItem(this,this);
     m_threadCategories = new ThreadFetchCategories(this,this);
     m_threadPackages = new ThreadFetchPackages(this,this);
     m_threadDetails = new ThreadFetchDetails(this,this);
+    m_threadShowSel = new ThreadShowSelections(this,this);
 
     createCatbar();
     createDetails();
@@ -143,8 +157,15 @@ pertubis::DatabaseView::DatabaseView()
     createUseflagEditor();
     createOptionsMenu();
     createWindowSearch();
+    m_syncTask = new OurSyncTask(m_env,this,m_output->output());
     statusBar()->showMessage(tr("ready"));
     loadSettings();
+    if (!rootTest() )
+    {
+        QMessageBox::warning(0,
+                            tr("unpriviledged mode"),
+                            tr("You are a normal user. Some features will only work for administrators ( root )"));
+    }
 }
 
 pertubis::DatabaseView::~DatabaseView()
@@ -260,6 +281,16 @@ void pertubis::DatabaseView::createPackageView()
             SIGNAL(triggered()),
             this,
             SLOT(slotTogglePackageView()));
+
+    connect(m_acSelection,
+            SIGNAL(triggered()),
+                   this,
+                   SLOT(slotShowSelectedPackages()));
+
+    connect(m_threadShowSel,
+            SIGNAL(sendRoot(Item*)),
+                   m_packModel,
+                   SLOT(slotSetRoot(Item*)));
 }
 
 void pertubis::DatabaseView::createToolBar()
@@ -373,6 +404,8 @@ void pertubis::DatabaseView::createActions()
             SIGNAL(triggered()),
             this,
             SLOT(slotEditUseTask()));
+
+
 }
 
 void pertubis::DatabaseView::createTasks()
@@ -539,14 +572,25 @@ void pertubis::DatabaseView::slotShowDetails(QString details)
     }
 }
 
-void pertubis::DatabaseView::slotSelectedPackages()
+void pertubis::DatabaseView::slotShowSelectedPackages()
 {
-    m_threadPackages->makePackageItems();
+    m_threadShowSel->start();
 }
 
 void pertubis::DatabaseView::slotSync()
 {
-    QMessageBox::information( this, tr("Sync"),"Must be implemented!");
+    if (!rootTest() )
+    {
+        QMessageBox::warning(0,
+                            tr("warning"),
+                            tr("You must be root for syncing repositories"));
+        return;
+    }
+
+    paludis::Context context("When performing sync action from command line:");
+    qDebug() << "DatabaseView::slotSync - 2";
+    m_syncTask->start();
+    qDebug() << "DatabaseView::slotSync - done";
 }
 
 void pertubis::DatabaseView::slotSearchItem()
@@ -558,7 +602,7 @@ void pertubis::DatabaseView::slotSearchItem()
 
     if (m_threadItem->isRunning())
     {
-        int res = QMessageBox::question( 0, tr("Question"),
+        int res = QMessageBox::question( 0, tr("Warning"),
                         tr("Search is already running! Yes for starting the new one or no for waiting until the pending is finished?"),QMessageBox::Yes,QMessageBox::No);
         if (res == QMessageBox::No )
         {

@@ -18,30 +18,37 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_BASE_H
-#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_BASE_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_H
+#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_H
 
-#include <QThread>
+#include "ThreadBase.hh"
+
 
 namespace pertubis
 {
-    class DatabaseView;
+    class Item;
 
-    /*! \brief provides the paludis infrastructure we need for the threads
-    *
-    */
-    class ThreadBase : public QThread
+    class ThreadShowSelections : public ThreadBase
     {
         Q_OBJECT
 
-    public:
+        public:
 
-        ThreadBase(QObject* parent,
-                   DatabaseView* main);
+            ThreadShowSelections(QObject* pobj, DatabaseView* main) : ThreadBase(pobj,main)
+            {
+            }
 
-    protected:
-        DatabaseView*     m_main;
+        signals:
+
+            void sendRoot(Item* item);
+
+        protected:
+
+            void run();
+
     };
 }
 
+
 #endif
+
