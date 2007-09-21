@@ -82,8 +82,10 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget)
 
     show();
 //     redirectOutput_Simple();
-    redirectOutput_Paludis();
+//     redirectOutput_Paludis();
 //     redirectOutput_Combined();
+    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
+    paludis::Log::get_instance()->set_program_name("pertubis");
 
     qDebug() << "MessageOutput::MessageOutput() - done";
 }
@@ -94,8 +96,6 @@ void pertubis::MessageOutput::redirectOutput_Simple()
     m_cout.reset(new QTOutputStreamBuf(*m_output));
     std::cout.rdbuf(m_cout.get());
     m_input.reset(new QTOutputStream(*m_output));
-    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
-    paludis::Log::get_instance()->set_program_name("pertubis");
     paludis::Log::get_instance()->set_log_stream(m_input.get());
 }
 
@@ -112,16 +112,12 @@ void pertubis::MessageOutput::redirectOutput_Paludis()
 //     copy_fd = dup(master_fd);
     m_thread = new Thread(this,m_output,master_fd);
     m_thread->start();
-    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
-    paludis::Log::get_instance()->set_program_name("pertubis");
     paludis::Log::get_instance()->set_log_stream(messages_stream.get());
 }
 
 void pertubis::MessageOutput::redirectOutput_Combined()
 {
     m_input.reset(new QTOutputStream(*m_output));
-    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
-    paludis::Log::get_instance()->set_program_name("pertubis");
     paludis::Log::get_instance()->set_log_stream(m_input.get());
 
     master_fd = posix_openpt(O_RDWR | O_NOCTTY);

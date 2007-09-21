@@ -24,7 +24,7 @@
 
 #include <QDebug>
 
-QVariantList pertubis::TaskBox::selectionData(const paludis::PackageID* id)
+QVariantList pertubis::TaskBox::selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
     QVariantList map;
     QVector<Task*>::const_iterator mytask = m_tasks.constBegin();
@@ -33,7 +33,7 @@ QVariantList pertubis::TaskBox::selectionData(const paludis::PackageID* id)
         map.push_back( ((*mytask)->hasEntry(id ) ) ? Qt::Checked : Qt::Unchecked);
         ++mytask;
     }
-//     qDebug() << "TaskBox::selectionData()" << map;
+    qDebug() << "TaskBox::selectionData()" << map;
     return map;
 }
 
@@ -68,37 +68,45 @@ bool pertubis::TaskBox::hasTask(int taskid) const
     return false;
 }
 
-void pertubis::TaskBox::slotTaskChanged(const paludis::PackageID* id,int taskid, bool mystate)
+void pertubis::TaskBox::slotTaskChanged(paludis::tr1::shared_ptr<const paludis::PackageID> id,int taskid, bool mystate)
 {
 //     qDebug() << "TaskBox::slotTaskChanged - start" << taskid << mystate;
 
     Task* t = task(taskid);
     if(t == 0)
         return;
-    t->changeEntry(id,mystate);
-
+    if (mystate)
+        t->addEntry(id);
+    else
+        t->deleteEntry(id);
 //     qDebug() << "TaskBox::slotTaskChanged - done";
 }
 
 void pertubis::TaskBox::setItemTasks(Item* item)
 {
-    QVariantList list = selectionData(item->ID().get());
+    qDebug() << "TaskBox::setItemTasks() - 1";
+    QVariantList list = selectionData(item->ID());
+    qDebug() << "TaskBox::setItemTasks() - 2" << list << m_tasks;
     QList<QVariant>::iterator mystate = list.begin();
+    qDebug() << "TaskBox::setItemTasks() - 3";
     for (QVector<Task*>::iterator mytask = m_tasks.begin(),
         taskend = m_tasks.end();
         mytask != taskend;
         ++mytask,
         ++mystate)
     {
+        qDebug() << "TaskBox::setItemTasks() - 3 a";
         Item::UpdateRange range = item->updateRange();
+        qDebug() << "TaskBox::setItemTasks() - 3 b";
         switch (range)
         {
             case Item::ur_parent:
                 (*mytask)->changeParentStates(item, mystate->toBool());
             case Item::ur_child:
-                (*mytask)->changeChildStates(item,mystate->toBool());
+                (*mytask)->changeChildStates(item, mystate->toBool());
             default:
                 ;
         }
+        qDebug() << "TaskBox::setItemTasks() - 3 c";
     }
 }

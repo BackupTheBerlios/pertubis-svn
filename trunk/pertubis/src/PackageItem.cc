@@ -40,7 +40,7 @@ pertubis::PackageItem::PackageItem( const paludis::tr1::shared_ptr<const paludis
 {
 }
 
-paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::PackageItem::ID() const
+paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::PackageItem::ID()
 {
     return m_bestChild->ID();
 }

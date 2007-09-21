@@ -37,12 +37,14 @@ namespace paludis
 namespace pertubis
 {
     class Item;
+    class TaskBox;
 
     /*! \brief Holds PackageIDs for a special purpose. This is an abstract base class
     * \see InstallTask, DeinstallTask
     */
     class Task : public QObject
     {
+        friend class TaskBox;
         Q_OBJECT
 
     public:
@@ -53,30 +55,49 @@ namespace pertubis
             QAction* action,
             QString name);
 
-        void addEntry(paludis::tr1::shared_ptr<const paludis::PackageID*> id);
+        /*! \brief adds a selection specified by PackageID
+         *
+         */
+        void addEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id);
 
-        void deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID*> id);
-
-        /*! \brief only for internal use
+        /*! \brief deletes a selection specified by PackageID
+        *
         */
-        void setTaskid(int id);
+        void deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id);
 
         /*! \brief sets the action this task is referring to
+        *
         */
         void setAction(QAction* myaction) {m_action = myaction;}
 
         /*! \brief sets Qt::Checked or Qt::Unchecked as result of hasEntry(item)
+        *
         */
         void fillAction(Item* item);
 
+        /*! \brief returns the action connected with this task
+        *
+        */
         QAction* action() const {return m_action;}
 
+        /*! \brief returns a reference to the data
+        *
+        */
         std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >& data() { return m_data;}
 
+        /*! \brief returns the unique integer key for this task
+        *
+        */
         int taskid() const { return m_taskid;}
 
-        bool hasEntry(const paludis::PackageID* id) const;
+        /*! \brief checks if this package is already selected for this task
+        *
+        */
+        bool hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const;
 
+        /*! \brief returns the literal name of this task
+         *
+         */
         QString name() const { return m_name;}
 
         virtual bool available(Item* item) const = 0;
@@ -96,7 +117,7 @@ namespace pertubis
         /*! \brief actually change
         *
         */
-        void changeEntry(const paludis::PackageID* id, bool mystate);
+        void changeEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id, bool mystate);
 
     protected:
 
@@ -105,6 +126,11 @@ namespace pertubis
         int             m_taskid;
 
     private:
+
+        /*! \brief only for internal use
+         */
+        void setTaskid(int id);
+
         std::list<paludis::tr1::shared_ptr<const paludis::PackageID> > m_data;
     };
 

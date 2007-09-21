@@ -24,12 +24,20 @@
 #include "MessageOutput.hh"
 #include "OptionsDelegate.hh"
 #include "PackageItem.hh"
-#include "SyncTask.hh"
 #include "PackageModel.hh"
+#include "SearchWindow.hh"
+#include "Settings.hh"
+#include "SyncTask.hh"
+#include "TaskBox.hh"
+#include "ThreadFetchCategories.hh"
+#include "ThreadFetchDetails.hh"
+#include "ThreadFetchItem.hh"
+#include "ThreadFetchPackages.hh"
+#include "ThreadShowSelections.hh"
+
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
-// #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 
 #include <QApplication>
@@ -58,14 +66,6 @@
 #include <QToolBar>
 #include <QUrl>
 
-#include "SearchWindow.hh"
-#include "Settings.hh"
-#include "TaskBox.hh"
-#include "ThreadFetchCategories.hh"
-#include "ThreadFetchDetails.hh"
-#include "ThreadFetchItem.hh"
-#include "ThreadFetchPackages.hh"
-#include "ThreadShowSelections.hh"
 
 #include <iostream>
 

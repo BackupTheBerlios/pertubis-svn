@@ -53,10 +53,7 @@ namespace pertubis
 
             UpdateRange updateRange() const;
 
-            paludis::tr1::shared_ptr<const paludis::PackageID> ID() const;
-
-        private:
-            paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
+            paludis::tr1::shared_ptr<const paludis::PackageID> ID();
     };
 
 //     Item* makeVersionItem( paludis::tr1::shared_ptr<const paludis::PackageID> id,

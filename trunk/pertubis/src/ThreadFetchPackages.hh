@@ -54,7 +54,6 @@ namespace pertubis
 
             void run();
 
-            void makePackageItems() const;
             void searchPackages(QString str);
 
         private:

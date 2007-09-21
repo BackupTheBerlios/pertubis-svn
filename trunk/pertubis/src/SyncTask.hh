@@ -50,6 +50,8 @@ namespace pertubis
             {
             }
 
+            ~OurSyncTask() {}
+
             virtual void on_sync_all_pre();
             virtual void on_sync_pre(const paludis::RepositoryName &);
             virtual void on_sync_post(const paludis::RepositoryName &);

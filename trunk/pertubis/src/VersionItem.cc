@@ -27,8 +27,7 @@ pertubis::VersionItem::VersionItem( const QList<QVariant> &dats) :
 
 pertubis::VersionItem::VersionItem( const paludis::tr1::shared_ptr<const paludis::PackageID>& id,
                                     const QList<QVariant> &dats) :
-                                    Item(dats,Item::is_stable),
-                                    m_id(id)
+                                    Item(id,dats,Item::is_stable)
 {
     // VersionItem has no childs in the moment!
     setBestChild(this);
@@ -39,7 +38,7 @@ bool pertubis::VersionItem::available() const
     return (m_state != Item::is_masked);
 }
 
-paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::VersionItem::ID() const
+paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::VersionItem::ID()
 {
     return m_id;
 }

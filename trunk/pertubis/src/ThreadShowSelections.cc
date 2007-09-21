@@ -42,8 +42,8 @@ void pertubis::ThreadShowSelections::run()
          tStart != tEnd;
          ++tStart)
     {
-        for (std::set<const paludis::PackageID*>::const_iterator idStart((*tStart)->idsBegin()),
-             idEnd((*tStart)->idsEnd());
+        for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator idStart( (*tStart)->data().begin()),
+             idEnd((*tStart)->data().end());
              idStart != idEnd;
              ++idStart)
         {

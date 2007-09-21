@@ -127,7 +127,7 @@ void pertubis::ThreadFetchItem::run()
                     vstart != vend; ++vstart)
                 {
                     QList<QVariant> vdata;
-                    vdata << QVariant(m_main->taskbox()->selectionData(vstart->get())) <<
+                    vdata << QVariant(m_main->taskbox()->selectionData(*vstart)) <<
                             stringify((*vstart)->version()).c_str() <<
                             stringify(p->category).c_str() <<
                             stringify(r->name()).c_str() <<

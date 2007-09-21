@@ -6,12 +6,25 @@
 
 pertubis::Item::Item()  : m_parent(0), m_bestChild(0), m_state(Item::is_stable) {}
 
+pertubis::Item::Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                    const QList<QVariant> &dats,
+                    ItemState mystate)  :
+                    m_id(id),
+                    m_data(dats),
+                    m_parent(0),
+                    m_bestChild(0),
+                    m_state(mystate)
+{
+}
+
 pertubis::Item::Item(const QList<QVariant> &dats,
-                ItemState mystate)  :
-                m_data(dats),
-                m_parent(0),
-                m_bestChild(0),
-                m_state(mystate) {}
+                    ItemState mystate)  :
+                    m_data(dats),
+                    m_parent(0),
+                    m_bestChild(0),
+                    m_state(mystate)
+{
+}
 
 pertubis::Item::~Item()
 {
@@ -113,7 +126,7 @@ void pertubis::Item::setTaskState(int taskid, Qt::CheckState mystate)
     setData(io_selected,states);
 }
 
-paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::RootItem::ID() const
+paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Item::ID()
 {
     return paludis::tr1::shared_ptr<const paludis::PackageID>(static_cast<const paludis::PackageID*>(0) );
 }

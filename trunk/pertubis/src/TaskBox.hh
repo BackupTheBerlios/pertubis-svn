@@ -49,14 +49,14 @@ namespace pertubis
         Task* task(int taskid) const;
         bool hasTask(int taskid) const;
         QVariantList tasks() const;
-        QVariantList selectionData(const paludis::PackageID* id);
+        QVariantList selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id);
         void setItemTasks(Item* item);
         QVector<Task*>::const_iterator taskBegin() { return QVector<Task*>::iterator(m_tasks.constBegin());}
         QVector<Task*>::const_iterator taskEnd() { return QVector<Task*>::iterator(m_tasks.constEnd());}
         void run() {}
 
     public slots:
-        void slotTaskChanged(const paludis::PackageID* id, int taskid, bool state);
+        void slotTaskChanged(paludis::tr1::shared_ptr<const paludis::PackageID> id, int taskid, bool state);
 
     private:
         QVector<Task*>    m_tasks;

@@ -38,41 +38,53 @@ void pertubis::Task::setTaskid(int id)
     m_taskid = id;
 }
 
-void pertubis::Task::addEntry(paludis::tr1::shared_ptr<const paludis::PackageID*> id)
+void pertubis::Task::addEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
     m_data.push_back(id);
 }
 
-void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID*> id)
+void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
-    std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator res;
+    std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::iterator res;
+    qDebug() << "Task::deleteEntry() - before" << m_data.size();
+    for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::iterator idIter(m_data.begin()),
+         idEnd(m_data.end());
+         idIter != idEnd;
+         ++idIter)
+    {
+        if ( *id.get() == *(*idIter) )
+        {
+            qDebug() << "Task::deleteEntry() - deleting";
+            m_data.erase(idIter);
+            break;
+        }
+    }
+    qDebug() << "Task::deleteEntry() - after" << m_data.size();
+}
+
+bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const
+{
     for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator idIter(m_data.begin()),
          idEnd(m_data.end());
          idIter != idEnd;
          ++idIter)
     {
-        if ( (*idIter) == (*id.get()) )
+        if ( *id.get() == *(*idIter) )
         {
-            res = idIter;
-            break;
+            return true;
         }
     }
-    m_data.erase(res);
-}
-
-bool pertubis::Task::hasEntry(const paludis::PackageID* id) const
-{
-    return (m_data.find(id ) != m_data.end());
+    return false;
 }
 
 void pertubis::Task::fillAction(Item* item)
 {
 //     qDebug() << "Task::fillAction() - start" << m_action->text();
-    m_action->setChecked( (hasEntry(item->ID().get())) ? Qt::Checked : Qt::Unchecked);
+    m_action->setChecked( (hasEntry(item->ID())) ? Qt::Checked : Qt::Unchecked);
 //     qDebug() << "Task::fillAction() - done";
 }
 
-void pertubis::Task::changeEntry(const paludis::PackageID* id,bool mystate)
+void pertubis::Task::changeEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id,bool mystate)
 {
 //     qDebug() << "Task::changeEntry() - start" << m_name << mystate;
 

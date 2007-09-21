@@ -65,34 +65,12 @@ void pertubis::ThreadFetchPackages::searchPackages(QString str)
     start();
 }
 
-void pertubis::ThreadFetchPackages::makePackageItems() const
-{
-    QVector<Task*>::const_iterator tStart(m_main->taskbox()->taskBegin());
-    QVector<Task*>::const_iterator tEnd(m_main->taskbox()->taskEnd());
-    while (tStart != tEnd)
-    {
-        Item* root = new RootItem();
-        std::set<const paludis::PackageID*>::const_iterator idStart((*tStart)->idsBegin());
-        std::set<const paludis::PackageID*>::const_iterator idEnd((*tStart)->idsEnd());
-        while (idStart != idEnd)
-        {
-            root->appendChild(new PackageItem(QVariantList() <<
-                    QVariant(m_main->taskbox()->selectionData(*idStart)) <<
-                paludis::stringify((*idStart)->name().package).c_str() <<
-                paludis::stringify((*idStart)->name().category).c_str() <<
-                paludis::stringify((*idStart)->repository()->name()).c_str() <<
-                paludis::stringify((*idStart)->version()).c_str()));
-            ++idStart;
-        }
-    }
-}
-
 void pertubis::ThreadFetchPackages::run()
 {
     using namespace paludis;
 
     Item* root = new RootItem();
-
+    qDebug() << "ThreadFetchPackages::run() - 1";
     for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
         r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
         r != r_end ; ++r)
@@ -100,47 +78,55 @@ void pertubis::ThreadFetchPackages::run()
         if (r->format() == "vdb" || r->format() == "installed_virtuals")
             continue;
         std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-
+        qDebug() << "ThreadFetchPackages::run() - 2";
         for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;c != c_end ; ++c)
         {
             CategoryNamePart cat(m_query.toLatin1().data());
 
             if (cat != *c )
                 continue;
-
+            qDebug() << "ThreadFetchPackages::run() - 3";
             paludis::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end());
                  p != p_end;
-                 ++p;)
+                 ++p)
             {
                 QList<QVariant> data;
+                qDebug() << "ThreadFetchPackages::run() - 4";
                 QVariantList tasks = m_main->taskbox()->tasks();
-
                 data << QVariant(tasks) <<
                     stringify(p->package).c_str() <<
                     stringify(p->category).c_str() <<
                     stringify(r->name()).c_str() <<
                     Qt::Unchecked;
+                qDebug() << "ThreadFetchPackages::run() - 5";
                 Item* p_item = new PackageItem(data);
                 root->appendChild(p_item);
-
+                qDebug() << "ThreadFetchPackages::run() - 6";
                 int mp=0;
                 int ip=0;
-
+                qDebug() << "ThreadFetchPackages::run() - 7";
                 tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
                 for (PackageIDSequence::Iterator vstart(versionIds->begin()),vend(versionIds->end());
                      vstart != vend;
                      ++vstart)
                 {
                     QList<QVariant> vdata;
+                    qDebug() << "ThreadFetchPackages::run() - 8";
                     vdata << QVariant(m_main->taskbox()->tasks()) <<
                     stringify((*vstart)->version()).c_str() <<
                     stringify(p->category).c_str() <<
                     stringify(r->name()).c_str() <<
-                    (m_main->taskbox()->task(m_main->tidInstall())->hasEntry(vstart->get()) ? Qt::Checked : Qt::Unchecked );
+                    Qt::Unchecked;
+                    qDebug() << "ThreadFetchPackages::run() - 9";
+//                     (m_main->taskbox()->task(m_main->tidInstall())->hasEntry(*vstart) ? Qt::Checked : Qt::Unchecked );
                     Item* v_item = new VersionItem(*vstart,vdata);
+                    qDebug() << "ThreadFetchPackages::run() - 10";
+
                     p_item->appendChild(v_item);
+                    qDebug() << "ThreadFetchPackages::run() - 11";
                     m_main->taskbox()->setItemTasks(v_item);
+                    qDebug() << "ThreadFetchPackages::run() - 12";
 
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
                     {
@@ -149,8 +135,9 @@ void pertubis::ThreadFetchPackages::run()
                     }
                     else
                         p_item->setBestChild(v_item);
+                    qDebug() << "ThreadFetchPackages::run() - 13";
                 }
-
+                qDebug() << "ThreadFetchPackages::run() - 10";
                 if ( ip > 0 )
                     p_item->setData(Item::io_installed,Qt::Checked);
                 if (mp == p_item->childCount())

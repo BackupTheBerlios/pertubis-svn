@@ -61,6 +61,10 @@ namespace pertubis
 
             Item();
 
+            Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                 const QList<QVariant> &dats,
+                 ItemState mystate);
+
             Item(const QList<QVariant> &dats,
                  ItemState mystate);
 
@@ -78,24 +82,25 @@ namespace pertubis
             virtual bool available() const;
             virtual ItemState state() const;
             virtual Item *child(int row) const;
-               virtual int indexOf(Item* item) const;
+            virtual int indexOf(Item* item) const;
             virtual int childCount() const;
             virtual int columnCount() const;
             virtual QVariant data(int column) const;
             virtual int row() const;
             virtual UpdateRange updateRange() const = 0;
             virtual Item *parent() const;
-            virtual paludis::tr1::shared_ptr<const paludis::PackageID> ID() const=0;
+            virtual paludis::tr1::shared_ptr<const paludis::PackageID> ID();
             QList<Item*>::iterator childBegin();
             QList<Item*>::iterator childEnd();
 
         protected:
-            QList<QVariant>    m_data;
-            QList<Item*>    m_children;
-            Item*             m_parent;
-            Item*            m_bestChild;
-            ItemState        m_state;
-            QVector<bool>    m_taskStates;
+            QList<QVariant>     m_data;
+            QList<Item*>        m_children;
+            Item*               m_parent;
+            Item*               m_bestChild;
+            ItemState           m_state;
+            QVector<bool>       m_taskStates;
+            paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
     };
 
     class RootItem : public Item
@@ -105,7 +110,6 @@ namespace pertubis
         public:
             RootItem() : Item(QList<QVariant>() << "" << "" << "" << "" << "",Item::is_stable) {}
             UpdateRange updateRange() const;
-            paludis::tr1::shared_ptr<const paludis::PackageID> ID() const;
     };
 
     QString status(Item::ItemState status);
