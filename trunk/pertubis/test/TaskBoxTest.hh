@@ -18,31 +18,32 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_DEINSTALL_TASK_H
-#define _PERTUBIS_ENTRY_PROTECTOR_DEINSTALL_TASK_H
 
-#include "Task.hh"
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_TASK_BOX_TEST_H
+#define _PERTUBIS_ENTRY_PROTECTOR_TASK_BOX_TEST_H
 
+#include <QtTest/QtTest>
+#include <QtCore>
+#include <QtGui>
 
 namespace pertubis
 {
-
-    class Item;
-
-    class DeinstallTask : public Task
+    class TaskBoxTest : public QObject
     {
         Q_OBJECT
+        public:
 
-    public:
+            TaskBoxTest() {}
+            ~TaskBoxTest() {}
 
-        DeinstallTask() {}
-        DeinstallTask(QObject* pobject,
-                    QAction* myaction,
-                      QString tname) : Task(pobject,myaction,tname) {}
-        bool available(Item* item) const;
-        bool changeParentStates(Item* item, int mystate);
-        bool changeChildStates(Item* item, int mystate);
+        private slots:
+            void addTask();
+            void hasTask();
+            void tasks();
+            void selectionData();
+            void setItemTasks();
     };
 }
 
 #endif
+

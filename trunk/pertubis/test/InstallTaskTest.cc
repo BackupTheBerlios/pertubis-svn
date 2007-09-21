@@ -85,6 +85,7 @@ void pertubis::InstallTaskTest::addEntry()
     if (versions->empty() )
         QFAIL("no packages found");
 
+    // here bash must be false, since it is not added
     QCOMPARE(install->hasEntry(*versions->begin()),false);
 
     // add bash and test if it's really added

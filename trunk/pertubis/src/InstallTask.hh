@@ -39,8 +39,8 @@ namespace pertubis
                     QAction* myaction,
                       QString tname) : Task(pobject,myaction,tname) {}
         bool available(Item* item) const;
-        bool changeChildStates(Item* item, bool mystate);
-        bool changeParentStates(Item* item, bool mystate);
+        bool changeChildStates(Item* item, int mystate);
+        bool changeParentStates(Item* item, int mystate);
     };
 }
 

@@ -94,13 +94,16 @@ namespace pertubis
             QList<Item*>::iterator childEnd();
 
         protected:
+
             QList<QVariant>     m_data;
             QList<Item*>        m_children;
+            QVector<bool>       m_taskStates;
+
+            paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
+
             Item*               m_parent;
             Item*               m_bestChild;
             ItemState           m_state;
-            QVector<bool>       m_taskStates;
-            paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
     };
 
     class RootItem : public Item

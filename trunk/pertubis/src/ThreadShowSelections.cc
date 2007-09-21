@@ -37,7 +37,7 @@
 void pertubis::ThreadShowSelections::run()
 {
     Item* root = new RootItem();
-    for (QVector<Task*>::const_iterator tStart(m_main->taskbox()->taskBegin()),
+    for (TaskBox::Iterator tStart(m_main->taskbox()->taskBegin()),
          tEnd(m_main->taskbox()->taskEnd());
          tStart != tEnd;
          ++tStart)

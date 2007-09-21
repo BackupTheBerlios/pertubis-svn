@@ -107,12 +107,12 @@ namespace pertubis
         * \param mystate add or delete the item to this task
         * We have to process every change here since only the task exactly knows how to deal with it. The task must be able to ask the item for the UpdateRange
         */
-        virtual bool changeChildStates(Item* item,bool mystate)=0;
+        virtual bool changeChildStates(Item* item, int mystate)=0;
 
         /*! \brief Use this class if you want to process a parent items' selection change and its side effects on all of its childs.
         *
         */
-        virtual bool changeParentStates(Item* item,bool mystate)=0;
+        virtual bool changeParentStates(Item* item, int mystate)=0;
 
         /*! \brief actually change
         *

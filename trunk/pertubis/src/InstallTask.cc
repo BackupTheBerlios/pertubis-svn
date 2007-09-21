@@ -27,69 +27,76 @@ bool pertubis::InstallTask::available(Item* item) const
     return item->available();
 }
 
-bool pertubis::InstallTask::changeParentStates(Item* item, bool newState)
+bool pertubis::InstallTask::changeParentStates(Item* item, int newState)
 {
 //     qDebug() << "InstallTask::changeParentStates - start" <<  newState;
     QList<Item*>::iterator iStart(item->childBegin());
     QList<Item*>::iterator iEnd(item->childEnd());
-    if (newState)
+    switch (newState)
     {
-        changeEntry(item->ID(),true);
-        item->setTaskState(m_taskid,Qt::PartiallyChecked);
-        if (item->bestChild())
-            item->bestChild()->setTaskState(m_taskid,Qt::Checked);
+        case Qt::PartiallyChecked:
+        case Qt::Checked:
+            changeEntry(item->ID(),true);
+            item->setTaskState(m_taskid,Qt::PartiallyChecked);
+            if (item->bestChild())
+                item->bestChild()->setTaskState(m_taskid,Qt::Checked);
+            break;
+        case Qt::Unchecked:
+
+            item->setTaskState(m_taskid,Qt::Unchecked);
+            while(iStart != iEnd)
+            {
+                changeEntry((*iStart)->ID(),false);
+                (*iStart)->setTaskState(m_taskid,Qt::Unchecked);
+                ++iStart;
+            }
+            break;
+        default:
+            ;
     }
-    else
-    {
-        item->setTaskState(m_taskid,Qt::Unchecked);
-        while(iStart != iEnd)
-        {
-            changeEntry((*iStart)->ID(),false);
-            (*iStart)->setTaskState(m_taskid,Qt::Unchecked);
-            ++iStart;
-        }
-    }
-//     qDebug() << "InstallTask::changeParentStates - done";
     return true;
 }
 
-bool pertubis::InstallTask::changeChildStates(Item* item, bool newState)
+bool pertubis::InstallTask::changeChildStates(Item* item, int newState)
 {
 //     qDebug() << "InstallTask::changeChildStates - start" <<  newState;
     QList<Item*>::iterator iStart(item->parent()->childBegin());
     QList<Item*>::iterator iEnd(item->parent()->childEnd());
     int i=0;
-    if (newState)
+    switch (newState)
     {
-        changeEntry(item->ID(),true);
-        item->setTaskState(m_taskid,Qt::Checked);
-        while(iStart != iEnd)
-        {
-            if ( (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
-                ++i;
-            ++iStart;
-        }
-        if (i == item->parent()->childCount() )
-            item->parent()->setTaskState(m_taskid,Qt::Checked);
-        else
-            item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
-    }
-    else
-    {
-        changeEntry(item->ID(),false);
-        item->setTaskState(m_taskid,Qt::Unchecked);
+        case Qt::PartiallyChecked:
+        case Qt::Checked:
+            changeEntry(item->ID(),true);
+            item->setTaskState(m_taskid,Qt::Checked);
+            while(iStart != iEnd)
+            {
+                if ( (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
+                    ++i;
+                ++iStart;
+            }
+            if (i == item->parent()->childCount() )
+                item->parent()->setTaskState(m_taskid,Qt::Checked);
+            else
+                item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
+            break;
+        case Qt::Unchecked:
+            changeEntry(item->ID(),false);
+            item->setTaskState(m_taskid,Qt::Unchecked);
 
-        while(iStart != iEnd)
-        {
-            if ( (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
-                ++i;
-            ++iStart;
-        }
-        if (i  == 0)
-            item->parent()->setTaskState(m_taskid,Qt::Unchecked);
-        else
-            item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
+            while(iStart != iEnd)
+            {
+                if ( (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
+                    ++i;
+                ++iStart;
+            }
+            if (i  == 0)
+                item->parent()->setTaskState(m_taskid,Qt::Unchecked);
+            else
+                item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
+            break;
+        default:
+            ;
     }
-//     qDebug() << "InstallTask::changeChildStates - done";
     return true;
 }

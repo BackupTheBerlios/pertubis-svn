@@ -44,15 +44,39 @@ namespace pertubis
         Q_OBJECT
     public:
 
+        typedef QVector<Task*>::iterator Iterator;
+
         TaskBox(QObject* pobject) : QObject(pobject) {}
         int addTask(Task* task);
         Task* task(int taskid) const;
         bool hasTask(int taskid) const;
+
+        /*! \brief returns a container format needed for Items with all values set to false
+        *
+        * Use this funtion if you want to contruct an empty but sane Item,
+        * and fill it later with information. One of the drawbacks of the current Item implementation
+        * is the need for the correct value count in this selection data container.
+        * \see selectionData()
+        */
         QVariantList tasks() const;
+
+        /*! \brief returns a container format needed for Items with appropriate values
+        *
+        * Use this funtion if you want to contruct an Item with correct selection formation.
+        * This function is more expensive than tasks!
+        * \see tasks()
+        */
         QVariantList selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+
+        /*! \brief sets the (visual) setting for each stored Task in the Item given
+        *
+        */
         void setItemTasks(Item* item);
-        QVector<Task*>::const_iterator taskBegin() { return QVector<Task*>::iterator(m_tasks.constBegin());}
-        QVector<Task*>::const_iterator taskEnd() { return QVector<Task*>::iterator(m_tasks.constEnd());}
+
+        Iterator taskBegin();
+
+        Iterator taskEnd();
+
         void run() {}
 
     public slots:
@@ -62,6 +86,9 @@ namespace pertubis
         QVector<Task*>    m_tasks;
         QMap<QString,int> m_index;
     };
+
+    inline TaskBox::Iterator TaskBox::taskBegin() { return Iterator(m_tasks.begin());}
+    inline TaskBox::Iterator TaskBox::taskEnd() { return Iterator(m_tasks.end());}
 }
 
 #endif

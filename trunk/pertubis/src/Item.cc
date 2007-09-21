@@ -9,8 +9,8 @@ pertubis::Item::Item()  : m_parent(0), m_bestChild(0), m_state(Item::is_stable) 
 pertubis::Item::Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                     const QList<QVariant> &dats,
                     ItemState mystate)  :
-                    m_id(id),
                     m_data(dats),
+                    m_id(id),
                     m_parent(0),
                     m_bestChild(0),
                     m_state(mystate)
