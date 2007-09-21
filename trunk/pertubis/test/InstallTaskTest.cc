@@ -48,6 +48,8 @@ void pertubis::InstallTaskTest::addEntry()
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name("test-ItemTest");
     paludis::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
+
+    // first quering paludis ids
     paludis::tr1::shared_ptr<const paludis::PackageIDSequence> versions(
         env->package_database()->query(
             paludis::query::Matches(paludis::PackageDepSpec("sys-apps/paludis", paludis::pds_pm_eapi_0_strict)) &
@@ -57,11 +59,12 @@ void pertubis::InstallTaskTest::addEntry()
     if (versions->empty() )
         QFAIL("no packages found");
     InstallTask* install = new InstallTask();
-    install->changeEntry(*versions->begin(),true);
+
+    // add id and test if it's really added
+    install->addEntry(*versions->begin());
     QCOMPARE(install->hasEntry(*versions->begin()),true);
-    install->changeEntry(*versions->begin(),false);
-    QCOMPARE(install->hasEntry(*versions->begin()),false);
-    install->changeEntry(*versions->begin(),true);
+
+    // second query for paludis ids
     versions = env->package_database()->query(
             paludis::query::Matches(paludis::PackageDepSpec("sys-apps/paludis", paludis::pds_pm_eapi_0_strict)) &
             paludis::query::InstalledAtRoot(env->root()),
@@ -70,6 +73,22 @@ void pertubis::InstallTaskTest::addEntry()
     if (versions->empty() )
         QFAIL("no packages found");
 
+    // delete former added id and test if even the new id is not inside the task
+    install->deleteEntry(*versions->begin());
+    QCOMPARE(install->hasEntry(*versions->begin()),false);
+
+    // testing if bash is added
+    versions = env->package_database()->query(
+            paludis::query::Matches(paludis::PackageDepSpec("app-shells/bash", paludis::pds_pm_eapi_0_strict)) &
+            paludis::query::InstalledAtRoot(env->root()),
+            paludis::qo_order_by_version);
+    if (versions->empty() )
+        QFAIL("no packages found");
+
+    QCOMPARE(install->hasEntry(*versions->begin()),false);
+
+    // add bash and test if it's really added
+    install->addEntry(*versions->begin());
     QCOMPARE(install->hasEntry(*versions->begin()),true);
     delete install;
 }
