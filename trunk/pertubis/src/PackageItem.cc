@@ -73,3 +73,17 @@ QString pertubis::stateDescription(Item::ItemState status)
             return "unknown package status";
     }
 }
+
+pertubis::Item* pertubis::makePackageItem(QVariantList selections,
+                            QString pack,
+                            QString cat,
+                            QString rep,
+                            int mystate)
+{
+    return new PackageItem(QVariantList() <<
+            QVariant(selections) <<
+            pack <<
+            cat <<
+            rep <<
+            mystate);
+}

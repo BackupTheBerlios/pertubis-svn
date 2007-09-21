@@ -32,12 +32,43 @@ namespace paludis
     class FDOutputStream;
 }
 
-class Thread;
+
 
 namespace pertubis
 {
     class QTOutputStreamBuf;
     class QTOutputStream;
+
+    class Thread : public QThread
+    {
+        Q_OBJECT
+        public:
+            Thread(QObject* pobj,  QTextEdit* output,int fd) : QThread(pobj), m_output(output), m_fd(fd),m_atwork(true)
+            {
+            }
+
+            void setAtWork(bool t) { m_atwork = t;}
+            bool atWork() const { return m_atwork;}
+
+        protected:
+
+            void run()
+            {
+                while (m_atwork)
+                {
+                    static char buf[256];
+                    int res = read(m_fd,&buf,256);
+                    m_output->append(QString::fromLocal8Bit(buf,res));
+                    msleep(50);
+                }
+            }
+
+        private:
+
+            QTextEdit*  m_output;
+            int         m_fd;
+            bool        m_atwork;
+    };
 
 
     /*! \brief output window for messages from paludis
@@ -65,9 +96,9 @@ namespace pertubis
             paludis::tr1::shared_ptr<QTOutputStreamBuf> m_cout;
             paludis::tr1::shared_ptr<QTOutputStream>    m_input;
             paludis::tr1::shared_ptr<paludis::FDOutputStream> messages_stream;
-            int                                         master_fd;
-            int                                         slave_fd;
-            int                                         copy_fd;
+            int                                         m_master_fd;
+            int                                         m_slave_fd;
+            int                                         m_copy_fd;
     };
 }
 

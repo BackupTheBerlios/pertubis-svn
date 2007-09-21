@@ -67,6 +67,15 @@ namespace pertubis
     };
 
     QString stateDescription(Item::ItemState status);
+
+    /*! \brief helps us creating correctly a PackageItem
+    *
+    */
+    Item* makePackageItem(QVariantList selections,
+                                 QString pack,
+                                 QString cat,
+                                 QString rep,
+                                 int mystate=Qt::Unchecked);
 }
 
 

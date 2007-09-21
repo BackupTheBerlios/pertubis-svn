@@ -122,6 +122,7 @@ void pertubis::Item::setState(ItemState s)
 void pertubis::Item::setTaskState(int taskid, Qt::CheckState mystate)
 {
     QVariantList states = data(io_selected).toList();
+//     qDebug() << "Item::setTaskState() -" << states << taskid << mystate;
     states[taskid] = mystate;
     setData(io_selected,states);
 }
@@ -139,4 +140,9 @@ pertubis::Item::UpdateRange pertubis::RootItem::updateRange() const
 pertubis::Item* pertubis::Item::bestChild() const
 {
     return m_bestChild;
+}
+
+pertubis::RootItem::RootItem() :
+    Item(QList<QVariant>() << "" << "" << "" << "" << "",Item::is_stable)
+{
 }

@@ -84,12 +84,16 @@ void pertubis::TaskBox::slotTaskChanged(paludis::tr1::shared_ptr<const paludis::
 
 void pertubis::TaskBox::setItemTasks(Item* item)
 {
+//     qDebug() << "TaskBox::setItemTasks() - start" << m_tasks.count();
     for (Iterator mytask(taskBegin()), taskend(taskEnd());
         mytask != taskend;
         ++mytask)
     {
+//         qDebug() << "TaskBox::setItemTasks() - 1";
         Qt::CheckState mystate( ((*mytask)->hasEntry(item->ID() ) ) ? Qt::Checked : Qt::Unchecked);
+//         qDebug() << "TaskBox::setItemTasks() - mystate" << mystate;
         Item::UpdateRange range = item->updateRange();
+//         qDebug() << "TaskBox::setItemTasks() - range" << range;
         switch (range)
         {
             case Item::ur_parent:

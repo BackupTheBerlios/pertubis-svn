@@ -62,6 +62,7 @@ bool pertubis::InstallTask::changeChildStates(Item* item, int newState)
 //     qDebug() << "InstallTask::changeChildStates - start" <<  newState;
     QList<Item*>::iterator iStart(item->parent()->childBegin());
     QList<Item*>::iterator iEnd(item->parent()->childEnd());
+//     qDebug() << "InstallTask::changeChildStates - 1";
     int i=0;
     switch (newState)
     {
@@ -71,7 +72,11 @@ bool pertubis::InstallTask::changeChildStates(Item* item, int newState)
             item->setTaskState(m_taskid,Qt::Checked);
             while(iStart != iEnd)
             {
-                if ( (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
+                QVariantList list((*iStart)->data(Item::io_selected).toList());
+//                 qDebug() << "InstallTask::changeChildStates - list" << list;
+                int mystate(list.value(m_taskid).toInt());
+//                 qDebug() << "InstallTask::changeChildStates - state" << mystate;
+                if ( mystate != Qt::Unchecked )
                     ++i;
                 ++iStart;
             }

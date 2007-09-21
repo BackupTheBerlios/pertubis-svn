@@ -33,37 +33,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-class Thread : public QThread
-{
-    public:
-        Thread(QObject* pobj,  QTextEdit* output,int fd) : QThread(pobj), m_output(output), m_fd(fd),m_atwork(true)
-        {
-        }
-
-        void setAtWork(bool t) { m_atwork = t;}
-        bool atWork() const { return m_atwork;}
-
-    protected:
-
-        void run()
-        {
-            while (m_atwork)
-            {
-                static char buf[256];
-                int res = read(m_fd,&buf,256);
-                m_output->append(QString::fromLocal8Bit(buf,res));
-                msleep(50);
-            }
-        }
-
-    private:
-
-        QTextEdit*  m_output;
-        int         m_fd;
-        bool        m_atwork;
-};
-
-pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget)
+pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
+                                    m_output(0),
+                                    m_thread(0),
+                                    m_master_fd(-1),
+                                    m_slave_fd(-1),
+                                    m_copy_fd(-1)
 {
     qDebug() << "MessageOutput::MessageOutput() - start";
     QVBoxLayout* mylayout = new QVBoxLayout;
@@ -101,16 +76,16 @@ void pertubis::MessageOutput::redirectOutput_Simple()
 
 void pertubis::MessageOutput::redirectOutput_Paludis()
 {
-    master_fd = posix_openpt(O_RDWR | O_NOCTTY);
-    grantpt(master_fd);
-    unlockpt(master_fd);
-    slave_fd = open(ptsname(master_fd), O_RDWR);
-    messages_stream.reset(new paludis::FDOutputStream(slave_fd));
-    paludis::set_run_command_stdout_fds(slave_fd, master_fd);
-    paludis::set_run_command_stderr_fds(slave_fd, master_fd);
-    paludis::PStream::set_stderr_fd(slave_fd, master_fd);
+    m_master_fd = posix_openpt(O_RDWR | O_NOCTTY);
+    grantpt(m_master_fd);
+    unlockpt(m_master_fd);
+    m_slave_fd = open(ptsname(m_master_fd), O_RDWR);
+    messages_stream.reset(new paludis::FDOutputStream(m_slave_fd));
+    paludis::set_run_command_stdout_fds(m_slave_fd, m_master_fd);
+    paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
+    paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
 //     copy_fd = dup(master_fd);
-    m_thread = new Thread(this,m_output,master_fd);
+    m_thread = new Thread(this,m_output,m_master_fd);
     m_thread->start();
     paludis::Log::get_instance()->set_log_stream(messages_stream.get());
 }
@@ -120,22 +95,25 @@ void pertubis::MessageOutput::redirectOutput_Combined()
     m_input.reset(new QTOutputStream(*m_output));
     paludis::Log::get_instance()->set_log_stream(m_input.get());
 
-    master_fd = posix_openpt(O_RDWR | O_NOCTTY);
-    grantpt(master_fd);
-    unlockpt(master_fd);
-    slave_fd = open(ptsname(master_fd), O_RDWR);
-    messages_stream.reset(new paludis::FDOutputStream(slave_fd));
-    paludis::set_run_command_stdout_fds(slave_fd, master_fd);
-    paludis::set_run_command_stderr_fds(slave_fd, master_fd);
-    paludis::PStream::set_stderr_fd(slave_fd, master_fd);
+    grantpt(m_master_fd);
+    unlockpt(m_master_fd);
+    m_slave_fd = open(ptsname(m_master_fd), O_RDWR);
+    messages_stream.reset(new paludis::FDOutputStream(m_slave_fd));
+    paludis::set_run_command_stdout_fds(m_slave_fd, m_master_fd);
+    paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
+    paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
     messages_stream->tie(m_input.get());
 }
 
 pertubis::MessageOutput::~MessageOutput()
 {
-    m_thread->setAtWork(false);
-    ::close(master_fd);
-    ::close(slave_fd);
+    if (m_thread)
+    {
+        m_thread->setAtWork(false);
+        m_thread->wait();
+        ::close(m_master_fd);
+        ::close(m_slave_fd);
+    }
+
     paludis::Log::get_instance()->set_log_stream(&std::cerr);
-    m_thread->wait();
 }

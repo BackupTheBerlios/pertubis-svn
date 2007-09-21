@@ -126,13 +126,9 @@ void pertubis::ThreadFetchItem::run()
                 for (PackageIDSequence::Iterator vstart(versionIds->begin()),vend(versionIds->end());
                     vstart != vend; ++vstart)
                 {
-                    QList<QVariant> vdata;
-                    vdata << QVariant(m_main->taskbox()->selectionData(*vstart)) <<
-                            stringify((*vstart)->version()).c_str() <<
-                            stringify(p->category).c_str() <<
-                            stringify(r->name()).c_str() <<
-                            Qt::Unchecked;
-                    Item* v_item = new VersionItem(*vstart,vdata);
+                    Item* v_item = makeVersionItem(*vstart,
+                            m_main->taskbox()->selectionData(*vstart),
+                            stringify((*vstart)->version()).c_str());
 
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
                     {

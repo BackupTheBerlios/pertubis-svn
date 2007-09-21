@@ -130,6 +130,7 @@ pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj)
             this,
             SLOT(close()));
 
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QHBoxLayout *horizontalLayout = new QHBoxLayout;
     horizontalLayout->addWidget(contentsWidget);
     horizontalLayout->addWidget(pagesWidget, 1);
@@ -138,7 +139,7 @@ pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj)
     buttonsLayout->addStretch(1);
     buttonsLayout->addWidget(closeButton);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout;
+
     mainLayout->addLayout(horizontalLayout);
     mainLayout->addStretch(1);
     mainLayout->addSpacing(12);

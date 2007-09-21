@@ -41,6 +41,8 @@ pertubis::PackageModel::PackageModel(QObject* pobj) : QAbstractItemModel(pobj),m
 
 pertubis::PackageModel::~PackageModel()
 {
+    if (m_root)
+        delete m_root;
 }
 
 void pertubis::PackageModel::setBox(TaskBox* t)

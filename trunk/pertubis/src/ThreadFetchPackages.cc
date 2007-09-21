@@ -91,16 +91,11 @@ void pertubis::ThreadFetchPackages::run()
                  p != p_end;
                  ++p)
             {
-                QList<QVariant> data;
+                Item* p_item = makePackageItem(m_main->taskbox()->tasks(),
+                                            stringify(p->package).c_str(),
+                                            stringify(p->category).c_str(),
+                                            stringify(r->name()).c_str());
 
-                QVariantList tasks = m_main->taskbox()->tasks();
-                data << QVariant(tasks) <<
-                    stringify(p->package).c_str() <<
-                    stringify(p->category).c_str() <<
-                    stringify(r->name()).c_str() <<
-                    Qt::Unchecked;
-
-                Item* p_item = new PackageItem(data);
                 root->appendChild(p_item);
 
                 int mp=0;
@@ -111,19 +106,11 @@ void pertubis::ThreadFetchPackages::run()
                      vstart != vend;
                      ++vstart)
                 {
-                    QList<QVariant> vdata;
-
-                    vdata << QVariant(m_main->taskbox()->tasks()) <<
-                    stringify((*vstart)->version()).c_str() <<
-                    stringify(p->category).c_str() <<
-                    stringify(r->name()).c_str() <<
-                    Qt::Unchecked;
-
-//                     (m_main->taskbox()->task(m_main->tidInstall())->hasEntry(*vstart) ? Qt::Checked : Qt::Unchecked );
-                    Item* v_item = new VersionItem(*vstart,vdata);
+                    Item* v_item = makeVersionItem(*vstart,
+                    m_main->taskbox()->tasks(),
+                                    stringify((*vstart)->version()).c_str());
 
                     p_item->appendChild(v_item);
-
                     m_main->taskbox()->setItemTasks(v_item);
 
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )

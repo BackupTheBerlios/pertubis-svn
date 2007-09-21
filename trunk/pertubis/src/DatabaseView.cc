@@ -162,9 +162,11 @@ pertubis::DatabaseView::DatabaseView()
     loadSettings();
     if (!rootTest() )
     {
-        QMessageBox::warning(0,
+        QMessageBox::warning(this,
                             tr("unpriviledged mode"),
-                            tr("You are a normal user. Some features will only work for administrators ( root )"));
+                            tr("You are a normal user. Some features will only work for administrators ( root )"),
+                            QMessageBox::Ok,
+                            QMessageBox::Ok);
     }
 }
 
@@ -581,7 +583,7 @@ void pertubis::DatabaseView::slotSync()
 {
     if (!rootTest() )
     {
-        QMessageBox::warning(0,
+        QMessageBox::warning(this,
                             tr("warning"),
                             tr("You must be root for syncing repositories"));
         return;
@@ -602,7 +604,7 @@ void pertubis::DatabaseView::slotSearchItem()
 
     if (m_threadItem->isRunning())
     {
-        int res = QMessageBox::question( 0, tr("Warning"),
+        int res = QMessageBox::question( this, tr("Warning"),
                         tr("Search is already running! Yes for starting the new one or no for waiting until the pending is finished?"),QMessageBox::Yes,QMessageBox::No);
         if (res == QMessageBox::No )
         {

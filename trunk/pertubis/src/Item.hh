@@ -111,7 +111,7 @@ namespace pertubis
         Q_OBJECT
 
         public:
-            RootItem() : Item(QList<QVariant>() << "" << "" << "" << "" << "",Item::is_stable) {}
+            RootItem();
             UpdateRange updateRange() const;
     };
 

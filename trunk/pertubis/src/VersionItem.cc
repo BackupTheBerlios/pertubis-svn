@@ -30,7 +30,7 @@ pertubis::VersionItem::VersionItem( const paludis::tr1::shared_ptr<const paludis
                                     Item(id,dats,Item::is_stable)
 {
     // VersionItem has no childs in the moment!
-    setBestChild(this);
+//     setBestChild(this);
 }
 
 bool pertubis::VersionItem::available() const
@@ -48,3 +48,17 @@ pertubis::Item::UpdateRange pertubis::VersionItem::updateRange() const
     return Item::ur_child;
 }
 
+pertubis::Item* pertubis::makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                                        QVariantList selections,
+                                        QString version,
+                                        int mystate)
+{
+    return new VersionItem(id,
+            QVariantList() <<
+            QVariant(selections) <<
+            version <<
+            "" <<
+            "" <<
+            "" <<
+            mystate);
+}

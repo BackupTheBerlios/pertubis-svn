@@ -31,7 +31,6 @@ namespace paludis
     class PackageID;
 }
 
-
 namespace pertubis
 {
     class VersionItem : public Item
@@ -56,9 +55,13 @@ namespace pertubis
             paludis::tr1::shared_ptr<const paludis::PackageID> ID();
     };
 
-//     Item* makeVersionItem( paludis::tr1::shared_ptr<const paludis::PackageID> id,
-//                            QString cat,
-//                             QString pack);
+    /*! \brief helps us creating correctly a VersionItem
+    *
+    */
+    Item* makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                        QVariantList selections,
+                        QString version,
+                        int mystate=Qt::Unchecked);
 }
 
 #endif

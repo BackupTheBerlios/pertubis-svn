@@ -46,7 +46,8 @@ pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
 
     m_line = new QLineEdit(this);
 
-    m_label = new QLabel(tr("&Find"));
+    m_label = new QLabel(this);
+    m_label->setText(tr("&Find"));
     m_label->setBuddy(m_line);
 
 

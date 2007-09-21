@@ -155,25 +155,24 @@ void pertubis::TaskBoxTest::setItemTasks()
     if (ids_1->empty() )
         QFAIL("no packages found");
 
-    paludis::tr1::shared_ptr<const paludis::PackageIDSequence> ids_2(
-            env->package_database()->query(
-                                  paludis::query::Matches(paludis::PackageDepSpec("app-shells/bash", paludis::pds_pm_eapi_0_strict)) &
-            paludis::query::InstalledAtRoot(env->root()),
-                                            paludis::qo_order_by_version));
-
-    if (ids_2->empty() )
-        QFAIL("no packages found");
-
     install->addEntry(*ids_1->begin());
-    install->addEntry(*ids_2->begin());
-    Item* pitem = new PackageItem(box->tasks());
-    Item* vitem = new VersionItem(*ids_1->begin(),box->tasks());
-    pitem->appendChild(vitem);
-    pitem->setBestChild(vitem);
+    Item* pitem = makePackageItem(box->tasks(),
+                                stringify( (*ids_1->begin())->name().package).c_str(),
+                                stringify( (*ids_1->begin())->name().category).c_str(),
+                                stringify( (*ids_1->begin())->repository()->name()).c_str());
+    for (paludis::PackageIDSequence::Iterator vstart(ids_1->begin()),vend(ids_1->end());
+         vstart != vend;
+         ++vstart)
+    {
+        Item* vitem = makeVersionItem(*ids_1->begin(),
+                                    box->tasks(),
+                                    stringify( (*ids_1->begin())->version()).c_str());
+        pitem->appendChild(vitem);
+        pitem->setBestChild(vitem);
+        box->setItemTasks(vitem);
+    }
 
     // begin testing
-
-    box->setItemTasks(vitem);
 
 //     QVariantList list_1 = vitem->data(Item::io_selected).toList();
 //     QCOMPARE(list_1,QVariantList() << QVariant(2) );
