@@ -33,7 +33,7 @@ QVariantList pertubis::TaskBox::selectionData(paludis::tr1::shared_ptr<const pal
     {
         list.push_back( ((*mytask)->hasEntry(id ) ) ? Qt::Checked : Qt::Unchecked);
     }
-    qDebug() << "TaskBox::selectionData()" << list;
+//     qDebug() << "TaskBox::selectionData()" << list;
     return list;
 }
 

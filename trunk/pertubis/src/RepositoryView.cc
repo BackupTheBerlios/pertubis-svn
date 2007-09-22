@@ -21,9 +21,13 @@
 #include "RepositoryModel.hh"
 
 #include <QGridLayout>
+#include <QHeaderView>
 
-pertubis::RepositoryView::RepositoryView(QWidget* parent) : QTableView( parent)
+pertubis::RepositoryInfoView::RepositoryInfoView(QWidget* pobj) : QTableView( pobj)
 {
-    QGridLayout* box = new QGridLayout(this);
+    horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    horizontalHeader()->setVisible(true);
+    horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    hide();
 }
 

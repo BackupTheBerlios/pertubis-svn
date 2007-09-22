@@ -21,7 +21,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_MODEL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_MODEL_H
 
-#include <QAbstractTableModel>
+#include <QAbstractItemModel>
 #include <QList>
 #include <QStringList>
 #include <QVariant>

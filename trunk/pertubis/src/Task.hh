@@ -49,6 +49,8 @@ namespace pertubis
 
     public:
 
+        typedef std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator Iterator;
+
         Task() : m_taskid(-1) {}
         Task(QObject* pobject,QString name);
         Task(QObject* pobject,
@@ -104,7 +106,7 @@ namespace pertubis
 
         /*! \brief Use this class if you want to process a child items' selection change and its side effects on items' parent (The UpdateRange )
         * \param item The item to process
-        * \param mystate add or delete the item to this task
+        * \param mystate one of the values of Qt::CheckRole
         * We have to process every change here since only the task exactly knows how to deal with it. The task must be able to ask the item for the UpdateRange
         */
         virtual bool changeChildStates(Item* item, int mystate)=0;

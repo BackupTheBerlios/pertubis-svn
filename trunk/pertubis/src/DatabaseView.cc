@@ -25,6 +25,9 @@
 #include "OptionsDelegate.hh"
 #include "PackageItem.hh"
 #include "PackageModel.hh"
+#include "RepositoryListModel.hh"
+#include "RepositoryInfoModel.hh"
+#include "RepositoryView.hh"
 #include "SearchWindow.hh"
 #include "Settings.hh"
 #include "SyncTask.hh"
@@ -45,7 +48,6 @@
 #include <QDesktopServices>
 #include <QDebug>
 #include <QDockWidget>
-#include <QDockWidget>
 #include <QFile>
 #include <QHeaderView>
 #include <QLayout>
@@ -65,7 +67,6 @@
 #include <QTextStream>
 #include <QToolBar>
 #include <QUrl>
-
 
 #include <iostream>
 
@@ -99,7 +100,14 @@ namespace pertubis
 bool pertubis::rootTest()
 {
     if (0 == getuid() )
+    {
+        QMessageBox::warning(0,
+                            QObject::tr("unpriviledged mode"),
+                            QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
+                                   QMessageBox::Ok,
+                                   QMessageBox::Ok);
         return true;
+    }
     return false;
 }
 
@@ -113,7 +121,26 @@ void pertubis::PackageView::mousePressEvent(QMouseEvent* ev)
     QTreeView::mousePressEvent(ev);
 }
 
-pertubis::DatabaseView::DatabaseView()
+pertubis::DatabaseView::DatabaseView() :
+    m_catModel(0),
+    m_current(0),
+    m_output(0),
+    m_packModel(0),
+    m_packages(0),
+    m_filter(0),
+    m_repoInfoView(0),
+    m_repoListModel(0),
+    m_repoInfoModel(0),
+    m_windowSearch(0),
+    m_settings(0),
+    m_box(0),
+    m_threadCategories(0),
+    m_threadDetails(0),
+    m_threadItem(0),
+    m_threadPackages(0),
+    m_threadKeywords(0),
+    m_threadShowSel(0),
+    m_syncTask(0)
 {
     qRegisterMetaType<QTextCursor>("QTextCursor");
     m_settings = new Settings(this);
@@ -146,11 +173,13 @@ pertubis::DatabaseView::DatabaseView()
     m_threadPackages = new ThreadFetchPackages(this,this);
     m_threadDetails = new ThreadFetchDetails(this,this);
     m_threadShowSel = new ThreadShowSelections(this,this);
+    m_threadRepo = new ThreadRepository(this,this);
 
     createCatbar();
     createDetails();
 
     createPackageView();
+    createRepositoryView();
     createTrayMenu();
     createToolBar();
 
@@ -160,14 +189,7 @@ pertubis::DatabaseView::DatabaseView()
     m_syncTask = new OurSyncTask(m_env,this,m_output->output());
     statusBar()->showMessage(tr("ready"));
     loadSettings();
-    if (!rootTest() )
-    {
-        QMessageBox::warning(this,
-                            tr("unpriviledged mode"),
-                            tr("You are a normal user. Some features will only work for administrators ( root )"),
-                            QMessageBox::Ok,
-                            QMessageBox::Ok);
-    }
+    rootTest();
 }
 
 pertubis::DatabaseView::~DatabaseView()
@@ -301,10 +323,12 @@ void pertubis::DatabaseView::createToolBar()
     m_toolBar->addAction(m_acSync);
     m_toolBar->addAction(m_acToggleCatBar);
     m_toolBar->addAction(m_acTogglePackageView);
+    m_toolBar->addAction(m_acToggleRepoView);
     m_toolBar->addAction(m_acToggleSearchWindow);
     m_toolBar->addAction(m_acSelection);
     m_toolBar->addAction(m_acFinish);
     m_toolBar->addAction(m_acPref);
+
 }
 
 void pertubis::DatabaseView::createOutput()
@@ -312,6 +336,38 @@ void pertubis::DatabaseView::createOutput()
     m_output = new MessageOutput(this);
     m_tabs->addTab(m_output,tr("Messages"));
 
+}
+
+void pertubis::DatabaseView::createRepositoryView()
+{
+    m_dockRepo = new QDockWidget(tr("repository list"),this);
+    m_dockRepo->layout()->setMargin(0);
+    m_dockRepo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    m_repoInfoView = new RepositoryInfoView(this);
+    m_repoListModel = new RepositoryListModel(this);
+    m_repoListView->setModel(m_repoListModel);
+    m_repoListModel->setHorizontalHeaderLabels(QStringList() <<
+            tr("name") <<
+            tr("value"));
+    m_vSplit->addWidget(m_repoListView);
+
+    m_repoListModel = new RepositoryListModel(this);
+
+    m_repoListView = new QTableView(this);
+    m_repoListView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    m_repoListView->horizontalHeader()->setVisible(false);
+    m_repoListView->verticalHeader()->setVisible(false);
+    m_repoListView->setModel(m_repoListModel);
+    m_repoListView->setShowGrid(false);
+    m_dockCat->setWidget(m_repoListView);
+    addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
+
+    connect(m_threadRepo,
+            SIGNAL(sendResult(QList<RepositoryItem>)),
+            m_repoListModel,
+            SLOT(slotResult(QList<RepositoryItem>)));
+
+    m_threadRepo->start();
 }
 
 void pertubis::DatabaseView::createDetails()
@@ -358,8 +414,13 @@ void pertubis::DatabaseView::createActions()
     m_acQuit = new QAction( QPixmap(":images/quit_22.xpm"),tr("quit") ,this);
     m_acQuit->setToolTip(tr("<html><h1><u>%1</u></h1><p>closing the pertubis suite.</p><p><b>All unsaved changes will be lost!</b></p></html>").arg(m_acQuit->text()));
 
+    m_acToggleRepoView = new QAction(tr("Repositories"),this);
+    m_acToggleRepoView->setCheckable(true);
+    m_acToggleRepoView->setChecked(false);
+    m_acToggleRepoView->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the repositories window in the middle</p></html>").arg(m_acToggleRepoView->text()) );
+
     m_acInstall= new QAction(tr("install"),this);
-    m_acInstall->setStatusTip( tr("install this package"));
+    m_acInstall->setToolTip( tr("install this package"));
     m_acInstall->setCheckable(true);
 
     m_acDeinstall= new QAction(tr("deinstall"),this);
@@ -407,7 +468,10 @@ void pertubis::DatabaseView::createActions()
             this,
             SLOT(slotEditUseTask()));
 
-
+    connect(m_acToggleRepoView,
+            SIGNAL(triggered()),
+                   this,
+                   SLOT(slotToggleRepoView()));
 }
 
 void pertubis::DatabaseView::createTasks()
@@ -581,7 +645,7 @@ void pertubis::DatabaseView::slotShowSelectedPackages()
 
 void pertubis::DatabaseView::slotSync()
 {
-    if (!rootTest() )
+    if (getuid() != 0 )
     {
         QMessageBox::warning(this,
                             tr("warning"),
@@ -674,7 +738,38 @@ void pertubis::DatabaseView::slotQuit()
 
 void pertubis::DatabaseView::slotTogglePackageView()
 {
-    m_vSplit->setVisible(!m_vSplit->isVisible());
+    if (m_packages->isVisible())
+    {
+        m_packages->hide();
+        m_dockCat->hide();
+        m_repoListView->show();
+        m_dockRepo->show();
+    }
+    else
+    {
+        m_packages->show();
+        m_dockCat->show();
+        m_dockRepo->hide();
+        m_repoListView->hide();
+    }
+}
+
+void pertubis::DatabaseView::slotToggleRepoView()
+{
+    if (m_repoListView->isVisible())
+    {
+        m_packages->show();
+        m_dockCat->show();
+        m_dockRepo->hide();
+        m_repoListView->hide();
+    }
+    else
+    {
+        m_packages->hide();
+        m_dockCat->hide();
+        m_repoListView->show();
+        m_dockRepo->show();
+    }
 }
 
 void pertubis::DatabaseView::slotToggleSearchWindow()

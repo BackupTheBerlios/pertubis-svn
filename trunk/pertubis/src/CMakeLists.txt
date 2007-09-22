@@ -9,7 +9,6 @@ SET(PERTUBIS_SRCS
     description_extractor.cc
     extractor.cc
     InstallTask.cc
-    QTOutputStream.hh
     Item.cc
     matcher.cc
     MessageOutput.cc
@@ -18,19 +17,24 @@ SET(PERTUBIS_SRCS
     PackageItem.cc
     PackageModel.cc
     pcre_matcher.cc
+    QTOutputStream.hh
+    RepositoryView.cc
+    RepositoryListModel.cc
+    RepositoryInfoModel.cc
     SearchWindow.cc
     Settings.cc
+    SyncTask.cc
     TaskBox.cc
     Task.cc
     text_matcher.cc
-    SyncTask.cc
     ThreadBase.cc
     ThreadFetchCategories.cc
     ThreadFetchDetails.cc
     ThreadFetchItem.cc
     ThreadFetchPackages.cc
     ThreadShowSelections.cc
-    VersionItem.cc)
+    VersionItem.cc
+)
 
 SET(PERTUBIS_MAIN_SRCS
  	main.cc)
@@ -45,6 +49,9 @@ SET(PERTUBIS_MOC_HDRS
     OptionsDelegate.hh
     PackageItem.hh
     PackageModel.hh
+    RepositoryView.hh
+    RepositoryListModel.hh
+    RepositoryInfoModel.hh
     SearchWindow.hh
     Settings.hh
     TaskBox.hh
@@ -53,9 +60,10 @@ SET(PERTUBIS_MOC_HDRS
     ThreadFetchCategories.hh
     ThreadFetchDetails.hh
     ThreadFetchItem.hh
-    ThreadShowSelections.hh
     ThreadFetchPackages.hh
-    VersionItem.hh)
+    ThreadShowSelections.hh
+    VersionItem.hh
+)
 
 EXEC_PROGRAM("/bin/sh"
     ARGS "${CMAKE_CURRENT_SOURCE_DIR}/../utils/scripts/gen_qresource.sh"

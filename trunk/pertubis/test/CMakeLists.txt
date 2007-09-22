@@ -2,57 +2,63 @@
 INCLUDE_DIRECTORIES(. ../src/ ${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR})
 
 SET(PERTUBIS_SRCS
-	../src/ArchModel.cc
-	../src/CategoryModel.cc
-	../src/DatabaseView.cc
-	../src/description_extractor.cc
-	../src/extractor.cc
-	../src/matcher.cc
-	../src/name_extractor.cc
-	../src/OptionsDelegate.cc
+    ../src/ArchModel.cc
+    ../src/CategoryModel.cc
+    ../src/DatabaseView.cc
+    ../src/DeinstallTask.cc
+    ../src/description_extractor.cc
+    ../src/extractor.cc
+    ../src/InstallTask.cc
+    ../src/Item.cc
+    ../src/matcher.cc
     ../src/MessageOutput.cc
-	../src/Item.cc
-	../src/PackageItem.cc
-	../src/VersionItem.cc
-	../src/PackageModel.cc
-	../src/pcre_matcher.cc
-	../src/SearchWindow.cc
-	../src/InstallTask.cc
-	../src/DeinstallTask.cc
-	../src/Settings.cc
-	../src/TaskBox.cc
-	../src/Task.cc
+    ../src/name_extractor.cc
+    ../src/OptionsDelegate.cc
+    ../src/PackageItem.cc
+    ../src/PackageModel.cc
+    ../src/pcre_matcher.cc
+    ../src/RepositoryView.cc
+    ../src/RepositoryInfoModel.cc
+    ../src/RepositoryListModel.cc
+    ../src/SearchWindow.cc
+    ../src/Settings.cc
     ../src/SyncTask.cc
-	../src/text_matcher.cc
-	../src/ThreadBase.cc
-	../src/ThreadFetchCategories.cc
-	../src/ThreadFetchDetails.cc
-	../src/ThreadFetchItem.cc
-	../src/ThreadFetchPackages.cc
+    ../src/TaskBox.cc
+    ../src/Task.cc
+    ../src/text_matcher.cc
+    ../src/ThreadBase.cc
+    ../src/ThreadFetchCategories.cc
+    ../src/ThreadFetchDetails.cc
+    ../src/ThreadFetchItem.cc
+    ../src/ThreadFetchPackages.cc
     ../src/ThreadShowSelections.cc
+    ../src/VersionItem.cc
 )
 
 SET(PERTUBIS_MOC_HDRS
-	../src/CategoryModel.hh
-	../src/DatabaseView.hh
-	../src/OptionsDelegate.hh
-	../src/InstallTask.hh
+    ../src/CategoryModel.hh
+    ../src/DatabaseView.hh
+    ../src/DeinstallTask.hh
+    ../src/InstallTask.hh
+    ../src/Item.hh
     ../src/MessageOutput.hh
-	../src/DeinstallTask.hh
-	../src/PackageItem.hh
-	../src/VersionItem.hh
-	../src/Item.hh
-	../src/PackageModel.hh
-	../src/SearchWindow.hh
-	../src/Settings.hh
-	../src/TaskBox.hh
-	../src/Task.hh
-	../src/ThreadBase.hh
-	../src/ThreadFetchCategories.hh
-	../src/ThreadFetchDetails.hh
-	../src/ThreadFetchItem.hh
-	../src/ThreadFetchPackages.hh
+    ../src/OptionsDelegate.hh
+    ../src/PackageItem.hh
+    ../src/PackageModel.hh
+    ../src/RepositoryView.hh
+    ../src/RepositoryInfoModel.hh
+    ../src/RepositoryListModel.hh
+    ../src/SearchWindow.hh
+    ../src/Settings.hh
+    ../src/TaskBox.hh
+    ../src/Task.hh
+    ../src/ThreadBase.hh
+    ../src/ThreadFetchCategories.hh
+    ../src/ThreadFetchDetails.hh
+    ../src/ThreadFetchItem.hh
+    ../src/ThreadFetchPackages.hh
     ../src/ThreadShowSelections.hh
+    ../src/VersionItem.hh
 )
 
 ADD_DEFINITIONS(-DPALUDIS_TR1_MEMORY_IS_STD_TR1=1 -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1 -DPALUDIS_TR1_FUNCTIONAL_IS_STD_TR1=1)

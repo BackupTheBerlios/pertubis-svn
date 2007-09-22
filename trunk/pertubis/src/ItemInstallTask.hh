@@ -17,8 +17,8 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_OUR_INSTALL_TASK_H
-#define _PERTUBIS_ENTRY_PROTECTOR_OUR_INSTALL_TASK_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_INSTALL_TASK_H
+#define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_TASK_H
 
 #include <paludis/tasks/install_task.hh>
 
@@ -57,7 +57,7 @@ std::string make_resume_command(const Environment * const env, const InstallTask
 
 namespace pertubis
 {
-    class OurInstallTask :
+    class Install :
             public ConsoleInstallTask
     {
         private:

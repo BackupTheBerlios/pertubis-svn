@@ -17,32 +17,64 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "RepositoryModel.hh"
+#include "RepositoryListModel.hh"
 
-namespace pertubis
+
+#include <QSet>
+#include <QString>
+#include <QDebug>
+
+pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj) : QAbstractListModel(pobj)
 {
-    /*! \brief not finished
-    *
-    */
-    class RepositoryThread : public QThread
-    {
-        public:
-            RepositoryThread(QObject* parent) : QThread(parent) {}
-            void run()
-            {
-                for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
-                    r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
-                    r != r_end ; ++r)
-                {
-                    std::tr1::shared_ptr<const RepositoryInfo> info = r->info();
-
-                }
-            }
-        private:
-            std::tr1::shared_ptr<paludis::Environment>         m_env;
-    };
 }
 
-pertubis::RepositoryModel::RepositoryModel(QObject* parent) : QAbstractListModel(parent)
+pertubis::RepositoryListModel::~RepositoryListModel()
 {
+}
+
+void pertubis::RepositoryListModel::setHorizontalHeaderLabels ( const QStringList & labels )
+{
+    m_header = labels;
+}
+
+QVariant pertubis::RepositoryListModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count() )
+        return QVariant();
+    return *(m_header.begin() + section);
+}
+
+void pertubis::RepositoryListModel::slotPopulateModel(QStringList cl)
+{
+    QString cat;
+    foreach (cat,cl)
+    {
+        m_data << cat;
+    }
+    m_data.sort();
+    reset();
+}
+
+int pertubis::RepositoryListModel::rowCount( const QModelIndex & pobj ) const
+{
+    return pobj.isValid() ? 0 : m_data.count();
+}
+
+int pertubis::RepositoryListModel::columnCount( const QModelIndex & pobj ) const
+{
+    return pobj.isValid() ? 0 : m_header.count();
+}
+
+QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int role) const
+{
+    if (!m_index.isValid())
+         return QVariant();
+
+     if (m_index.row() >= m_data.size())
+         return QVariant();
+
+     if (role == Qt::DisplayRole)
+         return m_data.at(m_index.row());
+     else
+         return QVariant();
 }

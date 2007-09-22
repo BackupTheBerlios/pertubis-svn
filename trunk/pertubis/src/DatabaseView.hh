@@ -52,11 +52,16 @@ namespace pertubis
     class ReleaseEater;
     class SearchWindow;
     class OurSyncTask;
+    class RepositoryListModel;
+    class RepositoryInfoModel;
+    class RepositoryListView;
+    class RepositoryInfoView;
     class Settings;
     class TaskBox;
     class ThreadFetchCategories;
     class ThreadFetchDetails;
     class ThreadFetchItem;
+    class ThreadRepository;
     class ThreadShowSelections;
     class ThreadFetchPackages;
     class ThreadKeywordManager;
@@ -106,6 +111,7 @@ namespace pertubis
         void createOptionsMenu();
         void createOutput();
         void createPackageView();
+        void createRepositoryView();
         void createTasks();
         void createToolBar();
         void createTrayMenu();
@@ -132,11 +138,13 @@ namespace pertubis
         QAction*                m_acSelection;
         QAction*                m_acSync;
         QAction*                m_acToggleCatBar;
+        QAction*                m_acToggleRepoView;
         QAction*                m_acToggleMainWindow;
         QAction*                m_acTogglePackageView;
         QAction*                m_acToggleSearchWindow;
         QAction*                m_acToggleUseBar;
         QDockWidget*            m_dockCat;
+        QDockWidget*            m_dockRepo;
         QDockWidget*            m_dockDetails;
         QDockWidget*            m_dockUse;
         QMenu*                  m_options;
@@ -144,9 +152,13 @@ namespace pertubis
         QSplitter*              m_vSplit;
         QTabWidget*             m_tabs;
         QTableView*             m_categories;
+        QTableView*             m_repoListView;
         QTextBrowser*           m_details;
         QToolBar*               m_toolBar;
         ReleaseEater*           m_filter;
+        RepositoryInfoView*     m_repoInfoView;
+        RepositoryListModel*    m_repoListModel;
+        RepositoryInfoModel*    m_repoInfoModel;
         SearchWindow*           m_windowSearch;
         Settings*               m_settings;
         TaskBox*                m_box;
@@ -156,6 +168,7 @@ namespace pertubis
         ThreadFetchPackages*    m_threadPackages;
         ThreadKeywordManager*   m_threadKeywords;
         ThreadShowSelections*   m_threadShowSel;
+        ThreadRepository*       m_threadRepo;
         OurSyncTask*            m_syncTask;
 
         int                     m_tidInstall;
@@ -184,6 +197,7 @@ namespace pertubis
 
         void slotToggleMainWindow();
         void slotTogglePackageView();
+        void slotToggleRepoView();
         void slotToggleSearchWindow();
     };
 

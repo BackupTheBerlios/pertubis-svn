@@ -170,24 +170,24 @@ void pertubis::TaskBoxTest::setItemTasks()
         pitem->appendChild(vitem);
         pitem->setBestChild(vitem);
         box->setItemTasks(vitem);
+        QVariantList list = vitem->data(Item::io_selected).toList();
+        QCOMPARE(list,QVariantList() << QVariant(2) );
     }
 
-    // begin testing
+    QCOMPARE(install->hasEntry(pitem->ID()),true );
+    QVariantList list = pitem->data(Item::io_selected).toList();
+    QCOMPARE(list,QVariantList() << QVariant(2) );
 
-//     QVariantList list_1 = vitem->data(Item::io_selected).toList();
-//     QCOMPARE(list_1,QVariantList() << QVariant(2) );
-//
-//     QVariantList list_2 = pitem->data(Item::io_selected).toList();
-//     QCOMPARE(list_2,QVariantList() << QVariant(2) );
-//
-//     install->deleteEntry(*ids_2->begin());
-//     box->setItemTasks(vitem);
-//
-//     list_1 = vitem->data(Item::io_selected).toList();
-//     QCOMPARE(list_1,QVariantList() << QVariant(0) );
-//
-//     list_2 = pitem->data(Item::io_selected).toList();
-//     QCOMPARE(list_2,QVariantList() << QVariant(0) );
+    install->deleteEntry(pitem->ID());
+    QCOMPARE(install->hasEntry(pitem->ID()),false );
+    box->setItemTasks(pitem->bestChild());
+
+    list = pitem->bestChild()->data(Item::io_selected).toList();
+    qDebug() << list;
+    QCOMPARE(list,QVariantList() << QVariant(0));
+
+    list = pitem->data(Item::io_selected).toList();
+    QCOMPARE(list,QVariantList() << QVariant(2) );
 
     delete box;
     delete install;

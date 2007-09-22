@@ -45,8 +45,7 @@ void pertubis::Task::addEntry(paludis::tr1::shared_ptr<const paludis::PackageID>
 
 void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
-    std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::iterator res;
-//     qDebug() << "Task::deleteEntry() - before" << m_data.size();
+    qDebug() << "Task::deleteEntry() - before" << m_data.size();
     for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::iterator idIter(m_data.begin()),
          idEnd(m_data.end());
          idIter != idEnd;
@@ -54,22 +53,22 @@ void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::Package
     {
         if ( *id.get() == *(*idIter) )
         {
-//             qDebug() << "Task::deleteEntry() - deleting";
+            qDebug() << "Task::deleteEntry() - deleting";
             m_data.erase(idIter);
             break;
         }
     }
-//     qDebug() << "Task::deleteEntry() - after" << m_data.size();
+    qDebug() << "Task::deleteEntry() - after" << m_data.size();
 }
 
 bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const
 {
-    for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator idIter(m_data.begin()),
+    for (Iterator idIter(m_data.begin()),
          idEnd(m_data.end());
          idIter != idEnd;
          ++idIter)
     {
-        if ( *id.get() == *(*idIter) )
+        if ( *id.get() == *(idIter->get()) )
         {
             return true;
         }
@@ -87,7 +86,6 @@ void pertubis::Task::fillAction(Item* item)
 void pertubis::Task::changeEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id,bool mystate)
 {
 //     qDebug() << "Task::changeEntry() - start" << m_name << mystate;
-
     if (mystate)
         addEntry(id);
     else
