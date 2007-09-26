@@ -28,11 +28,11 @@ SET(PERTUBIS_SRCS
     ../src/Task.cc
     ../src/text_matcher.cc
     ../src/ThreadBase.cc
-    ../src/ThreadFetchCategories.cc
-    ../src/ThreadFetchDetails.cc
-    ../src/ThreadFetchItem.cc
-    ../src/ThreadFetchPackages.cc
-    ../src/ThreadShowSelections.cc
+    ../src/CategoriesThread.cc
+    ../src/PackagesThread.cc
+    ../src/SearchThread.cc
+    ../src/DetailsThread.cc
+    ../src/ShowSelectionsThread.cc
     ../src/VersionItem.cc
 )
 
@@ -54,11 +54,11 @@ SET(PERTUBIS_MOC_HDRS
     ../src/TaskBox.hh
     ../src/Task.hh
     ../src/ThreadBase.hh
-    ../src/ThreadFetchCategories.hh
-    ../src/ThreadFetchDetails.hh
-    ../src/ThreadFetchItem.hh
-    ../src/ThreadFetchPackages.hh
-    ../src/ThreadShowSelections.hh
+    ../src/CategoriesThread.hh
+    ../src/PackagesThread.hh
+    ../src/SearchThread.hh
+    ../src/DetailsThread.hh
+    ../src/ShowSelectionsThread.hh
     ../src/VersionItem.hh
 )
 

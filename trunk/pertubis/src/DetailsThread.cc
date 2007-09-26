@@ -18,42 +18,37 @@
 */
 
 
-#include "ThreadFetchDetails.hh"
+#include "DetailsThread.hh"
+
 #include "DatabaseView.hh"
-#include <QDebug>
-
-
+#include "FormatterUtils.hh"
 #include "HtmlFormatter.hh"
-#include <paludis/mask.hh>
-#include <paludis/environment.hh>
-#include <paludis/package_database.hh>
+
 #include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
+#include <paludis/mask.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/metadata_key.hh>
 
-// #include <paludis/util/tr1_memory.hh>
-// #include "pcre_matcher.hh"
-// #include "text_matcher.hh"
-#include "Utils.hh"
-// #include "description_extractor.hh"
-// #include "name_extractor.hh"
+#include <QDebug>
 
 namespace
 {
     class Displayer : public paludis::ConstVisitor<paludis::MetadataKeyVisitorTypes>
     {
         private:
-            pertubis::ThreadFetchDetails* thread;
+            pertubis::DetailsThread* thread;
             const paludis::Environment * const env;
             const paludis::tr1::shared_ptr<const paludis::PackageID> id;
             const paludis::MetadataKeyType type;
 
         public:
-            Displayer(pertubis::ThreadFetchDetails *  t,
+            Displayer(pertubis::DetailsThread *  t,
                     const paludis::Environment * const e,
                     const paludis::tr1::shared_ptr<const paludis::PackageID> & i,
                     const paludis::MetadataKeyType k) :
@@ -194,23 +189,23 @@ namespace
     };
 }
 
-pertubis::ThreadFetchDetails::ThreadFetchDetails(QObject* pobj,
+pertubis::DetailsThread::DetailsThread(QObject* pobj,
         DatabaseView* main) : ThreadBase(pobj,main)
 {
 }
 
-void pertubis::ThreadFetchDetails::appendOutput(std::string text)
+void pertubis::DetailsThread::appendOutput(std::string text)
 {
     m_output.append(QString::fromStdString(text));
 }
 
-void pertubis::ThreadFetchDetails::search( paludis::tr1::shared_ptr<const paludis::PackageID> id)
+void pertubis::DetailsThread::search( paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
     m_id = id;
     start();
 }
 
-void pertubis::ThreadFetchDetails::run()
+void pertubis::DetailsThread::run()
 {
     qDebug() << "PackageDetails::fetchDetails() - start";
 
@@ -219,8 +214,8 @@ void pertubis::ThreadFetchDetails::run()
 "<body bgcolor=\"#aaaaaa\" text=\"black\">\n"
 "    <table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"15\">\n"
 "            <colgroup>\n"
-"                <col width=\"50%\">\n"
-"                <col width=\"50%\">\n"
+"                <col width=\"30%\">\n"
+"                <col width=\"70%\">\n"
 "            </colgroup>\n"
 "            <tr>\n"
 "               <th colspan=\"2\" align=\"left\">%1-%2</th>\n"
@@ -239,7 +234,7 @@ void pertubis::ThreadFetchDetails::run()
 "        </table>\n"
 " </body>\n"
 "</html>\n"));
-    qDebug() << m_output;
+//     qDebug() << m_output;
     emit detailsResult(m_output);
     qDebug() << "PackageDetails::fetchDetails() - done";
 }

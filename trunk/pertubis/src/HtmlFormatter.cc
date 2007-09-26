@@ -22,7 +22,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/name.hh>
-#include "Utils.hh"
+#include "FormatterUtils.hh"
 
 pertubis::HtmlFormatter::HtmlFormatter() :
         new_use_flag_names(new paludis::UseFlagNameSet),

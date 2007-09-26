@@ -18,8 +18,8 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PALUDIS_GUARD_SRC_OUTPUT_HTML_FORMATTER_HH
-#define PALUDIS_GUARD_SRC_OUTPUT_HTML_FORMATTER_HH 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_HTML_FORMATTER_HH
+#define _PERTUBIS_ENTRY_PROTECTOR_HTML_FORMATTER_HH
 
 #include <string>
 #include <paludis/util/tr1_memory.hh>

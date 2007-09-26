@@ -32,11 +32,11 @@
 #include "Settings.hh"
 #include "SyncTask.hh"
 #include "TaskBox.hh"
-#include "ThreadFetchCategories.hh"
-#include "ThreadFetchDetails.hh"
-#include "ThreadFetchItem.hh"
-#include "ThreadFetchPackages.hh"
-#include "ThreadShowSelections.hh"
+#include "CategoriesThread.hh"
+#include "DetailsThread.hh"
+#include "PackagesThread.hh"
+#include "SearchThread.hh"
+#include "ShowSelectionsThread.hh"
 
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/name.hh>
@@ -99,7 +99,7 @@ namespace pertubis
 
 bool pertubis::rootTest()
 {
-    if (0 == getuid() )
+    if (0 != getuid() )
     {
         QMessageBox::warning(0,
                             QObject::tr("unpriviledged mode"),
@@ -234,7 +234,6 @@ void pertubis::DatabaseView::createCatbar()
             SLOT(slotPopulateModel(QStringList)));
 
     m_acToggleCatBar = m_dockCat->toggleViewAction();
-
     m_acToggleCatBar->setText(tr("catbar"));
     m_acToggleCatBar->setIcon(QPixmap(":images/catbar_22.xpm"));
     m_acToggleCatBar->setShortcut( tr("F9"));
@@ -281,8 +280,8 @@ void pertubis::DatabaseView::createPackageView()
 
     connect(m_packages,
             SIGNAL(clicked(const QModelIndex&)),
-                   this,
-                   SLOT(slotOptionsMenu(const QModelIndex&)));
+            this,
+            SLOT(slotOptionsMenu(const QModelIndex&)));
 
     connect(m_threadPackages,
             SIGNAL(finished()),
@@ -311,13 +310,13 @@ void pertubis::DatabaseView::createPackageView()
 
     connect(m_acSelection,
             SIGNAL(triggered()),
-                   this,
-                   SLOT(slotShowSelectedPackages()));
+            this,
+            SLOT(slotShowSelectedPackages()));
 
     connect(m_threadShowSel,
             SIGNAL(sendRoot(Item*)),
-                   m_packModel,
-                   SLOT(slotSetRoot(Item*)));
+            m_packModel,
+            SLOT(slotSetRoot(Item*)));
 }
 
 void pertubis::DatabaseView::createToolBar()
@@ -325,13 +324,13 @@ void pertubis::DatabaseView::createToolBar()
     m_toolBar = addToolBar( tr("database toolbar") );
     m_toolBar->addAction(m_acSync);
     m_toolBar->addAction(m_acToggleCatBar);
+    m_toolBar->addAction(m_acToggleRepoBar);
     m_toolBar->addAction(m_acTogglePackageView);
     m_toolBar->addAction(m_acToggleRepoView);
     m_toolBar->addAction(m_acToggleSearchWindow);
     m_toolBar->addAction(m_acSelection);
     m_toolBar->addAction(m_acFinish);
     m_toolBar->addAction(m_acPref);
-
 }
 
 void pertubis::DatabaseView::createOutput()
@@ -373,6 +372,12 @@ void pertubis::DatabaseView::createRepositoryView()
     m_dockRepo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     m_dockRepo->setWidget(m_repoListView);
     addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
+
+    m_acToggleRepoBar = m_dockRepo->toggleViewAction();
+    m_acToggleRepoBar->setText(tr("repository bar"));
+    m_acToggleRepoBar->setIcon(QPixmap(":images/catbar_22.xpm"));
+    m_acToggleRepoBar->setShortcut( tr("F10"));
+    m_acToggleRepoBar->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the repository sidebar</p></html>").arg(m_acToggleRepoBar->text()) );
 
     connect(m_repoInfoThread,
             SIGNAL(sendResult(QList<QVariantList>)),
@@ -438,6 +443,7 @@ void pertubis::DatabaseView::createActions()
 
     m_acToggleRepoView = new QAction(QPixmap(":images/repositories_22.xpm"),tr("Repositories"),this);
     m_acToggleRepoView->setCheckable(true);
+    m_acTogglePackageView->setChecked(true);
     m_acToggleRepoView->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the repositories window in the middle</p></html>").arg(m_acToggleRepoView->text()) );
 
     m_acInstall= new QAction(tr("install"),this);
@@ -557,10 +563,15 @@ void pertubis::DatabaseView::loadSettings()
         setVisible(settings.value("visible",true).toBool());
         resize(settings.value("size",QVariant(QSize(800,600))).toSize());
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
-        m_acToggleCatBar->setChecked(settings.value("cat_visible",true ).toBool()  );
-        m_acTogglePackageView->setChecked(settings.value("vsplit_visible",true).toBool() );
-        m_acToggleUseBar->setChecked(settings.value("useedit_visible", true).toBool());
+
+        m_acToggleCatBar->setChecked(settings.value("catbar_visible",true ).toBool()  );
+        m_acToggleRepoBar->setChecked(settings.value("repobar_visible",true ).toBool()  );
+        m_acToggleUseBar->setChecked(settings.value("usebar_visible", true).toBool());
+
+        m_acTogglePackageView->setChecked(settings.value("packageview_visible",true).toBool() );
+        m_acToggleRepoView->setChecked(settings.value("repoview_visible",true).toBool() );
         m_vSplit->restoreState(settings.value("vsplt").toByteArray());
+
         m_dockCat->setVisible(m_acToggleCatBar->isChecked());
         m_dockRepo->setVisible(m_acToggleRepoView->isChecked());
         m_dockUse->setVisible(m_acToggleUseBar->isChecked());
@@ -575,10 +586,13 @@ void pertubis::DatabaseView::saveSettings()
         settings.setValue("visible", isVisible() );
         settings.setValue("size", size() );
         settings.setValue("pos", pos());
-        settings.setValue("cat_visible", m_acToggleCatBar->isChecked());
-        settings.setValue("repo_visible", m_acToggleRepoView->isChecked());
-        settings.setValue("vsplit_visible", m_acTogglePackageView->isChecked());
-        settings.setValue("useedit_visible",m_acToggleUseBar->isChecked());
+
+        settings.setValue("catbar_visible", m_acToggleCatBar->isChecked());
+        settings.setValue("repobar_visible", m_acToggleRepoBar->isChecked());
+        settings.setValue("usebar_visible",m_acToggleUseBar->isChecked());
+
+        settings.setValue("repoview_visible", m_acToggleRepoView->isChecked());
+        settings.setValue("packageview_visible", m_acTogglePackageView->isChecked());
         settings.setValue("vsplt", m_vSplit->saveState());
     settings.endGroup();
 }
@@ -769,42 +783,12 @@ void pertubis::DatabaseView::slotQuit()
 
 void pertubis::DatabaseView::slotTogglePackageView()
 {
-    if (m_packages->isVisible())
-    {
-        m_packages->hide();
-        m_repoInfoView->show();
-
-        m_dockCat->hide();
-        m_dockRepo->show();
-    }
-    else
-    {
-        m_packages->show();
-        m_repoInfoView->hide();
-
-        m_dockCat->show();
-        m_dockRepo->hide();
-    }
+    m_packages->setVisible(!m_packages->isVisible());
 }
 
 void pertubis::DatabaseView::slotToggleRepoView()
 {
-    if (m_repoListView->isVisible())
-    {
-        m_packages->show();
-        m_repoInfoView->hide();
-
-        m_dockCat->show();
-        m_dockRepo->hide();
-    }
-    else
-    {
-        m_packages->hide();
-        m_repoInfoView->show();
-
-        m_dockCat->hide();
-        m_dockRepo->show();
-    }
+    m_repoInfoView->setVisible(!m_repoInfoView->isVisible());
 }
 
 void pertubis::DatabaseView::slotToggleSearchWindow()

@@ -18,54 +18,37 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_PACKAGES_H
-#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_PACKAGES_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_H
+#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_H 1
 
 #include "ThreadBase.hh"
 
-
-namespace paludis
-{
-    class Environment;
-}
-
-class QMenu;
-
-#include <QStringList>
-#include <set>
 
 namespace pertubis
 {
     class Item;
 
-    /*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
-    *
-    */
-    class ThreadFetchPackages : public ThreadBase
+    class ThreadShowSelections : public ThreadBase
     {
         Q_OBJECT
 
         public:
 
-            ThreadFetchPackages(QObject* parent,
-                                DatabaseView* main);
+            ThreadShowSelections(QObject* pobj, DatabaseView* main) : ThreadBase(pobj,main)
+            {
+            }
 
-            ~ThreadFetchPackages();
+        signals:
+
+            void sendRoot(Item* item);
+
+        protected:
 
             void run();
 
-            void searchPackages(QString str);
-
-        private:
-
-            void fetchPackages();
-
-            QString                                    m_query;
-
-        signals:
-            void packagesResult(Item* root);
     };
 }
-#endif
 
+
+#endif
 

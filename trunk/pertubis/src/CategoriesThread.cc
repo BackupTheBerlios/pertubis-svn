@@ -17,7 +17,7 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "ThreadFetchCategories.hh"
+#include "CategoriesThread.hh"
 #include "DatabaseView.hh"
 
 #include <paludis/environment.hh>
@@ -43,15 +43,15 @@
 #include <map>
 #include <algorithm>
 
-pertubis::ThreadFetchCategories::ThreadFetchCategories(QObject* pobj,
+pertubis::CategoriesThread::CategoriesThread(QObject* pobj,
         DatabaseView* main) : ThreadBase(pobj,main)
 {
 }
 
-void pertubis::ThreadFetchCategories::run()
+void pertubis::CategoriesThread::run()
 {
     using namespace paludis;
-    qDebug() << "ThreadFetchCategories.run() - starting";
+    qDebug() << "CategoriesThread.run() - starting";
     QSet<QString> cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
@@ -65,5 +65,5 @@ void pertubis::ThreadFetchCategories::run()
         }
     }
     emit categoriesResult(cats.toList());
-    qDebug() << "ThreadFetchCategories.run() - done";
+    qDebug() << "CategoriesThread.run() - done";
 }

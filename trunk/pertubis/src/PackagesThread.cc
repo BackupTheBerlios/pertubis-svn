@@ -17,7 +17,7 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "ThreadFetchPackages.hh"
+#include "PackagesThread.hh"
 
 #include "TaskBox.hh"
 #include "Task.hh"
@@ -50,22 +50,22 @@
 
 #include <map>
 
-pertubis::ThreadFetchPackages::ThreadFetchPackages( QObject* pobject,
+pertubis::PackagesThread::PackagesThread( QObject* pobject,
                                                     DatabaseView* main) : ThreadBase(pobject,main)
 {
 }
 
-pertubis::ThreadFetchPackages::~ThreadFetchPackages()
+pertubis::PackagesThread::~PackagesThread()
 {
 }
 
-void pertubis::ThreadFetchPackages::searchPackages(QString str)
+void pertubis::PackagesThread::searchPackages(QString str)
 {
     m_query = str;
     start();
 }
 
-void pertubis::ThreadFetchPackages::run()
+void pertubis::PackagesThread::run()
 {
     using namespace paludis;
 

@@ -139,6 +139,7 @@ namespace pertubis
         QAction*                m_acSelection;
         QAction*                m_acSync;
         QAction*                m_acToggleCatBar;
+        QAction*                m_acToggleRepoBar;
         QAction*                m_acToggleRepoView;
         QAction*                m_acToggleMainWindow;
         QAction*                m_acTogglePackageView;

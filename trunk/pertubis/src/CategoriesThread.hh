@@ -18,37 +18,36 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_H
-#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORIES_THREAD_H
+#define _PERTUBIS_ENTRY_PROTECTOR_CATEGORIES_THREAD_H 1
 
 #include "ThreadBase.hh"
 
+#include <QStringList>
 
 namespace pertubis
 {
-    class Item;
+    class KeywordManager;
 
-    class ThreadShowSelections : public ThreadBase
+    /*! \brief thread for fetching categories from repositories and returns a list of names
+    *
+    */
+    class CategoriesThread : public ThreadBase
     {
         Q_OBJECT
 
-        public:
+    public:
 
-            ThreadShowSelections(QObject* pobj, DatabaseView* main) : ThreadBase(pobj,main)
-            {
-            }
+        CategoriesThread(QObject* parent, DatabaseView* main);
 
-        signals:
+    protected:
 
-            void sendRoot(Item* item);
+        void run();
 
-        protected:
+    signals:
 
-            void run();
-
+        void categoriesResult(QStringList cl);
     };
 }
 
-
 #endif
-

@@ -18,48 +18,45 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_DETAILS_H
-#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_FETCH_DETAILS_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_SEARCH_THREAD_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SEARCH_THREAD_H 1
 
 #include "ThreadBase.hh"
-#include "PackageItem.hh"
-
-#include <paludis/util/tr1_memory.hh>
+#include "DatabaseView.hh"
 
 #include <QString>
-#include <string>
-
 
 namespace pertubis
 {
-    class DatabaseView;
+    class Item;
 
-    /*! \brief this thread asks pertubis for package details and returns preformatted text.
+    /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
     *
     */
-    class ThreadFetchDetails : public ThreadBase
+    class SearchThread : public ThreadBase
     {
         Q_OBJECT
 
     public:
 
-        ThreadFetchDetails(QObject* pobj,
-                           pertubis::DatabaseView* main);
-        void search(paludis::tr1::shared_ptr<const paludis::PackageID> id);
-        void appendOutput(std::string text);
+        SearchThread(QObject* parent,
+                        DatabaseView* main);
+
+        void search(QString str,bool name,bool desc);
+
+    protected:
 
         void run();
 
     private:
 
-        paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
-        mutable QString    m_output;
+        QString                                    m_query;
+        bool                                    m_optName;
+        bool                                    m_optDesc;
 
     signals:
-        void detailsResult(QString output);
+        void itemResult(Item* root);
     };
 }
 
 #endif
-
-

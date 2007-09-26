@@ -29,11 +29,11 @@ SET(PERTUBIS_SRCS
     Task.cc
     text_matcher.cc
     ThreadBase.cc
-    ThreadFetchCategories.cc
-    ThreadFetchItem.cc
-    ThreadFetchPackages.cc
-    ThreadFetchDetails.cc
-    ThreadShowSelections.cc
+    CategoriesThread.cc
+    PackagesThread.cc
+    SearchThread.cc
+    DetailsThread.cc
+    ShowSelectionsThread.cc
     VersionItem.cc
 )
 
@@ -56,13 +56,13 @@ SET(PERTUBIS_MOC_HDRS
     SearchWindow.hh
     Settings.hh
     TaskBox.hh
-    Task.hh
+    CategoriesThread.hh
+    PackagesThread.hh
+    SearchThread.hh
+    DetailsThread.hh
+    ShowSelectionsThread.hh
     ThreadBase.hh
-    ThreadFetchCategories.hh
-    ThreadFetchDetails.hh
-    ThreadFetchItem.hh
-    ThreadFetchPackages.hh
-    ThreadShowSelections.hh
+Thread
     VersionItem.hh
 )
 

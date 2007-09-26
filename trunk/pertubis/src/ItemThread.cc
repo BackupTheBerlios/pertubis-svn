@@ -24,7 +24,7 @@
 #include "pcre_matcher.hh"
 #include "TaskBox.hh"
 #include "text_matcher.hh"
-#include "ThreadFetchItem.hh"
+#include "SearchThread.hh"
 #include "VersionItem.hh"
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <paludis/dep_spec.hh>
@@ -40,12 +40,12 @@
 #include <QVariant>
 #include <set>
 
-pertubis::ThreadFetchItem::ThreadFetchItem(QObject* pobj,
+pertubis::SearchThread::SearchThread(QObject* pobj,
                                            DatabaseView* main) : ThreadBase(pobj,main)
 {
 }
 
-void pertubis::ThreadFetchItem::search(QString str,bool name,bool desc)
+void pertubis::SearchThread::search(QString str,bool name,bool desc)
 {
     m_query = str;
     m_optName = name;
@@ -53,14 +53,14 @@ void pertubis::ThreadFetchItem::search(QString str,bool name,bool desc)
      start();
 }
 
-void pertubis::ThreadFetchItem::run()
+void pertubis::SearchThread::run()
 {
     using namespace paludis;
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
-    qDebug() << "ThreadFetchItem::run() - query string:" << m_query;
-    qDebug() << "ThreadFetchItem::run() - searching for name:" << m_optName << m_optDesc;
-    qDebug() << "ThreadFetchItem::run() - searching for description: " << m_optDesc;
+    qDebug() << "SearchThread::run() - query string:" << m_query;
+    qDebug() << "SearchThread::run() - searching for name:" << m_optName << m_optDesc;
+    qDebug() << "SearchThread::run() - searching for description: " << m_optDesc;
     matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
 
     if (m_optName )

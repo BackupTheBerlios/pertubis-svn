@@ -18,6 +18,7 @@
  */
 
 #include "SyncTask.hh"
+#include "FormatterUtils.hh"
 #include <paludis/tasks/sync_task.hh>
 #include <paludis/util/stringify.hh>
 #include <QtGlobal>
@@ -33,7 +34,7 @@ void pertubis::OurSyncTask::on_sync_all_pre()
 
 void pertubis::OurSyncTask::on_sync_pre(const paludis::RepositoryName & r)
 {
-    m_output->append(QString("<font color=\"magenta\">Sync %1</font>").arg(stringify(r).c_str()));
+    m_output->append(QString::fromStdString(color(stringify(r),"magenta")));
 }
 
 void pertubis::OurSyncTask::on_sync_post(const paludis::RepositoryName &)
