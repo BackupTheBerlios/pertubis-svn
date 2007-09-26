@@ -26,7 +26,6 @@
 
 namespace pertubis
 {
-
     class Item;
 
     class DeinstallTask : public Task

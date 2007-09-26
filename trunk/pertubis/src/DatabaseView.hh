@@ -58,14 +58,13 @@ namespace pertubis
     class RepositoryInfoView;
     class Settings;
     class TaskBox;
-    class ThreadFetchCategories;
-    class ThreadFetchDetails;
-    class ThreadFetchItem;
+    class CategoriesThread;
+    class DetailsThread;
+    class SearchThread;
     class RepositoryListThread;
     class RepositoryInfoThread;
-    class ThreadShowSelections;
-    class ThreadFetchPackages;
-    class ThreadKeywordManager;
+    class ShowSelectionsThread;
+    class PackagesThread;
     class UseFlagEditor;
 
     /*! \brief This class only exists since we need correct mouse coordinates
@@ -164,19 +163,16 @@ namespace pertubis
         SearchWindow*           m_windowSearch;
         Settings*               m_settings;
         TaskBox*                m_box;
-        ThreadFetchCategories*  m_threadCategories;
-        ThreadFetchDetails*     m_threadDetails;
-        ThreadFetchItem*        m_threadItem;
-        ThreadFetchPackages*    m_threadPackages;
-        ThreadKeywordManager*   m_threadKeywords;
-        ThreadShowSelections*   m_threadShowSel;
+        CategoriesThread*       m_categoriesThread;
+        DetailsThread*          m_detailsThread;
+        SearchThread*           m_searchThread;
+        PackagesThread*         m_packagesThread;
+        ShowSelectionsThread*   m_selectionsThread;
         RepositoryInfoThread*   m_repoInfoThread;
         RepositoryListThread*   m_repoListThread;
         OurSyncTask*            m_syncTask;
-
         int                     m_tidInstall;
         int                     m_tidDeinstall;
-//         UseFlagEditor*          m_useflagEditor;
 
     private slots:
 

@@ -18,23 +18,22 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_H
-#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_THREAD_H
+#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_THREAD_H 1
 
 #include "ThreadBase.hh"
-
 
 namespace pertubis
 {
     class Item;
 
-    class ThreadShowSelections : public ThreadBase
+    class ShowSelectionsThread : public ThreadBase
     {
         Q_OBJECT
 
         public:
 
-            ThreadShowSelections(QObject* pobj, DatabaseView* main) : ThreadBase(pobj,main)
+            ShowSelectionsThread(QObject* pobj, DatabaseView* main) : ThreadBase(pobj,main)
             {
             }
 

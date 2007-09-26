@@ -18,7 +18,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "ThreadShowSelections.hh"
+#include "ShowSelectionsThread.hh"
 #include "PackageItem.hh"
 #include "VersionItem.hh"
 #include "TaskBox.hh"
@@ -34,7 +34,7 @@
 #include <paludis/name.hh>
 #include <paludis/repository.hh>
 
-void pertubis::ThreadShowSelections::run()
+void pertubis::ShowSelectionsThread::run()
 {
     Item* root = new RootItem();
     for (TaskBox::Iterator tStart(m_main->taskbox()->taskBegin()),

@@ -135,12 +135,11 @@ pertubis::DatabaseView::DatabaseView() :
     m_windowSearch(0),
     m_settings(0),
     m_box(0),
-    m_threadCategories(0),
-    m_threadDetails(0),
-    m_threadItem(0),
-    m_threadPackages(0),
-    m_threadKeywords(0),
-    m_threadShowSel(0),
+    m_categoriesThread(0),
+    m_detailsThread(0),
+    m_searchThread(0),
+    m_packagesThread(0),
+    m_selectionsThread(0),
     m_syncTask(0)
 {
     qRegisterMetaType<QTextCursor>("QTextCursor");
@@ -151,7 +150,6 @@ pertubis::DatabaseView::DatabaseView() :
     createOutput();
     m_env = paludis::EnvironmentMaker::get_instance()->make_from_spec("");
 
-    m_threadKeywords = 0;
     m_vSplit = new QSplitter(Qt::Vertical, this);
     m_filter = new ReleaseEater(this);
     m_box = new TaskBox(this);
@@ -170,11 +168,11 @@ pertubis::DatabaseView::DatabaseView() :
 
     // "this,this" seems stupid, but the first this will only be accessible
     // as a const reference via "const QObject& QObject::parent()"
-    m_threadItem = new ThreadFetchItem(this,this);
-    m_threadCategories = new ThreadFetchCategories(this,this);
-    m_threadPackages = new ThreadFetchPackages(this,this);
-    m_threadDetails = new ThreadFetchDetails(this,this);
-    m_threadShowSel = new ThreadShowSelections(this,this);
+    m_searchThread = new SearchThread(this,this);
+    m_categoriesThread = new CategoriesThread(this,this);
+    m_packagesThread = new PackagesThread(this,this);
+    m_detailsThread = new DetailsThread(this,this);
+    m_selectionsThread = new ShowSelectionsThread(this,this);
     m_repoListThread = new RepositoryListThread(this,this);
     m_repoInfoThread = new RepositoryInfoThread(this,this);
 
@@ -228,7 +226,7 @@ void pertubis::DatabaseView::createCatbar()
             this,
             SLOT(slotCategoryChanged( const QModelIndex& )) );
 
-    connect(m_threadCategories,
+    connect(m_categoriesThread,
             SIGNAL(categoriesResult(QStringList)),
             m_catModel,
             SLOT(slotPopulateModel(QStringList)));
@@ -268,7 +266,7 @@ void pertubis::DatabaseView::createPackageView()
     m_vSplit->setStretchFactor(0,10);
     m_vSplit->setStretchFactor(1,10);
 
-    connect(m_threadPackages,
+    connect(m_packagesThread,
             SIGNAL(packagesResult(Item*)),
             m_packModel,
             SLOT(slotSetRoot(Item*)));
@@ -283,22 +281,22 @@ void pertubis::DatabaseView::createPackageView()
             this,
             SLOT(slotOptionsMenu(const QModelIndex&)));
 
-    connect(m_threadPackages,
+    connect(m_packagesThread,
             SIGNAL(finished()),
             this,
             SLOT(slotSearchPackagesFinished()));
 
-    connect(m_threadItem,
+    connect(m_searchThread,
             SIGNAL(itemResult(Item*)),
             m_packModel,
             SLOT(slotAppendPackage(Item*)));
 
-    connect(m_threadItem,
+    connect(m_searchThread,
             SIGNAL(finished()),
             this,
             SLOT(slotSearchItemFinished()));
 
-    connect(m_threadDetails,
+    connect(m_detailsThread,
             SIGNAL(detailsResult(QString)),
             this,
             SLOT(slotShowDetails(QString)));
@@ -313,7 +311,7 @@ void pertubis::DatabaseView::createPackageView()
             this,
             SLOT(slotShowSelectedPackages()));
 
-    connect(m_threadShowSel,
+    connect(m_selectionsThread,
             SIGNAL(sendRoot(Item*)),
             m_packModel,
             SLOT(slotSetRoot(Item*)));
@@ -599,8 +597,8 @@ void pertubis::DatabaseView::saveSettings()
 
 void pertubis::DatabaseView::slotRefreshCategories()
 {
-    if (!m_threadCategories->isRunning())
-        m_threadCategories->start();
+    if (!m_categoriesThread->isRunning())
+        m_categoriesThread->start();
 }
 
 void pertubis::DatabaseView::slotSearchItemFinished()
@@ -615,15 +613,15 @@ void pertubis::DatabaseView::slotSearchPackagesFinished()
 
 void pertubis::DatabaseView::slotCategoryChanged( const QModelIndex& index )
 {
-    if ( !index.isValid() || m_threadPackages->isRunning())
+    if ( !index.isValid() || m_packagesThread->isRunning())
         return;
     QString cat = m_catModel->data(index).toString();
-    m_threadPackages->searchPackages(cat);
+    m_packagesThread->searchPackages(cat);
 }
 
 void pertubis::DatabaseView::slotRepositoryChanged( const QModelIndex& index )
 {
-    if ( !index.isValid() || m_threadPackages->isRunning())
+    if ( !index.isValid() || m_packagesThread->isRunning())
         return;
     QString repo = m_repoListModel->data(index).toString();
     m_repoInfoThread->getInfo(repo);
@@ -661,12 +659,12 @@ void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
             item->data(Item::io_category) << " , " <<
             item->data(Item::io_repository) << " , " <<
             item->data(Item::io_installed);
-    if (m_threadDetails->isRunning() ||
+    if (m_detailsThread->isRunning() ||
         !index.isValid() ||
         index.column() != Item::io_package ||
         !item->available() )
         return;
-    m_threadDetails->search(item->ID());
+    m_detailsThread->search(item->ID());
     qDebug() << "DatabaseView::slotDetailsChanged() - done";
 }
 
@@ -685,23 +683,21 @@ void pertubis::DatabaseView::slotShowDetails(QString details)
 
 void pertubis::DatabaseView::slotShowSelectedPackages()
 {
-    m_threadShowSel->start();
+    m_selectionsThread->start();
 }
 
 void pertubis::DatabaseView::slotSync()
 {
     if (getuid() != 0 )
     {
-        QMessageBox::warning(this,
-                            tr("warning"),
+        QMessageBox::critical(this,
+                            tr("authentication error"),
                             tr("You must be root for syncing repositories"));
         return;
     }
 
     paludis::Context context("When performing sync action from command line:");
-    qDebug() << "DatabaseView::slotSync - 2";
     m_syncTask->start();
-    qDebug() << "DatabaseView::slotSync - done";
 }
 
 void pertubis::DatabaseView::slotSearchItem()
@@ -711,7 +707,7 @@ void pertubis::DatabaseView::slotSearchItem()
         return;
     }
 
-    if (m_threadItem->isRunning())
+    if (m_searchThread->isRunning())
     {
         int res = QMessageBox::question( this, tr("Warning"),
                         tr("Search is already running! Yes for starting the new one or no for waiting until the pending is finished?"),QMessageBox::Yes,QMessageBox::No);
@@ -721,7 +717,7 @@ void pertubis::DatabaseView::slotSearchItem()
             return;
         }
         if (res == QMessageBox::Yes )
-            m_threadItem->terminate();
+            m_searchThread->terminate();
     }
 
     m_windowSearch->hide();
@@ -730,7 +726,7 @@ void pertubis::DatabaseView::slotSearchItem()
     m_packModel->slotSetRoot(new RootItem());
 
     statusBar()->showMessage(QString(tr("searching for %1...")).arg(m_windowSearch->m_line->text()) );
-    m_threadItem->search(m_windowSearch->m_line->text(),m_windowSearch->m_chkName->isChecked(),m_windowSearch->m_chkDesc->isChecked());
+    m_searchThread->search(m_windowSearch->m_line->text(),m_windowSearch->m_chkName->isChecked(),m_windowSearch->m_chkDesc->isChecked());
 }
 
 void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& index)

@@ -3,10 +3,12 @@ INCLUDE(${QT_USE_FILE})
 
 
 SET(PERTUBIS_SRCS
+    CategoriesThread.cc
     CategoryModel.cc
     DatabaseView.cc
     DeinstallTask.cc
     description_extractor.cc
+    DetailsThread.cc
     extractor.cc
     HtmlFormatter.cc
     InstallTask.cc
@@ -17,23 +19,21 @@ SET(PERTUBIS_SRCS
     OptionsDelegate.cc
     PackageItem.cc
     PackageModel.cc
+    PackagesThread.cc
     pcre_matcher.cc
     QTOutputStream.hh
-    RepositoryView.cc
-    RepositoryListModel.cc
     RepositoryInfoModel.cc
+    RepositoryListModel.cc
+    RepositoryView.cc
+    SearchThread.cc
     SearchWindow.cc
     Settings.cc
+    ShowSelectionsThread.cc
     SyncTask.cc
     TaskBox.cc
     Task.cc
     text_matcher.cc
     ThreadBase.cc
-    CategoriesThread.cc
-    PackagesThread.cc
-    SearchThread.cc
-    DetailsThread.cc
-    ShowSelectionsThread.cc
     VersionItem.cc
 )
 
@@ -41,28 +41,28 @@ SET(PERTUBIS_MAIN_SRCS
  	main.cc)
 
 SET(PERTUBIS_MOC_HDRS
+    CategoriesThread.hh
     CategoryModel.hh
     DatabaseView.hh
     DeinstallTask.hh
+    DetailsThread.hh
     InstallTask.hh
     Item.hh
     MessageOutput.hh
     OptionsDelegate.hh
     PackageItem.hh
     PackageModel.hh
-    RepositoryView.hh
-    RepositoryListModel.hh
+    PackagesThread.hh
     RepositoryInfoModel.hh
+    RepositoryListModel.hh
+    RepositoryView.hh
+    SearchThread.hh
     SearchWindow.hh
     Settings.hh
-    TaskBox.hh
-    CategoriesThread.hh
-    PackagesThread.hh
-    SearchThread.hh
-    DetailsThread.hh
     ShowSelectionsThread.hh
+    Task.hh
+    TaskBox.hh
     ThreadBase.hh
-Thread
     VersionItem.hh
 )
 
