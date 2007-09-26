@@ -17,12 +17,31 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
+#include "DatabaseView.hh"
 #include "RepositoryListModel.hh"
-
+#include <paludis/name.hh>
+#include <paludis/repository.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/package_database.hh>
+#include <paludis/environment.hh>
 
 #include <QSet>
 #include <QString>
 #include <QDebug>
+
+void pertubis::RepositoryListThread::run()
+{
+    using namespace paludis;
+    QList<QVariantList> list;
+    QStringList names;
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
+         r((*m_main->getEnv()).package_database()->begin_repositories()), r_end((*m_main->getEnv()).package_database()->end_repositories()) ;
+         r != r_end ; ++r)
+    {
+        names << stringify(r->name()).c_str();
+    }
+    emit sendNames(names);
+}
 
 pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj) : QAbstractListModel(pobj)
 {
@@ -44,14 +63,13 @@ QVariant pertubis::RepositoryListModel::headerData(int section, Qt::Orientation 
     return *(m_header.begin() + section);
 }
 
-void pertubis::RepositoryListModel::slotPopulateModel(QStringList cl)
+void pertubis::RepositoryListModel::slotResult(QStringList cl)
 {
     QString cat;
     foreach (cat,cl)
     {
-        m_data << cat;
+        m_data << RepositoryListItem(cat);
     }
-    m_data.sort();
     reset();
 }
 
@@ -74,7 +92,7 @@ QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int 
          return QVariant();
 
      if (role == Qt::DisplayRole)
-         return m_data.at(m_index.row());
+         return m_data.value(m_index.row()).name();
      else
          return QVariant();
 }

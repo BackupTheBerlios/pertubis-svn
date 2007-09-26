@@ -160,7 +160,7 @@ void pertubis::TaskBoxTest::setItemTasks()
                                 stringify( (*ids_1->begin())->name().package).c_str(),
                                 stringify( (*ids_1->begin())->name().category).c_str(),
                                 stringify( (*ids_1->begin())->repository()->name()).c_str());
-    for (paludis::PackageIDSequence::Iterator vstart(ids_1->begin()),vend(ids_1->end());
+    for (paludis::PackageIDSequence::ConstIterator vstart(ids_1->begin()),vend(ids_1->end());
          vstart != vend;
          ++vstart)
     {

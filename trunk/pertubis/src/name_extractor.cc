@@ -46,9 +46,9 @@ pertubis::NameExtractor::NameExtractor(const paludis::Environment * const env) :
 {
 }
 
-std::string pertubis::NameExtractor::operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const
+std::string pertubis::NameExtractor::operator() (const paludis::PackageID& id) const
 {
-    return paludis::stringify(id->name());
+    return paludis::stringify(id.name());
 }
 
 

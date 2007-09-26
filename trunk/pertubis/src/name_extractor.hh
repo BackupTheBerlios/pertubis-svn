@@ -42,6 +42,11 @@
 
 #include "extractor.hh"
 
+namespace paludis
+{
+    class PackageID;
+}
+
 namespace pertubis
 {
     class NameExtractor : public Extractor
@@ -49,7 +54,7 @@ namespace pertubis
         public:
             NameExtractor(const paludis::Environment * const env);
 
-            std::string operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const;
+            std::string operator() (const paludis::PackageID& id) const;
     };
 }
 

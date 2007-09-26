@@ -8,6 +8,7 @@ SET(PERTUBIS_SRCS
     DeinstallTask.cc
     description_extractor.cc
     extractor.cc
+    HtmlFormatter.cc
     InstallTask.cc
     Item.cc
     matcher.cc
@@ -29,9 +30,9 @@ SET(PERTUBIS_SRCS
     text_matcher.cc
     ThreadBase.cc
     ThreadFetchCategories.cc
-    ThreadFetchDetails.cc
     ThreadFetchItem.cc
     ThreadFetchPackages.cc
+    ThreadFetchDetails.cc
     ThreadShowSelections.cc
     VersionItem.cc
 )

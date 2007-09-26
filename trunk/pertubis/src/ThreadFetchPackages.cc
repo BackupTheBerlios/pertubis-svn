@@ -71,7 +71,7 @@ void pertubis::ThreadFetchPackages::run()
 
     Item* root = new RootItem();
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
         r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
         r != r_end ; ++r)
     {
@@ -79,7 +79,7 @@ void pertubis::ThreadFetchPackages::run()
             continue;
         std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
 
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;c != c_end ; ++c)
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;c != c_end ; ++c)
         {
             CategoryNamePart cat(m_query.toLatin1().data());
 
@@ -87,7 +87,7 @@ void pertubis::ThreadFetchPackages::run()
                 continue;
 
             paludis::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end());
+            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end());
                  p != p_end;
                  ++p)
             {
@@ -102,7 +102,7 @@ void pertubis::ThreadFetchPackages::run()
                 int ip=0;
 
                 tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
-                for (PackageIDSequence::Iterator vstart(versionIds->begin()),vend(versionIds->end());
+                for (PackageIDSequence::ConstIterator vstart(versionIds->begin()),vend(versionIds->end());
                      vstart != vend;
                      ++vstart)
                 {

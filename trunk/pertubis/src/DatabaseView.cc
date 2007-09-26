@@ -127,8 +127,9 @@ pertubis::DatabaseView::DatabaseView() :
     m_output(0),
     m_packModel(0),
     m_packages(0),
-    m_filter(0),
+    m_repoListView(0),
     m_repoInfoView(0),
+    m_filter(0),
     m_repoListModel(0),
     m_repoInfoModel(0),
     m_windowSearch(0),
@@ -143,6 +144,7 @@ pertubis::DatabaseView::DatabaseView() :
     m_syncTask(0)
 {
     qRegisterMetaType<QTextCursor>("QTextCursor");
+    qRegisterMetaType<QList<QVariantList> >("QList<QVariantList>");
     m_settings = new Settings(this);
 
     m_tabs = new QTabWidget(this);
@@ -173,7 +175,8 @@ pertubis::DatabaseView::DatabaseView() :
     m_threadPackages = new ThreadFetchPackages(this,this);
     m_threadDetails = new ThreadFetchDetails(this,this);
     m_threadShowSel = new ThreadShowSelections(this,this);
-    m_threadRepo = new ThreadRepository(this,this);
+    m_repoListThread = new RepositoryListThread(this,this);
+    m_repoInfoThread = new RepositoryInfoThread(this,this);
 
     createCatbar();
     createDetails();
@@ -340,34 +343,53 @@ void pertubis::DatabaseView::createOutput()
 
 void pertubis::DatabaseView::createRepositoryView()
 {
-    m_dockRepo = new QDockWidget(tr("repository list"),this);
-    m_dockRepo->layout()->setMargin(0);
-    m_dockRepo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    m_repoInfoView = new RepositoryInfoView(this);
     m_repoListModel = new RepositoryListModel(this);
-    m_repoListView->setModel(m_repoListModel);
     m_repoListModel->setHorizontalHeaderLabels(QStringList() <<
-            tr("name") <<
-            tr("value"));
-    m_vSplit->addWidget(m_repoListView);
-
-    m_repoListModel = new RepositoryListModel(this);
+            tr("Repository name"));
 
     m_repoListView = new QTableView(this);
+    m_repoListView->setModel(m_repoListModel);
     m_repoListView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     m_repoListView->horizontalHeader()->setVisible(false);
     m_repoListView->verticalHeader()->setVisible(false);
-    m_repoListView->setModel(m_repoListModel);
     m_repoListView->setShowGrid(false);
-    m_dockCat->setWidget(m_repoListView);
-    addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
 
-    connect(m_threadRepo,
-            SIGNAL(sendResult(QList<RepositoryItem>)),
-            m_repoListModel,
-            SLOT(slotResult(QList<RepositoryItem>)));
+    m_repoInfoModel = new RepositoryInfoModel(this);
+    m_repoInfoModel->setHorizontalHeaderLabels(QStringList() <<
+            tr("name") <<
+            tr("state"));
 
-    m_threadRepo->start();
+    m_repoInfoView = new QTableView(this);
+    m_repoInfoView->setModel(m_repoInfoModel);
+    m_repoInfoView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    m_repoInfoView->horizontalHeader()->setVisible(true);
+    m_repoInfoView->verticalHeader()->setVisible(false);
+//     m_repoInfoView->setShowGrid(false);
+
+    m_vSplit->addWidget(m_repoInfoView);
+
+    m_dockRepo = new QDockWidget(tr("repository list"),this);
+    m_dockRepo->layout()->setMargin(0);
+    m_dockRepo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    m_dockRepo->setWidget(m_repoListView);
+    addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
+
+    connect(m_repoInfoThread,
+            SIGNAL(sendResult(QList<QVariantList>)),
+            m_repoInfoModel,
+            SLOT(slotResult(QList<QVariantList>)));
+
+    connect(m_repoListThread,
+            SIGNAL(sendNames(QStringList)),
+                   m_repoListModel,
+                   SLOT(slotResult(QStringList)));
+
+    connect(m_repoListView,
+            SIGNAL(clicked( const QModelIndex&)),
+                   this,
+                   SLOT(slotRepositoryChanged( const QModelIndex& )) );
+
+    m_repoListThread->start();
 }
 
 void pertubis::DatabaseView::createDetails()
@@ -414,9 +436,8 @@ void pertubis::DatabaseView::createActions()
     m_acQuit = new QAction( QPixmap(":images/quit_22.xpm"),tr("quit") ,this);
     m_acQuit->setToolTip(tr("<html><h1><u>%1</u></h1><p>closing the pertubis suite.</p><p><b>All unsaved changes will be lost!</b></p></html>").arg(m_acQuit->text()));
 
-    m_acToggleRepoView = new QAction(tr("Repositories"),this);
+    m_acToggleRepoView = new QAction(QPixmap(":images/repositories_22.xpm"),tr("Repositories"),this);
     m_acToggleRepoView->setCheckable(true);
-    m_acToggleRepoView->setChecked(false);
     m_acToggleRepoView->setToolTip( tr("<html><h1><u>%1</u></h1><p>enable/disable the repositories window in the middle</p></html>").arg(m_acToggleRepoView->text()) );
 
     m_acInstall= new QAction(tr("install"),this);
@@ -470,8 +491,8 @@ void pertubis::DatabaseView::createActions()
 
     connect(m_acToggleRepoView,
             SIGNAL(triggered()),
-                   this,
-                   SLOT(slotToggleRepoView()));
+            this,
+            SLOT(slotToggleRepoView()));
 }
 
 void pertubis::DatabaseView::createTasks()
@@ -541,6 +562,7 @@ void pertubis::DatabaseView::loadSettings()
         m_acToggleUseBar->setChecked(settings.value("useedit_visible", true).toBool());
         m_vSplit->restoreState(settings.value("vsplt").toByteArray());
         m_dockCat->setVisible(m_acToggleCatBar->isChecked());
+        m_dockRepo->setVisible(m_acToggleRepoView->isChecked());
         m_dockUse->setVisible(m_acToggleUseBar->isChecked());
         m_vSplit->setVisible(m_acTogglePackageView->isChecked());
     settings.endGroup();
@@ -554,6 +576,7 @@ void pertubis::DatabaseView::saveSettings()
         settings.setValue("size", size() );
         settings.setValue("pos", pos());
         settings.setValue("cat_visible", m_acToggleCatBar->isChecked());
+        settings.setValue("repo_visible", m_acToggleRepoView->isChecked());
         settings.setValue("vsplit_visible", m_acTogglePackageView->isChecked());
         settings.setValue("useedit_visible",m_acToggleUseBar->isChecked());
         settings.setValue("vsplt", m_vSplit->saveState());
@@ -582,6 +605,14 @@ void pertubis::DatabaseView::slotCategoryChanged( const QModelIndex& index )
         return;
     QString cat = m_catModel->data(index).toString();
     m_threadPackages->searchPackages(cat);
+}
+
+void pertubis::DatabaseView::slotRepositoryChanged( const QModelIndex& index )
+{
+    if ( !index.isValid() || m_threadPackages->isRunning())
+        return;
+    QString repo = m_repoListModel->data(index).toString();
+    m_repoInfoThread->getInfo(repo);
 }
 
 void pertubis::DatabaseView::slotInstallTask(bool mystate)
@@ -741,16 +772,18 @@ void pertubis::DatabaseView::slotTogglePackageView()
     if (m_packages->isVisible())
     {
         m_packages->hide();
+        m_repoInfoView->show();
+
         m_dockCat->hide();
-        m_repoListView->show();
         m_dockRepo->show();
     }
     else
     {
         m_packages->show();
+        m_repoInfoView->hide();
+
         m_dockCat->show();
         m_dockRepo->hide();
-        m_repoListView->hide();
     }
 }
 
@@ -759,15 +792,17 @@ void pertubis::DatabaseView::slotToggleRepoView()
     if (m_repoListView->isVisible())
     {
         m_packages->show();
+        m_repoInfoView->hide();
+
         m_dockCat->show();
         m_dockRepo->hide();
-        m_repoListView->hide();
     }
     else
     {
         m_packages->hide();
+        m_repoInfoView->show();
+
         m_dockCat->hide();
-        m_repoListView->show();
         m_dockRepo->show();
     }
 }

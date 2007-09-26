@@ -21,7 +21,7 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_INFO_MODEL_H
 
 #include <QList>
-#include <QPair>
+#include <QVariant>
 #include <QStringList>
 #include "ThreadBase.hh"
 #include <QAbstractTableModel>
@@ -38,33 +38,24 @@ namespace pertubis
     /*! \brief not finished
      *
      */
-    class RepositoryInfoItem
-    {
-        public:
-
-            typedef QStringList Line;
-            RepositoryInfoItem(QString name) : m_name(name) {}
-
-            void add(QString key,QString value) { m_data.push_back(Line() << key << value );}
-            QList<Line>          m_data;
-            QString              m_name;
-    };
-
-    /*! \brief not finished
-     *
-     */
-    class ThreadRepository : public ThreadBase
+    class RepositoryInfoThread : public ThreadBase
     {
         Q_OBJECT
         public:
-            ThreadRepository(QObject* pobj,
+            RepositoryInfoThread(QObject* pobj,
                              DatabaseView* main) : ThreadBase(pobj,main) {}
+
+            void getInfo(QString name);
+
+        protected:
 
             void run();
 
         signals:
 
-            void sendResult(RepositoryInfoItem list);
+            void sendResult(QList<QVariantList> list);
+        private:
+            QString     m_repName;
     };
 
     /*! \brief not finished
@@ -90,12 +81,12 @@ namespace pertubis
 
     public slots:
 
-        void slotResult(RepositoryInfoItem list);
+        void slotResult(QList<QVariantList> list);
 
 
     private:
-        RepositoryInfoItem m_data;
-        QStringList        m_header;
+        QList<QVariantList>       m_data;
+        QStringList                 m_header;
     };
 
 }

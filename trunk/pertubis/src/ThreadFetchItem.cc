@@ -68,18 +68,18 @@ void pertubis::ThreadFetchItem::run()
     if (m_optDesc )
         extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_main->getEnv().get())));
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
         if (r->format() == "vdb" || r->format() == "installed_virtuals" || r->format() == "virtuals")
             continue;
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end());
+            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end());
                  p != p_end; ++p)
             {
                 tr1::shared_ptr<const PackageIDSequence> version_ids(r->package_ids(*p));
@@ -88,7 +88,7 @@ void pertubis::ThreadFetchItem::run()
                     continue;
 
                 tr1::shared_ptr<const PackageID> display_entry(*version_ids->begin());
-                for (PackageIDSequence::Iterator i(version_ids->begin()),
+                for (PackageIDSequence::ConstIterator i(version_ids->begin()),
                         i_end(version_ids->end()) ; i != i_end ; ++i)
                     if (! (*i)->masked())
                         display_entry = *i;
@@ -97,7 +97,7 @@ void pertubis::ThreadFetchItem::run()
                 for (std::list<tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
                         x_end(extractors.end()) ; x != x_end && ! match ; ++x)
                 {
-                    std::string xx((**x)(display_entry));
+                    std::string xx((**x)(*display_entry));
                     for (std::list<tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
                             m_end(matchers.end()) ; m != m_end && ! match ; ++m)
                         if ((**m)(xx))
@@ -123,7 +123,7 @@ void pertubis::ThreadFetchItem::run()
                 tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
                 int mp=0;
                 int ip=0;
-                for (PackageIDSequence::Iterator vstart(versionIds->begin()),vend(versionIds->end());
+                for (PackageIDSequence::ConstIterator vstart(versionIds->begin()),vend(versionIds->end());
                     vstart != vend; ++vstart)
                 {
                     Item* v_item = makeVersionItem(*vstart,

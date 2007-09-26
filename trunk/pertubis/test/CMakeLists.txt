@@ -10,6 +10,7 @@ SET(PERTUBIS_SRCS
     ../src/extractor.cc
     ../src/InstallTask.cc
     ../src/Item.cc
+    ../src/HtmlFormatter.cc
     ../src/matcher.cc
     ../src/MessageOutput.cc
     ../src/name_extractor.cc

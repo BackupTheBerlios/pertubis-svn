@@ -28,7 +28,13 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <paludis/environment.hh>
-#include <paludis/repository_info.hh>
+
+
+void pertubis::RepositoryInfoThread::getInfo(QString name)
+{
+    m_repName = name;
+    start();
+}
 
 pertubis::RepositoryInfoModel::RepositoryInfoModel(QObject* pobj) : QAbstractTableModel(pobj)
 {
@@ -42,35 +48,31 @@ QVariant pertubis::RepositoryInfoModel::headerData(int section, Qt::Orientation 
     return *(m_header.begin() + section);
 }
 
-void pertubis::ThreadRepository ::run()
+void pertubis::RepositoryInfoThread ::run()
 {
     using namespace paludis;
-    QList<RepositoryItem> list;
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
-         r((*m_main->getEnv()).package_database()->begin_repositories()), r_end((*m_main->getEnv()).package_database()->end_repositories()) ;
-         r != r_end ; ++r)
+    QList<QVariantList> list;
+    QStringList names;
+    RepositoryName repoName(m_repName.toStdString());
+    tr1::shared_ptr<Repository> repo = m_main->getEnv()->package_database()->fetch_repository(repoName);
+    std::tr1::shared_ptr<const RepositoryInfo> info = repo->info(true);
+    for (IndirectIterator<RepositoryInfo::SectionConstIterator>
+            s(indirect_iterator(info->begin_sections())), s_end(indirect_iterator(info->end_sections())) ;
+            s != s_end ; ++s)
     {
-        std::tr1::shared_ptr<const RepositoryInfo> info = r->info(true);
-        for (IndirectIterator<RepositoryInfo::SectionIterator>
-             s(indirect_iterator(info->begin_sections())), s_end(indirect_iterator(info->end_sections())) ;
-             s != s_end ; ++s)
+        for (RepositoryInfoSection::KeyValueConstIterator k(s->begin_kvs()), k_end(s->end_kvs()) ;
+                k != k_end ; ++k)
         {
-            RepositoryItem item(s->heading().c_str());
-            for (RepositoryInfoSection::KeyValueIterator k(s->begin_kvs()), k_end(s->end_kvs()) ;
-                 k != k_end ; ++k)
-            {
-                qDebug() << k->first.c_str() << k->second.c_str();
-                item.add(k->first.c_str(),k->second.c_str());
-            }
-            list.push_back(item);
+//             qDebug() << k->first.c_str() << k->second.c_str();
+            list.push_back(QVariantList() << k->first.c_str() << k->second.c_str());
         }
     }
     emit sendResult(list);
 }
 
-void pertubis::RepositoryInfoModel::slotResult(QList<RepositoryInfoItem> list)
+void pertubis::RepositoryInfoModel::slotResult(QList<QVariantList> list)
 {
-    m_repos = list;
+    m_data = list;
     reset();
 }
 
@@ -81,7 +83,7 @@ QVariant pertubis::RepositoryInfoModel::data ( const QModelIndex & ix, int role)
 
     if (role == Qt::DisplayRole )
     {
-        return m_data->m_data.value(ix.column());
+        return m_data.value(ix.row()).value(ix.column());
     }
 
     return QVariant();
@@ -92,15 +94,12 @@ void pertubis::RepositoryInfoModel::setHorizontalHeaderLabels ( const QStringLis
     m_header = labels;
 }
 
-
 int pertubis::RepositoryInfoModel::rowCount(const QModelIndex& /*pmi*/) const
 {
-    return m_repos.count();
+    return m_data.count();
 }
 
 int pertubis::RepositoryInfoModel::columnCount ( const QModelIndex& /*parent*/ ) const
 {
     return 2;
 }
-
-

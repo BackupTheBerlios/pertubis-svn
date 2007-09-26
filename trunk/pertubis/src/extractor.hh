@@ -41,7 +41,6 @@
 
 #include <string>
 #include <paludis/environment.hh>
-#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
@@ -57,7 +56,11 @@ namespace pertubis
             Extractor(const paludis::Environment * const env);
             virtual ~Extractor();
 
-            virtual std::string operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const = 0;
+
+
+            virtual std::string operator() (const paludis::PackageID& id) const = 0;
+
+        private:
 
             const paludis::Environment * const m_env;
     };

@@ -25,9 +25,6 @@
 
 namespace pertubis
 {
-
-    class RepositoryInfoModel;
-
     /*! \brief not finished
     *
     */
@@ -40,8 +37,6 @@ namespace pertubis
 
         RepositoryInfoView(QWidget* pobj);
         ~RepositoryInfoView() {}
-    private:
-        RepositoryInfoModel*   m_model;
     };
 }
 

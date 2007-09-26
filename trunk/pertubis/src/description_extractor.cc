@@ -31,9 +31,9 @@ pertubis::DescriptionExtractor::~DescriptionExtractor()
 {
 }
 
-std::string pertubis::DescriptionExtractor::operator() (paludis::tr1::shared_ptr<const paludis::PackageID> id) const
+std::string pertubis::DescriptionExtractor::operator() (const paludis::PackageID& id) const
 {
-    if (id->short_description_key())
-        return id->short_description_key()->value();
+    if (id.short_description_key())
+        return id.short_description_key()->value();
     return "";
 }

@@ -53,12 +53,12 @@ void pertubis::ThreadFetchCategories::run()
     using namespace paludis;
     qDebug() << "ThreadFetchCategories.run() - starting";
     QSet<QString> cats;
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
-        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
+        paludis::tr1::shared_ptr<const paludis::CategoryNamePartSet> cat_names(r->category_names());
+        for (paludis::CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
         {
 //             qDebug() << stringify(*c).c_str();
             cats << stringify(*c).c_str();

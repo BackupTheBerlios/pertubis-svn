@@ -55,7 +55,7 @@ void pertubis::InstallTaskTest::addEntry()
             paludis::query::Matches(paludis::PackageDepSpec("sys-apps/paludis", paludis::pds_pm_eapi_0_strict)) &
             paludis::query::InstalledAtRoot(env->root()),
             paludis::qo_order_by_version));
-    paludis::PackageIDSequence::Iterator vstart(versions->begin()),vend(versions->end());
+    paludis::PackageIDSequence::ConstIterator vstart(versions->begin()),vend(versions->end());
     if (versions->empty() )
         QFAIL("no packages found");
     InstallTask* install = new InstallTask();

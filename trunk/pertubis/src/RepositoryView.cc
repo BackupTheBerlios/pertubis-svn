@@ -28,6 +28,6 @@ pertubis::RepositoryInfoView::RepositoryInfoView(QWidget* pobj) : QTableView( po
     horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     horizontalHeader()->setVisible(true);
     horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    hide();
+//     hide();
 }
 

@@ -61,7 +61,8 @@ namespace pertubis
     class ThreadFetchCategories;
     class ThreadFetchDetails;
     class ThreadFetchItem;
-    class ThreadRepository;
+    class RepositoryListThread;
+    class RepositoryInfoThread;
     class ThreadShowSelections;
     class ThreadFetchPackages;
     class ThreadKeywordManager;
@@ -153,10 +154,10 @@ namespace pertubis
         QTabWidget*             m_tabs;
         QTableView*             m_categories;
         QTableView*             m_repoListView;
+        QTableView*             m_repoInfoView;
         QTextBrowser*           m_details;
         QToolBar*               m_toolBar;
         ReleaseEater*           m_filter;
-        RepositoryInfoView*     m_repoInfoView;
         RepositoryListModel*    m_repoListModel;
         RepositoryInfoModel*    m_repoInfoModel;
         SearchWindow*           m_windowSearch;
@@ -168,7 +169,8 @@ namespace pertubis
         ThreadFetchPackages*    m_threadPackages;
         ThreadKeywordManager*   m_threadKeywords;
         ThreadShowSelections*   m_threadShowSel;
-        ThreadRepository*       m_threadRepo;
+        RepositoryInfoThread*   m_repoInfoThread;
+        RepositoryListThread*   m_repoListThread;
         OurSyncTask*            m_syncTask;
 
         int                     m_tidInstall;
@@ -187,6 +189,7 @@ namespace pertubis
         void slotOptionsMenu(const QModelIndex& index);
         void slotQuit();
         void slotRefreshCategories();
+        void slotRepositoryChanged( const QModelIndex& index );
         void slotSearchItem();
         void slotSearchItemFinished();
         void slotSearchPackagesFinished();

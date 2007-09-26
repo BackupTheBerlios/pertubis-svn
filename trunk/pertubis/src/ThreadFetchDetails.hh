@@ -24,10 +24,16 @@
 #include "ThreadBase.hh"
 #include "PackageItem.hh"
 
+#include <paludis/util/tr1_memory.hh>
+
 #include <QString>
+#include <string>
+
 
 namespace pertubis
 {
+    class DatabaseView;
+
     /*! \brief this thread asks pertubis for package details and returns preformatted text.
     *
     */
@@ -38,11 +44,9 @@ namespace pertubis
     public:
 
         ThreadFetchDetails(QObject* pobj,
-                           DatabaseView* main);
-        void search(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
-        void appendOutput(QString text);
-
-    protected:
+                           pertubis::DatabaseView* main);
+        void search(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+        void appendOutput(std::string text);
 
         void run();
 

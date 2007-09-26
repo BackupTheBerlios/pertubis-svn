@@ -24,7 +24,7 @@
 #include <QAbstractListModel>
 
 #include <paludis/util/tr1_memory.hh>
-#include <QThread>
+#include "ThreadBase.hh"
 
 #include <QStringList>
 
@@ -34,8 +34,28 @@ namespace pertubis
     {
         public:
 
-            paludis::RepositoryName m_rname;
-            QString m_name;
+            RepositoryListItem(){}
+            RepositoryListItem(QString r) : m_name(r) {}
+            QVariant name() { return m_name;}
+        private:
+            QVariant m_name;
+    };
+
+    /*! \brief not finished
+     *
+     */
+    class RepositoryListThread : public ThreadBase
+    {
+        Q_OBJECT
+        public:
+            RepositoryListThread(QObject* pobj,
+                             DatabaseView* main) : ThreadBase(pobj,main) {}
+
+            void run();
+
+        signals:
+
+            void sendNames(QStringList list);
     };
 
     /*! \brief This qt model class holds repositories.
@@ -50,7 +70,6 @@ namespace pertubis
             RepositoryListModel( QObject* parent);
             ~RepositoryListModel();
 
-            QStringList completeData() const { return m_data;}
             QVariant headerData(int section, Qt::Orientation orientation, int role) const;
             void setHorizontalHeaderLabels ( const QStringList & labels );
 
@@ -63,7 +82,7 @@ namespace pertubis
             QStringList                 m_header;
 
         public slots:
-            void slotPopulateModel(QStringList cl);
+            void slotResult(QStringList cl);
     };
 }
 #endif
