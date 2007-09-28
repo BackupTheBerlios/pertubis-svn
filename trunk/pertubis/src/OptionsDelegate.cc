@@ -18,7 +18,8 @@
 */
 
 #include "OptionsDelegate.hh"
-#include "PackageItem.hh"
+#include "PackageFilterModel.hh"
+#include "Item.hh"
 #include <QColor>
 #include <QBrush>
 #include <QMenu>
@@ -26,18 +27,19 @@
 #include <QPainter>
 #include <QPen>
 
-pertubis::OptionsDelegate::OptionsDelegate(QWidget *pobj) : QItemDelegate(pobj)
+pertubis::OptionsDelegate::OptionsDelegate(QWidget *pobj,PackageFilterModel* proxy) : QItemDelegate(pobj),m_proxy(proxy)
 {
 }
 
 void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
                                         const QStyleOptionViewItem& option,
-                                          const QModelIndex& index) const
+                                          const QModelIndex& mix) const
 {
-    if (!index.isValid())
+    if (!mix.isValid())
         return;
     painter->save();
 
+    QModelIndex index(m_proxy->mapToSource(mix));
     Item* item = static_cast<Item*>(index.internalPointer());
     if (!item)
         return;

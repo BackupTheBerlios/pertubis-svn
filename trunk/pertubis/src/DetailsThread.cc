@@ -24,7 +24,6 @@
 #include "FormatterUtils.hh"
 #include "HtmlFormatter.hh"
 
-#include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>

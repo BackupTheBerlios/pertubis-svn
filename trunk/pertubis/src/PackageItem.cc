@@ -59,21 +59,6 @@ pertubis::Item::UpdateRange pertubis::PackageItem::updateRange() const
     return ur_parent;
 }
 
-QString pertubis::stateDescription(Item::ItemState status)
-{
-    switch (status)
-    {
-        case Item::is_stable:
-            return "stable";
-        case Item::is_unstable:
-            return "possibly unstable";
-        case Item::is_masked:
-            return "not avaliable since masked";
-        default:
-            return "unknown package status";
-    }
-}
-
 pertubis::Item* pertubis::makePackageItem(QVariantList selections,
                             QString pack,
                             QString cat,

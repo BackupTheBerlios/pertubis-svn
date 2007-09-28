@@ -19,7 +19,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_HTML_FORMATTER_HH
-#define _PERTUBIS_ENTRY_PROTECTOR_HTML_FORMATTER_HH
+#define _PERTUBIS_ENTRY_PROTECTOR_HTML_FORMATTER_HH 1
 
 #include <string>
 #include <paludis/util/tr1_memory.hh>

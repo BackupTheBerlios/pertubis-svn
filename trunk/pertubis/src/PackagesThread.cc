@@ -17,38 +17,24 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "PackagesThread.hh"
 
+#include "PackagesThread.hh"
+#include "DatabaseView.hh"
+#include "Item.hh"
 #include "TaskBox.hh"
 #include "Task.hh"
 
-#include <paludis/util/set.hh>
-#include <paludis/util/sequence.hh>
-#include <paludis/package_id.hh>
-#include <paludis/environment.hh>
-
-#include <paludis/package_database.hh>
-#include <paludis/package_id.hh>
-#include <paludis/dep_spec.hh>
-#include <paludis/query.hh>
-#include <QDebug>
-#include <QVariant>
-#include <paludis/mask.hh>
-#include <paludis/metadata_key.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/environment.hh>
+#include <paludis/mask.hh>
+#include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
+#include <paludis/query.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
-
-#include "pcre_matcher.hh"
-#include "PackageItem.hh"
-#include "VersionItem.hh"
-#include "text_matcher.hh"
-#include "description_extractor.hh"
-#include "name_extractor.hh"
-#include "DatabaseView.hh"
-
-#include <map>
 
 pertubis::PackagesThread::PackagesThread( QObject* pobject,
                                                     DatabaseView* main) : ThreadBase(pobject,main)
@@ -69,7 +55,7 @@ void pertubis::PackagesThread::run()
 {
     using namespace paludis;
 
-    Item* root = new RootItem();
+    Item* root = new Item();
 
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
         r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
@@ -91,28 +77,45 @@ void pertubis::PackagesThread::run()
                  p != p_end;
                  ++p)
             {
-                Item* p_item = makePackageItem(m_main->taskbox()->tasks(),
+                tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
+                Item* p_item = makePackageItem(*versionIds->last(),
+                                            m_main->taskbox()->tasks(),
                                             stringify(p->package).c_str(),
                                             stringify(p->category).c_str(),
-                                            stringify(r->name()).c_str());
+                                            stringify(r->name()).c_str(),
+                                            false,
+                                            Item::is_stable,
+                                            Item::ur_parent,
+                                            root,
+                                            "");
 
                 root->appendChild(p_item);
 
                 int mp=0;
                 int ip=0;
-
-                tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
                 for (PackageIDSequence::ConstIterator vstart(versionIds->begin()),vend(versionIds->end());
                      vstart != vend;
                      ++vstart)
                 {
+                    QString reasons;
+                    for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
+                         m != m_end ; ++m)
+                    {
+                        qDebug() << "mask _reason" << stringify((*m)->description()).c_str();
+                        reasons.append(stringify((*m)->description()).c_str());
+                    }
+
                     Item* v_item = makeVersionItem(*vstart,
-                    m_main->taskbox()->tasks(),
-                                    stringify((*vstart)->version()).c_str());
+                                                m_main->taskbox()->tasks(),
+                                                stringify((*vstart)->version()).c_str(),
+                                                false,
+                                                Item::is_stable,
+                                                Item::ur_child,
+                                                p_item,
+                                                reasons);
 
                     p_item->appendChild(v_item);
                     m_main->taskbox()->setItemTasks(v_item);
-
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
                     {
                         v_item->setState(Item::is_masked);
@@ -120,7 +123,6 @@ void pertubis::PackagesThread::run()
                     }
                     else
                         p_item->setBestChild(v_item);
-
                 }
 
                 if ( ip > 0 )
@@ -132,4 +134,5 @@ void pertubis::PackagesThread::run()
     }
 
     emit packagesResult(root);
+    emit finished(root->childCount());
 }

@@ -18,7 +18,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_INSTALL_TASK_H
-#define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_TASK_H
+#define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_TASK_H 1
 
 #include <paludis/tasks/install_task.hh>
 

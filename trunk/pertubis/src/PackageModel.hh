@@ -19,21 +19,18 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_MODEL_H
-#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_MODEL_H
+#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_MODEL_H 1
 
 #include <QAbstractItemModel>
-#include <QList>
 #include <QStringList>
+#include <QModelIndex>
 #include <QVariant>
-#include <paludis/util/tr1_memory.hh>
 
 class QAction;
 
 namespace pertubis
 {
     class Item;
-    class PackageItem;
-    class VersionItem;
     class TaskBox;
 
     /*! \brief holds package data fetched from paludis in a tree structure
@@ -45,31 +42,37 @@ namespace pertubis
 
     public:
 
-        PackageModel(QObject* parent);
+        PackageModel(QObject* parent=0);
 
         ~PackageModel();
 
-        int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
-
-        QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+        QVariant data ( const QModelIndex & index,
+                        int role = Qt::DisplayRole ) const;
 
         Qt::ItemFlags flags(const QModelIndex &index) const;
 
-        QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-
-        bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role = Qt::EditRole );
-
-        QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
+        QModelIndex index ( int row, int column,
+                            const QModelIndex & parent = QModelIndex() ) const;
 
         QModelIndex parent ( const QModelIndex & index ) const;
 
         int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
 
-        bool setSelectionData( const QModelIndex & ix, int taskid, bool mystate);
+        int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
+
+        QVariant headerData(int section,
+                            Qt::Orientation orientation,
+                            int role) const;
 
         void setHorizontalHeaderLabels ( const QStringList & labels );
 
-        const Item* root() const { return m_root;}
+
+        bool setHeaderData ( int section,
+                             Qt::Orientation orientation,
+                             const QVariant & value,
+                             int role = Qt::EditRole );
+
+        bool setSelectionData( const QModelIndex & ix, int taskid, bool mystate);
 
         void setBox(TaskBox* t);
 
@@ -83,12 +86,12 @@ namespace pertubis
         QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
 
         Item*            m_root;
-        QStringList        m_header;
+        TaskBox*         m_box;
+        QStringList      m_header;
 
         QAction*        m_toggleInstall;
         QAction*        m_toggleDeinstall;
         QAction*        m_toggleSlot;
-        TaskBox*        m_box;
 
     };
 }

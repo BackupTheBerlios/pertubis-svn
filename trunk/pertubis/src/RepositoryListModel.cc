@@ -29,16 +29,37 @@
 #include <QString>
 #include <QDebug>
 
+pertubis::RepositoryListItem::RepositoryListItem() : m_data(QList<QVariant>() << Qt::Checked << "")
+{
+}
+
+pertubis::RepositoryListItem::RepositoryListItem(const paludis::RepositoryName & name) :
+        m_data(QList<QVariant>() << Qt::Checked << QString::fromStdString(paludis::stringify(name)) )
+{
+}
+
+
+
+bool pertubis::RepositoryListItem::setData(int col,const QVariant& value)
+{
+    if (m_data.count() > col)
+    {
+        m_data.replace(col,value);
+        return true;
+    }
+    return false;
+}
+
 void pertubis::RepositoryListThread::run()
 {
     using namespace paludis;
     QList<QVariantList> list;
-    QStringList names;
+    QList<RepositoryListItem*> names;
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
          r((*m_main->getEnv()).package_database()->begin_repositories()), r_end((*m_main->getEnv()).package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
-        names << stringify(r->name()).c_str();
+        names << new RepositoryListItem(r->name());
     }
     emit sendNames(names);
 }
@@ -49,6 +70,41 @@ pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj) : QAbstractLis
 
 pertubis::RepositoryListModel::~RepositoryListModel()
 {
+    qDeleteAll(m_data);
+    m_data.clear();
+}
+
+Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const
+{
+    switch (mix.column())
+    {
+        case 0:
+            return /*Qt::ItemIsSelectable | Qt::ItemIsEditable | */Qt::ItemIsUserCheckable;
+            break;
+        default:
+            return 0;
+    }
+    return 0;
+}
+
+bool pertubis::RepositoryListModel::setData ( const QModelIndex & ix, const QVariant & value, int role )
+{
+    if (!ix.isValid() || ix.column() != 0)
+        return false;
+    m_data.value(ix.row())->setData(0,value);
+    changeActiveRepos(m_data.value(ix.row())->data(1).toString());
+    emit dataChanged(ix,ix);
+    return true;
+}
+
+
+void pertubis::RepositoryListModel::changeActiveRepos(QString name)
+{
+    QSet<QString>::iterator it(m_activeRepos.find(name));
+    if (it == m_activeRepos.end())
+        m_activeRepos.insert(name);
+    else
+        m_activeRepos.erase(it);
 }
 
 void pertubis::RepositoryListModel::setHorizontalHeaderLabels ( const QStringList & labels )
@@ -63,12 +119,14 @@ QVariant pertubis::RepositoryListModel::headerData(int section, Qt::Orientation 
     return *(m_header.begin() + section);
 }
 
-void pertubis::RepositoryListModel::slotResult(QStringList cl)
+void pertubis::RepositoryListModel::slotResult(QList<RepositoryListItem*> cl)
 {
-    QString cat;
-    foreach (cat,cl)
+    m_activeRepos.clear();
+    m_data = cl;
+    RepositoryListItem* item;
+    foreach (item ,cl)
     {
-        m_data << RepositoryListItem(cat);
+        m_activeRepos.insert(item->data(1).toString());
     }
     reset();
 }
@@ -88,11 +146,29 @@ QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int 
     if (!m_index.isValid())
          return QVariant();
 
-     if (m_index.row() >= m_data.size())
-         return QVariant();
+    if (role == Qt::DisplayRole && m_index.column() == 1)
+    {
+        return m_data.value(m_index.row())->data(1);
+    }
 
-     if (role == Qt::DisplayRole)
-         return m_data.value(m_index.row()).name();
-     else
-         return QVariant();
+    if (role == Qt::CheckStateRole && m_index.column() == 0)
+    {
+        return m_data.value(m_index.row())->data(0);
+    }
+
+    return QVariant();
+}
+
+QSet<QString>  pertubis::RepositoryListModel::activeRepositories() const
+{
+//     QSet<QString> myset;
+//     for (RepositoryConstIterator start(m_data.constBegin()),
+//          end(m_data.constEnd());
+//          start != end;
+//          ++start)
+//     {
+//         if ((*start)->data(0).toInt() == Qt::Checked)
+//             myset.insert((*start)->data(1).toString());
+//     }
+    return m_activeRepos;
 }

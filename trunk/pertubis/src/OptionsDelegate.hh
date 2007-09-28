@@ -19,7 +19,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H
-#define _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H
+#define _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H 1
 
 #include <QItemDelegate>
 
@@ -30,6 +30,7 @@ class QMenu;
 namespace pertubis
 {
 
+    class PackageFilterModel;
     /*! \brief Used for presenting a customized selections display in PackageView
     *
     */
@@ -39,7 +40,7 @@ namespace pertubis
 
     public:
 
-        OptionsDelegate(QWidget *parent = 0);
+        OptionsDelegate(QWidget *parent,PackageFilterModel* proxy);
 
         void paint( QPainter* painter,
                     const QStyleOptionViewItem& option,
@@ -51,6 +52,7 @@ namespace pertubis
     private:
 
         QMenu*            m_menu;
+        PackageFilterModel* m_proxy;
     };
 }
 

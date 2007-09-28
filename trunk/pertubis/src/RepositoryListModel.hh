@@ -19,14 +19,19 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_LIST_MODEL_H
-#define _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_LIST_MODEL_H
+#define _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_LIST_MODEL_H 1
 
 #include <QAbstractListModel>
 
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/name.hh>
 #include "ThreadBase.hh"
 
 #include <QStringList>
+#include <QList>
+#include <QSet>
+#include <QVariant>
+#include <list>
 
 namespace pertubis
 {
@@ -34,11 +39,12 @@ namespace pertubis
     {
         public:
 
-            RepositoryListItem(){}
-            RepositoryListItem(QString r) : m_name(r) {}
-            QVariant name() { return m_name;}
+            RepositoryListItem();
+            RepositoryListItem(const paludis::RepositoryName & name);
+            QVariant data(int col) const { return m_data.value(col);}
+            bool setData(int col,const QVariant& value);
         private:
-            QVariant m_name;
+            QList<QVariant>     m_data;
     };
 
     /*! \brief not finished
@@ -55,7 +61,7 @@ namespace pertubis
 
         signals:
 
-            void sendNames(QStringList list);
+            void sendNames(QList<RepositoryListItem*> cl);
     };
 
     /*! \brief This qt model class holds repositories.
@@ -67,22 +73,34 @@ namespace pertubis
 
         public:
 
+            typedef QList<RepositoryListItem*>::const_iterator RepositoryConstIterator;
+
             RepositoryListModel( QObject* parent);
             ~RepositoryListModel();
 
             QVariant headerData(int section, Qt::Orientation orientation, int role) const;
             void setHorizontalHeaderLabels ( const QStringList & labels );
 
+            QSet<QString> activeRepositories() const;
+
+            Qt::ItemFlags flags(const QModelIndex &mix) const;
+
             int rowCount( const QModelIndex & index ) const;
             int columnCount( const QModelIndex & index ) const;
             QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+            void changeActiveRepos(QString name);
+
+            bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 
         private:
-            QList<RepositoryListItem>   m_data;
+            QList<RepositoryListItem*>   m_data;
             QStringList                 m_header;
+            QSet<QString>               m_activeRepos;
 
         public slots:
-            void slotResult(QStringList cl);
+            void slotResult(QList<RepositoryListItem*> cl);
+
     };
 }
 #endif
+

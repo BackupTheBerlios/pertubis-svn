@@ -23,16 +23,7 @@
 
 #include "ThreadBase.hh"
 
-
-namespace paludis
-{
-    class Environment;
-}
-
-class QMenu;
-
-#include <QStringList>
-#include <set>
+#include <QString>
 
 namespace pertubis
 {
@@ -64,8 +55,10 @@ namespace pertubis
 
         signals:
             void packagesResult(Item* root);
+            void finished(int resultCount);
     };
 }
 #endif
+
 
 

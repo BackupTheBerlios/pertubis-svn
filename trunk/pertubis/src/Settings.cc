@@ -1,22 +1,21 @@
 
 #include "Settings.hh"
-#include <QStackedWidget>
-#include <QListWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QComboBox>
 #include <QApplication>
-
-#include <QLabel>
+#include <QComboBox>
 #include <QDebug>
-#include <QLineEdit>
 #include <QDir>
-#include <QSettings>
-#include <QMessageBox>
-#include <QGroupBox>
 #include <QGridLayout>
-#include <QPushButton>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
 #include <QLocale>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QSettings>
+#include <QStackedWidget>
+#include <QVBoxLayout>
 
 pertubis::I18NPage::I18NPage(QWidget *pobj)
      : QWidget(pobj)

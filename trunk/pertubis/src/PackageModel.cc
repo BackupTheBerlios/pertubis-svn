@@ -18,25 +18,18 @@
 */
 
 #include "PackageModel.hh"
-#include "PackageItem.hh"
-
-#include <QDebug>
-#include <QBrush>
-#include <QApplication>
-#include <QColor>
-
-#include "Task.hh"
 #include "TaskBox.hh"
+#include "Task.hh"
+#include "Item.hh"
+
+#include <QColor>
+#include <QBrush>
+#include <QVariant>
+#include <QDebug>
 #include <QStringList>
 
-bool ItemLessThan(const pertubis::Item* a,const pertubis::Item* b)
+pertubis::PackageModel::PackageModel(QObject* pobj) : QAbstractItemModel(pobj),m_root(new Item()),m_box(0)
 {
-    return (a->data(0).toString() < b->data(0).toString() );
-}
-
-pertubis::PackageModel::PackageModel(QObject* pobj) : QAbstractItemModel(pobj),m_root(0)
-{
-    m_root = new RootItem();
 }
 
 pertubis::PackageModel::~PackageModel()
@@ -45,49 +38,12 @@ pertubis::PackageModel::~PackageModel()
         delete m_root;
 }
 
-void pertubis::PackageModel::setBox(TaskBox* t)
-{
-    m_box = t;
-}
 
-bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taskid, bool mystate)
-{
-    qDebug() << "PackageModel::setSelectionData() - start" << ix << taskid << mystate;
-    Item* item = static_cast<Item*>(ix.internalPointer());
-    Item::UpdateRange range = item->updateRange();
-    switch (range)
-    {
-        case Item::ur_parent:
-               if (m_box->task(taskid)->changeParentStates(item, mystate) )
-                emit dataChanged(ix, index(item->childCount()-1,0,ix));
-            return true;
-        case Item::ur_child:
-            if (m_box->task(taskid)->changeChildStates(item,mystate) )
-            {
-                QModelIndex p = parent(ix);
-                QModelIndex last = index(rowCount(p)-1,0,p);
-                emit dataChanged(p,last);
-            }
-            return true;
-        default:
-            return true;
-    }
-    return false;
-}
-
-bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role)
-{
-    if (orientation == Qt::Horizontal && section < m_header.count() && role == Qt::EditRole)
-    {
-        m_header.replace(section,value.toString());
-        emit headerDataChanged(orientation,section,section);
-        return true;
-    }
-    return false;
-}
 
 Qt::ItemFlags pertubis::PackageModel::flags(const QModelIndex &mix) const
 {
+    if (!mix.isValid() )
+        return 0;
     switch (mix.column())
     {
         case Item::io_selected:
@@ -121,6 +77,8 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
             return QBrush(QColor(0,0,255));
         if (ix.column() == Item::io_selected)
             return QBrush(QColor(0,255,0));
+        if (ix.column() == Item::io_mask_reasons)
+            return QBrush(QColor(255,0,0));
         if (ix.column() == Item::io_package)
         {
             if (item->state() == Item::is_stable)
@@ -159,26 +117,21 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
 
 QModelIndex pertubis::PackageModel::index(int row, int column, const QModelIndex &parentIndex) const
 {
-     if (!hasIndex(row, column, parentIndex))
+    if (!hasIndex(row, column, parentIndex))
         return QModelIndex();
 
-    Item *pmiItem;
+    Item *parentItem;
 
     if (!parentIndex.isValid())
-        pmiItem = m_root;
+        parentItem = m_root;
     else
-        pmiItem = static_cast<Item*>(parentIndex.internalPointer());
+        parentItem = static_cast<Item*>(parentIndex.internalPointer());
 
-    Item *childItem = pmiItem->child(row);
+    Item *childItem = parentItem->child(row);
     if (childItem)
         return QAbstractItemModel::createIndex(row, column, childItem);
     else
         return QModelIndex();
-}
-
-void pertubis::PackageModel::setHorizontalHeaderLabels ( const QStringList & labels )
-{
-    m_header = labels;
 }
 
 QModelIndex pertubis::PackageModel::parent(const QModelIndex &mix) const
@@ -232,7 +185,53 @@ void pertubis::PackageModel::slotAppendPackage(Item* item)
     if (m_root != 0)
     {
         m_root->appendChild(item);
-        item->setParent(m_root);
         reset();
     }
+}
+
+bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taskid, bool mystate)
+{
+    Item* item = static_cast<Item*>(ix.internalPointer());
+    qDebug() << "PackageModel::setSelectionData() - start" << ix << taskid << mystate << *item;
+    Item::UpdateRange range = item->updateRange();
+    switch (range)
+    {
+        case Item::ur_parent:
+            if (m_box->task(taskid)->changeParentStates(item, mystate) )
+                emit dataChanged(ix, index(item->childCount()-1,0,ix));
+            return true;
+        case Item::ur_child:
+            if (m_box->task(taskid)->changeChildStates(item,mystate) )
+            {
+                QModelIndex p = parent(ix);
+                QModelIndex last = index(rowCount(p)-1,0,p);
+                emit dataChanged(p,last);
+            }
+            return true;
+        default:
+            return true;
+    }
+    return false;
+}
+
+void pertubis::PackageModel::setBox(TaskBox* t)
+{
+    m_box = t;
+}
+
+void pertubis::PackageModel::setHorizontalHeaderLabels ( const QStringList & labels )
+{
+    m_header = labels;
+    emit headerDataChanged(Qt::Horizontal,0,labels.count()-1);
+}
+
+bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role)
+{
+    if (orientation == Qt::Horizontal && section < m_header.count() && role == Qt::EditRole)
+    {
+        m_header.replace(section,value.toString());
+        emit headerDataChanged(orientation,section,section);
+        return true;
+    }
+    return false;
 }

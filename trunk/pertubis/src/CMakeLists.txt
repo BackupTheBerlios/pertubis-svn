@@ -17,14 +17,14 @@ SET(PERTUBIS_SRCS
     MessageOutput.cc
     name_extractor.cc
     OptionsDelegate.cc
-    PackageItem.cc
+    PackageFilterModel.cc
+    CategoryItem.cc
     PackageModel.cc
     PackagesThread.cc
     pcre_matcher.cc
     QTOutputStream.hh
     RepositoryInfoModel.cc
     RepositoryListModel.cc
-    RepositoryView.cc
     SearchThread.cc
     SearchWindow.cc
     Settings.cc
@@ -34,7 +34,7 @@ SET(PERTUBIS_SRCS
     Task.cc
     text_matcher.cc
     ThreadBase.cc
-    VersionItem.cc
+#     VersionItem.cc
 )
 
 SET(PERTUBIS_MAIN_SRCS
@@ -50,12 +50,12 @@ SET(PERTUBIS_MOC_HDRS
     Item.hh
     MessageOutput.hh
     OptionsDelegate.hh
-    PackageItem.hh
+    PackageFilterModel.hh
+#     PackageItem.hh
     PackageModel.hh
     PackagesThread.hh
     RepositoryInfoModel.hh
     RepositoryListModel.hh
-    RepositoryView.hh
     SearchThread.hh
     SearchWindow.hh
     Settings.hh
@@ -63,7 +63,7 @@ SET(PERTUBIS_MOC_HDRS
     Task.hh
     TaskBox.hh
     ThreadBase.hh
-    VersionItem.hh
+#     VersionItem.hh
 )
 
 EXEC_PROGRAM("/bin/sh"

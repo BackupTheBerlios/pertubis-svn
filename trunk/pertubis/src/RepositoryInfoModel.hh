@@ -18,7 +18,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_INFO_MODEL_H
-#define _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_INFO_MODEL_H
+#define _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_INFO_MODEL_H 1
 
 #include <QList>
 #include <QVariant>
@@ -86,7 +86,7 @@ namespace pertubis
 
     private:
         QList<QVariantList>       m_data;
-        QStringList                 m_header;
+        QStringList               m_header;
     };
 
 }

@@ -19,10 +19,9 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_SEARCH_WINDOW_H
-#define _PERTUBIS_ENTRY_PROTECTOR_SEARCH_WINDOW_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SEARCH_WINDOW_H 1
 
 #include <QDialog>
-#include <QLineEdit>
 
 class QGroupBox;
 class QLineEdit;
@@ -42,7 +41,6 @@ namespace pertubis
     public:
         SearchWindow( QWidget *pwid = 0);
 
-        QLabel*                m_label;
         QLineEdit*            m_line;
         QCheckBox*            m_chkDesc;
         QCheckBox*            m_chkName;

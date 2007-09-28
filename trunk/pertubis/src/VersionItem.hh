@@ -19,7 +19,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_VERSION_ITEM_H
-#define _PERTUBIS_ENTRY_PROTECTOR_VERSION_ITEM_H
+#define _PERTUBIS_ENTRY_PROTECTOR_VERSION_ITEM_H 1
 
 #include "Item.hh"
 #include <QList>
@@ -51,11 +51,9 @@ namespace pertubis
             bool available() const;
 
             UpdateRange updateRange() const;
-
-            paludis::tr1::shared_ptr<const paludis::PackageID> ID();
     };
 
-    /*! \brief helps us creating correctly a VersionItem
+    /*! \brief helps us creating a VersionItem
     *
     */
     Item* makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,

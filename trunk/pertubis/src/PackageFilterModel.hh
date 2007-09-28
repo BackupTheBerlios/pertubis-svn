@@ -18,36 +18,31 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORIES_THREAD_H
-#define _PERTUBIS_ENTRY_PROTECTOR_CATEGORIES_THREAD_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H
+#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H 1
 
-#include "ThreadBase.hh"
-#include <QList>
+#include <QSortFilterProxyModel>
+#include <QVariant>
+#include <QModelIndex>
 
 namespace pertubis
 {
-    class KeywordManager;
-    class CategoryItem;
+    class RepositoryListModel;
 
-    /*! \brief thread for fetching categories from repositories and returns a list of names
-    *
-    */
-    class CategoriesThread : public ThreadBase
+    class PackageFilterModel : public QSortFilterProxyModel
     {
         Q_OBJECT
+        public:
 
-    public:
+            PackageFilterModel(QObject * pobj,const RepositoryListModel& main);
 
-        CategoriesThread(QObject* parent, DatabaseView* main);
+            bool filterAcceptsRow(int sourceRow,
+                             const QModelIndex &sourceParent) const;
 
-    protected:
-
-        void run();
-
-    signals:
-
-        void categoriesResult(QList<CategoryItem*> cl);
+            const RepositoryListModel& m_model;
     };
+
 }
 
 #endif
+

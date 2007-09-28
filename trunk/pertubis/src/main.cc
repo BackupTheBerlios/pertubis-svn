@@ -64,30 +64,3 @@ int main( int argc, char **argv )
 
     return 0;
 }
-
-
-// #include "PackageItem.hh"
-// #include <QList>
-// #include <QVariant>
-//
-// int main( int argc, char **argv )
-// {
-//     QApplication a( argc, argv );
-//     QVariantList reslist;
-//     QVariantMap resmap;
-//     reslist << true << false;
-//     resmap.insert("1",true);
-//     resmap.insert("2",false);
-//
-//     QVariantList bl;
-//     bl << reslist << 1 << 2 << 3 << "4";
-//     QVariantList bm;
-//     bm << resmap << 1 << 2 << 3 << "4";
-//     QVariant iter;
-//     foreach (iter,bl)
-//         qDebug() << iter;
-//     qDebug() << "\n\n";
-//     foreach (iter,bm)
-//         qDebug() << iter;
-//     return 0;
-// }

@@ -19,15 +19,14 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_TASK_H
-#define _PERTUBIS_ENTRY_PROTECTOR_TASK_H
+#define _PERTUBIS_ENTRY_PROTECTOR_TASK_H 1
 
-#include <QString>
-#include <QAction>
-
-#include <QVector>
-
-#include <paludis/util/tr1_memory.hh>
 #include <list>
+#include <QObject>
+#include <QString>
+#include <paludis/util/tr1_memory.hh>
+
+class QAction;
 
 namespace paludis
 {

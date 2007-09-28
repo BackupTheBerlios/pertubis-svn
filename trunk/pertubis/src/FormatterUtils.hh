@@ -19,7 +19,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_UTILS_H
-#define _PERTUBIS_ENTRY_PROTECTOR_UTILS_H
+#define _PERTUBIS_ENTRY_PROTECTOR_UTILS_H 1
 
 #include <QString>
 #include <string>
@@ -64,6 +64,11 @@ namespace pertubis
     inline std::string bold(const std::string& text)
     {
         return std::string("<b>"+text+"</b>");
+    }
+
+    inline QString html_tooltip(const QString& text,const QString& shortcut="")
+    {
+        return QString("<html><h1><u>%1</u></h1><p>%2</p></html>").arg(shortcut).arg(text);
     }
 }
 

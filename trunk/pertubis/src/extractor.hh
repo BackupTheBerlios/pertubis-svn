@@ -37,7 +37,7 @@
  */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_EXTRACTOR_H
-#define _PERTUBIS_ENTRY_PROTECTOR_EXTRACTOR_H
+#define _PERTUBIS_ENTRY_PROTECTOR_EXTRACTOR_H 1
 
 #include <string>
 #include <paludis/environment.hh>

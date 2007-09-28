@@ -20,14 +20,13 @@
 #include "DatabaseView.hh"
 #include "description_extractor.hh"
 #include "name_extractor.hh"
-#include "PackageItem.hh"
+#include "Item.hh"
 #include "pcre_matcher.hh"
 #include "TaskBox.hh"
 #include "text_matcher.hh"
 #include "SearchThread.hh"
-#include "VersionItem.hh"
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <paludis/dep_spec.hh>
+
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -62,7 +61,7 @@ void pertubis::SearchThread::run()
     qDebug() << "SearchThread::run() - searching for name:" << m_optName << m_optDesc;
     qDebug() << "SearchThread::run() - searching for description: " << m_optDesc;
     matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
-
+    int count(0);
     if (m_optName )
         extractors.push_back(tr1::shared_ptr<NameExtractor>( new NameExtractor(m_main->getEnv().get()) )    );
     if (m_optDesc )
@@ -111,24 +110,48 @@ void pertubis::SearchThread::run()
 
                 Item* p_item=0;
                 QVariantList tasks(m_main->taskbox()->tasks());
+                tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
                 if (dps.version_requirements_ptr() || dps.slot_ptr() || dps.use_requirements_ptr() || dps.repository_ptr())
                 {
-                    p_item = new PackageItem(display_entry, QList<QVariant>() << QVariant(tasks) << stringify(*dps.package_name_part_ptr()).c_str() << stringify(*dps.category_name_part_ptr()).c_str() << stringify(*dps.repository_ptr()).c_str() << Qt::Unchecked);
+                    p_item = makePackageItem(display_entry,
+                                            tasks,
+                                            QString::fromStdString(stringify(*dps.package_name_part_ptr())),
+                                            QString::fromStdString(stringify(*dps.category_name_part_ptr())),
+                                            QString::fromStdString(stringify(*dps.repository_ptr())),
+                                            false,
+                                            Item::is_stable,
+                                            Item::ur_child,
+                                            0,
+                                            "");
                 }
                 else
                 {
-                    p_item = new PackageItem(display_entry,QList<QVariant>() << QVariant(tasks) << stringify(display_entry->name().package).c_str()<< stringify(display_entry->name().category).c_str() << stringify(display_entry->repository()->name()).c_str() << Qt::Unchecked) ;
+                    p_item = makePackageItem(*versionIds->last(),
+                                            tasks,
+                                            QString::fromStdString(stringify(display_entry->name().package)),
+                                            QString::fromStdString(stringify(display_entry->name().category)) ,
+                                            QString::fromStdString(stringify(display_entry->repository()->name())),
+                                            false,
+                                            Item::is_stable,
+                                            Item::ur_child,
+                                            0,
+                                            "");
                 }
 
-                tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
+
                 int mp=0;
                 int ip=0;
                 for (PackageIDSequence::ConstIterator vstart(versionIds->begin()),vend(versionIds->end());
                     vstart != vend; ++vstart)
                 {
                     Item* v_item = makeVersionItem(*vstart,
-                            m_main->taskbox()->selectionData(*vstart),
-                            stringify((*vstart)->version()).c_str());
+                                                    m_main->taskbox()->tasks(),
+                                                    QString::fromStdString(stringify((*vstart)->version())),
+                                                    false,
+                                                    Item::is_stable,
+                                                    Item::ur_child,
+                                                    p_item,
+                                                    "");
 
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
                     {
@@ -146,7 +169,9 @@ void pertubis::SearchThread::run()
                 if (mp == p_item->childCount())
                     p_item->setState(Item::is_masked);
                 emit itemResult(p_item);
+                ++count;
             }
         }
     }
+    emit finished(count);
 }

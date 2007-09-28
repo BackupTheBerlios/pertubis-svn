@@ -19,7 +19,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_SYNC_TASK_H
-#define _PERTUBIS_ENTRY_PROTECTOR_SYNC_TASK_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SYNC_TASK_H 1
 
 #include <QThread>
 #include <paludis/tasks/sync_task.hh>

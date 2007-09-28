@@ -17,17 +17,13 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "RepositoryView.hh"
-#include "RepositoryModel.hh"
+#include "CategoryItem.hh"
 
-#include <QGridLayout>
-#include <QHeaderView>
-
-pertubis::RepositoryInfoView::RepositoryInfoView(QWidget* pobj) : QTableView( pobj)
+pertubis::CategoryItem::CategoryItem(const QString& catname, const QStringList& repos) : m_name(catname),m_repos(repos)
 {
-    horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    horizontalHeader()->setVisible(true);
-    horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-//     hide();
 }
 
+QString pertubis::CategoryItem::name() const
+{
+    return m_name;
+}

@@ -22,13 +22,16 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_DETAILS_THREAD_H 1
 
 #include "ThreadBase.hh"
-#include "PackageItem.hh"
 
 #include <paludis/util/tr1_memory.hh>
 
 #include <QString>
 #include <string>
 
+namespace paludis
+{
+    class PackageID;
+}
 
 namespace pertubis
 {

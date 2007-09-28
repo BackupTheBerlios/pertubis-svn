@@ -18,27 +18,25 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_VIEW_H
-#define _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_VIEW_H
-
-#include <QTableView>
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_FILTER_MODEL_H
+#define _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_FILTER_MODEL_H 1
 
 namespace pertubis
 {
-    /*! \brief not finished
-    *
-    */
-
-    class RepositoryInfoView : public QTableView
+    class CategoryFilterModel : public QSortFilterProyModel
     {
         Q_OBJECT
 
-    public:
+        public:
 
-        RepositoryInfoView(QWidget* pobj);
-        ~RepositoryInfoView() {}
+            CategoryFilterModel(QObject * pobj,const DatabaseView& main);
+
+            bool filterAcceptsRow(int sourceRow,
+                                  const QModelIndex &sourceParent) const;
+
+            const DatabaseView& m_main;
     };
+
 }
 
 #endif
-

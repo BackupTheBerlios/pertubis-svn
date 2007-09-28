@@ -18,42 +18,31 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_MODEL_H
-#define _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_MODEL_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_ITEM_H
+#define _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_ITEM_H 1
 
-#include <QAbstractListModel>
 #include <QStringList>
 
 namespace pertubis
 {
 
-    class CategoryItem;
-    /*! \brief This qt model class holds all software categories of all repositories it is instructed to store.
+    /*! \brief stores category name with associated repositories
     *
     */
-    class CategoryModel : public QAbstractListModel
+        class CategoryItem
     {
-        Q_OBJECT
-
         public:
 
-            CategoryModel( QObject* parent);
-            ~CategoryModel();
+            CategoryItem(const QString& name,const QStringList& repos);
 
-            QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-            void setHorizontalHeaderLabels ( const QStringList & labels );
-
-            int rowCount( const QModelIndex & index ) const;
-            int columnCount( const QModelIndex & index ) const;
-            QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+            QString name() const;
+            QStringList data() const;
 
         private:
-            QList<CategoryItem*> m_data;
-            QStringList        m_header;
 
-    public slots:
-        void slotPopulateModel(QList<CategoryItem*> list);
+            QString     m_name;
+            QStringList m_repos;
     };
+
 }
 #endif
-

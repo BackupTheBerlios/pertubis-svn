@@ -18,11 +18,11 @@
 */
 
 #include "CategoryModel.hh"
+#include "CategoryItem.hh"
 
-
-#include <QSet>
 #include <QString>
 #include <QDebug>
+
 
 pertubis::CategoryModel::CategoryModel(QObject* pobj) : QAbstractListModel(pobj)
 {
@@ -30,6 +30,8 @@ pertubis::CategoryModel::CategoryModel(QObject* pobj) : QAbstractListModel(pobj)
 
 pertubis::CategoryModel::~CategoryModel()
 {
+    qDeleteAll(m_data);
+    m_data.clear();
 }
 
 void pertubis::CategoryModel::setHorizontalHeaderLabels ( const QStringList & labels )
@@ -44,14 +46,10 @@ QVariant pertubis::CategoryModel::headerData(int section, Qt::Orientation orient
     return *(m_header.begin() + section);
 }
 
-void pertubis::CategoryModel::slotPopulateModel(QStringList cl)
+void pertubis::CategoryModel::slotPopulateModel(QList<CategoryItem*> cl)
 {
-    QString cat;
-    foreach (cat,cl)
-    {
-        m_data << cat;
-    }
-    m_data.sort();
+    m_data = cl;
+//     m_data.sort();
     reset();
 }
 
@@ -65,16 +63,16 @@ int pertubis::CategoryModel::columnCount( const QModelIndex & pobj ) const
     return pobj.isValid() ? 0 : m_header.count();
 }
 
-QVariant pertubis::CategoryModel::data ( const QModelIndex & m_index, int role) const
+QVariant pertubis::CategoryModel::data ( const QModelIndex & mix, int role) const
 {
-    if (!m_index.isValid())
+    if (!mix.isValid())
          return QVariant();
 
-     if (m_index.row() >= m_data.size())
+    if (mix.row() >= m_data.size())
          return QVariant();
 
      if (role == Qt::DisplayRole)
-         return m_data.at(m_index.row());
+         return m_data.at(mix.row())->name();
      else
          return QVariant();
 }

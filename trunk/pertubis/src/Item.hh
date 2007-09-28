@@ -22,10 +22,9 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_ITEM_H
 
 #include <QList>
+#include <QDebug>
 #include <QVariant>
 #include <paludis/util/tr1_memory.hh>
-
-#include "TaskBox.hh"
 
 namespace paludis
 {
@@ -47,7 +46,7 @@ namespace pertubis
         public:
 
             enum ItemState { is_stable, is_unstable, is_masked };
-            enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed};
+            enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed,io_mask_reasons};
             enum ItemType { it_category,it_package,it_version};
 
             /*! \brief In which direction we want model updates
@@ -63,10 +62,14 @@ namespace pertubis
 
             Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                  const QList<QVariant> &dats,
-                 ItemState mystate);
+                 ItemState mystate,
+                 UpdateRange ur,
+                 Item* parent);
 
             Item(const QList<QVariant> &dats,
-                 ItemState mystate);
+                 ItemState mystate,
+                 UpdateRange ur,
+                 Item* pitem);
 
             virtual ~Item();
 
@@ -87,7 +90,7 @@ namespace pertubis
             virtual int columnCount() const;
             virtual QVariant data(int column) const;
             virtual int row() const;
-            virtual UpdateRange updateRange() const = 0;
+            virtual UpdateRange updateRange() const;
             virtual Item *parent() const;
             virtual paludis::tr1::shared_ptr<const paludis::PackageID> ID();
             QList<Item*>::iterator childBegin();
@@ -97,25 +100,68 @@ namespace pertubis
 
             QList<QVariant>     m_data;
             QList<Item*>        m_children;
-            QVector<bool>       m_taskStates;
-
             paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
-
             Item*               m_parent;
             Item*               m_bestChild;
             ItemState           m_state;
+            UpdateRange         m_ur;
     };
 
-    class RootItem : public Item
-    {
-        Q_OBJECT
 
-        public:
-            RootItem();
-            UpdateRange updateRange() const;
-    };
-
+    QString stateDescription(Item::ItemState status);
     QString status(Item::ItemState status);
+
+    /*! \brief helps us creating a PackageItem
+     *
+     */
+
+    inline Item* makePackageItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                                QVariantList selections,
+                                QString pack,
+                                QString cat,
+                                QString rep,
+                                bool isInstalled,
+                                Item::ItemState mystate,
+                                Item::UpdateRange ur,
+                                Item* pitem,
+                                QString mask_reasons)
+    {
+        QVariantList list;
+        list <<
+            QVariant(selections) <<
+            pack <<
+            cat <<
+            rep <<
+            (isInstalled ? Qt::Checked : Qt::Unchecked) <<
+            mask_reasons;
+        return new Item(id,list,mystate,ur,pitem);
+    }
+
+    /*! \brief helps us creating a VersionItem
+    *
+    */
+    inline Item* makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+        QVariantList selections,
+        QString version,
+        bool isInstalled,
+        Item::ItemState mystate,
+        Item::UpdateRange ur,
+        Item* pitem,
+        QString mask_reasons)
+    {
+        QVariantList list;
+        list <<
+            QVariant(selections) <<
+            version <<
+            "" <<
+            "" <<
+            (isInstalled ? Qt::Checked : Qt::Unchecked) <<
+            mask_reasons;
+        return new Item(id,list,mystate,ur,pitem);
+    }
 }
+
+QDebug operator<<(QDebug dbg, const pertubis::Item &c);
+
 
 #endif

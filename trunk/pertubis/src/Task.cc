@@ -18,10 +18,11 @@
 */
 
 #include "Task.hh"
-#include "PackageItem.hh"
+#include "Item.hh"
 #include <paludis/package_id.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <QDebug>
+#include <QAction>
 
 pertubis::Task::Task(QObject* pobj,
                      QAction* myaction,
@@ -79,7 +80,10 @@ bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID>
 void pertubis::Task::fillAction(Item* item)
 {
 //     qDebug() << "Task::fillAction() - start" << m_action->text();
-    m_action->setChecked( (hasEntry(item->ID())) ? Qt::Checked : Qt::Unchecked);
+    if (item->ID().get() != 0)
+        m_action->setChecked( (hasEntry(item->ID())) ? Qt::Checked : Qt::Unchecked);
+    else
+        m_action->setChecked( Qt::Unchecked);
 //     qDebug() << "Task::fillAction() - done";
 }
 
@@ -92,3 +96,4 @@ void pertubis::Task::changeEntry(paludis::tr1::shared_ptr<const paludis::Package
         deleteEntry(id);
 //     qDebug() << "Task::changeEntry() - done";
 }
+

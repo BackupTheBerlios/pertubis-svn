@@ -19,8 +19,6 @@
 */
 
 #include "ShowSelectionsThread.hh"
-#include "PackageItem.hh"
-#include "VersionItem.hh"
 #include "TaskBox.hh"
 #include "DatabaseView.hh"
 #include "Task.hh"
@@ -36,7 +34,7 @@
 
 void pertubis::ShowSelectionsThread::run()
 {
-    Item* root = new RootItem();
+    Item* root = new Item();
     for (TaskBox::Iterator tStart(m_main->taskbox()->taskBegin()),
          tEnd(m_main->taskbox()->taskEnd());
          tStart != tEnd;
@@ -47,17 +45,26 @@ void pertubis::ShowSelectionsThread::run()
              idStart != idEnd;
              ++idStart)
         {
-            Item* p_item = new PackageItem(QVariantList() <<
-                    QVariant(m_main->taskbox()->selectionData(*idStart)) <<
-                    paludis::stringify((*idStart)->name().package).c_str() <<
-                    paludis::stringify((*idStart)->name().category).c_str() <<
-                    paludis::stringify((*idStart)->repository()->name()).c_str());
-            Item* v_item = new VersionItem(paludis::tr1::shared_ptr<const paludis::PackageID>(*idStart),QVariantList() <<
-                    QVariant(m_main->taskbox()->selectionData(*idStart)) <<
-                    paludis::stringify((*idStart)->version()).c_str());
+            Item* p_item = makePackageItem(*idStart,
+                            m_main->taskbox()->selectionData(*idStart),
+                            QString::fromStdString(paludis::stringify((*idStart)->name().package)),
+                            QString::fromStdString(paludis::stringify((*idStart)->name().category)),
+                            QString::fromStdString(paludis::stringify((*idStart)->repository()->name())),
+                            false,
+                            Item::is_stable,
+                            Item::ur_parent,
+                            root,
+                            "");
+            Item* v_item = makeVersionItem(
+                                *idStart,
+                                m_main->taskbox()->selectionData(*idStart),
+                                QString::fromStdString(paludis::stringify((*idStart)->version()).c_str()),
+                                false,
+                                Item::is_stable,
+                                Item::ur_child,
+                                p_item,
+                                "");
             p_item->appendChild(v_item);
-            p_item->setBestChild(v_item);
-            root->appendChild(p_item);
         }
     }
     emit sendRoot(root);

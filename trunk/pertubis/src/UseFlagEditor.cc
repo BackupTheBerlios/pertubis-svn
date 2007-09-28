@@ -19,6 +19,7 @@
 
 #include "UseFlagEditor.hh"
 #include "UseFlagModel.hh"
+#include "FormatterUtils.hh"
 
 #include <QCloseEvent>
 #include <QListWidget>
@@ -102,19 +103,19 @@ void pertubis::UseFlagEditor::createToolbar()
     m_toolbar->layout()->setMargin(0);
     m_toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     QAction * ac_reload = m_toolbar->addAction( QPixmap(":images/reload_22.xpm"),tr("reload") );
-    ac_reload->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>Pertubis only loads automatically the useflag configuration on startup.</p><p>If you manually change these files pertubis is out of sync with your system.</p><p>Press this button to reload everything!</p></body></html>").arg(ac_reload->text()));
+    ac_reload->setToolTip(html_tooltip(tr("Pertubis only loads automatically the useflag configuration on startup.</p><p>If you manually change these files pertubis is out of sync with your system.</p><p>Press this button to reload everything!"),ac_reload->text()));
 
     QAction * ac_setbar = m_toolbar->addAction( QPixmap(":images/setbar_22.xpm"),tr("setlist") );
-    ac_setbar->setToolTip(tr("<html><body><h1><u>%1</u></h1></p><p>Enable or disable the useflag set list for a better view on the useflags</p></body></html>").arg(ac_setbar->text()));
+    ac_setbar->setToolTip(html_tooltip(tr("Enable or disable the useflag set list for a better view on the useflags"),ac_setbar->text()));
 
     QAction * ac_accept = m_toolbar->addAction( QPixmap(":images/save_22.xpm"),tr("save changes") );
-    ac_accept->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>You have to save your changes when you are finished. Otherwise all changes will be lost</p></body></html>").arg(ac_accept->text()));
+    ac_accept->setToolTip(html_tooltip(tr("You have to save your changes when you are finished. Otherwise all changes will be lost"),ac_accept->text()));
 
     QAction * ac_undo = m_toolbar->addAction( QPixmap(":images/undo_22.xpm"),tr("undo changes") );
-    ac_undo->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>Press this button to restore the former settings!</p></body></html>").arg(ac_undo->text()));
+    ac_undo->setToolTip(html_tooltip(tr("Press this button to restore the former settings!"),ac_undo->text()));
 
     QAction * ac_filter = m_toolbar->addAction( QPixmap(":images/cleanflags_22.xpm"),tr("clean useflags") );
-    ac_filter->setToolTip(tr("<html><body><h1><u>%1</u></h1><p>From time to time some useflags are added or deleted.\nYou can delete these old, unknown or unused useflags.</p><p><b>Don't forget saving!</b></p></body></html>").arg(ac_filter->text()));
+    ac_filter->setToolTip(html_tooltip(tr("From time to time some useflags are added or deleted. You can delete these old, unknown or unused useflags.<br><br>Don't forget saving!"),ac_filter->text()));
 
     connect(ac_setbar,
             SIGNAL(triggered()),

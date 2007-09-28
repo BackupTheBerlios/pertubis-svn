@@ -19,6 +19,7 @@
 
 #include "DeinstallTask.hh"
 #include "Item.hh"
+#include <QAction>
 
 bool pertubis::DeinstallTask::changeParentStates(pertubis::Item* item, int mystate)
 {

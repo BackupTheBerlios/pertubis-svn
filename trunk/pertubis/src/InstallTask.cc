@@ -38,11 +38,10 @@ bool pertubis::InstallTask::changeParentStates(Item* item, int newState)
         case Qt::Checked:
             changeEntry(item->ID(),true);
             item->setTaskState(m_taskid,Qt::PartiallyChecked);
-            if (item->bestChild())
+            if (item->bestChild() != 0)
                 item->bestChild()->setTaskState(m_taskid,Qt::Checked);
             break;
         case Qt::Unchecked:
-
             item->setTaskState(m_taskid,Qt::Unchecked);
             while(iStart != iEnd)
             {
@@ -62,7 +61,7 @@ bool pertubis::InstallTask::changeChildStates(Item* item, int newState)
 //     qDebug() << "InstallTask::changeChildStates - start" <<  newState;
     QList<Item*>::iterator iStart(item->parent()->childBegin());
     QList<Item*>::iterator iEnd(item->parent()->childEnd());
-//     qDebug() << "InstallTask::changeChildStates - 1";
+
     int i=0;
     switch (newState)
     {

@@ -15,10 +15,10 @@ SET(PERTUBIS_SRCS
     ../src/MessageOutput.cc
     ../src/name_extractor.cc
     ../src/OptionsDelegate.cc
+    ../src/PackageFilterModel.cc
     ../src/PackageItem.cc
     ../src/PackageModel.cc
     ../src/pcre_matcher.cc
-    ../src/RepositoryView.cc
     ../src/RepositoryInfoModel.cc
     ../src/RepositoryListModel.cc
     ../src/SearchWindow.cc
@@ -44,9 +44,9 @@ SET(PERTUBIS_MOC_HDRS
     ../src/Item.hh
     ../src/MessageOutput.hh
     ../src/OptionsDelegate.hh
+    ../src/PackageFilterModel.hh
     ../src/PackageItem.hh
     ../src/PackageModel.hh
-    ../src/RepositoryView.hh
     ../src/RepositoryInfoModel.hh
     ../src/RepositoryListModel.hh
     ../src/SearchWindow.hh

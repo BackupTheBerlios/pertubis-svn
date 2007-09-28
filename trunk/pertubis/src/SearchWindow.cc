@@ -19,19 +19,13 @@
 
 #include "SearchWindow.hh"
 
-
-#include <iostream>
-#include <paludis/environment.hh>
-#include <paludis/environments/environment_maker.hh>
-#include <paludis/package_database.hh>
-#include <paludis/util/iterator.hh>
-#include <paludis/util/stringify.hh>
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QDebug>
@@ -45,11 +39,6 @@ pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
     QVBoxLayout* leftLayout = new QVBoxLayout;
 
     m_line = new QLineEdit(this);
-
-    m_label = new QLabel(this);
-    m_label->setText(tr("&Find"));
-    m_label->setBuddy(m_line);
-
 
     m_dbox = new QDialogButtonBox(QDialogButtonBox::Close,Qt::Vertical);
 

@@ -19,7 +19,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_TASKBOX_H
-#define _PERTUBIS_ENTRY_PROTECTOR_TASKBOX_H
+#define _PERTUBIS_ENTRY_PROTECTOR_TASKBOX_H 1
 
 #include <QVector>
 #include <QVariant>

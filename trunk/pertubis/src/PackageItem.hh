@@ -66,9 +66,9 @@ namespace pertubis
 
     };
 
-    QString stateDescription(Item::ItemState status);
 
-    /*! \brief helps us creating correctly a PackageItem
+
+    /*! \brief helps us creating a PackageItem
     *
     */
     Item* makePackageItem(QVariantList selections,

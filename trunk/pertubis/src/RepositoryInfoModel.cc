@@ -29,7 +29,6 @@
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <paludis/environment.hh>
 
-
 void pertubis::RepositoryInfoThread::getInfo(QString name)
 {
     m_repName = name;

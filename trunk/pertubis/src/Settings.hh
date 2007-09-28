@@ -78,7 +78,7 @@ namespace pertubis
         private:
 
             QListWidget *contentsWidget;
-             QStackedWidget *pagesWidget;
+            QStackedWidget *pagesWidget;
             I18NPage*        m_i18n;
     };
 }

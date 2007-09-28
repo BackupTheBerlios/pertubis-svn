@@ -56,6 +56,7 @@ namespace pertubis
 
     signals:
         void itemResult(Item* root);
+        void finished(int resultCount);
     };
 }
 

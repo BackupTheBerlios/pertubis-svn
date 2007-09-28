@@ -1,28 +1,59 @@
+
+/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+*
+* This file is part of the pertubis frontend for paludis package manager.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #include "Item.hh"
 #include <QDebug>
 #include <paludis/package_id.hh>
 
-
-
-pertubis::Item::Item()  : m_parent(0), m_bestChild(0), m_state(Item::is_stable) {}
+pertubis::Item::Item()  :
+    m_data(QList<QVariant>() << QVariant(QVariantList()) << "" << "" << "" << "" << "" << ""),
+    m_parent(0),
+    m_bestChild(0),
+    m_state(Item::is_stable),
+    m_ur(Item::ur_nothing)
+{
+}
 
 pertubis::Item::Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                     const QList<QVariant> &dats,
-                    ItemState mystate)  :
+                    ItemState mystate,
+                    UpdateRange ur,
+                    Item* pitem)  :
                     m_data(dats),
                     m_id(id),
-                    m_parent(0),
+                    m_parent(pitem),
                     m_bestChild(0),
-                    m_state(mystate)
+                    m_state(mystate),
+                    m_ur(ur)
 {
 }
 
 pertubis::Item::Item(const QList<QVariant> &dats,
-                    ItemState mystate)  :
+                    ItemState mystate,
+                    UpdateRange ur,
+                    Item* pitem)  :
                     m_data(dats),
-                    m_parent(0),
+                    m_parent(pitem),
                     m_bestChild(0),
-                    m_state(mystate)
+                    m_state(mystate),
+                    m_ur(ur)
 {
 }
 
@@ -65,7 +96,7 @@ int pertubis::Item::indexOf(Item* item) const
 
 bool pertubis::Item::available() const
 {
-    return true;
+    return (m_state != Item::is_masked);
 }
 
 pertubis::Item::ItemState pertubis::Item::state() const
@@ -122,19 +153,20 @@ void pertubis::Item::setState(ItemState s)
 void pertubis::Item::setTaskState(int taskid, Qt::CheckState mystate)
 {
     QVariantList states = data(io_selected).toList();
-//     qDebug() << "Item::setTaskState() -" << states << taskid << mystate;
+//     qDebug() << "Item::setTaskState() - start" << states << taskid << mystate;
     states[taskid] = mystate;
     setData(io_selected,states);
+//     qDebug() << "Item::setTaskState() - done";
 }
 
 paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Item::ID()
 {
-    return paludis::tr1::shared_ptr<const paludis::PackageID>(static_cast<const paludis::PackageID*>(0) );
+    return m_id;
 }
 
-pertubis::Item::UpdateRange pertubis::RootItem::updateRange() const
+pertubis::Item::UpdateRange pertubis::Item::updateRange() const
 {
-    return ur_nothing;
+    return m_ur;
 }
 
 pertubis::Item* pertubis::Item::bestChild() const
@@ -142,7 +174,30 @@ pertubis::Item* pertubis::Item::bestChild() const
     return m_bestChild;
 }
 
-pertubis::RootItem::RootItem() :
-    Item(QList<QVariant>() << "" << "" << "" << "" << "",Item::is_stable)
+QString pertubis::stateDescription(Item::ItemState status)
 {
+    switch (status)
+    {
+        case Item::is_stable:
+            return "stable";
+        case Item::is_unstable:
+            return "possibly unstable";
+        case Item::is_masked:
+            return "not avaliable since masked";
+        default:
+            return "unknown package status";
+    }
+}
+
+QDebug operator<<(QDebug dbg, const pertubis::Item &item)
+{
+    dbg.nospace() << "pertubis::Item(" <<
+            item.data(pertubis::Item::io_selected).toList() << ", " <<
+            item.data(pertubis::Item::io_package).toString() << ", " <<
+            item.data(pertubis::Item::io_category).toString() << ", " <<
+            item.data(pertubis::Item::io_repository).toString() << ", " <<
+            item.data(pertubis::Item::io_installed).toString() << ", " <<
+            item.childCount() << ", " <<
+            item.columnCount() << ")";
+    return dbg.space();
 }

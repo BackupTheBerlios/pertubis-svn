@@ -18,14 +18,10 @@
 */
 
 #include "CategoriesThread.hh"
+#include "CategoryItem.hh"
 #include "DatabaseView.hh"
-
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/package_id.hh>
-#include <paludis/query.hh>
-#include <paludis/mask.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
@@ -33,15 +29,10 @@
 #include <paludis/util/sequence.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
-#include "name_extractor.hh"
+
 #include <QDebug>
 #include <QSet>
-
-#include <iomanip>
-#include <iostream>
-#include <list>
-#include <map>
-#include <algorithm>
+#include <QStringList>
 
 pertubis::CategoriesThread::CategoriesThread(QObject* pobj,
         DatabaseView* main) : ThreadBase(pobj,main)
@@ -52,7 +43,7 @@ void pertubis::CategoriesThread::run()
 {
     using namespace paludis;
     qDebug() << "CategoriesThread.run() - starting";
-    QSet<QString> cats;
+    QMap<QString, QStringList> cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
@@ -60,10 +51,18 @@ void pertubis::CategoriesThread::run()
         paludis::tr1::shared_ptr<const paludis::CategoryNamePartSet> cat_names(r->category_names());
         for (paludis::CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
         {
-//             qDebug() << stringify(*c).c_str();
-            cats << stringify(*c).c_str();
+            cats[QString::fromStdString(stringify(*c))].push_back(QString::fromStdString(stringify(r->name())));
         }
     }
-    emit categoriesResult(cats.toList());
+    QList<CategoryItem*> list;
+    for(QMap<QString,QStringList>::const_iterator cStart(cats.constBegin()),
+        end(cats.constEnd());
+        cStart != end;
+        ++cStart)
+    {
+        list.push_back(new CategoryItem(cStart.key(),cStart.value()));
+    }
+    emit categoriesResult(list);
     qDebug() << "CategoriesThread.run() - done";
 }
+

@@ -19,7 +19,7 @@
 */
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H
-#define _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H
+#define _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H 1
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
@@ -49,6 +49,7 @@ namespace pertubis
     class MessageOutput;
     class PackageDetails;
     class PackageModel;
+    class PackageFilterModel;
     class ReleaseEater;
     class SearchWindow;
     class OurSyncTask;
@@ -98,6 +99,7 @@ namespace pertubis
         int tidInstall() const { return m_tidInstall;}
         paludis::tr1::shared_ptr<paludis::Environment> getEnv() const { return m_env;}
         TaskBox* taskbox() const { return m_box;}
+        RepositoryListModel* repositoryListModel() const { return m_repoListModel;}
 
     protected:
 
@@ -112,6 +114,7 @@ namespace pertubis
         void createOutput();
         void createPackageView();
         void createRepositoryView();
+        void createRepositoryBar();
         void createTasks();
         void createToolBar();
         void createTrayMenu();
@@ -122,10 +125,15 @@ namespace pertubis
         void saveSettings();
 
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
+        CategoriesThread*       m_categoriesThread;
         CategoryModel*          m_catModel;
+        DetailsThread*          m_detailsThread;
         Item*                   m_current;
         MessageOutput*          m_output;
+        OurSyncTask*            m_syncTask;
         PackageModel*           m_packModel;
+        PackageFilterModel*     m_packageFilterModel;
+        PackagesThread*         m_packagesThread;
         PackageView*            m_packages;
         QAction*                m_acDeinstall;
         QAction*                m_acEditUse;
@@ -138,41 +146,40 @@ namespace pertubis
         QAction*                m_acSelection;
         QAction*                m_acSync;
         QAction*                m_acToggleCatBar;
-        QAction*                m_acToggleRepoBar;
-        QAction*                m_acToggleRepoView;
         QAction*                m_acToggleMainWindow;
         QAction*                m_acTogglePackageView;
+        QAction*                m_acToggleRepoBar;
+        QAction*                m_acToggleRepoView;
         QAction*                m_acToggleSearchWindow;
         QAction*                m_acToggleUseBar;
         QDockWidget*            m_dockCat;
-        QDockWidget*            m_dockRepo;
         QDockWidget*            m_dockDetails;
+        QDockWidget*            m_dockRepo;
         QDockWidget*            m_dockUse;
         QMenu*                  m_options;
         QMenu*                  m_trayMenu;
         QSplitter*              m_vSplit;
-        QTabWidget*             m_tabs;
         QTableView*             m_categories;
-        QTableView*             m_repoListView;
         QTableView*             m_repoInfoView;
+        QTableView*             m_repoListView;
+        QTabWidget*             m_tabs;
         QTextBrowser*           m_details;
         QToolBar*               m_toolBar;
         ReleaseEater*           m_filter;
-        RepositoryListModel*    m_repoListModel;
         RepositoryInfoModel*    m_repoInfoModel;
+        RepositoryInfoThread*   m_repoInfoThread;
+        RepositoryListModel*    m_repoListModel;
+        RepositoryListThread*   m_repoListThread;
+        SearchThread*           m_searchThread;
         SearchWindow*           m_windowSearch;
         Settings*               m_settings;
-        TaskBox*                m_box;
-        CategoriesThread*       m_categoriesThread;
-        DetailsThread*          m_detailsThread;
-        SearchThread*           m_searchThread;
-        PackagesThread*         m_packagesThread;
         ShowSelectionsThread*   m_selectionsThread;
-        RepositoryInfoThread*   m_repoInfoThread;
-        RepositoryListThread*   m_repoListThread;
-        OurSyncTask*            m_syncTask;
+        TaskBox*                m_box;
         int                     m_tidInstall;
         int                     m_tidDeinstall;
+        int                     m_repoViewTabID;
+        int                     m_outputTabID;
+        int                     m_detailsTabID;
 
     private slots:
 
@@ -181,24 +188,24 @@ namespace pertubis
         void slotDetailsChanged(const QModelIndex & index);
         void slotEditUseTask();
         void slotInstallTask(bool mystate);
-        void slotOpenSettings();
         void slotOpenURL(const QUrl&);
         void slotOptionsMenu(const QModelIndex& index);
         void slotQuit();
         void slotRefreshCategories();
-        void slotRepositoryChanged( const QModelIndex& index );
-        void slotSearchItem();
-        void slotSearchItemFinished();
-        void slotSearchPackagesFinished();
-        void slotShowSelectedPackages();
-        void slotShowDetails(QString details);
-        void slotSync();
-        void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
 
+        void slotRepositoryChanged( const QModelIndex& index );
+
+        void slotSearchItem();
+        void slotResultCount(int);
+        void slotShowDetails(QString details);
+        void slotShowSelectedPackages();
+        void slotSync();
         void slotToggleMainWindow();
         void slotTogglePackageView();
         void slotToggleRepoView();
         void slotToggleSearchWindow();
+        void slotToggleSettings();
+        void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
     };
 
     bool rootTest();
