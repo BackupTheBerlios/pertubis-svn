@@ -182,15 +182,17 @@ pertubis::DatabaseView::DatabaseView() :
     m_repoListThread = new RepositoryListThread(this,this);
     m_repoInfoThread = new RepositoryInfoThread(this,this);
 
-
-    createDetails();
-
-    createRepositoryView();
     createRepositoryBar();
     createPackageView();
+    createRepositoryView();
+
     createCatbar();
     addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
     addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
+    createDetails();
+    m_detailsTabID = m_tabs->addTab(m_details,tr("Package Details") );
+    m_repoViewTabID= m_tabs->addTab(m_repoInfoView,tr("repository details") );
+    m_outputTabID=m_tabs->addTab(m_output,tr("Messages"));
     createTrayMenu();
     createToolBar();
 
@@ -333,6 +335,11 @@ void pertubis::DatabaseView::createPackageView()
             SIGNAL(sendRoot(Item*)),
             m_packModel,
             SLOT(slotSetRoot(Item*)));
+
+    connect(m_repoListModel,
+            SIGNAL(dataChanged( const QModelIndex&,const QModelIndex&)),
+            m_packageFilterModel,
+            SLOT(invalidate() ));
 }
 
 void pertubis::DatabaseView::createToolBar()
@@ -352,7 +359,7 @@ void pertubis::DatabaseView::createToolBar()
 void pertubis::DatabaseView::createOutput()
 {
     m_output = new MessageOutput(this);
-    m_outputTabID=m_tabs->addTab(m_output,tr("Messages"));
+
 }
 
 void pertubis::DatabaseView::createRepositoryView()
@@ -370,8 +377,6 @@ void pertubis::DatabaseView::createRepositoryView()
     QPalette p(m_output->palette());
     p.setColor(QPalette::Base,QColor(170,170,170)); // background color  = black
     m_repoInfoView->setPalette(p);
-
-    m_repoViewTabID=m_tabs->addTab(m_repoInfoView,tr("repository details") );
 
     connect(m_repoInfoThread,
             SIGNAL(sendResult(QList<QVariantList>)),
@@ -424,10 +429,7 @@ void pertubis::DatabaseView::createRepositoryBar()
             this,
             SLOT(slotRepositoryChanged( const QModelIndex& )) );
 
-    connect(m_repoListModel,
-            SIGNAL(dataChanged( const QModelIndex&,const QModelIndex&)),
-            m_packageFilterModel,
-            SLOT(invalidate()) );
+
 
     m_repoListThread->start();
 }
@@ -438,7 +440,7 @@ void pertubis::DatabaseView::createDetails()
     QPalette p(m_output->palette());
     p.setColor(QPalette::Base,QColor(170,170,170)); // background color  = black
     m_details->setPalette(p);
-    m_detailsTabID = m_tabs->insertTab(0,m_details,tr("Package Details") );
+
     m_details->setOpenLinks(false);
     connect(m_details,
             SIGNAL(anchorClicked(const QUrl&)),
