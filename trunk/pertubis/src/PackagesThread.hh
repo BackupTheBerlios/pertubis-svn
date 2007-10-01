@@ -25,6 +25,7 @@
 
 #include <QString>
 
+
 namespace pertubis
 {
     class Item;
@@ -55,7 +56,6 @@ namespace pertubis
 
         signals:
             void packagesResult(Item* root);
-//             void finished(int resultCount);
     };
 }
 #endif

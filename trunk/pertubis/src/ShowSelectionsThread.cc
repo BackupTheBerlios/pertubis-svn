@@ -45,7 +45,6 @@ void pertubis::ShowSelectionsThread::run()
              idStart != idEnd;
              ++idStart)
         {
-            qDebug() << "ShowSelectionsThread::run()";
             Item* p_item = makePackageItem(*idStart,
                             m_main->taskbox()->selectionData(*idStart),
                             QString::fromStdString(paludis::stringify((*idStart)->name().package)),

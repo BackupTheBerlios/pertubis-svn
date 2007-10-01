@@ -706,7 +706,7 @@ void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
 //     qDebug() << "DatabaseView::slotDetailsChanged() - start" << index;
     QModelIndex ix = m_packageFilterModel->mapToSource(index);
     Item* item = static_cast<Item*>(ix.internalPointer());
-    qDebug() << *item;
+
     if (!ix.isValid() ||
         m_detailsThread->isRunning() ||
         ix.column() != Item::io_package ||

@@ -29,6 +29,7 @@
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
 #include <paludis/package_database.hh>
+
 #include <paludis/package_id.hh>
 #include <paludis/query.hh>
 #include <paludis/util/iterator.hh>
@@ -51,19 +52,18 @@ void pertubis::PackagesThread::searchPackages(QString str)
     start();
 }
 
+
 void pertubis::PackagesThread::run()
 {
     using namespace paludis;
 
     Item* root = new Item();
-//     QSet<QString> myRepos(m_main->repositoryListModel()->activeRepositories());
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
         r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
         r != r_end ; ++r)
     {
         if (r->format() == "vdb" ||
-            r->format() == "installed_virtuals" /*||*/
-           /* !myRepos.contains(QString::fromStdString(stringify(r->name())))*/)
+            r->format() == "installed_virtuals")
             continue;
         std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
 
@@ -103,19 +103,19 @@ void pertubis::PackagesThread::run()
                     for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
                          m != m_end ; ++m)
                     {
-                        qDebug() << "mask _reason" << stringify((*m)->description()).c_str();
                         reasons.append(stringify((*m)->description()).c_str());
                     }
 
                     Item* v_item = makeVersionItem(*vstart,
                                                 m_main->taskbox()->tasks(),
                                                 stringify((*vstart)->version()).c_str(),
-                                                false,
+                                                ( (installed(*vstart) ) ? Qt::Checked : Qt::Unchecked),
                                                 Item::is_stable,
                                                 Item::ur_child,
                                                 p_item,
                                                 reasons);
-
+                    if (v_item->data(Item::io_installed).toInt() != 0)
+                        ++ip;
                     p_item->appendChild(v_item);
                     m_main->taskbox()->setItemTasks(v_item);
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
@@ -136,5 +136,4 @@ void pertubis::PackagesThread::run()
     }
 
     emit packagesResult(root);
-//     emit finished(root->childCount());
 }

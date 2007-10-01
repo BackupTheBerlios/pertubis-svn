@@ -32,7 +32,7 @@
 
 pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
 {
-    qDebug() << "SearchWindow::SearchWindow() - start";
+//     qDebug() << "SearchWindow::SearchWindow() - start";
     setObjectName("m_windowSearch");
     QGridLayout* main_layout = new QGridLayout;
     main_layout->setObjectName("layout");
@@ -79,5 +79,5 @@ pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
     setWindowTitle(tr("Search Dialog"));
     setWindowModality(Qt::WindowModal);
     hide();
-    qDebug() << "SearchWindow::SearchWindow() - done";
+//     qDebug() << "SearchWindow::SearchWindow() - done";
 }

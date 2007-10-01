@@ -42,7 +42,7 @@ pertubis::CategoriesThread::CategoriesThread(QObject* pobj,
 void pertubis::CategoriesThread::run()
 {
     using namespace paludis;
-    qDebug() << "CategoriesThread.run() - starting";
+//     qDebug() << "CategoriesThread.run() - starting";
     QMap<QString, QSet<QString> > cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
@@ -63,6 +63,6 @@ void pertubis::CategoriesThread::run()
         list.push_back(new CategoryItem(cStart.key(),cStart.value()));
     }
     emit categoriesResult(list);
-    qDebug() << "CategoriesThread.run() - done";
+//     qDebug() << "CategoriesThread.run() - done";
 }
 

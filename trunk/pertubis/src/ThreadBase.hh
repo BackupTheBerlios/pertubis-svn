@@ -22,6 +22,12 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_THREAD_BASE_H 1
 
 #include <QThread>
+#include <paludis/util/tr1_memory.hh>
+
+namespace paludis
+{
+    class PackageID;
+}
 
 namespace pertubis
 {
@@ -39,7 +45,11 @@ namespace pertubis
         ThreadBase(QObject* parent,
                    DatabaseView* main);
 
+
     protected:
+
+        bool installed(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+
         DatabaseView*     m_main;
     };
 }
