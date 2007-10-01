@@ -476,7 +476,7 @@ void pertubis::DatabaseView::createActions()
     m_acPref->setToolTip(html_tooltip(tr("configure pertubis"),m_acPref->text()));
 
     m_acToggleSearchWindow = new QAction( QPixmap(":images/find_22.xpm"),tr("find") ,this);
-    m_acToggleSearchWindow->setShortcut( tr("CTRL+f"));
+    m_acToggleSearchWindow->setShortcut( tr("CTRL+F"));
     m_acToggleSearchWindow->setToolTip(html_tooltip( tr("toggle search window"),m_acToggleSearchWindow->text() ) );
 
     m_acSelection = new QAction( QPixmap(":images/selections_22.xpm"),tr("selections") ,this);

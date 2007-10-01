@@ -41,25 +41,25 @@ void pertubis::Task::setTaskid(int id)
 
 void pertubis::Task::addEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
-    m_data.push_back(id);
+    if (!hasEntry(id))
+        m_data.push_back(id);
 }
 
 void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
-//     qDebug() << "Task::deleteEntry() - before" << m_data.size();
     for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::iterator idIter(m_data.begin()),
          idEnd(m_data.end());
          idIter != idEnd;
          ++idIter)
     {
-        if ( *id.get() == *(*idIter) )
+        const paludis::PackageID* a(id.get());
+        const paludis::PackageID* b(idIter->get());
+        if (*a  == *b )
         {
-//             qDebug() << "Task::deleteEntry() - deleting";
             m_data.erase(idIter);
             break;
         }
     }
-//     qDebug() << "Task::deleteEntry() - after" << m_data.size();
 }
 
 bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const
@@ -69,7 +69,9 @@ bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID>
          idIter != idEnd;
          ++idIter)
     {
-        if ( *id.get() == *(idIter->get()) )
+        const paludis::PackageID* a(id.get());
+        const paludis::PackageID* b(idIter->get());
+        if (*a  == *b )
         {
             return true;
         }
@@ -79,21 +81,16 @@ bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID>
 
 void pertubis::Task::fillAction(Item* item)
 {
-//     qDebug() << "Task::fillAction() - start" << m_action->text();
     if (item->ID().get() != 0)
         m_action->setChecked( (hasEntry(item->ID())) ? Qt::Checked : Qt::Unchecked);
     else
         m_action->setChecked( Qt::Unchecked);
-//     qDebug() << "Task::fillAction() - done";
 }
 
 void pertubis::Task::changeEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id,bool mystate)
 {
-//     qDebug() << "Task::changeEntry() - start" << m_name << mystate;
     if (mystate)
         addEntry(id);
     else
         deleteEntry(id);
-//     qDebug() << "Task::changeEntry() - done";
 }
-

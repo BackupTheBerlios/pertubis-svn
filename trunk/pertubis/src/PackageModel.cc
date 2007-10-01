@@ -192,7 +192,7 @@ void pertubis::PackageModel::slotAppendPackage(Item* item)
 bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taskid, bool mystate)
 {
     Item* item = static_cast<Item*>(ix.internalPointer());
-    qDebug() << "PackageModel::setSelectionData() - start" << ix << taskid << mystate << *item;
+//     qDebug() << "PackageModel::setSelectionData() - start" << ix << taskid << mystate << *item;
     Item::UpdateRange range = item->updateRange();
     switch (range)
     {

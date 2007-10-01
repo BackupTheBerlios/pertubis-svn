@@ -45,6 +45,7 @@ void pertubis::ShowSelectionsThread::run()
              idStart != idEnd;
              ++idStart)
         {
+            qDebug() << "ShowSelectionsThread::run()";
             Item* p_item = makePackageItem(*idStart,
                             m_main->taskbox()->selectionData(*idStart),
                             QString::fromStdString(paludis::stringify((*idStart)->name().package)),
@@ -65,6 +66,7 @@ void pertubis::ShowSelectionsThread::run()
                                 p_item,
                                 "");
             p_item->appendChild(v_item);
+            root->appendChild(p_item);
         }
     }
     emit sendRoot(root);

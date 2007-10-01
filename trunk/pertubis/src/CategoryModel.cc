@@ -24,6 +24,11 @@
 #include <QDebug>
 
 
+bool CategoryItemSorter(pertubis::CategoryItem* a,pertubis::CategoryItem* b)
+{
+    return a->name() < b->name();
+}
+
 pertubis::CategoryModel::CategoryModel(QObject* pobj) : QAbstractTableModel(pobj)
 {
 }
@@ -49,7 +54,7 @@ QVariant pertubis::CategoryModel::headerData(int section, Qt::Orientation orient
 void pertubis::CategoryModel::slotPopulateModel(QList<CategoryItem*> cl)
 {
     m_data = cl;
-//     m_data.sort();
+    qSort(m_data.begin(),m_data.end(),CategoryItemSorter);
     reset();
 }
 
