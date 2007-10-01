@@ -43,7 +43,7 @@ void pertubis::CategoriesThread::run()
 {
     using namespace paludis;
     qDebug() << "CategoriesThread.run() - starting";
-    QMap<QString, QStringList> cats;
+    QMap<QString, QSet<QString> > cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
@@ -51,11 +51,11 @@ void pertubis::CategoriesThread::run()
         paludis::tr1::shared_ptr<const paludis::CategoryNamePartSet> cat_names(r->category_names());
         for (paludis::CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
         {
-            cats[QString::fromStdString(stringify(*c))].push_back(QString::fromStdString(stringify(r->name())));
+            cats[QString::fromStdString(stringify(*c))].insert(QString::fromStdString(stringify(r->name())));
         }
     }
     QList<CategoryItem*> list;
-    for(QMap<QString,QStringList>::const_iterator cStart(cats.constBegin()),
+    for(QMap<QString,QSet<QString> >::const_iterator cStart(cats.constBegin()),
         end(cats.constEnd());
         cStart != end;
         ++cStart)

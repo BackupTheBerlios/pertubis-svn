@@ -20,10 +20,10 @@
 
 #include "PackagesThread.hh"
 #include "DatabaseView.hh"
+#include "RepositoryListModel.hh"
 #include "Item.hh"
 #include "TaskBox.hh"
 #include "Task.hh"
-
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <paludis/environment.hh>
@@ -56,12 +56,14 @@ void pertubis::PackagesThread::run()
     using namespace paludis;
 
     Item* root = new Item();
-
+//     QSet<QString> myRepos(m_main->repositoryListModel()->activeRepositories());
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
         r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
         r != r_end ; ++r)
     {
-        if (r->format() == "vdb" || r->format() == "installed_virtuals")
+        if (r->format() == "vdb" ||
+            r->format() == "installed_virtuals" /*||*/
+           /* !myRepos.contains(QString::fromStdString(stringify(r->name())))*/)
             continue;
         std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
 
@@ -134,5 +136,5 @@ void pertubis::PackagesThread::run()
     }
 
     emit packagesResult(root);
-    emit finished(root->childCount());
+//     emit finished(root->childCount());
 }

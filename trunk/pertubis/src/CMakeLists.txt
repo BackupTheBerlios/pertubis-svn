@@ -4,6 +4,7 @@ INCLUDE(${QT_USE_FILE})
 
 SET(PERTUBIS_SRCS
     CategoriesThread.cc
+    CategoryFilterModel.cc
     CategoryModel.cc
     DatabaseView.cc
     DeinstallTask.cc
@@ -42,6 +43,7 @@ SET(PERTUBIS_MAIN_SRCS
 
 SET(PERTUBIS_MOC_HDRS
     CategoriesThread.hh
+    CategoryFilterModel.hh
     CategoryModel.hh
     DatabaseView.hh
     DeinstallTask.hh

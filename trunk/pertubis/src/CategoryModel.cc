@@ -24,7 +24,7 @@
 #include <QDebug>
 
 
-pertubis::CategoryModel::CategoryModel(QObject* pobj) : QAbstractListModel(pobj)
+pertubis::CategoryModel::CategoryModel(QObject* pobj) : QAbstractTableModel(pobj)
 {
 }
 
@@ -75,4 +75,16 @@ QVariant pertubis::CategoryModel::data ( const QModelIndex & mix, int role) cons
          return m_data.at(mix.row())->name();
      else
          return QVariant();
+}
+
+QModelIndex pertubis::CategoryModel::index(int row, int column, const QModelIndex &parentIndex) const
+{
+    if (!hasIndex(row, column, parentIndex))
+        return QModelIndex();
+
+    CategoryItem *item = m_data.value(row);
+    if (item)
+        return QAbstractItemModel::createIndex(row, column, item);
+    else
+        return QModelIndex();
 }

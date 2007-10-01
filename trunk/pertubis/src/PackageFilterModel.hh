@@ -39,10 +39,6 @@ namespace pertubis
             bool filterAcceptsRow(int sourceRow,
                              const QModelIndex &sourceParent) const;
 
-        public slots:
-
-            void refreshModel(const QModelIndex&, const QModelIndex&);
-
         private:
 
             const RepositoryListModel& m_model;

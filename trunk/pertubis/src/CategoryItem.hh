@@ -21,7 +21,8 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_ITEM_H
 #define _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_ITEM_H 1
 
-#include <QStringList>
+#include <QSet>
+#include <QString>
 
 namespace pertubis
 {
@@ -29,20 +30,21 @@ namespace pertubis
     /*! \brief stores category name with associated repositories
     *
     */
-        class CategoryItem
+    class CategoryItem
     {
         public:
 
-            CategoryItem(const QString& name,const QStringList& repos);
+            CategoryItem(const QString& name, const QSet<QString>& repos);
 
             QString name() const;
-            QStringList data() const;
+            QSet<QString> repos() const;
 
         private:
 
             QString     m_name;
-            QStringList m_repos;
+            QSet<QString> m_repos;
     };
 
 }
 #endif
+

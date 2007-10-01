@@ -55,7 +55,7 @@ namespace pertubis
 
         signals:
             void packagesResult(Item* root);
-            void finished(int resultCount);
+//             void finished(int resultCount);
     };
 }
 #endif

@@ -33,7 +33,6 @@ bool pertubis::PackageFilterModel::filterAcceptsRow(int sourceRow,
 {
 //     qDebug() << "pertubis::PackageFilterModel::filterAcceptsRow()";
     QSet<QString> repos(m_model.activeRepositories());
-    qDebug() << "pertubis::PackageFilterModel::filterAcceptsRow()" << repos;
     QModelIndex ix1 = sourceModel()->index(sourceRow,Item::io_repository,sourceParent);
     Item* p_item = static_cast<Item*>(sourceParent.internalPointer());
     if (p_item)
@@ -43,9 +42,4 @@ bool pertubis::PackageFilterModel::filterAcceptsRow(int sourceRow,
             return true;
     }
     return repos.contains(sourceModel()->data(ix1).toString());
-}
-
-void pertubis::PackageFilterModel::refreshModel(const QModelIndex&, const QModelIndex& )
-{
-    invalidate();
 }

@@ -21,7 +21,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_MODEL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_MODEL_H 1
 
-#include <QAbstractListModel>
+#include <QAbstractTableModel>
 #include <QStringList>
 
 namespace pertubis
@@ -31,7 +31,7 @@ namespace pertubis
     /*! \brief This qt model class holds all software categories of all repositories it is instructed to store.
     *
     */
-    class CategoryModel : public QAbstractListModel
+    class CategoryModel : public QAbstractTableModel
     {
         Q_OBJECT
 
@@ -43,6 +43,7 @@ namespace pertubis
             QVariant headerData(int section, Qt::Orientation orientation, int role) const;
             void setHorizontalHeaderLabels ( const QStringList & labels );
 
+            QModelIndex index(int row, int column, const QModelIndex &parentIndex) const;
             int rowCount( const QModelIndex & index ) const;
             int columnCount( const QModelIndex & index ) const;
             QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;

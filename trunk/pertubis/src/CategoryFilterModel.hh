@@ -21,22 +21,32 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_FILTER_MODEL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_FILTER_MODEL_H 1
 
+#include <QSortFilterProxyModel>
+#include <QVariant>
+#include <QModelIndex>
+
 namespace pertubis
 {
-    class CategoryFilterModel : public QSortFilterProyModel
+    class RepositoryListModel;
+
+    class CategoryFilterModel : public QSortFilterProxyModel
     {
         Q_OBJECT
-
         public:
 
-            CategoryFilterModel(QObject * pobj,const DatabaseView& main);
+            CategoryFilterModel(QObject * pobj,const RepositoryListModel& main);
 
             bool filterAcceptsRow(int sourceRow,
                                   const QModelIndex &sourceParent) const;
 
-            const DatabaseView& m_main;
+        private:
+
+            const RepositoryListModel& m_model;
+
+
     };
 
 }
 
 #endif
+

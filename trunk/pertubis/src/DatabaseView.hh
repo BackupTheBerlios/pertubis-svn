@@ -44,6 +44,7 @@ namespace paludis
 
 namespace pertubis
 {
+    class CategoryFilterModel;
     class CategoryModel;
     class Item;
     class MessageOutput;
@@ -126,6 +127,7 @@ namespace pertubis
 
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
         CategoriesThread*       m_categoriesThread;
+        CategoryFilterModel*    m_categoryFilterModel;
         CategoryModel*          m_catModel;
         DetailsThread*          m_detailsThread;
         Item*                   m_current;
@@ -196,7 +198,7 @@ namespace pertubis
         void slotRepositoryChanged( const QModelIndex& index );
 
         void slotSearchItem();
-        void slotResultCount(int);
+        void slotResultCount();
         void slotShowDetails(QString details);
         void slotShowSelectedPackages();
         void slotSync();
