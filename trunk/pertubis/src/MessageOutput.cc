@@ -31,6 +31,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <fcntl.h>
+#include <errno.h>
 #include <unistd.h>
 
 pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
@@ -40,38 +41,35 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
                                     m_slave_fd(-1),
                                     m_copy_fd(-1)
 {
-    qDebug() << "MessageOutput::MessageOutput() - start";
     QVBoxLayout* mylayout = new QVBoxLayout;
     mylayout->setMargin(0);
     setLayout(mylayout);
     m_output = new QTextEdit(this);
     m_output->setReadOnly(true);
-//     m_output->setFontPointSize(10);
-//     m_output->document()->setMaximumBlockCount(100);
+    m_output->document()->setMaximumBlockCount(100);
     QPalette p(m_output->palette());
     p.setColor(QPalette::Base,QColor(0,0,0)); // background color  = black
     p.setColor(QPalette::Text,QColor(255,255,255)); // text color  = white
     m_output->setPalette(p);
     m_output->setAutoFillBackground(true);
     mylayout->addWidget(m_output);
-
-    show();
-//     redirectOutput_Simple();
-//     redirectOutput_Paludis();
-//     redirectOutput_Combined();
+    redirectOutput_Paludis();
     paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
     paludis::Log::get_instance()->set_program_name("pertubis");
-
-    qDebug() << "MessageOutput::MessageOutput() - done";
+    show();
 }
 
-
-void pertubis::MessageOutput::redirectOutput_Simple()
+void pertubis::Thread::run()
 {
-    m_cout.reset(new QTOutputStreamBuf(*m_output));
-    std::cout.rdbuf(m_cout.get());
-    m_input.reset(new QTOutputStream(*m_output));
-    paludis::Log::get_instance()->set_log_stream(m_input.get());
+    static char buf[515];
+    while (m_atwork)
+    {
+        errno=0;
+        int res = read(m_fd,&buf,512);
+        if (errno == 0)
+            m_output->append(QString::fromLocal8Bit(buf,res));
+        msleep(50);
+    }
 }
 
 void pertubis::MessageOutput::redirectOutput_Paludis()
@@ -84,25 +82,11 @@ void pertubis::MessageOutput::redirectOutput_Paludis()
     paludis::set_run_command_stdout_fds(m_slave_fd, m_master_fd);
     paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
     paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
-//     copy_fd = dup(master_fd);
+    m_copy_fd = dup(m_master_fd);
+    fcntl(m_copy_fd,F_SETFL,fcntl(m_copy_fd,F_GETFL) | O_NONBLOCK);
     m_thread = new Thread(this,m_output,m_master_fd);
     m_thread->start();
     paludis::Log::get_instance()->set_log_stream(messages_stream.get());
-}
-
-void pertubis::MessageOutput::redirectOutput_Combined()
-{
-    m_input.reset(new QTOutputStream(*m_output));
-    paludis::Log::get_instance()->set_log_stream(m_input.get());
-
-    grantpt(m_master_fd);
-    unlockpt(m_master_fd);
-    m_slave_fd = open(ptsname(m_master_fd), O_RDWR);
-    messages_stream.reset(new paludis::FDOutputStream(m_slave_fd));
-    paludis::set_run_command_stdout_fds(m_slave_fd, m_master_fd);
-    paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
-    paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
-    messages_stream->tie(m_input.get());
 }
 
 pertubis::MessageOutput::~MessageOutput()

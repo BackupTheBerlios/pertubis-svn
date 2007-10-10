@@ -25,18 +25,25 @@
 #include <QObject>
 #include <QString>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
+#include <paludis/util/operators.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/package_id.hh>
 
 class QAction;
-
-namespace paludis
-{
-    class PackageID;
-}
 
 namespace pertubis
 {
     class Item;
     class TaskBox;
+
+//     class IDCompare
+//     {
+//         public:
+//             bool operator() (const paludis::tr1::shared_ptr<const paludis::PackageID>& a,
+//                           const paludis::tr1::shared_ptr<const paludis::PackageID>& b) const;
+//     };
 
     /*! \brief Holds PackageIDs for a special purpose. This is an abstract base class
     * \see InstallTask, DeinstallTask
@@ -48,7 +55,7 @@ namespace pertubis
 
     public:
 
-        typedef std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator Iterator;
+        typedef paludis::PackageIDSet::ConstIterator Iterator;
 
         Task() : m_taskid(-1) {}
         Task(QObject* pobject,QString name);
@@ -84,7 +91,8 @@ namespace pertubis
         /*! \brief returns a reference to the data
         *
         */
-        std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >& data() { return m_data;}
+//         std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >& data() { return m_data;}
+        paludis::PackageIDSet& data() { return m_data;}
 
         /*! \brief returns the unique integer key for this task
         *
@@ -132,7 +140,8 @@ namespace pertubis
          */
         void setTaskid(int id);
 
-        std::list<paludis::tr1::shared_ptr<const paludis::PackageID> > m_data;
+//         std::list<paludis::tr1::shared_ptr<const paludis::PackageID> > m_data;
+        paludis::PackageIDSet m_data;
     };
 
     inline bool operator!=(const Task& a,const Task& b) { return a.name() != b.name();}

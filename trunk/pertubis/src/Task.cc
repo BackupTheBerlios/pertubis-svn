@@ -20,9 +20,18 @@
 #include "Task.hh"
 #include "Item.hh"
 #include <paludis/package_id.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <QDebug>
 #include <QAction>
+
+// bool pertubis::IDCompare::operator() ( const paludis::tr1::shared_ptr<const paludis::PackageID>& a,
+//                                        const paludis::tr1::shared_ptr<const paludis::PackageID>& b) const
+// {
+//     return ( a->arbitrary_less_than_comparison(*b.get()) );
+// }
 
 pertubis::Task::Task(QObject* pobj,
                      QAction* myaction,
@@ -42,40 +51,47 @@ void pertubis::Task::setTaskid(int id)
 void pertubis::Task::addEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
     if (!hasEntry(id))
-        m_data.push_back(id);
+        m_data.insert(id);
 }
 
 void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
-    for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::iterator idIter(m_data.begin()),
-         idEnd(m_data.end());
-         idIter != idEnd;
-         ++idIter)
-    {
-        const paludis::PackageID* a(id.get());
-        const paludis::PackageID* b(idIter->get());
-        if (*a  == *b )
-        {
-            m_data.erase(idIter);
-            break;
-        }
-    }
+//     for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::iterator idIter(m_data.begin()),
+//          idEnd(m_data.end());
+//          idIter != idEnd;
+//          ++idIter)
+//     {
+//         const paludis::PackageID* a(id.get());
+//         const paludis::PackageID* b(idIter->get());
+//         if (*a  == *b )
+//         {
+//             m_data.erase(idIter);
+//             break;
+//         }
+//     }
+    paludis::PackageIDSet::ConstIterator iter = m_data.find(id);
+    if (iter != m_data.end())
+        m_data.erase(*iter);
 }
 
 bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const
 {
-    for (Iterator idIter(m_data.begin()),
-         idEnd(m_data.end());
-         idIter != idEnd;
-         ++idIter)
-    {
-        const paludis::PackageID* a(id.get());
-        const paludis::PackageID* b(idIter->get());
-        if (*a  == *b )
-        {
-            return true;
-        }
-    }
+//     for (Iterator idIter(m_data.begin()),
+//          idEnd(m_data.end());
+//          idIter != idEnd;
+//          ++idIter)
+//     {
+//         const paludis::PackageID* a(id.get());
+//         const paludis::PackageID* b(idIter->get());
+//         if (*a  == *b )
+//         {
+//             return true;
+//         }
+//     }
+//     return false;
+    Iterator iter = m_data.find(id);
+    if (iter != m_data.end())
+        return true;
     return false;
 }
 
@@ -89,8 +105,5 @@ void pertubis::Task::fillAction(Item* item)
 
 void pertubis::Task::changeEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id,bool mystate)
 {
-    if (mystate)
-        addEntry(id);
-    else
-        deleteEntry(id);
+    (mystate) ? addEntry(id) : deleteEntry(id);
 }

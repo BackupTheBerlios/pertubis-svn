@@ -52,16 +52,7 @@ namespace pertubis
 
         protected:
 
-            void run()
-            {
-                while (m_atwork)
-                {
-                    static char buf[256];
-                    int res = read(m_fd,&buf,256);
-                    m_output->append(QString::fromLocal8Bit(buf,res));
-                    msleep(50);
-                }
-            }
+            void run();
 
         private:
 
@@ -85,9 +76,7 @@ namespace pertubis
 
             void append(QString text) { m_output->append(text);}
             QTextEdit* output() const { return m_output;}
-            void redirectOutput_Simple();
             void redirectOutput_Paludis();
-            void redirectOutput_Combined();
 
         private:
 

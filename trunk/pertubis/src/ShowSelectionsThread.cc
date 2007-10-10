@@ -32,6 +32,8 @@
 #include <paludis/name.hh>
 #include <paludis/repository.hh>
 
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+
 void pertubis::ShowSelectionsThread::run()
 {
     Item* root = new Item();
@@ -40,7 +42,7 @@ void pertubis::ShowSelectionsThread::run()
          tStart != tEnd;
          ++tStart)
     {
-        for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_iterator idStart( (*tStart)->data().begin()),
+        for (Task::Iterator idStart( (*tStart)->data().begin()),
              idEnd((*tStart)->data().end());
              idStart != idEnd;
              ++idStart)
