@@ -711,8 +711,7 @@ void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
 
     if (!ix.isValid() ||
         m_detailsThread->isRunning() ||
-        ix.column() != Item::io_package ||
-        !item->available() )
+        ix.column() != Item::io_package)
         return;
     m_detailsThread->search(item->ID());
 //     qDebug() << "DatabaseView::slotDetailsChanged() - done";
@@ -785,7 +784,7 @@ void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& mix)
     m_current= static_cast<Item*>(index.internalPointer());
 //     qDebug() << "DatabaseView::slotOptionsMenu() - start" << index << *m_current;
 
-    if (index.column() != Item::io_selected || !m_current->available() )
+    if (index.column() != Item::io_selected)
         return;
 
     m_options->clear();
