@@ -27,12 +27,6 @@
 #include <QDebug>
 #include <QAction>
 
-// bool pertubis::IDCompare::operator() ( const paludis::tr1::shared_ptr<const paludis::PackageID>& a,
-//                                        const paludis::tr1::shared_ptr<const paludis::PackageID>& b) const
-// {
-//     return ( a->arbitrary_less_than_comparison(*b.get()) );
-// }
-
 pertubis::Task::Task(QObject* pobj,
                      QAction* myaction,
                      QString myname) :
@@ -56,19 +50,6 @@ void pertubis::Task::addEntry(paludis::tr1::shared_ptr<const paludis::PackageID>
 
 void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
-//     for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::iterator idIter(m_data.begin()),
-//          idEnd(m_data.end());
-//          idIter != idEnd;
-//          ++idIter)
-//     {
-//         const paludis::PackageID* a(id.get());
-//         const paludis::PackageID* b(idIter->get());
-//         if (*a  == *b )
-//         {
-//             m_data.erase(idIter);
-//             break;
-//         }
-//     }
     paludis::PackageIDSet::ConstIterator iter = m_data.find(id);
     if (iter != m_data.end())
         m_data.erase(*iter);
@@ -76,19 +57,7 @@ void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::Package
 
 bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const
 {
-//     for (Iterator idIter(m_data.begin()),
-//          idEnd(m_data.end());
-//          idIter != idEnd;
-//          ++idIter)
-//     {
-//         const paludis::PackageID* a(id.get());
-//         const paludis::PackageID* b(idIter->get());
-//         if (*a  == *b )
-//         {
-//             return true;
-//         }
-//     }
-//     return false;
+
     Iterator iter = m_data.find(id);
     if (iter != m_data.end())
         return true;

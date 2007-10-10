@@ -33,7 +33,6 @@ QVariantList pertubis::TaskBox::selectionData(paludis::tr1::shared_ptr<const pal
     {
         list.push_back( ((*mytask)->hasEntry(id ) ) ? Qt::Checked : Qt::Unchecked);
     }
-//     qDebug() << "TaskBox::selectionData()" << list;
     return list;
 }
 
@@ -70,8 +69,6 @@ bool pertubis::TaskBox::hasTask(int taskid) const
 
 void pertubis::TaskBox::slotTaskChanged(paludis::tr1::shared_ptr<const paludis::PackageID> id,int taskid, bool mystate)
 {
-//     qDebug() << "TaskBox::slotTaskChanged - start" << taskid << mystate;
-
     Task* t = task(taskid);
     if(t == 0)
         return;
@@ -79,21 +76,18 @@ void pertubis::TaskBox::slotTaskChanged(paludis::tr1::shared_ptr<const paludis::
         t->addEntry(id);
     else
         t->deleteEntry(id);
-//     qDebug() << "TaskBox::slotTaskChanged - done";
 }
 
 void pertubis::TaskBox::setItemTasks(Item* item)
 {
-//     qDebug() << "TaskBox::setItemTasks() - start" << m_tasks.count();
     for (Iterator mytask(taskBegin()), taskend(taskEnd());
         mytask != taskend;
         ++mytask)
     {
-//         qDebug() << "TaskBox::setItemTasks() - 1";
         Qt::CheckState mystate( ((*mytask)->hasEntry(item->ID() ) ) ? Qt::Checked : Qt::Unchecked);
-//         qDebug() << "TaskBox::setItemTasks() - mystate" << mystate;
+
         Item::UpdateRange range = item->updateRange();
-//         qDebug() << "TaskBox::setItemTasks() - range" << range;
+
         switch (range)
         {
             case Item::ur_parent:

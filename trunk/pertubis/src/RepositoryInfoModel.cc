@@ -62,7 +62,6 @@ void pertubis::RepositoryInfoThread ::run()
         for (RepositoryInfoSection::KeyValueConstIterator k(s->begin_kvs()), k_end(s->end_kvs()) ;
                 k != k_end ; ++k)
         {
-//             qDebug() << k->first.c_str() << k->second.c_str();
             list.push_back(QVariantList() << k->first.c_str() << k->second.c_str());
         }
     }
