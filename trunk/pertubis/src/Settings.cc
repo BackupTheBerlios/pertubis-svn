@@ -32,7 +32,6 @@ pertubis::I18NPage::I18NPage(QWidget *pobj)
     int i=0;
     foreach (filename,list)
     {
-        qDebug() << "filename" << i << filename;
         QString name = languageName(filename);
         langToTranslation.insert(name,filename);
         choice->addItem(name);
@@ -96,11 +95,10 @@ void pertubis::I18NPage::languageChanged(const QString& language)
 QString pertubis::languageName(const QString &qmFile)
 {
     QString prefix(qmFile.split("-").value(1));
-    qDebug() << qmFile << prefix;
     if (prefix == "de")
         return ("Deutsch");
     if (prefix == "fr")
-        return ("français");
+        return ("Français");
     return ("English");
 }
 
@@ -175,7 +173,7 @@ QStringList pertubis::findQmFiles()
         i.next();
          QFileInfo info(i.value());
         QString tmp(dir.filePath(info.baseName()));
-        qDebug() << "basename" << tmp;
+        qDebug() << "\033[32mfound translation file =" << tmp << "\033[0m";
         i.setValue(tmp);
     }
 

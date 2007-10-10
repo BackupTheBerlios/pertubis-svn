@@ -57,12 +57,12 @@ namespace pertubis
             QString name);
 
         /*! \brief adds a selection specified by PackageID
-         *
-         */
+        * expensive for the moment
+        */
         void addEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id);
 
         /*! \brief deletes a selection specified by PackageID
-        *
+        * expensive for the moment
         */
         void deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id);
 
@@ -97,8 +97,8 @@ namespace pertubis
         bool hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const;
 
         /*! \brief returns the literal name of this task
-         *
-         */
+        * expensive for the moment
+        */
         QString name() const { return m_name;}
 
         virtual bool available(Item* item) const = 0;

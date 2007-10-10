@@ -177,6 +177,7 @@ namespace pertubis
         Settings*               m_settings;
         ShowSelectionsThread*   m_selectionsThread;
         TaskBox*                m_box;
+        UseFlagEditor*          m_useflagEditor;
         int                     m_tidInstall;
         int                     m_tidDeinstall;
         int                     m_repoViewTabID;

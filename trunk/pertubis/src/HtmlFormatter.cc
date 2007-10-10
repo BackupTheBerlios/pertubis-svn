@@ -197,19 +197,19 @@ pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::f
 std::string
 pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Enabled &) const
 {
-    return color(paludis::stringify(f),"green");
+    return color(paludis::stringify(f) +" (on)" ,"green");
 }
 
 std::string
 pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Disabled &) const
 {
-    return color( "-" + stringify(f),"red");
+    return color( "-" + stringify(f)+" (off)" ,"red");
 }
 
 std::string
 pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Forced &) const
 {
-    return color( "(" + stringify(f) + ")","green");
+    return color( "(" + stringify(f) + " (forced) " +")","green");
 }
 
 std::string
@@ -257,13 +257,13 @@ pertubis::HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis
 std::string
 pertubis::HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis::format::Installed &) const
 {
-    return color( paludis::stringify(f),"blue");
+    return color( bold(paludis::stringify(f)),"blue").append(color(std::string(" (installed)"),std::string("green")));
 }
 
 std::string
 pertubis::HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis::format::Installable &) const
 {
-    return color( bold(paludis::stringify(f)),"blue");
+    return color( paludis::stringify(f),"blue").append(color(std::string(" (installable)"),std::string("green")));
 }
 
 std::string
@@ -303,34 +303,66 @@ pertubis::HtmlFormatter::format(const paludis::KeywordName & f, const paludis::f
 }
 
 std::string
+pertubis::HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Plain &) const
+{
+    return paludis::stringify(f);
+}
+
+std::string
+pertubis::HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Accepted &) const
+{
+    return color(paludis::stringify(f),"green");
+}
+
+std::string
+pertubis::HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Unaccepted &) const
+{
+    return color(paludis::stringify(f),"red");
+}
+
+
+std::string
 pertubis::HtmlFormatter::format(const std::string & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::LabelsDepSpec<paludis::URILabelVisitorTypes> & f, const paludis::format::Plain &) const
+pertubis::HtmlFormatter::format(const paludis::URILabelsDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::LabelsDepSpec<paludis::DependencyLabelVisitorTypes> & f, const paludis::format::Plain &) const
+pertubis::HtmlFormatter::format(const paludis::DependencyLabelsDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::URIDepSpec & f, const paludis::format::Plain &) const
+pertubis::HtmlFormatter::format(const paludis::FetchableURIDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-        pertubis::HtmlFormatter::format(const paludis::BlockDepSpec & f, const paludis::format::Plain &) const
+pertubis::HtmlFormatter::format(const paludis::SimpleURIDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
+
+std::string
+pertubis::HtmlFormatter::format(const paludis::BlockDepSpec & f, const paludis::format::Plain &) const
+{
+    return paludis::stringify(f);
+}
+
+std::string
+pertubis::HtmlFormatter::format(const paludis::NamedSetDepSpec & f, const paludis::format::Plain &) const
+{
+    return stringify(f);
+}
+
 
 std::string
 pertubis::HtmlFormatter::format(const paludis::tr1::shared_ptr<const paludis::PackageID> & f, const paludis::format::Plain &) const
@@ -341,13 +373,13 @@ pertubis::HtmlFormatter::format(const paludis::tr1::shared_ptr<const paludis::Pa
 std::string
 pertubis::HtmlFormatter::format(const paludis::tr1::shared_ptr<const paludis::PackageID> & f, const paludis::format::Installed &) const
 {
-    return color(paludis::stringify(*f),"blue");
+    return color(bold(paludis::stringify(*f)+" installed"),"blue");
 }
 
 std::string
 pertubis::HtmlFormatter::format(const paludis::tr1::shared_ptr<const paludis::PackageID> & f, const paludis::format::Installable &) const
 {
-    return color(bold(paludis::stringify(*f)),"blue");
+    return color(paludis::stringify(*f)+" installable","blue");
 }
 
 std::string

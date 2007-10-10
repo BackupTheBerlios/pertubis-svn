@@ -43,7 +43,7 @@ int main( int argc, char **argv )
         settings.beginGroup( "i18npage" );
         QString lang = settings.value("language").toString();
         settings.endGroup();
-        qDebug() << "lang = " << lang.toLatin1().data();
+        qDebug() << "\033[32mactual language =" << lang.toLatin1().data() << "\033[0m";
         t.load(lang);
         a.installTranslator(&t);
         pertubis::DatabaseView p;

@@ -14,6 +14,7 @@ SET(PERTUBIS_SRCS
     HtmlFormatter.cc
     InstallTask.cc
     Item.cc
+#     ItemInstallTask.cc
     matcher.cc
     MessageOutput.cc
     name_extractor.cc
@@ -35,7 +36,8 @@ SET(PERTUBIS_SRCS
     Task.cc
     text_matcher.cc
     ThreadBase.cc
-#     VersionItem.cc
+#     UseFlagEditor.cc
+#     UseFlagModel.cc
 )
 
 SET(PERTUBIS_MAIN_SRCS
@@ -49,11 +51,11 @@ SET(PERTUBIS_MOC_HDRS
     DeinstallTask.hh
     DetailsThread.hh
     InstallTask.hh
+#     ItemInstallTask.hh
     Item.hh
     MessageOutput.hh
     OptionsDelegate.hh
     PackageFilterModel.hh
-#     PackageItem.hh
     PackageModel.hh
     PackagesThread.hh
     RepositoryInfoModel.hh
@@ -65,7 +67,8 @@ SET(PERTUBIS_MOC_HDRS
     Task.hh
     TaskBox.hh
     ThreadBase.hh
-#     VersionItem.hh
+#     UseFlagEditor.hh
+#     UseFlagModel.hh
 )
 
 EXEC_PROGRAM("/bin/sh"
@@ -84,7 +87,7 @@ INCLUDE_DIRECTORIES(BEFORE /usr/local/include/paludis-0.25)
 
 ADD_EXECUTABLE (pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
 
-TARGET_LINK_LIBRARIES(pertubis ${PALUDISENV_LIB} ${PALUDIS_ENV_LIB} ${PALUDIS_TASK_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
+TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
 
 ######################################################
 # install

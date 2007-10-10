@@ -35,12 +35,15 @@
 #include <QVBoxLayout>
 #include <QPixmap>
 
-pertubis::UseFlagEditor::UseFlagEditor(QWidget* parent,
-                          std::tr1::shared_ptr<paludis::Environment> env) : QWidget(parent), m_env(env)
+#include <paludis/metadata_key.hh>
+
+
+pertubis::UseFlagEditor::UseFlagEditor(QWidget* pobj,
+                            std::tr1::shared_ptr<paludis::Environment> env) : QWidget(pobj), m_env(env)
 {
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->setMargin(0);
-    setLayout(layout);
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    mainLayout->setMargin(0);
+    setLayout(mainLayout);
     m_model = new UseFlagModel(this,env);
 
     m_setView = new QTableWidget(1,1,this);
@@ -85,8 +88,8 @@ pertubis::UseFlagEditor::UseFlagEditor(QWidget* parent,
     m_hSplit = new QSplitter(Qt::Vertical,this);
     m_hSplit->addWidget(m_setView);
     m_hSplit->addWidget(m_table);
-    layout->addWidget(m_toolbar);
-    layout->addWidget(m_hSplit);
+    mainLayout->addWidget(m_toolbar);
+    mainLayout->addWidget(m_hSplit);
     loadSettings();
     m_model->slotRefresh();
     m_setView->setHorizontalHeaderLabels( QStringList() << tr("useflag set"));
@@ -201,4 +204,9 @@ void pertubis::UseFlagEditor::saveSettings()
         settings.setValue("setview_visible", m_setView->isVisible() );
         settings.setValue("hsplt", m_hSplit->saveState());
     settings.endGroup();
+}
+
+void pertubis::UseFlagEditor::setModel(UseFlagModel* umodel)
+{
+    m_model = umodel;
 }

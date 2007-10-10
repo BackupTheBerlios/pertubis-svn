@@ -22,10 +22,14 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_UTILS_H 1
 
 #include <QString>
+#include <QDebug>
+#include <QRegExp>
 #include <string>
+
 
 namespace pertubis
 {
+
     inline std::string color(const std::string& text, const std::string& color)
     {
         return std::string("<font color=\""+ color +"\">" + text + "</font>");
@@ -46,14 +50,21 @@ namespace pertubis
         return std::string("<tr><td>"+col_1 + "</td><td>" + col_2 +" </td></tr>");
     }
 
-    inline QString link(const QString& link, const QString& text)
-    {
-        return QString("<a href=\"%1\">%2</a>").arg(link).arg(text);
-    }
+//     inline QString link(const QString& link, const QString& text="")
+//     {
+//         QString tmp(text);
+//         return QString("<a href=\"%1\">%2</a>").arg(link).arg(tmp.remove(QRegExp("/$"))+" hallo");
+//     }
 
     inline std::string link(const std::string& link, const std::string& text)
     {
-        return std::string("<a href=" + link + ">" + text + "</a>");
+        // qt is sometimes a little bit strange. We must delete possible trailing slash to be able to render this link as a "QURL"
+        std::string tmp2(link);
+        std::string::reverse_iterator iter2 = tmp2.rbegin();
+        if (*iter2 == '/')
+            tmp2.erase(tmp2.begin()+tmp2.size()-1);
+        std::string res = std::string("<a href=" + tmp2 + ">" + text + "</a>");
+        return res;
     }
 
     inline QString bold(const QString& text)
@@ -71,6 +82,5 @@ namespace pertubis
         return QString("<html><h1><u>%1</u></h1><p>%2</p></html>").arg(shortcut).arg(text);
     }
 }
-
 
 #endif

@@ -17,21 +17,23 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "UseFlagModel.hh"
-#include <QFile>
-#include <QDir>
-#include <QDebug>
-#include <QTextStream>
-#include <QRegExp>
+#include "Item.hh"
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/iterator.hh>
-#include <paludis/environments/environment_maker.hh>
-
-#include <paludis/util/stringify.hh>
+#include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <paludis/repository_info.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/util/stringify.hh>
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QRegExp>
+#include <QTextStream>
+#include "UseFlagModel.hh"
 
-pertubis::UseFlagModel::UseFlagModel(QObject* parent,std::tr1::shared_ptr<paludis::Environment> env) : QObject(parent),m_env(env)
+pertubis::UseFlagModel::UseFlagModel(QObject* pobj,std::tr1::shared_ptr<paludis::Environment> env) : QObject(pobj),m_env(env)
 {
     loadProfileUseflags();
 }
@@ -57,7 +59,7 @@ void pertubis::UseFlagModel::loadUseFlagDescGlobal(const paludis::Repository& re
             line = stream.readLine();
             QRegExp rx("^#");
 
-            if (rx.indexIn(line) == -1 && line != "")
+            if (rx.indexIn(line) == -1 && !line.isEmpty())
             {
                 QStringList list = line.split(spl);
                 addDescription(stringify(repo.name()).c_str(),"global",list[0],list[1]);
@@ -99,21 +101,21 @@ void pertubis::UseFlagModel::loadUseFlagDescLocal(const paludis::Repository& rep
     }
 }
 
-void pertubis::UseFlagModel::addDescription(QString /*repository*/, QString ufset, QString useflag, QString desc)
+void pertubis::UseFlagModel::addDescription(QString /*repository*/, QString ufset, QString uflag, QString desc)
 {
     MSMap::iterator dset = m_descriptions.find(ufset);
     if (dset == m_descriptions.end() )
         dset = m_descriptions.insert(ufset,SMap());
-    dset.value().insert(useflag,desc);
+    dset.value().insert(uflag,desc);
 }
 
-void pertubis::UseFlagModel::addUseflag(QString /*repository*/, QString ufset, QString useflag, bool ison)
+void pertubis::UseFlagModel::addUseflag(QString /*repository*/, QString ufset, QString uflag, bool ison)
 {
 //     qDebug() << "UseFlagModel::addUseflag()" << ufset << useflag << ison;
     MBMap::iterator fset = m_useflags.find(ufset);
     if (fset == m_useflags.end() )
         fset = m_useflags.insert(ufset,BMap());
-    fset.value().insert(useflag,ison);
+    fset.value().insert(uflag,ison);
 }
 
 QString pertubis::UseFlagModel::fileFinder(QString pathname, QString filename)
@@ -185,29 +187,29 @@ void pertubis::UseFlagModel::loadRepoVars(const paludis::Repository& repo)
     file.close();
 }
 
-QString pertubis::UseFlagModel::description(QString /*repository*/, QString ufset, QString useflag) const
+QString pertubis::UseFlagModel::description(QString /*repository*/, QString ufset, QString uflag) const
 {
     MSMap::const_iterator fs = m_descriptions.find(ufset);
     if (fs == m_descriptions.constEnd() )
     {
-        qWarning() << QString("\033[33mwarning: description for useflag %1 in useflagset %2 not found!\033[0m").arg(useflag).arg(ufset);
+        qWarning() << QString("\033[33mwarning: description for useflag %1 in useflagset %2 not found!\033[0m").arg(uflag).arg(ufset);
         return QString("unknown");
     }
-    SMap::const_iterator uf = fs.value().find(useflag);
+    SMap::const_iterator uf = fs.value().find(uflag);
     if (uf != fs.value().constEnd() )
         return uf.value();
     return QString("unknown");
 }
 
-bool pertubis::UseFlagModel::useflag(QString /*repository*/, QString ufset, QString useflag) const
+bool pertubis::UseFlagModel::useflag(QString /*repository*/, QString ufset, QString uflag) const
 {
-    BMap::const_iterator state = m_useflagChanges.find(useflag);
+    BMap::const_iterator state = m_useflagChanges.find(uflag);
     if (state != m_useflagChanges.constEnd() )
         return state.value();
     MBMap::const_iterator fs = m_useflags.find(ufset);
     if (fs == m_useflags.constEnd() )
         return false;
-    BMap::const_iterator uf = fs.value().find(useflag);
+    BMap::const_iterator uf = fs.value().find(uflag);
     if (uf == fs.value().constEnd() )
         return false;
     return uf.value();
@@ -314,71 +316,38 @@ void pertubis::UseFlagModel::useflagSetData(QString /*repository*/, QString ufse
     emit useflagResult(list);
 }
 
-void pertubis::UseFlagModel::slotEditItemFlags(QString cat,QString pack,QString version,QString repository)
+void pertubis::UseFlagModel::slotEditItemFlags(pertubis::Item* item)
 {
     using namespace paludis;
     QString ufset;
-    CategoryNamePart c(cat.toLatin1().data());
-    PackageNamePart p(pack.toLatin1().data());
-    QualifiedPackageName qpn(c,p);
-    RepositoryName n(repository.toLatin1().data());
 
-    if (!m_env->package_database()->has_repository_named(n))
-        return;
-    std::tr1::shared_ptr< Repository > rep = m_env->package_database()->fetch_repository(n);
     QString iuse;
-
-    if (version.isEmpty())
-    {
-        ufset =QString("%1/%2").arg(cat).arg(pack);
-
-        std::tr1::shared_ptr< const VersionSpecCollection > specs = rep->version_specs(qpn);
-
-        std::tr1::shared_ptr< const VersionMetadata > data = rep->version_metadata(qpn, *specs->last() );
-
-        iuse = stringify(data->ebuild_interface->iuse).c_str();
-
-    }
-    else
-    {
-
-        ufset = QString("=%1/%2-%3").arg(cat).arg(pack).arg(version);
-
-        std::tr1::shared_ptr< const VersionMetadata > data = rep->version_metadata(qpn, VersionSpec(version.toLatin1().data()) );
-
-        iuse = stringify(data->ebuild_interface->iuse).c_str();
-
-    }
-
+    const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > useflagset(item->ID()->iuse_key());
     QList<QVariantList> res;
-    QStringList list = iuse.split(" ");
-    if (!list.isEmpty() )
-    {
-        bool found=hasSet("",ufset);
 
-        QList<QString>::const_iterator use =  list.constBegin();
-        while (use != list.constEnd() )
-        {
-            bool global = useflag("all","global",*use);
-            bool local=false;
-            if (found)
-                local = useflag("all","global",*use);
-
-            QString desc(description("none",ufset,*use));
-            bool md = m_makeDefaults.find(*use) != m_makeDefaults.end();
-            bool ud = m_useDefaults.find(*use) != m_useDefaults.end();
-            QVariantList row;
-            row <<
-                *use <<
-                (md ? Qt::Checked : Qt::Unchecked) <<
-                (ud ? Qt::Checked : Qt::Unchecked) <<
-                ( (found ? local : global ) ? Qt::Checked : Qt::Unchecked) <<
-                desc;
-            res << row;
-            ++use;
-        }
-    }
-    emit useflagResult(res);
+//     bool found=hasSet("",ufset);
+//     for (list.constEnd() )
+//     {
+//         bool global = useflag("all","global",*use);
+//         bool local=false;
+//         if (found)
+//             local = useflag("all","global",*use);
+//
+//         QString desc(description("none",ufset,*use));
+//         bool md = m_makeDefaults.find(*use) != m_makeDefaults.end();
+//         bool ud = m_useDefaults.find(*use) != m_useDefaults.end();
+//         QVariantList row;
+//         row <<
+//             *use <<
+//             (md ? Qt::Checked : Qt::Unchecked) <<
+//             (ud ? Qt::Checked : Qt::Unchecked) <<
+//             ( (found ? local : global ) ? Qt::Checked : Qt::Unchecked) <<
+//             desc;
+//         res << row;
+//         ++use;
+//         }
+//     }
+//     emit useflagResult(res);
 }
 
 void pertubis::UseFlagModel::loadTargetConfig()

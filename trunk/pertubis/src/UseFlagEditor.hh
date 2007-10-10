@@ -53,7 +53,7 @@ namespace pertubis
             void loadSettings();
 
             void createToolbar();
-            void setModel(UseFlagModel* model) { m_model = model;}
+            void setModel(UseFlagModel* umodel);
 
             UseFlagModel* model() { return m_model;}
 

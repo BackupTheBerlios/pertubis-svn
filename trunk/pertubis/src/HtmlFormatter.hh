@@ -36,10 +36,13 @@ namespace pertubis
         public paludis::CanFormat<paludis::UseDepSpec>,
         public paludis::CanFormat<paludis::PackageDepSpec>,
         public paludis::CanFormat<paludis::BlockDepSpec>,
-        public paludis::CanFormat<paludis::LabelsDepSpec<paludis::DependencyLabelVisitorTypes> >,
-        public paludis::CanFormat<paludis::LabelsDepSpec<paludis::URILabelVisitorTypes> >,
+        public paludis::CanFormat<paludis::DependencyLabelsDepSpec>,
+        public paludis::CanFormat<paludis::URILabelsDepSpec>,
         public paludis::CanFormat<paludis::PlainTextDepSpec>,
-        public paludis::CanFormat<paludis::URIDepSpec>,
+        public paludis::CanFormat<paludis::SimpleURIDepSpec>,
+        public paludis::CanFormat<paludis::LicenseDepSpec>,
+        public paludis::CanFormat<paludis::FetchableURIDepSpec>,
+        public paludis::CanFormat<paludis::NamedSetDepSpec>,
         public paludis::CanFormat<paludis::tr1::shared_ptr<const paludis::PackageID> >,
         public paludis::CanFormat<std::string>,
         public paludis::CanSpace
@@ -53,11 +56,20 @@ namespace pertubis
             const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_use_flag_names() const;
             const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_use_expand_prefixes() const;
 
+            std::string format(const paludis::KeywordName&, const paludis::format::Plain &) const;
+            std::string format(const paludis::KeywordName&, const paludis::format::Accepted &) const;
+            std::string format(const paludis::KeywordName&, const paludis::format::Unaccepted &) const;
+
             std::string format(const paludis::IUseFlag &, const paludis::format::Plain &) const;
             std::string format(const paludis::IUseFlag &, const paludis::format::Enabled &) const;
             std::string format(const paludis::IUseFlag &, const paludis::format::Disabled &) const;
             std::string format(const paludis::IUseFlag &, const paludis::format::Forced &) const;
             std::string format(const paludis::IUseFlag &, const paludis::format::Masked &) const;
+
+            std::string format(const paludis::LicenseDepSpec &, const paludis::format::Plain &) const;
+            std::string format(const paludis::LicenseDepSpec &, const paludis::format::Accepted &) const;
+            std::string format(const paludis::LicenseDepSpec &, const paludis::format::Unaccepted &) const;
+
             std::string decorate(const paludis::IUseFlag &, const std::string &, const paludis::format::Added &) const;
             std::string decorate(const paludis::IUseFlag &, const std::string &, const paludis::format::Changed &) const;
 
@@ -81,17 +93,16 @@ namespace pertubis
             std::string format(const paludis::PlainTextDepSpec &, const paludis::format::Accepted &) const;
             std::string format(const paludis::PlainTextDepSpec &, const paludis::format::Unaccepted &) const;
 
-            std::string format(const paludis::KeywordName &, const paludis::format::Plain &) const;
-            std::string format(const paludis::KeywordName &, const paludis::format::Accepted &) const;
-            std::string format(const paludis::KeywordName &, const paludis::format::Unaccepted &) const;
-
             std::string format(const std::string &, const paludis::format::Plain &) const;
 
-            std::string format(const paludis::LabelsDepSpec<paludis::URILabelVisitorTypes> &, const paludis::format::Plain &) const;
+            std::string format(const paludis::URILabelsDepSpec&, const paludis::format::Plain &) const;
 
-            std::string format(const paludis::LabelsDepSpec<paludis::DependencyLabelVisitorTypes> &, const paludis::format::Plain &) const;
+            std::string format(const paludis::DependencyLabelsDepSpec&, const paludis::format::Plain &) const;
 
-            std::string format(const paludis::URIDepSpec &, const paludis::format::Plain &) const;
+            std::string format(const paludis::NamedSetDepSpec& f, const paludis::format::Plain &) const;
+
+            std::string format(const paludis::FetchableURIDepSpec &, const paludis::format::Plain &) const;
+            std::string format(const paludis::SimpleURIDepSpec &, const paludis::format::Plain &) const;
 
             std::string format(const paludis::BlockDepSpec &, const paludis::format::Plain &) const;
 

@@ -39,8 +39,9 @@
 #include "ShowSelectionsThread.hh"
 #include "SyncTask.hh"
 #include "TaskBox.hh"
+#include "UseFlagEditor.hh"
 
-#include <paludis/environments/environment_maker.hh>
+#include <paludis/environment_maker.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/stringify.hh>
@@ -575,6 +576,7 @@ void pertubis::DatabaseView::createWindowSearch()
 
 void pertubis::DatabaseView::createUseflagEditor()
 {
+//     m_useflagEditor = new UseFlagEditor(this,m_env);
     m_dockUse = new QDockWidget(tr("useflag editor"),this);
     m_dockUse->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 //     m_dockUse->setWidget(m_useflagEditor);

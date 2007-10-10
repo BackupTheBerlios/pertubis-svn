@@ -21,7 +21,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_USEFLAG_MODEL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_USEFLAG_MODEL_H
 
-#include <paludis/environment.hh>
+
 
 #include <QMap>
 #include <QObject>
@@ -33,10 +33,13 @@
 namespace paludis
 {
     class Repository;
+    class Environment;
 }
 
 namespace pertubis
 {
+
+    class Item;
 
     /*! \brief Holds system wide and package wise useflag settings for application use and editing.
     *
@@ -74,7 +77,7 @@ namespace pertubis
 
         bool hasSet(QString repository, QString ufset);
 
-        void slotEditItemFlags(QString cat,QString pack,QString version,QString repository);
+        void slotEditItemFlags(Item* item);
 
         bool isExpandVariable(QString line) const;
 
@@ -101,10 +104,9 @@ namespace pertubis
 
         std::tr1::shared_ptr<paludis::Environment> m_env;
 
-        GMBMap                            m_expandVars;
-        MBMap                            m_useflags;
-        MSMap                            m_descriptions;
-        MSMap                            m_environVariables;
+        GMBMap                          m_expandVars;
+        MBMap                           m_useflags;
+        MSMap                           m_environVariables;
         SSet                            m_environSet;
         SSet                            m_makeDefaults;
         SSet                            m_useDefaults;

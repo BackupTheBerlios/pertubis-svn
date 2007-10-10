@@ -19,7 +19,6 @@
 
 #include "SyncTask.hh"
 #include "FormatterUtils.hh"
-#include <paludis/tasks/sync_task.hh>
 #include <paludis/util/stringify.hh>
 #include <QtGlobal>
 #include <QTextEdit>

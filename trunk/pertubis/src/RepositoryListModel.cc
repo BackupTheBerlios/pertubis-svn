@@ -87,7 +87,7 @@ Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const
     return 0;
 }
 
-bool pertubis::RepositoryListModel::setData ( const QModelIndex & ix, const QVariant & value, int role )
+bool pertubis::RepositoryListModel::setData ( const QModelIndex & ix, const QVariant & value, int /*role*/ )
 {
     if (!ix.isValid() || ix.column() != 0)
         return false;

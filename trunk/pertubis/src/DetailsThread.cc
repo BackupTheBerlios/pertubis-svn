@@ -100,14 +100,24 @@ namespace
                 }
             }
 
-            void visit(const paludis::MetadataSpecTreeKey<paludis::URISpecTree> & k)
+            void visit(const paludis::MetadataSpecTreeKey<paludis::FetchableURISpecTree> & k)
+            {
+                if (k.type() == type)
+                {
+                    pertubis::HtmlFormatter formatter;
+                    thread->appendOutput(
+                            pertubis::make_row( paludis::stringify(k.human_name()),
+                                                k.pretty_print(formatter) ));                }
+            }
+
+            void visit(const paludis::MetadataSpecTreeKey<paludis::SimpleURISpecTree> & k)
             {
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
                     thread->appendOutput(
                         pertubis::make_row( paludis::stringify(k.human_name()),
-                                            pertubis::link(k.pretty_print_flat(formatter),k.pretty_print(formatter)) ));
+                                            pertubis::link(k.pretty_print_flat(formatter),k.pretty_print_flat(formatter)) ));
                 }
             }
 
@@ -116,7 +126,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print(formatter)));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter)));
                 }
             }
 
@@ -125,7 +135,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()).c_str(),k.pretty_print(formatter)));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()).c_str(),k.pretty_print_flat(formatter)));
                 }
             }
 
@@ -134,7 +144,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print(formatter).c_str()));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter)));
                 }
             }
 

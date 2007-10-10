@@ -22,7 +22,7 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_SYNC_TASK_H 1
 
 #include <QThread>
-#include <paludis/tasks/sync_task.hh>
+#include <paludis/sync_task.hh>
 #include <paludis/util/tr1_memory.hh>
 
 class QTextEdit;
