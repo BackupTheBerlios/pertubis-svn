@@ -30,6 +30,8 @@
 #include <paludis/util/operators.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/package_id.hh>
+#include <paludis/environment-fwd.hh>
+
 
 class QAction;
 
@@ -37,6 +39,7 @@ namespace pertubis
 {
     class Item;
     class TaskBox;
+    class DatabaseView;
 
 //     class IDCompare
 //     {
@@ -62,6 +65,11 @@ namespace pertubis
         Task(QObject* pobject,
             QAction* action,
             QString name);
+
+        /*! \brief starts the corresponding paludis task
+        *
+        */
+        virtual void startTask(DatabaseView* main)=0;
 
         /*! \brief adds a selection specified by PackageID
         *
@@ -129,6 +137,7 @@ namespace pertubis
 
     protected:
 
+        paludis::PackageIDSet m_data;
         QAction*        m_action;
         QString         m_name;
         int             m_taskid;
@@ -139,7 +148,7 @@ namespace pertubis
          */
         void setTaskid(int id);
 
-        paludis::PackageIDSet m_data;
+
     };
 
     inline bool operator!=(const Task& a,const Task& b) { return a.name() != b.name();}

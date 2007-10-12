@@ -26,6 +26,7 @@
 #include "FormatterUtils.hh"
 #include "InstallTask.hh"
 #include "Item.hh"
+
 #include "MessageOutput.hh"
 #include "OptionsDelegate.hh"
 #include "PackageFilterModel.hh"
@@ -41,9 +42,15 @@
 #include "TaskBox.hh"
 #include "UseFlagEditor.hh"
 
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/args/install_args_group.hh>
 #include <paludis/environment_maker.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/util/set-fwd.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/stringify.hh>
 
 #include <QApplication>
@@ -552,6 +559,11 @@ void pertubis::DatabaseView::createActions()
             SIGNAL(triggered()),
             this,
             SLOT(slotToggleRepoView()));
+
+    connect(m_acFinish,
+            SIGNAL(triggered()),
+            this,
+            SLOT(slotFinish()));
 }
 
 void pertubis::DatabaseView::createTasks()
@@ -690,6 +702,17 @@ void pertubis::DatabaseView::slotDeinstallTask(bool mystate)
 {
 //     QModelIndex index = m_packageFilterModel->mapToSource(m_packageFilterModel->currentIndex());
 //     m_packModel->setSelectionData(index,m_tidDeinstall,mystate);
+}
+
+
+void pertubis::DatabaseView::slotFinish()
+{
+    m_box->doPendingTasks(this);
+//     QMessageBox::information(0,
+//                          QObject::tr("information"),
+//                                      QObject::tr("feature is under development"),
+//                                              QMessageBox::Ok,
+//                                              QMessageBox::Ok);
 }
 
 void pertubis::DatabaseView::slotEditUseTask()

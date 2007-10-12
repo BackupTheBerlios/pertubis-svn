@@ -100,6 +100,7 @@ namespace pertubis
         int tidInstall() const { return m_tidInstall;}
         paludis::tr1::shared_ptr<paludis::Environment> getEnv() const { return m_env;}
         TaskBox* taskbox() const { return m_box;}
+        MessageOutput* messages() const { return m_output;}
         RepositoryListModel* repositoryListModel() const { return m_repoListModel;}
 
     protected:
@@ -190,6 +191,7 @@ namespace pertubis
         void slotDeinstallTask(bool mystate);
         void slotDetailsChanged(const QModelIndex & index);
         void slotEditUseTask();
+        void slotFinish();
         void slotInstallTask(bool mystate);
         void slotOpenURL(const QUrl&);
         void slotOptionsMenu(const QModelIndex& index);

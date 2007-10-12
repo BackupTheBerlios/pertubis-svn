@@ -22,6 +22,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
+
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <QDebug>
@@ -57,7 +58,6 @@ void pertubis::Task::deleteEntry(paludis::tr1::shared_ptr<const paludis::Package
 
 bool pertubis::Task::hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const
 {
-
     Iterator iter = m_data.find(id);
     if (iter != m_data.end())
         return true;

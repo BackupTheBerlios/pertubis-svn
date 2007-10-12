@@ -25,6 +25,7 @@
 
 namespace pertubis
 {
+    class Install;
     /*! \brief stores the PackageIDs and bundles information what must be done with packages which are about to be installed
 
     */
@@ -37,10 +38,15 @@ namespace pertubis
         InstallTask() {}
         InstallTask(QObject* pobject,
                     QAction* myaction,
-                      QString tname) : Task(pobject,myaction,tname) {}
+                      QString tname) : Task(pobject,myaction,tname),m_task(0) {}
         bool available(Item* item) const;
+        void startTask(DatabaseView* main);
         bool changeChildStates(Item* item, int mystate);
         bool changeParentStates(Item* item, int mystate);
+
+    private:
+
+        Install* m_task;
     };
 }
 

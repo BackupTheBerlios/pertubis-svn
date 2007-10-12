@@ -99,3 +99,11 @@ void pertubis::TaskBox::setItemTasks(Item* item)
         }
     }
 }
+
+void pertubis::TaskBox::doPendingTasks(DatabaseView* main)
+{
+    for (Iterator i(m_tasks.begin()),i_end(m_tasks.end());i!= i_end;++i)
+    {
+        (*i)->startTask(main);
+    }
+}

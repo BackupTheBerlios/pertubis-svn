@@ -25,16 +25,14 @@
 #include <QVariant>
 #include <QObject>
 #include <paludis/util/tr1_memory.hh>
-
-namespace paludis
-{
-    class PackageID;
-}
+#include <paludis/package_id-fwd.hh>
+#include <paludis/environment-fwd.hh>
 
 namespace pertubis
 {
     class Task;
     class Item;
+    class DatabaseView;
 
     /*! \brief manages the tasks pertubis knows about
     *
@@ -72,6 +70,8 @@ namespace pertubis
         *
         */
         void setItemTasks(Item* item);
+
+        void doPendingTasks(DatabaseView* main);
 
         Iterator taskBegin();
 

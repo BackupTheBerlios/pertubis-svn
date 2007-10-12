@@ -14,7 +14,7 @@ SET(PERTUBIS_SRCS
     HtmlFormatter.cc
     InstallTask.cc
     Item.cc
-#     ItemInstallTask.cc
+    ItemInstallTask.cc
     matcher.cc
     MessageOutput.cc
     name_extractor.cc

@@ -22,6 +22,7 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_DEINSTALL_TASK_H 1
 
 #include "Task.hh"
+#include <paludis/environment-fwd.hh>
 
 
 namespace pertubis
@@ -40,6 +41,7 @@ namespace pertubis
                       QString tname) : Task(pobject,myaction,tname) {}
         bool available(Item* item) const;
         bool changeParentStates(Item* item, int mystate);
+        void startTask(DatabaseView* main);
         bool changeChildStates(Item* item, int mystate);
     };
 }

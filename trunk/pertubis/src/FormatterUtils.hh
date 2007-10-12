@@ -67,6 +67,11 @@ namespace pertubis
         return res;
     }
 
+    inline std::string header(const std::string& text)
+    {
+        return std::string("<h1>"+ text + "</h1>");
+    }
+
     inline QString bold(const QString& text)
     {
         return QString("<b>%1</b>").arg(text);

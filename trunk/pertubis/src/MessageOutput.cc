@@ -53,7 +53,7 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
     m_output->setPalette(p);
     m_output->setAutoFillBackground(true);
     mylayout->addWidget(m_output);
-    redirectOutput_Paludis();
+//     redirectOutput_Paludis();
     paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
     paludis::Log::get_instance()->set_program_name("pertubis");
     show();

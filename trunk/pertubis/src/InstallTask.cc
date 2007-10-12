@@ -20,7 +20,13 @@
 #include <QDebug>
 #include "InstallTask.hh"
 #include "Item.hh"
+#include "DatabaseView.hh"
+#include "ItemInstallTask.hh"
 #include <paludis/package_id.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/set-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 bool pertubis::InstallTask::available(Item* item) const
 {
@@ -103,4 +109,19 @@ bool pertubis::InstallTask::changeChildStates(Item* item, int newState)
             ;
     }
     return true;
+}
+
+void pertubis::InstallTask::startTask(DatabaseView* main)
+{
+    paludis::DepListOptions options;
+    if (m_task)
+        delete m_task;
+    m_task = new Install(this,main,options,main->getEnv()->default_destinations());
+    for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
+         i != i_end ; ++i)
+    {
+        m_task->add_target("="+paludis::stringify(*i->get()));
+    }
+    m_task->run();
+    m_data.empty();
 }

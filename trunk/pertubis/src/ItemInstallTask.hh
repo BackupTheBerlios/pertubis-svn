@@ -17,23 +17,74 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_INSTALL_TASK_H
-#define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_TASK_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H
+#define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H 1
 
-#include <paludis/tasks/install_task.hh>
+#include <QThread>
+#include <paludis/install_task.hh>
+#include <paludis/environment-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 
 namespace pertubis
 {
-    class Install : public paludis::InstallTask
+    class DatabaseView;
+    class Install : public paludis::InstallTask,
+                    public QThread
     {
         public:
-            Install(paludis::tr1::shared_ptr<paludis::Environment> env, const paludis::DepListOptions & options,
-                        paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations) :
-                ConsoleInstallTask(env.get(), options, destinations),
-                                m_env(env)
-            {
-            }
+            Install(QObject* pobj,
+                    DatabaseView* main,
+                    const paludis::DepListOptions & options,
+                    paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations);
+            void run() { execute();}
+            virtual void on_build_deplist_pre() {}
+            virtual void on_build_deplist_post() {}
+            virtual void on_build_cleanlist_pre(const paludis::DepListEntry&) {}
+            virtual void on_build_cleanlist_post(const paludis::DepListEntry&) {}
+            virtual void on_display_merge_list_post() {}
+            virtual void on_display_merge_list_entry(const paludis::DepListEntry&) {}
+            virtual void on_display_failure_summary_pre() {}
+            virtual void on_display_failure_summary_success(const paludis::DepListEntry&) {}
+            virtual void on_display_failure_summary_failure(const paludis::DepListEntry&) {}
+            virtual void on_display_failure_summary_skipped_unsatisfied(const paludis::DepListEntry&, const paludis::PackageDepSpec&) {}
+            virtual void on_display_failure_summary_totals(int, int, int, int) {}
+            virtual void on_display_failure_summary_post() {}
+            virtual void on_display_failure_no_summary() {}
+            virtual void on_not_continuing_due_to_errors() {}
+            virtual void on_fetch_all_pre() {}
+            virtual void on_fetch_pre(const paludis::DepListEntry&, int, int, int, int) {}
+            virtual void on_fetch_post(const paludis::DepListEntry&, int, int, int, int) {}
+            virtual void on_fetch_all_post() {}
+            virtual void on_install_all_pre() {}
+            virtual void on_install_pre(const paludis::DepListEntry&, int, int, int, int) {}
+            virtual void on_install_post(const paludis::DepListEntry&, int, int, int, int) {}
+            virtual void on_install_fail(const paludis::DepListEntry&, int, int, int, int) {}
+            virtual void on_install_all_post() {}
+            virtual void on_display_merge_list_pre();
+            virtual void on_skip_unsatisfied(const paludis::DepListEntry&, const paludis::PackageDepSpec&, int, int, int, int) {}
+            virtual void on_no_clean_needed(const paludis::DepListEntry&) {}
+            virtual void on_clean_all_pre(const paludis::DepListEntry&, const paludis::PackageIDSequence&) {}
+            virtual void on_clean_pre(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
+            virtual void on_clean_post(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
+            virtual void on_clean_fail(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
+            virtual void on_clean_all_post(const paludis::DepListEntry&, const paludis::PackageIDSequence&) {}
+            virtual void on_update_world_pre() {}
+            virtual void on_update_world(const paludis::PackageDepSpec&) {}
+            virtual void on_update_world(const paludis::SetName&) {}
+            virtual void on_update_world_skip(const paludis::PackageDepSpec&, const std::string&) {}
+            virtual void on_update_world_skip(const paludis::SetName&, const std::string&) {}
+            virtual void on_update_world_post() {}
+            virtual void on_preserve_world() {}
+            virtual void on_ambiguous_package_name_error(const paludis::AmbiguousPackageNameError&) {}
+            virtual void on_no_such_package_error(const paludis::NoSuchPackageError&) {}
+            virtual void on_all_masked_error(const paludis::AllMaskedError&) {}
+            virtual void on_use_requirements_not_met_error(const paludis::UseRequirementsNotMetError&) {}
+            virtual void on_dep_list_error(const paludis::DepListError&) {}
+            virtual void on_had_both_package_and_set_targets_error(const paludis::HadBothPackageAndSetTargets&) {}
+            virtual void on_multiple_set_targets_specified(const paludis::MultipleSetTargetsSpecified&) {}
+            virtual void on_install_action_error(const paludis::InstallActionError&) {}
+            virtual void on_fetch_action_error(const paludis::FetchActionError&) {}
+
 
             virtual bool want_full_install_reasons() const;
 
@@ -51,15 +102,18 @@ namespace pertubis
 
             virtual void on_installed_paludis();
 
-            virtual HookResult perform_hook(const paludis::Hook & hook) const;
+            virtual paludis::HookResult perform_hook(const paludis::Hook & hook) const;
 
             void show_resume_command() const;
+            std::string make_resume_command(const paludis::PackageIDSequence& seq) const;
 
         private:
-            paludis::tr1::shared_ptr<paludis::Environment>      m_env;
             DatabaseView*                                       m_mainview;
+            std::string                                         m_resumeCommand;
             bool                                                m_pretend;
+
     };
 }
 
 #endif
+

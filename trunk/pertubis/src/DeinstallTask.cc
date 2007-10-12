@@ -104,3 +104,16 @@ bool pertubis::DeinstallTask::changeChildStates(pertubis::Item* item, int newSta
 //     }
     return true;
 }
+
+void pertubis::DeinstallTask::startTask(DatabaseView* main)
+{
+//     paludis::DepListOptions options;
+//     pertubis::Install task(m_env,options,m_env->default_destinations());
+//     for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
+//          i != i_end ; ++i)
+//     {
+//         task.add_target(i->get()->canonical_form(paludis::idcf_full);
+//     }
+//     task.execute();
+}
+
