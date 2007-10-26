@@ -74,12 +74,12 @@ namespace pertubis
         /*! \brief adds a selection specified by PackageID
         *
         */
-        void addEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+        void addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
         /*! \brief deletes a selection specified by PackageID
         *
         */
-        void deleteEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+        void deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
         /*! \brief sets the action this task is referring to
         *
@@ -109,7 +109,7 @@ namespace pertubis
         /*! \brief checks if this package is already selected for this task
         *
         */
-        bool hasEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id) const;
+        bool hasEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) const;
 
         /*! \brief returns the literal name of this task
         *
@@ -133,7 +133,7 @@ namespace pertubis
         /*! \brief actually change
         *
         */
-        void changeEntry(paludis::tr1::shared_ptr<const paludis::PackageID> id, bool mystate);
+        void changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id, bool mystate);
 
     protected:
 

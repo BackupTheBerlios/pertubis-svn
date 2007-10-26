@@ -38,23 +38,22 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
                                     m_output(0),
                                     m_thread(0),
                                     m_master_fd(-1),
-                                    m_slave_fd(-1),
-                                    m_copy_fd(-1)
+                                    m_slave_fd(-1)
 {
     QVBoxLayout* mylayout = new QVBoxLayout;
     mylayout->setMargin(0);
     setLayout(mylayout);
     m_output = new QTextEdit(this);
     m_output->setReadOnly(true);
-    m_output->document()->setMaximumBlockCount(100);
+    m_output->document()->setMaximumBlockCount(1000);
     QPalette p(m_output->palette());
     p.setColor(QPalette::Base,QColor(0,0,0)); // background color  = black
     p.setColor(QPalette::Text,QColor(255,255,255)); // text color  = white
     m_output->setPalette(p);
     m_output->setAutoFillBackground(true);
     mylayout->addWidget(m_output);
-//     redirectOutput_Paludis();
-    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
+    redirectOutput_Paludis();
+    paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name("pertubis");
     show();
 }
@@ -82,8 +81,7 @@ void pertubis::MessageOutput::redirectOutput_Paludis()
     paludis::set_run_command_stdout_fds(m_slave_fd, m_master_fd);
     paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
     paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
-    m_copy_fd = dup(m_master_fd);
-    fcntl(m_copy_fd,F_SETFL,fcntl(m_copy_fd,F_GETFL) | O_NONBLOCK);
+    fcntl(m_master_fd,F_SETFL,fcntl(m_master_fd,F_GETFL) | O_NONBLOCK);
     m_thread = new Thread(this,m_output,m_master_fd);
     m_thread->start();
     paludis::Log::get_instance()->set_log_stream(messages_stream.get());

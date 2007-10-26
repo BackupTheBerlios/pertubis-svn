@@ -87,7 +87,6 @@ namespace pertubis
             paludis::tr1::shared_ptr<paludis::FDOutputStream> messages_stream;
             int                                         m_master_fd;
             int                                         m_slave_fd;
-            int                                         m_copy_fd;
     };
 }
 

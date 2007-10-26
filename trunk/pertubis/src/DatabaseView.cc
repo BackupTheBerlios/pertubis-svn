@@ -376,7 +376,6 @@ void pertubis::DatabaseView::createToolBar()
 void pertubis::DatabaseView::createOutput()
 {
     m_output = new MessageOutput(this);
-
 }
 
 void pertubis::DatabaseView::createRepositoryView()

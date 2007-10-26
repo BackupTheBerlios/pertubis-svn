@@ -28,21 +28,24 @@
 namespace pertubis
 {
     class DatabaseView;
-    class Install : public paludis::InstallTask,
-                    public QThread
+    class Install : public QThread,
+        public paludis::InstallTask
     {
+        Q_OBJECT
         public:
             Install(QObject* pobj,
                     DatabaseView* main,
                     const paludis::DepListOptions & options,
                     paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations);
-            void run() { execute();}
-            virtual void on_build_deplist_pre() {}
+            ~Install() {}
+
+            void run();
+            virtual void on_build_deplist_pre();
             virtual void on_build_deplist_post() {}
-            virtual void on_build_cleanlist_pre(const paludis::DepListEntry&) {}
+            virtual void on_build_cleanlist_pre(const paludis::DepListEntry&);
             virtual void on_build_cleanlist_post(const paludis::DepListEntry&) {}
             virtual void on_display_merge_list_post() {}
-            virtual void on_display_merge_list_entry(const paludis::DepListEntry&) {}
+            virtual void on_display_merge_list_entry(const paludis::DepListEntry&);
             virtual void on_display_failure_summary_pre() {}
             virtual void on_display_failure_summary_success(const paludis::DepListEntry&) {}
             virtual void on_display_failure_summary_failure(const paludis::DepListEntry&) {}
@@ -63,7 +66,7 @@ namespace pertubis
             virtual void on_display_merge_list_pre();
             virtual void on_skip_unsatisfied(const paludis::DepListEntry&, const paludis::PackageDepSpec&, int, int, int, int) {}
             virtual void on_no_clean_needed(const paludis::DepListEntry&) {}
-            virtual void on_clean_all_pre(const paludis::DepListEntry&, const paludis::PackageIDSequence&) {}
+            virtual void on_clean_all_pre(const paludis::DepListEntry&, const paludis::PackageIDSequence&);
             virtual void on_clean_pre(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
             virtual void on_clean_post(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
             virtual void on_clean_fail(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
@@ -84,25 +87,17 @@ namespace pertubis
             virtual void on_multiple_set_targets_specified(const paludis::MultipleSetTargetsSpecified&) {}
             virtual void on_install_action_error(const paludis::InstallActionError&) {}
             virtual void on_fetch_action_error(const paludis::FetchActionError&) {}
-
-
             virtual bool want_full_install_reasons() const;
-
             virtual bool want_tags_summary() const;
-
             virtual bool want_install_reasons() const;
-
             virtual bool want_unchanged_use_flags() const;
-
             virtual bool want_changed_use_flags() const;
-
             virtual bool want_new_use_flags() const;
-
             virtual bool want_use_summary() const;
-
             virtual void on_installed_paludis();
 
             virtual paludis::HookResult perform_hook(const paludis::Hook & hook) const;
+            virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID & c);
 
             void show_resume_command() const;
             std::string make_resume_command(const paludis::PackageIDSequence& seq) const;
@@ -110,8 +105,6 @@ namespace pertubis
         private:
             DatabaseView*                                       m_mainview;
             std::string                                         m_resumeCommand;
-            bool                                                m_pretend;
-
     };
 }
 

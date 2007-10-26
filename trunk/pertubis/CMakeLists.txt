@@ -13,36 +13,26 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUD
 
 MESSAGE("CMAKE_CURRENT_SOURCE_DIR  = ${CMAKE_CURRENT_SOURCE_DIR}")
 
-# here we combine system provided compiler flags with our ones
-SET(PERTUBIS_FLAGS $ENV{CXXFLAGS})
-SET(CMAKE_CXX_FLAGS "${PERTUBIS_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -D_REENTRANT -DQT_SHARED -Wextra -Wold-style-cast -Wredundant-decls -Wstrict-null-sentinel -Wmissing-noreturn -Woverloaded-virtual -Winit-self -Wunused -Wunused-function -Wshadow -Wwrite-strings")
-SET(CMAKE_CXX_FLAGS_DEBUG "${PERTUBIS_FLAGS} -Wall -Wextra -g -D_REENTRANT -DQT_SHARED")
-SET(CMAKE_CXX_FLAGS_MINSIZEREL "${PERTUBIS_FLAGS} -Os -pipe -fvisibility=hidden -Wall -Wextra -D_REENTRANT -DQT_SHARED")
-SET(CMAKE_CXX_FLAGS_RELEASE "${PERTUBIS_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden -D_REENTRANT -DQT_SHARED -DQT_NO_DEBUG -DQT_NO_DEBUG_OUTPUT")
-
 FIND_LIBRARY(PCRE_LIB NAMES pcre++
 	PATHS  /usr/lib /usr/local/lib)
 
-FIND_LIBRARY(PALUDIS_LIB NAMES paludis
-	PATHS  /usr/local/lib
-	NO_DEFAULT_PATH
-	NO_CMAKE_ENVIRONMENT_PATH
-	NO_SYSTEM_ENVIRONMENT_PATH
-	NO_CMAKE_SYSTEM_PATH)
-#
-# FIND_LIBRARY(PALUDIS_ENV_LIB NAMES paludisenvironments
+# FIND_LIBRARY(PALUDIS_LIB NAMES paludis
 # 	PATHS  /usr/local/lib
 # 	NO_DEFAULT_PATH
 # 	NO_CMAKE_ENVIRONMENT_PATH
 # 	NO_SYSTEM_ENVIRONMENT_PATH
 # 	NO_CMAKE_SYSTEM_PATH)
 
-# FIND_LIBRARY(PALUDIS_TASK_LIB NAMES paludistasks
-#     PATHS  /usr/local/lib
-#     NO_DEFAULT_PATH
-#     NO_CMAKE_ENVIRONMENT_PATH
-#     NO_SYSTEM_ENVIRONMENT_PATH
-#     NO_CMAKE_SYSTEM_PATH)
+INCLUDE(UsePkgConfig)
+SET( ENV{PKG_CONFIG_PATH} ENV{PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig )
+PKGCONFIG(paludis PALUDIS_INCLUDE_DIR PALUDIS_LINK_DIR PALUDIS_LINK_FLAGS PALUDIS_CFLAGS)
+
+# here we combine system provided compiler flags with our ones
+SET(PERTUBIS_FLAGS $ENV{CXXFLAGS})
+SET(CMAKE_CXX_FLAGS "${PERTUBIS_FLAGS} ${PALUDIS_CFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden -Wall -Wextra -D_REENTRANT -DQT_SHARED -Wextra -Wold-style-cast -Wredundant-decls -Wstrict-null-sentinel -Wmissing-noreturn -Woverloaded-virtual -Winit-self -Wunused -Wunused-function -Wshadow -Wwrite-strings")
+SET(CMAKE_CXX_FLAGS_DEBUG "${PERTUBIS_FLAGS} ${PALUDIS_CFLAGS} -Wall -Wextra -g -D_REENTRANT -DQT_SHARED")
+SET(CMAKE_CXX_FLAGS_MINSIZEREL "${PERTUBIS_FLAGS} ${PALUDIS_CFLAGS} -Os -pipe -fvisibility=hidden -Wall -Wextra -D_REENTRANT -DQT_SHARED")
+SET(CMAKE_CXX_FLAGS_RELEASE "${PERTUBIS_FLAGS} ${PALUDIS_CFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden -D_REENTRANT -DQT_SHARED -DQT_NO_DEBUG -DQT_NO_DEBUG_OUTPUT")
 
 ADD_SUBDIRECTORY(src)
 # ADD_SUBDIRECTORY(test)

@@ -120,7 +120,7 @@ void pertubis::InstallTask::startTask(DatabaseView* main)
     for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
          i != i_end ; ++i)
     {
-        m_task->add_target("="+paludis::stringify(*i->get()));
+        m_task->add_exact_package(*i);
     }
     m_task->run();
     m_data.empty();
