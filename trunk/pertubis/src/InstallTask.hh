@@ -38,7 +38,7 @@ namespace pertubis
         InstallTask() {}
         InstallTask(QObject* pobject,
                     QAction* myaction,
-                      QString tname) : Task(pobject,myaction,tname),m_task(0) {}
+                    QString tname) : Task(pobject,myaction,tname),m_task(0) {}
         bool available(Item* item) const;
         void startTask(DatabaseView* main);
         bool changeChildStates(Item* item, int mystate);

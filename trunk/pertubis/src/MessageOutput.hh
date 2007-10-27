@@ -36,14 +36,11 @@ namespace paludis
 
 namespace pertubis
 {
-    class QTOutputStreamBuf;
-    class QTOutputStream;
-
     class Thread : public QThread
     {
         Q_OBJECT
         public:
-            Thread(QObject* pobj,  QTextEdit* output,int fd) : QThread(pobj), m_output(output), m_fd(fd),m_atwork(true)
+            Thread(QObject* pobj,  int fd) : QThread(pobj), m_fd(fd),m_atwork(true)
             {
             }
 
@@ -54,9 +51,12 @@ namespace pertubis
 
             void run();
 
+        signals:
+
+            void sendMessage(QString message);
+
         private:
 
-            QTextEdit*  m_output;
             int         m_fd;
             bool        m_atwork;
     };
@@ -78,12 +78,14 @@ namespace pertubis
             QTextEdit* output() const { return m_output;}
             void redirectOutput_Paludis();
 
+        public slots:
+
+            void receiveMessage(QString message);
+
         private:
 
             QTextEdit*                                  m_output;
             Thread*                                     m_thread;
-            paludis::tr1::shared_ptr<QTOutputStreamBuf> m_cout;
-            paludis::tr1::shared_ptr<QTOutputStream>    m_input;
             paludis::tr1::shared_ptr<paludis::FDOutputStream> messages_stream;
             int                                         m_master_fd;
             int                                         m_slave_fd;

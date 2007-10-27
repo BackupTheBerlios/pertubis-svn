@@ -22,6 +22,7 @@
 #include "Item.hh"
 #include "DatabaseView.hh"
 #include "ItemInstallTask.hh"
+#include "MessageOutput.hh"
 #include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
@@ -116,7 +117,13 @@ void pertubis::InstallTask::startTask(DatabaseView* main)
     paludis::DepListOptions options;
     if (m_task)
         delete m_task;
-    m_task = new Install(this,main,options,main->getEnv()->default_destinations());
+    m_task = new Install(this,main->getEnv().get(),options,main->getEnv()->default_destinations());
+    connect(m_task,
+            SIGNAL(sendMessage(QString)),
+            main->messages(),
+            SLOT(receiveMessage(QString)),
+            Qt::AutoConnection);
+
     for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
          i != i_end ; ++i)
     {

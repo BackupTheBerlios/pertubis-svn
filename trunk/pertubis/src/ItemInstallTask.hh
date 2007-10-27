@@ -34,7 +34,7 @@ namespace pertubis
         Q_OBJECT
         public:
             Install(QObject* pobj,
-                    DatabaseView* main,
+                    paludis::Environment* env,
                     const paludis::DepListOptions & options,
                     paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations);
             ~Install() {}
@@ -65,11 +65,11 @@ namespace pertubis
             virtual void on_install_all_post() {}
             virtual void on_display_merge_list_pre();
             virtual void on_skip_unsatisfied(const paludis::DepListEntry&, const paludis::PackageDepSpec&, int, int, int, int) {}
-            virtual void on_no_clean_needed(const paludis::DepListEntry&) {}
+            virtual void on_no_clean_needed(const paludis::DepListEntry&);
             virtual void on_clean_all_pre(const paludis::DepListEntry&, const paludis::PackageIDSequence&);
             virtual void on_clean_pre(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
             virtual void on_clean_post(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
-            virtual void on_clean_fail(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
+            virtual void on_clean_fail(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int);
             virtual void on_clean_all_post(const paludis::DepListEntry&, const paludis::PackageIDSequence&) {}
             virtual void on_update_world_pre() {}
             virtual void on_update_world(const paludis::PackageDepSpec&) {}
@@ -102,8 +102,12 @@ namespace pertubis
             void show_resume_command() const;
             std::string make_resume_command(const paludis::PackageIDSequence& seq) const;
 
+        signals:
+
+            void sendMessage(const QString& message);
+
         private:
-            DatabaseView*                                       m_mainview;
+//             DatabaseView*                                       m_mainview;
             std::string                                         m_resumeCommand;
     };
 }

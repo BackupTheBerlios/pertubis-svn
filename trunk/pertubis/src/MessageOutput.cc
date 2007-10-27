@@ -19,6 +19,7 @@
 
 #include "MessageOutput.hh"
 #include <QLayout>
+#include <QDebug>
 #include <QColor>
 #include <QTextEdit>
 #include <QTextCursor>
@@ -27,7 +28,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/fd_output_stream.hh>
-#include "QTOutputStream.hh"
+// #include "QTOutputStream.hh"
 #include <iostream>
 #include <cstdlib>
 #include <fcntl.h>
@@ -53,7 +54,7 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
     m_output->setAutoFillBackground(true);
     mylayout->addWidget(m_output);
     redirectOutput_Paludis();
-    paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
+    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
     paludis::Log::get_instance()->set_program_name("pertubis");
     show();
 }
@@ -66,7 +67,9 @@ void pertubis::Thread::run()
         errno=0;
         int res = read(m_fd,&buf,512);
         if (errno == 0)
-            m_output->append(QString::fromLocal8Bit(buf,res));
+        {
+            sendMessage(QString::fromLocal8Bit(buf,res));
+        }
         msleep(50);
     }
 }
@@ -82,9 +85,19 @@ void pertubis::MessageOutput::redirectOutput_Paludis()
     paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
     paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
     fcntl(m_master_fd,F_SETFL,fcntl(m_master_fd,F_GETFL) | O_NONBLOCK);
-    m_thread = new Thread(this,m_output,m_master_fd);
+    m_thread = new Thread(this,m_master_fd);
+    connect(m_thread,
+            SIGNAL(sendMessage(QString)),
+            this,
+            SLOT(receiveMessage(QString)),
+            Qt::AutoConnection);
     m_thread->start();
     paludis::Log::get_instance()->set_log_stream(messages_stream.get());
+}
+
+void pertubis::MessageOutput::receiveMessage(QString message)
+{
+    m_output->append(message);
 }
 
 pertubis::MessageOutput::~MessageOutput()

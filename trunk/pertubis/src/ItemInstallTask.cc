@@ -36,12 +36,11 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 pertubis::Install::Install(QObject* pobj,
-                        DatabaseView* main,
+                        paludis::Environment* env,
                         const paludis::DepListOptions & options,
                         paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations) :
                         QThread(pobj),
-                        paludis::InstallTask(main->getEnv().get(), options, destinations),
-                        m_mainview(main)
+                        paludis::InstallTask(env, options, destinations)
 {
 }
 
@@ -96,7 +95,7 @@ void pertubis::Install::on_installed_paludis()
 
     std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
 
-    m_mainview->messages()->append(color(QString("Paludis has just upgraded Paludis"),QString("green")));
+    emit sendMessage(color(QString("Paludis has just upgraded Paludis"),QString("green")));
     execl("/bin/sh", "sh", "-c", resume_command.c_str(), static_cast<const char *>(0));
 }
 
@@ -131,7 +130,7 @@ void pertubis::Install::show_resume_command() const
 
 void pertubis::Install::on_display_merge_list_pre()
 {
-    m_mainview->messages()->append(QString::fromStdString(header(color(std::string("These packages will be installed:"),"green"))));
+    emit sendMessage(QString::fromStdString(header(color(std::string("These packages will be installed:"),"green"))));
 }
 
 void pertubis::Install::run()
@@ -141,12 +140,12 @@ void pertubis::Install::run()
 
 void pertubis::Install::on_build_deplist_pre()
 {
-    m_mainview->messages()->append("Building dependency list");
+    emit sendMessage("Building dependency list");
 }
 
 void pertubis::Install::on_build_cleanlist_pre(const paludis::DepListEntry & d)
 {
-    m_mainview->messages()->append(QString::fromStdString(header(color(std::string("Cleaning stale versions after installing ") + stringify(*d.package_id),"green"))));
+    emit sendMessage(QString::fromStdString(header(color(std::string("Cleaning stale versions after installing ") + paludis::stringify(*d.package_id),"green"))));
 }
 
 void pertubis::Install::on_clean_all_pre(const paludis::DepListEntry & d,
@@ -157,6 +156,17 @@ void pertubis::Install::on_clean_all_pre(const paludis::DepListEntry & d,
                   paludis::tr1::bind(paludis::tr1::mem_fn(&Install::display_one_clean_all_pre_list_entry), this, _1));
 
 //     display_clean_all_pre_list_end(d, c);
+}
+
+void pertubis::Install::on_no_clean_needed(const paludis::DepListEntry &)
+{
+    emit sendMessage(QString::fromStdString(header(color(std::string("No cleaning required"),std::string("green")))));
+}
+
+void pertubis::Install::on_clean_fail(const paludis::DepListEntry &,
+                                       const paludis::PackageID & c, const int x, const int y, const int s, const int f)
+{
+//     emit sendMessage(QString::fromStdString("(" + make_x_of_y(x, y, s, f) + ") Failed cleaning " + stringify(c)));
 }
 
 void pertubis::Install::on_display_merge_list_entry(const paludis::DepListEntry& c)
@@ -241,7 +251,42 @@ void pertubis::Install::on_display_merge_list_entry(const paludis::DepListEntry&
 //         display_merge_list_entry_mask_reasons(d);
 }
 
+// void pertubis::Install::InstallTask::_display_task_list()
+// {
+//     using namespace pertubis;
+//     paludis::Context context("When displaying task list:");
+//
+//     if (_imp->pretend &&
+//         0 != perform_hook(Hook("install_pretend_pre")("TARGETS", join(_imp->raw_targets.begin(),
+//                           _imp->raw_targets.end(), " "))).max_exit_status)
+//         throw InstallActionError("Pretend install aborted by hook");
+//
+//     on_display_merge_list_pre();
+//
+//     /* display our task list */
+//     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+//          dep != dep_end ; ++dep)
+//     {
+//         if (_imp->pretend &&
+//             0 != perform_hook(Hook("install_pretend_display_item_pre")
+//             ("TARGET", stringify(*dep->package_id))
+//             ("KIND", stringify(dep->kind))).max_exit_status)
+//             throw InstallActionError("Pretend install aborted by hook");
+//
+//         on_display_merge_list_entry(*dep);
+//
+//         if (_imp->pretend &&
+//             0 != perform_hook(Hook("install_pretend_display_item_post")
+//             ("TARGET", stringify(*dep->package_id))
+//             ("KIND", stringify(dep->kind))).max_exit_status)
+//             throw InstallActionError("Pretend install aborted by hook");
+//     }
+//
+//     /* we're done displaying our task list */
+//     on_display_merge_list_post();
+// }
+
 void pertubis::Install::display_one_clean_all_pre_list_entry(const paludis::PackageID & c)
 {
-    m_mainview->messages()->append(QString::fromStdString(color(paludis::stringify(c),"blue")));
+    emit sendMessage(QString::fromStdString(color(paludis::stringify(c),"blue")));
 }
