@@ -23,12 +23,12 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/sequence.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <QDebug>
 #include <QSet>
@@ -42,7 +42,7 @@ pertubis::CategoriesThread::CategoriesThread(QObject* pobj,
 void pertubis::CategoriesThread::run()
 {
     using namespace paludis;
-//     qDebug() << "CategoriesThread.run() - starting";
+    qDebug() << "CategoriesThread.run() - starting";
     QMap<QString, QSet<QString> > cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
@@ -51,18 +51,13 @@ void pertubis::CategoriesThread::run()
         paludis::tr1::shared_ptr<const paludis::CategoryNamePartSet> cat_names(r->category_names());
         for (paludis::CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
         {
+//             qDebug() << QString::fromStdString(stringify(*c));
             cats[QString::fromStdString(stringify(*c))].insert(QString::fromStdString(stringify(r->name())));
         }
     }
-    QList<CategoryItem*> list;
-    for(QMap<QString,QSet<QString> >::const_iterator cStart(cats.constBegin()),
-        end(cats.constEnd());
-        cStart != end;
-        ++cStart)
-    {
-        list.push_back(new CategoryItem(cStart.key(),cStart.value()));
-    }
-    emit categoriesResult(list);
-//     qDebug() << "CategoriesThread.run() - done";
+
+    emit sendCategory(cats);
+
+    qDebug() << "CategoriesThread.run() - done";
 }
 

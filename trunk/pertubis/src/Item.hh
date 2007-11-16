@@ -46,7 +46,7 @@ namespace pertubis
         public:
 
             enum ItemState { is_stable, is_unstable, is_masked };
-            enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed,io_mask_reasons};
+            enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed,io_mask_reasons,io_change};
             enum ItemType { it_category,it_package,it_version};
 
             /*! \brief In which direction we want model updates
@@ -143,6 +143,7 @@ namespace pertubis
     inline Item* makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
         QVariantList selections,
         QString version,
+        QString rep,
         bool isInstalled,
         Item::ItemState mystate,
         Item::UpdateRange ur,
@@ -154,7 +155,7 @@ namespace pertubis
             QVariant(selections) <<
             version <<
             "" <<
-            "" <<
+            rep <<
             (isInstalled ? Qt::Checked : Qt::Unchecked) <<
             mask_reasons;
         return new Item(id,list,mystate,ur,pitem);

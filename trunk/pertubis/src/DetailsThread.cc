@@ -29,7 +29,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>

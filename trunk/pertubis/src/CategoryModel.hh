@@ -23,6 +23,9 @@
 
 #include <QAbstractTableModel>
 #include <QStringList>
+#include <QMap>
+#include <QSet>
+#include <QString>
 
 namespace pertubis
 {
@@ -52,8 +55,8 @@ namespace pertubis
             QList<CategoryItem*> m_data;
             QStringList        m_header;
 
-    public slots:
-        void slotPopulateModel(QList<CategoryItem*> list);
+        public slots:
+            void slotAppendCategory(QMap<QString, QSet<QString> > map);
     };
 }
 #endif

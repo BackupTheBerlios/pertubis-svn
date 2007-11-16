@@ -23,14 +23,15 @@
 #include <QDebug>
 #include <paludis/repository.hh>
 #include <paludis/repository_info.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/package_database.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/environment.hh>
 
-void pertubis::RepositoryInfoThread::getInfo(QString name)
+void pertubis::RepositoryInfoThread::getInfo(const QString& name)
 {
+    qDebug() << "RepositoryInfoThread::getInfo()" << name;
     m_repName = name;
     start();
 }

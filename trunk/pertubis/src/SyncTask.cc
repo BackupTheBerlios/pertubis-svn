@@ -50,7 +50,7 @@ void pertubis::OurSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
     m_output->append(QString("Sync %1 completed").arg(paludis::stringify(r).c_str()));
 }
 
-void pertubis::OurSyncTask::on_sync_fail(const paludis::RepositoryName & r, const paludis::SyncFailedError & e)
+void pertubis::OurSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
 {
     _return_code |= 1;
     qWarning("Sync error: * %s %s",e.backtrace("\n  * ").c_str(), e.message().c_str());

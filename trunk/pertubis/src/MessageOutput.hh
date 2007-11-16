@@ -76,7 +76,7 @@ namespace pertubis
 
             void append(QString text) { m_output->append(text);}
             QTextEdit* output() const { return m_output;}
-            void redirectOutput_Paludis();
+            void redirectOutput();
 
         public slots:
 

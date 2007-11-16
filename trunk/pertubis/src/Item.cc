@@ -189,6 +189,7 @@ QString pertubis::stateDescription(Item::ItemState status)
     }
 }
 
+#ifndef QT_NO_DEBUG
 QDebug operator<<(QDebug dbg, const pertubis::Item &item)
 {
     dbg.nospace() << "pertubis::Item(" <<
@@ -201,3 +202,4 @@ QDebug operator<<(QDebug dbg, const pertubis::Item &item)
             item.columnCount() << ")";
     return dbg.space();
 }
+#endif

@@ -28,7 +28,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/fd_output_stream.hh>
-// #include "QTOutputStream.hh"
 #include <iostream>
 #include <cstdlib>
 #include <fcntl.h>
@@ -41,6 +40,9 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
                                     m_master_fd(-1),
                                     m_slave_fd(-1)
 {
+    redirectOutput();
+    paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
+    paludis::Log::get_instance()->set_program_name("pertubis");
     QVBoxLayout* mylayout = new QVBoxLayout;
     mylayout->setMargin(0);
     setLayout(mylayout);
@@ -53,9 +55,6 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
     m_output->setPalette(p);
     m_output->setAutoFillBackground(true);
     mylayout->addWidget(m_output);
-    redirectOutput_Paludis();
-    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
-    paludis::Log::get_instance()->set_program_name("pertubis");
     show();
 }
 
@@ -74,7 +73,7 @@ void pertubis::Thread::run()
     }
 }
 
-void pertubis::MessageOutput::redirectOutput_Paludis()
+void pertubis::MessageOutput::redirectOutput()
 {
     m_master_fd = posix_openpt(O_RDWR | O_NOCTTY);
     grantpt(m_master_fd);
@@ -85,6 +84,7 @@ void pertubis::MessageOutput::redirectOutput_Paludis()
     paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
     paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
     fcntl(m_master_fd,F_SETFL,fcntl(m_master_fd,F_GETFL) | O_NONBLOCK);
+    paludis::Log::get_instance()->set_log_stream(messages_stream.get());
     m_thread = new Thread(this,m_master_fd);
     connect(m_thread,
             SIGNAL(sendMessage(QString)),
@@ -92,7 +92,6 @@ void pertubis::MessageOutput::redirectOutput_Paludis()
             SLOT(receiveMessage(QString)),
             Qt::AutoConnection);
     m_thread->start();
-    paludis::Log::get_instance()->set_log_stream(messages_stream.get());
 }
 
 void pertubis::MessageOutput::receiveMessage(QString message)
@@ -109,6 +108,5 @@ pertubis::MessageOutput::~MessageOutput()
         ::close(m_master_fd);
         ::close(m_slave_fd);
     }
-
     paludis::Log::get_instance()->set_log_stream(&std::cerr);
 }

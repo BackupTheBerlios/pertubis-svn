@@ -1,0 +1,18 @@
+--pi "set" = system | world | everything | ...
+
+dynamisch menu erzeugen, wo diese tasks abgerufen werden können
+
+--debug-build default,split,internal
+
+debugging
+
+--regenerate-installed-cache
+--regenerate-installable-cache
+--continue-on-failure = if-fetch-only,never,if-satisfied,if-independent,always
+
+- integration of layman? add repository
+
+
+
+Dein Login: 2744955
+Dein Passwort: veq4qyapVA

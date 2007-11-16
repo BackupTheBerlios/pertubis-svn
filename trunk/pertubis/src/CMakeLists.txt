@@ -1,10 +1,9 @@
-
 INCLUDE(${QT_USE_FILE})
-
 
 SET(PERTUBIS_SRCS
     CategoriesThread.cc
     CategoryFilterModel.cc
+    CategoryItem.cc
     CategoryModel.cc
     DatabaseView.cc
     DeinstallTask.cc
@@ -20,11 +19,9 @@ SET(PERTUBIS_SRCS
     name_extractor.cc
     OptionsDelegate.cc
     PackageFilterModel.cc
-    CategoryItem.cc
     PackageModel.cc
     PackagesThread.cc
-    pcre_matcher.cc
-    QTOutputStream.hh
+    RegexMatcher.cc
     RepositoryInfoModel.cc
     RepositoryListModel.cc
     SearchThread.cc
@@ -36,12 +33,10 @@ SET(PERTUBIS_SRCS
     Task.cc
     text_matcher.cc
     ThreadBase.cc
-#     UseFlagEditor.cc
-#     UseFlagModel.cc
 )
 
 SET(PERTUBIS_MAIN_SRCS
- 	main.cc)
+    main.cc)
 
 SET(PERTUBIS_MOC_HDRS
     CategoriesThread.hh
@@ -67,8 +62,6 @@ SET(PERTUBIS_MOC_HDRS
     Task.hh
     TaskBox.hh
     ThreadBase.hh
-#     UseFlagEditor.hh
-#     UseFlagModel.hh
 )
 
 EXEC_PROGRAM("/bin/sh"
@@ -80,14 +73,11 @@ QT4_WRAP_CPP(PERTUBIS_MOC_SRCS ${PERTUBIS_MOC_HDRS} )
 
 QT4_ADD_RESOURCES(PERTUBIS_RCCS_SRCS ${PERTUBIS_RCCS} )
 
-# ADD_DEFINITIONS(-DPALUDIS_TR1_MEMORY_IS_STD_TR1=1 -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1 -DPALUDIS_TR1_FUNCTIONAL_IS_STD_TR1=1)
-# SET (CMAKE_INCLUDE_PATH /usr/local/include/paludis-0.25)
-SET (CMAKE_INCLUDE_PATH PALUDIS_INCLUDE_DIR)
-INCLUDE_DIRECTORIES(BEFORE /usr/local/include/paludis-0.25)
+INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} ${MODELTEST_DIR} )
 
-ADD_EXECUTABLE (pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
-
-TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
+ADD_EXECUTABLE(pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
+LINK_DIRECTORIES(${PALUDIS_LINK_DIR} )
+TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
 
 ######################################################
 # install

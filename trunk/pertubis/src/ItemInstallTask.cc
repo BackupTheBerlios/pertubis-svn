@@ -28,12 +28,14 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 pertubis::Install::Install(QObject* pobj,
                         paludis::Environment* env,
@@ -109,19 +111,18 @@ paludis::HookResult pertubis::Install::perform_hook(const paludis::Hook & hook) 
 
 std::string pertubis::Install::make_resume_command(const paludis::PackageIDSequence& s) const
 {
-//     using namespace paludis;
-//     std::string resume_command = environment()->paludis_command()
-//             + " --" + QObject::tr("Install following packages").toLocal8Bit().data();
-//
-// //     resume_command = resume_command + CommandLine::get_instance()->install_args.resume_command_fragment(*this);
-// //     resume_command = resume_command + CommandLine::get_instance()->dl_args.resume_command_fragment(*this);
-//
-//     for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
-//          i != i_end ; ++i)
-//         resume_command = resume_command + " '=" + stringify(**i) + "'";
+    using namespace paludis;
+    std::string resume_command = environment()->paludis_command()
+            + " --" + QObject::tr("Install following packages").toLocal8Bit().data();
 
-//     return resume_command;
-    return "";
+//     resume_command = resume_command + CommandLine::get_instance()->install_args.resume_command_fragment(*this);
+//     resume_command = resume_command + CommandLine::get_instance()->dl_args.resume_command_fragment(*this);
+
+    for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
+         i != i_end ; ++i)
+        resume_command = resume_command + " '=" + stringify(**i) + "'";
+
+    return resume_command;
 }
 
 void pertubis::Install::show_resume_command() const
@@ -148,11 +149,11 @@ void pertubis::Install::on_build_cleanlist_pre(const paludis::DepListEntry & d)
     emit sendMessage(QString::fromStdString(header(color(std::string("Cleaning stale versions after installing ") + paludis::stringify(*d.package_id),"green"))));
 }
 
-void pertubis::Install::on_clean_all_pre(const paludis::DepListEntry & d,
+void pertubis::Install::on_clean_all_pre(const paludis::DepListEntry& /*d*/,
                                          const paludis::PackageIDSequence & c)
 {
     using namespace paludis::tr1::placeholders;
-    std::for_each(indirect_iterator(c.begin()), indirect_iterator(c.end()),
+    std::for_each(paludis::indirect_iterator(c.begin()), indirect_iterator(c.end()),
                   paludis::tr1::bind(paludis::tr1::mem_fn(&Install::display_one_clean_all_pre_list_entry), this, _1));
 
 //     display_clean_all_pre_list_end(d, c);
@@ -164,12 +165,16 @@ void pertubis::Install::on_no_clean_needed(const paludis::DepListEntry &)
 }
 
 void pertubis::Install::on_clean_fail(const paludis::DepListEntry &,
-                                       const paludis::PackageID & c, const int x, const int y, const int s, const int f)
+                                     const paludis::PackageID& /*c*/,
+                                     const int /*x*/,
+                                     const int /*y*/,
+                                     const int /*s*/,
+                                     const int /*f*/)
 {
 //     emit sendMessage(QString::fromStdString("(" + make_x_of_y(x, y, s, f) + ") Failed cleaning " + stringify(c)));
 }
 
-void pertubis::Install::on_display_merge_list_entry(const paludis::DepListEntry& c)
+void pertubis::Install::on_display_merge_list_entry(const paludis::DepListEntry& /*c*/)
 {
 //     DisplayMode m;
 //

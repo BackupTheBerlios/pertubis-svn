@@ -22,13 +22,12 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_SEARCH_THREAD_H 1
 
 #include "ThreadBase.hh"
-#include "DatabaseView.hh"
-
 #include <QString>
 
 namespace pertubis
 {
     class Item;
+    class DatabaseView;
 
     /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
     *
@@ -40,9 +39,9 @@ namespace pertubis
     public:
 
         SearchThread(QObject* parent,
-                        DatabaseView* main);
+                    DatabaseView* main);
 
-        void search(QString str,bool name,bool desc);
+        void start(const QString& str,bool name,bool desc);
 
     protected:
 
@@ -50,7 +49,7 @@ namespace pertubis
 
     private:
 
-        QString                                    m_query;
+        QString                                 m_query;
         bool                                    m_optName;
         bool                                    m_optDesc;
 

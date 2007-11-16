@@ -1,21 +1,20 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl.
 *
-* This file is part of the pertubis frontend for paludis package manager.
+* This file is part of pertubis.
 *
-* This program is free software; you can redistribute it and/or modify
+* pertubis is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
+* the Free Software Foundation; either version 3 of the License, or
 * (at your option) any later version.
 *
-* This program is distributed in the hope that it will be useful,
+* pertubis is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License along
-* with this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
@@ -37,26 +36,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_PCRE_MATCHER_H
-#define _PERTUBIS_ENTRY_PROTECTOR_PCRE_MATCHER_H
+#include "RegexMatcher.hh"
 
-#include "matcher.hh"
 
-#include <pcre++.h>
-
-namespace pertubis
+pertubis::RegexMatcher::RegexMatcher(const std::string& pattern) : m_regex(QString::fromStdString(pattern) )
 {
-    class PCREMatcher : public Matcher
-    {
-        public:
-            PCREMatcher(const std::string &);
-            virtual ~PCREMatcher();
-
-            bool operator() (const std::string &) const;
-
-            mutable pcrepp::Pcre::Pcre m_pattern;
-    };
 }
 
-#endif
+
+bool pertubis::RegexMatcher::operator() (const std::string & s) const
+{
+    return m_regex.indexIn(QString::fromStdString(s)) != -1;
+}
+
+pertubis::RegexMatcher::~RegexMatcher()
+{
+}
+
 

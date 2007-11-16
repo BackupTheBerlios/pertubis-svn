@@ -43,7 +43,7 @@ namespace pertubis
 
         public:
             OurSyncTask(paludis::tr1::shared_ptr<paludis::Environment> env, QObject* pobj, QTextEdit* output) :
-                SyncTask(env.get()),
+                SyncTask(env.get(),true),
                 QThread(pobj),
                 _return_code(0),
                 m_output(output)
@@ -57,6 +57,7 @@ namespace pertubis
             virtual void on_sync_post(const paludis::RepositoryName &);
             virtual void on_sync_skip(const paludis::RepositoryName &);
             virtual void on_sync_fail(const paludis::RepositoryName &, const paludis::SyncFailedError &);
+            virtual void on_sync_status(int, int, int) {}
             virtual void on_sync_succeed(const paludis::RepositoryName &);
             virtual void on_sync_all_post();
 

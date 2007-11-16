@@ -38,8 +38,6 @@ pertubis::PackageModel::~PackageModel()
         delete m_root;
 }
 
-
-
 Qt::ItemFlags pertubis::PackageModel::flags(const QModelIndex &mix) const
 {
     if (!mix.isValid() )
@@ -198,14 +196,16 @@ bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taski
     {
         case Item::ur_parent:
             if (m_box->task(taskid)->changeParentStates(item, mystate) )
-                emit dataChanged(ix, index(item->childCount()-1,0,ix));
+//                 emit dataChanged(ix, index(item->childCount()-1,0,ix));
+                emit layoutChanged();
             return true;
         case Item::ur_child:
             if (m_box->task(taskid)->changeChildStates(item,mystate) )
             {
                 QModelIndex p = parent(ix);
                 QModelIndex last = index(rowCount(p)-1,0,p);
-                emit dataChanged(p,last);
+//                 emit dataChanged(p,last);
+                emit layoutChanged();
             }
             return true;
         default:
@@ -227,7 +227,7 @@ void pertubis::PackageModel::setHorizontalHeaderLabels ( const QStringList & lab
 
 bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role)
 {
-    if (orientation == Qt::Horizontal && section < m_header.count() && role == Qt::EditRole)
+    if (section >= 0 && orientation == Qt::Horizontal && section < m_header.count() && role == Qt::EditRole)
     {
         m_header.replace(section,value.toString());
         emit headerDataChanged(orientation,section,section);

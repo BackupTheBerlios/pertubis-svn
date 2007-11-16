@@ -22,8 +22,8 @@
 
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
-#include <paludis/util/iterator.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/package_id.hh>

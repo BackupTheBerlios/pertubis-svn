@@ -21,20 +21,21 @@
 #include "description_extractor.hh"
 #include "name_extractor.hh"
 #include "Item.hh"
-#include "pcre_matcher.hh"
+#include "RegexMatcher.hh"
 #include "TaskBox.hh"
 #include "text_matcher.hh"
 #include "SearchThread.hh"
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/query.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <QDebug>
 #include <QVariant>
 #include <set>
@@ -44,12 +45,12 @@ pertubis::SearchThread::SearchThread(QObject* pobj,
 {
 }
 
-void pertubis::SearchThread::search(QString str,bool name,bool desc)
+void pertubis::SearchThread::start(const QString& str, bool name, bool desc)
 {
     m_query = str;
     m_optName = name;
     m_optDesc = desc;
-     start();
+    QThread::start();
 }
 
 void pertubis::SearchThread::run()
@@ -67,31 +68,39 @@ void pertubis::SearchThread::run()
     if (m_optDesc )
         extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_main->getEnv().get())));
 
+    qDebug() << "1";
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
-        if (r->format() == "vdb" || r->format() == "installed_virtuals" || r->format() == "virtuals")
+//         qDebug() << "1 a" << stringify(r->format()).c_str();
+        if (r->format() != "ebuild")
             continue;
+        qDebug() << "1 b";
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        qDebug() << "1 c";
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
+            qDebug() << "1 d";
             tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            qDebug() << "1 e";
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end());
                  p != p_end; ++p)
             {
                 tr1::shared_ptr<const PackageIDSequence> version_ids(r->package_ids(*p));
 
+                qDebug() << "2";
                 if (version_ids->empty())
                     continue;
 
+                qDebug() << "3";
                 tr1::shared_ptr<const PackageID> display_entry(*version_ids->begin());
                 for (PackageIDSequence::ConstIterator i(version_ids->begin()),
                         i_end(version_ids->end()) ; i != i_end ; ++i)
                     if (! (*i)->masked())
                         display_entry = *i;
-
+                qDebug() << "4";
                 bool match(false);
                 for (std::list<tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
                         x_end(extractors.end()) ; x != x_end && ! match ; ++x)
@@ -103,14 +112,17 @@ void pertubis::SearchThread::run()
                             match = true;
                 }
 
+
+                qDebug() << "5";
                 if (! match)
                     continue;
-
+                qDebug() << "6";
                 PackageDepSpec dps(stringify(*p),pds_pm_eapi_0_strict);
-
+                qDebug() << "7";
                 Item* p_item=0;
                 QVariantList tasks(m_main->taskbox()->tasks());
                 tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
+                qDebug() << "8";
                 if (dps.version_requirements_ptr() || dps.slot_ptr() || dps.use_requirements_ptr() || dps.repository_ptr())
                 {
                     p_item = makePackageItem(display_entry,
@@ -138,7 +150,7 @@ void pertubis::SearchThread::run()
                                             "");
                 }
 
-
+                qDebug() << "9";
                 int mp=0;
                 int ip=0;
                 for (PackageIDSequence::ConstIterator vstart(versionIds->begin()),vend(versionIds->end());
@@ -147,6 +159,7 @@ void pertubis::SearchThread::run()
                     Item* v_item = makeVersionItem(*vstart,
                                                     m_main->taskbox()->tasks(),
                                                     QString::fromStdString(stringify((*vstart)->version())),
+                                                    QString::fromStdString(stringify((*vstart)->repository()->name())),
                                                     false,
                                                     Item::is_stable,
                                                     Item::ur_child,
@@ -173,5 +186,6 @@ void pertubis::SearchThread::run()
             }
         }
     }
+    qDebug() << "2";
     emit finished(count);
 }

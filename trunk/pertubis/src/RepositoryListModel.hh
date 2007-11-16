@@ -24,7 +24,7 @@
 #include <QAbstractListModel>
 
 #include <paludis/util/tr1_memory.hh>
-#include <paludis/name.hh>
+#include <paludis/name-fwd.hh>
 #include "ThreadBase.hh"
 
 #include <QStringList>
@@ -88,7 +88,7 @@ namespace pertubis
             int rowCount( const QModelIndex & index ) const;
             int columnCount( const QModelIndex & index ) const;
             QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
-            void changeActiveRepos(QString name);
+            void changeActiveRepos(const QString& name);
 
             bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 

@@ -34,17 +34,17 @@ int main( int argc, char **argv )
 
     if (argc == 1)
     {
-        QApplication a( argc, argv );
-        a.setApplicationName("pertubis");
-        a.setOrganizationName("pertubis");
-        QTranslator t;
-
         QSettings settings;
         settings.beginGroup( "i18npage" );
         QString lang = settings.value("language").toString();
         settings.endGroup();
-        qDebug() << "\033[32mactual language =" << lang.toLatin1().data() << "\033[0m";
+//         qDebug() << "\033[32mactual language =" << lang.toLatin1().data() << "\033[0m";
+
+        QTranslator t;
         t.load(lang);
+        QApplication a( argc, argv );
+        a.setApplicationName("pertubis");
+        a.setOrganizationName("pertubis");
         a.installTranslator(&t);
         pertubis::DatabaseView p;
         p.show();

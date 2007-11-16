@@ -17,13 +17,15 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "DatabaseView.hh"
 #include "RepositoryListModel.hh"
-#include <paludis/name.hh>
-#include <paludis/repository.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <paludis/package_database.hh>
+#include "DatabaseView.hh"
 #include <paludis/environment.hh>
+#include <paludis/name.hh>
+#include <paludis/package_database.hh>
+#include <paludis/repository.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <QSet>
 #include <QString>
@@ -37,8 +39,6 @@ pertubis::RepositoryListItem::RepositoryListItem(const paludis::RepositoryName &
         m_data(QList<QVariant>() << Qt::Checked << QString::fromStdString(paludis::stringify(name)) )
 {
 }
-
-
 
 bool pertubis::RepositoryListItem::setData(int col,const QVariant& value)
 {
@@ -79,7 +79,7 @@ Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const
     switch (mix.column())
     {
         case 0:
-            return /*Qt::ItemIsSelectable | Qt::ItemIsEditable | */Qt::ItemIsUserCheckable;
+            return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable;
             break;
         default:
             return 0;
@@ -97,8 +97,7 @@ bool pertubis::RepositoryListModel::setData ( const QModelIndex & ix, const QVar
     return true;
 }
 
-
-void pertubis::RepositoryListModel::changeActiveRepos(QString name)
+void pertubis::RepositoryListModel::changeActiveRepos(const QString& name)
 {
     QSet<QString>::iterator it(m_activeRepos.find(name));
     if (it == m_activeRepos.end())
@@ -143,17 +142,20 @@ int pertubis::RepositoryListModel::columnCount( const QModelIndex & pobj ) const
 
 QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int role) const
 {
+//     qDebug() << "RepositoryListModel::data()";
     if (!m_index.isValid())
          return QVariant();
 
-    if (role == Qt::DisplayRole && m_index.column() == 1)
-    {
-        return m_data.value(m_index.row())->data(1);
-    }
-
     if (role == Qt::CheckStateRole && m_index.column() == 0)
     {
+//         qDebug() << "RepositoryListModel::data() - 0" << m_data.value(m_index.row())->data(0);
         return m_data.value(m_index.row())->data(0);
+    }
+
+    if (role == Qt::DisplayRole && m_index.column() == 1)
+    {
+//         qDebug() << "RepositoryListModel::data() - 1" << m_data.value(m_index.row())->data(1);
+        return m_data.value(m_index.row())->data(1);
     }
 
     return QVariant();
@@ -161,14 +163,5 @@ QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int 
 
 QSet<QString>  pertubis::RepositoryListModel::activeRepositories() const
 {
-//     QSet<QString> myset;
-//     for (RepositoryConstIterator start(m_data.constBegin()),
-//          end(m_data.constEnd());
-//          start != end;
-//          ++start)
-//     {
-//         if ((*start)->data(0).toInt() == Qt::Checked)
-//             myset.insert((*start)->data(1).toString());
-//     }
     return m_activeRepos;
 }

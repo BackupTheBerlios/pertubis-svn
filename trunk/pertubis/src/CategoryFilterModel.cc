@@ -32,22 +32,12 @@ bool pertubis::CategoryFilterModel::filterAcceptsRow(int sourceRow,
         const QModelIndex &sourceParent) const
 {
     QSet<QString> repos(m_model.activeRepositories());
+
     QModelIndex ix1 = sourceModel()->index(sourceRow,0,sourceParent);
     CategoryItem* p_item = static_cast<CategoryItem*>(ix1.internalPointer());
-    if (p_item)
+    if (p_item && repos.intersect(p_item->repos()).isEmpty() )
     {
-        QSet<QString> catrepos = p_item->repos();
-        int count=0;
-        for (QSet<QString>::const_iterator iter(catrepos.constBegin()),
-             iEnd(catrepos.constEnd());
-             iter != iEnd;
-             ++iter)
-        {
-            if (!repos.contains(*iter) )
-                ++count;
-        }
-        if (catrepos.count() == count)
-            return false;
+        return false;
     }
     return true;
 }

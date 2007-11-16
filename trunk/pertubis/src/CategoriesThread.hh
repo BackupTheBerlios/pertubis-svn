@@ -23,6 +23,9 @@
 
 #include "ThreadBase.hh"
 #include <QList>
+#include <QMap>
+#include <QSet>
+#include <QString>
 
 namespace pertubis
 {
@@ -46,7 +49,7 @@ namespace pertubis
 
     signals:
 
-        void categoriesResult(QList<CategoryItem*> cl);
+        void sendCategory(QMap<QString, QSet<QString> >);
     };
 }
 

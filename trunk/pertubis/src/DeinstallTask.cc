@@ -21,7 +21,7 @@
 #include "Item.hh"
 #include <QAction>
 
-bool pertubis::DeinstallTask::changeParentStates(pertubis::Item* item, int mystate)
+bool pertubis::DeinstallTask::changeParentStates(pertubis::Item* /*item*/, int /*mystate*/)
 {
 //     QList<Item*>::iterator iStart(item->childBegin());
 //     QList<Item*>::iterator iEnd(item->childEnd());
@@ -63,7 +63,7 @@ bool pertubis::DeinstallTask::available(Item* item) const
     return item->data(Item::io_installed).toBool();
 }
 
-bool pertubis::DeinstallTask::changeChildStates(pertubis::Item* item, int newState)
+bool pertubis::DeinstallTask::changeChildStates(pertubis::Item* /*item*/, int /*newState*/)
 {
 //     bool inUse=false;
 //     QtCheckState oldState = (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt();
@@ -105,7 +105,7 @@ bool pertubis::DeinstallTask::changeChildStates(pertubis::Item* item, int newSta
     return true;
 }
 
-void pertubis::DeinstallTask::startTask(DatabaseView* main)
+void pertubis::DeinstallTask::startTask(DatabaseView* /*main*/)
 {
 //     paludis::DepListOptions options;
 //     pertubis::Install task(m_env,options,m_env->default_destinations());

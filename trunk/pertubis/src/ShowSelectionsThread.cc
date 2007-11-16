@@ -32,8 +32,6 @@
 #include <paludis/name.hh>
 #include <paludis/repository.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-
 void pertubis::ShowSelectionsThread::run()
 {
     Item* root = new Item();
@@ -47,11 +45,12 @@ void pertubis::ShowSelectionsThread::run()
              idStart != idEnd;
              ++idStart)
         {
+            QString repo(QString::fromStdString(paludis::stringify((*idStart)->repository()->name())));
             Item* p_item = makePackageItem(*idStart,
                             m_main->taskbox()->selectionData(*idStart),
                             QString::fromStdString(paludis::stringify((*idStart)->name().package)),
                             QString::fromStdString(paludis::stringify((*idStart)->name().category)),
-                            QString::fromStdString(paludis::stringify((*idStart)->repository()->name())),
+                            repo,
                             false,
                             Item::is_stable,
                             Item::ur_parent,
@@ -61,6 +60,7 @@ void pertubis::ShowSelectionsThread::run()
                                 *idStart,
                                 m_main->taskbox()->selectionData(*idStart),
                                 QString::fromStdString(paludis::stringify((*idStart)->version()).c_str()),
+                                repo,
                                 false,
                                 Item::is_stable,
                                 Item::ur_child,

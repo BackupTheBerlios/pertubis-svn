@@ -96,9 +96,7 @@ namespace pertubis
 
         DatabaseView();
         virtual ~DatabaseView();
-
-        int tidInstall() const { return m_tidInstall;}
-        paludis::tr1::shared_ptr<paludis::Environment> getEnv() const { return m_env;}
+        paludis::tr1::shared_ptr<paludis::Environment> getEnv() const;
         TaskBox* taskbox() const { return m_box;}
         MessageOutput* messages() const { return m_output;}
         RepositoryListModel* repositoryListModel() const { return m_repoListModel;}
@@ -111,17 +109,23 @@ namespace pertubis
 
         void createActions();
         void createCatbar();
+        void createConnections();
         void createDetails();
         void createOptionsMenu();
         void createOutput();
         void createPackageView();
-        void createRepositoryView();
         void createRepositoryBar();
+        void createRepositoryView();
+        void createSettings();
+        void createTab();
+        void createTaskBox();
         void createTasks();
         void createToolBar();
         void createTrayMenu();
         void createUseflagEditor();
         void createWindowSearch();
+        void initGUI();
+        void initLayout();
         void loadCategories();
         void loadSettings();
         void saveSettings();
@@ -152,7 +156,6 @@ namespace pertubis
         QAction*                m_acToggleMainWindow;
         QAction*                m_acTogglePackageView;
         QAction*                m_acToggleRepoBar;
-        QAction*                m_acToggleRepoView;
         QAction*                m_acToggleSearchWindow;
         QAction*                m_acToggleUseBar;
         QDockWidget*            m_dockCat;
@@ -178,7 +181,7 @@ namespace pertubis
         Settings*               m_settings;
         ShowSelectionsThread*   m_selectionsThread;
         TaskBox*                m_box;
-        UseFlagEditor*          m_useflagEditor;
+//         UseFlagEditor*          m_useflagEditor;
         int                     m_tidInstall;
         int                     m_tidDeinstall;
         int                     m_repoViewTabID;
@@ -197,9 +200,7 @@ namespace pertubis
         void slotOptionsMenu(const QModelIndex& index);
         void slotQuit();
         void slotRefreshCategories();
-
         void slotRepositoryChanged( const QModelIndex& index );
-
         void slotSearchItem();
         void slotResultCount();
         void slotShowDetails(QString details);
@@ -207,7 +208,6 @@ namespace pertubis
         void slotSync();
         void slotToggleMainWindow();
         void slotTogglePackageView();
-        void slotToggleRepoView();
         void slotToggleSearchWindow();
         void slotToggleSettings();
         void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);

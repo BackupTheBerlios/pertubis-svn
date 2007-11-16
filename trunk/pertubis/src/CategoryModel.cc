@@ -51,11 +51,18 @@ QVariant pertubis::CategoryModel::headerData(int section, Qt::Orientation orient
     return *(m_header.begin() + section);
 }
 
-void pertubis::CategoryModel::slotPopulateModel(QList<CategoryItem*> cl)
+void pertubis::CategoryModel::slotAppendCategory(QMap<QString, QSet<QString> > cats)
 {
-    m_data = cl;
-    qSort(m_data.begin(),m_data.end(),CategoryItemSorter);
-    reset();
+    for(QMap<QString,QSet<QString> >::const_iterator cStart(cats.constBegin()),
+            end(cats.constEnd());
+            cStart != end;
+            ++cStart)
+    {
+        m_data.push_back(new CategoryItem(cStart.key(),cStart.value()));
+    }
+//     QModelIndex i(index(m_data.indexOf(cl),0,QModelIndex()));
+//     qSort(m_data.begin(),m_data.end(),CategoryItemSorter);
+    emit layoutChanged();
 }
 
 int pertubis::CategoryModel::rowCount( const QModelIndex & pobj ) const

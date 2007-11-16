@@ -25,14 +25,17 @@
 #include "TaskBox.hh"
 #include "Task.hh"
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
 #include <paludis/package_database.hh>
 
 #include <paludis/package_id.hh>
+#include <paludis/action.hh>
 #include <paludis/query.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
@@ -52,88 +55,90 @@ void pertubis::PackagesThread::searchPackages(QString str)
     start();
 }
 
-
 void pertubis::PackagesThread::run()
 {
     using namespace paludis;
 
     Item* root = new Item();
-    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-        r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
-        r != r_end ; ++r)
+    QMap<QString,Item*> map;
+    TaskBox* box(m_main->taskbox());
+    CategoryNamePart cat(m_query.toLatin1().data());
+    const tr1::shared_ptr< const PackageIDSequence > packageIds(
+    m_main->getEnv()->package_database()->query(
+                query::Category(cat),
+                qo_order_by_version));
+
+    int maskedPackageCount=0;
+    int installedPackageCount=0;
+    for (PackageIDSequence::ConstIterator vstart(packageIds->begin()),vend(packageIds->end());
+         vstart != vend;
+         ++vstart)
     {
-        if (r->format() == "vdb" ||
-            r->format() == "installed_virtuals")
+
+        if ( (*vstart)->repository()->format() == "virtuals" ||
+            (*vstart)->repository()->format() == "vdb" ||
+            (*vstart)->repository()->format() == "installed_virtuals")
             continue;
-        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
 
-        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;c != c_end ; ++c)
+        // get the package name once
+        QString name(QString::fromStdString(stringify((*vstart)->name().package)));
+        QString repo(QString::fromStdString(stringify((*vstart)->repository()->name())));
+        Item* p_item=0;
+
+        // test the presence of a package item node with the name
+        if (map.constEnd() == map.find(name) )
         {
-            CategoryNamePart cat(m_query.toLatin1().data());
-
-            if (cat != *c )
-                continue;
-
-            paludis::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end());
-                 p != p_end;
-                 ++p)
-            {
-                tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
-                Item* p_item = makePackageItem(*versionIds->last(),
-                                            m_main->taskbox()->tasks(),
-                                            stringify(p->package).c_str(),
-                                            stringify(p->category).c_str(),
-                                            stringify(r->name()).c_str(),
-                                            false,
-                                            Item::is_stable,
-                                            Item::ur_parent,
-                                            root,
-                                            "");
-
-                root->appendChild(p_item);
-
-                int mp=0;
-                int ip=0;
-                for (PackageIDSequence::ConstIterator vstart(versionIds->begin()),vend(versionIds->end());
-                     vstart != vend;
-                     ++vstart)
-                {
-                    QString reasons;
-                    for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
-                         m != m_end ; ++m)
-                    {
-                        reasons.append(stringify((*m)->description()).c_str());
-                    }
-
-                    Item* v_item = makeVersionItem(*vstart,
-                                                m_main->taskbox()->tasks(),
-                                                stringify((*vstart)->version()).c_str(),
-                                                ( (installed(*vstart) ) ? Qt::Checked : Qt::Unchecked),
-                                                Item::is_stable,
-                                                Item::ur_child,
-                                                p_item,
-                                                reasons);
-                    if (v_item->data(Item::io_installed).toInt() != 0)
-                        ++ip;
-                    p_item->appendChild(v_item);
-                    m_main->taskbox()->setItemTasks(v_item);
-                    if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
-                    {
-                        v_item->setState(Item::is_masked);
-                        ++mp;
-                    }
-                    else
-                        p_item->setBestChild(v_item);
-                }
-
-                if ( ip > 0 )
-                    p_item->setData(Item::io_installed,Qt::Checked);
-                if (mp == p_item->childCount())
-                    p_item->setState(Item::is_masked);
-            }
+            p_item = makePackageItem(*packageIds->last(),
+                                    box->tasks(),
+                                    name,
+                                    QString::fromStdString(stringify((*vstart)->name().category)),
+                                    repo,
+                                    false,
+                                    Item::is_stable,
+                                    Item::ur_parent,
+                                    root,
+                                    "");
+            map.insert(name,p_item);
+            root->appendChild(p_item);
         }
+        else
+        {
+            p_item = map.find(name).value();
+        }
+
+        QString reasons;
+        for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
+                m != m_end ; ++m)
+        {
+            reasons.append(stringify((*m)->description()).c_str());
+        }
+
+        Item* v_item = makeVersionItem(*vstart,
+                                    box->tasks(),
+                                    stringify((*vstart)->version()).c_str(),
+                                    repo,
+                                    /*( ((*vstart)->supports_action(UninstallAction()) ? Qt::Checked : Qt::Unchecked)*/ 0,
+                                    Item::is_stable,
+                                    Item::ur_child,
+                                    p_item,
+                                    reasons);
+        if (v_item->data(Item::io_installed).toInt() != 0)
+            ++installedPackageCount;
+        p_item->appendChild(v_item);
+        box->setItemTasks(v_item);
+        if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
+        {
+            v_item->setState(Item::is_masked);
+            ++maskedPackageCount;
+        }
+        else
+            p_item->setBestChild(v_item);
     }
+
+//     if ( installedPackageCount > 0 )
+//         p_item->setData(Item::io_installed,Qt::Checked);
+//     if (maskedPackageCount == p_item->childCount())
+//         p_item->setState(Item::is_masked);
 
     emit packagesResult(root);
 }

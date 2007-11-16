@@ -45,7 +45,7 @@ namespace pertubis
             RepositoryInfoThread(QObject* pobj,
                              DatabaseView* main) : ThreadBase(pobj,main) {}
 
-            void getInfo(QString name);
+            void getInfo(const QString& name);
 
         protected:
 
