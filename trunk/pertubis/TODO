@@ -1,18 +1,11 @@
---pi "set" = system | world | everything | ...
+* we must implement following paludis features:
 
-dynamisch menu erzeugen, wo diese tasks abgerufen werden können
+    * --pi "set" = system | world | everything | ...
 
---debug-build default,split,internal
+        create menu to present set dependend tasks
 
-debugging
-
---regenerate-installed-cache
---regenerate-installable-cache
---continue-on-failure = if-fetch-only,never,if-satisfied,if-independent,always
-
-- integration of layman? add repository
-
-
-
-Dein Login: 2744955
-Dein Passwort: veq4qyapVA
+    * --debug-build default,split,internal
+    * --regenerate-installed-cache
+    * --regenerate-installable-cache
+    * --continue-on-failure = if-fetch-only,never,if-satisfied,if-independent,always
+* integration of layman? automatically add a repository
