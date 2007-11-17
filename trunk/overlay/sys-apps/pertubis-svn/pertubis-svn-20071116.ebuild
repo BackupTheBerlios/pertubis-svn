@@ -20,8 +20,7 @@ LICENSE="GPL-2"
 SLOT="0"
 IUSE="debug"
 
-RDEPEND="dev-libs/pcre++
-        >=x11-libs/qt-4.3.0"
+RDEPEND=">=x11-libs/qt-4.3.0"
 
 DEPEND="${RDEPEND}
         >=dev-util/cmake-2.4.7"
