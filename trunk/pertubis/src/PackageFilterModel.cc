@@ -31,18 +31,17 @@ bool pertubis::PackageFilterModel::filterAcceptsRow(int sourceRow,
     const QModelIndex &sourceParent) const
 {
 //     qDebug() << m_repositories << sourceRow << sourceParent;
-//     if (sourceParent == QModelIndex() )
-//     {
-//         QModelIndex pmi = sourceModel()->index(sourceRow,0,sourceParent);
-//         for (uint i=0,iEnd=sourceModel()->rowCount(pmi);i<iEnd;i++)
-//         {
-//             QModelIndex vx = sourceModel()->index(i,Item::io_repository,pmi);
-//             if (m_repositories.contains(sourceModel()->data(vx).toString()))
-//                 return true;
-//         }
-//         return false;
-        return true;
-//     }
-//     QModelIndex ix1 = sourceModel()->index(sourceRow,Item::io_repository,sourceParent);
-//     return m_repositories.contains(sourceModel()->data(ix1).toString());
+    if (sourceParent == QModelIndex() )
+    {
+        QModelIndex pmi = sourceModel()->index(sourceRow,0,sourceParent);
+        for (uint i=0,iEnd=sourceModel()->rowCount(pmi);i<iEnd;i++)
+        {
+            QModelIndex vx = sourceModel()->index(i,Item::io_repository,pmi);
+            if (m_repositories.contains(sourceModel()->data(vx).toString()))
+                return true;
+        }
+        return false;
+    }
+    QModelIndex ix1 = sourceModel()->index(sourceRow,Item::io_repository,sourceParent);
+    return m_repositories.contains(sourceModel()->data(ix1).toString());
 }
