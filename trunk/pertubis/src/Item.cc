@@ -23,7 +23,7 @@
 #include <paludis/package_id.hh>
 
 pertubis::Item::Item()  :
-    m_data(QList<QVariant>() << QVariant(QVariantList()) << "" << "" << "" << "" << "" << ""),
+    m_data(QList<QVariant>() << QVariant(QVariantList()) << "" << "" << "" << Qt::Unchecked << "" << ""),
     m_parent(0),
     m_bestChild(0),
     m_state(Item::is_stable),
@@ -110,6 +110,12 @@ void pertubis::Item::appendChild(Item *item)
     item->setParent(this);
 }
 
+void pertubis::Item::prependChild(Item *item)
+{
+    m_children.prepend(item);
+    item->setParent(this);
+}
+
 int pertubis::Item::row() const
 {
     if (m_parent)
@@ -153,10 +159,10 @@ void pertubis::Item::setState(ItemState s)
 void pertubis::Item::setTaskState(int taskid, Qt::CheckState mystate)
 {
     QVariantList states = data(io_selected).toList();
-//     qDebug() << "Item::setTaskState() - start" << states << taskid << mystate;
+    qDebug() << "Item::setTaskState() - start" << states << taskid << mystate;
     states[taskid] = mystate;
     setData(io_selected,states);
-//     qDebug() << "Item::setTaskState() - done";
+    qDebug() << "Item::setTaskState() - done";
 }
 
 paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Item::ID()
@@ -192,12 +198,13 @@ QString pertubis::stateDescription(Item::ItemState status)
 #ifndef QT_NO_DEBUG
 QDebug operator<<(QDebug dbg, const pertubis::Item &item)
 {
-    dbg.nospace() << "pertubis::Item(" <<
+    dbg.nospace() <<
             item.data(pertubis::Item::io_selected).toList() << ", " <<
             item.data(pertubis::Item::io_package).toString() << ", " <<
             item.data(pertubis::Item::io_category).toString() << ", " <<
             item.data(pertubis::Item::io_repository).toString() << ", " <<
             item.data(pertubis::Item::io_installed).toString() << ", " <<
+            item.data(pertubis::Item::io_change).toString() << ", " <<
             item.childCount() << ", " <<
             item.columnCount() << ")";
     return dbg.space();

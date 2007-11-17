@@ -46,7 +46,7 @@ namespace pertubis
 
             void run();
 
-            void searchPackages(QString str);
+            void start(QString str);
 
         private:
 
@@ -55,7 +55,7 @@ namespace pertubis
             QString                                    m_query;
 
         signals:
-            void packagesResult(Item* root);
+            void addPackage(Item* package);
     };
 }
 #endif

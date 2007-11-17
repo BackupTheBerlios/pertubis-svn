@@ -34,7 +34,6 @@
 
 void pertubis::ShowSelectionsThread::run()
 {
-    Item* root = new Item();
     for (TaskBox::Iterator tStart(m_main->taskbox()->taskBegin()),
          tEnd(m_main->taskbox()->taskEnd());
          tStart != tEnd;
@@ -46,29 +45,16 @@ void pertubis::ShowSelectionsThread::run()
              ++idStart)
         {
             QString repo(QString::fromStdString(paludis::stringify((*idStart)->repository()->name())));
-            Item* p_item = makePackageItem(*idStart,
-                            m_main->taskbox()->selectionData(*idStart),
-                            QString::fromStdString(paludis::stringify((*idStart)->name().package)),
-                            QString::fromStdString(paludis::stringify((*idStart)->name().category)),
-                            repo,
-                            false,
-                            Item::is_stable,
-                            Item::ur_parent,
-                            root,
-                            "");
-            Item* v_item = makeVersionItem(
-                                *idStart,
-                                m_main->taskbox()->selectionData(*idStart),
-                                QString::fromStdString(paludis::stringify((*idStart)->version()).c_str()),
-                                repo,
-                                false,
-                                Item::is_stable,
-                                Item::ur_child,
-                                p_item,
-                                "");
-            p_item->appendChild(v_item);
-            root->appendChild(p_item);
+            QVariantList list;
+            list <<
+                    QVariant(m_main->taskbox()->selectionData(*idStart)) <<
+                    QString::fromStdString(paludis::stringify((*idStart)->name().package)).append("-"+QString::fromStdString(paludis::stringify((*idStart)->version()))) <<
+                    QString::fromStdString(paludis::stringify((*idStart)->name().category)) <<
+                    QString::fromStdString(paludis::stringify((*idStart)->repository()->name())) <<
+                    ( installed(*idStart) ? Qt::Checked : Qt::Unchecked) <<
+                    "" <<
+                    "";
+            emit appendPackage(new Item(*idStart,list,Item::is_stable,Item::ur_node,0));
         }
     }
-    emit sendRoot(root);
 }

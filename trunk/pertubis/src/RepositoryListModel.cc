@@ -161,7 +161,7 @@ QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int 
     return QVariant();
 }
 
-QSet<QString>  pertubis::RepositoryListModel::activeRepositories() const
+const QSet<QString>&  pertubis::RepositoryListModel::activeRepositories() const
 {
     return m_activeRepos;
 }

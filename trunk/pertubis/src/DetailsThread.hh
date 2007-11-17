@@ -48,7 +48,7 @@ namespace pertubis
 
         DetailsThread(QObject* pobj,
                            pertubis::DatabaseView* main);
-        void search(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+        void start(paludis::tr1::shared_ptr<const paludis::PackageID> id);
         void appendOutput(std::string text);
 
         void run();

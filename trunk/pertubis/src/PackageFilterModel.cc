@@ -19,27 +19,30 @@
 */
 
 #include "PackageFilterModel.hh"
-#include "RepositoryListModel.hh"
 #include "Item.hh"
-#include <QSet>
+
 #include <QDebug>
 
-pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj,const RepositoryListModel& model) : QSortFilterProxyModel(pobj),m_model(model)
+pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj)
 {
 }
 
 bool pertubis::PackageFilterModel::filterAcceptsRow(int sourceRow,
     const QModelIndex &sourceParent) const
 {
-//     qDebug() << "pertubis::PackageFilterModel::filterAcceptsRow()";
-    QSet<QString> repos(m_model.activeRepositories());
-    QModelIndex ix1 = sourceModel()->index(sourceRow,Item::io_repository,sourceParent);
-    Item* p_item = static_cast<Item*>(sourceParent.internalPointer());
-    if (p_item)
-    {
-        Item* child = p_item->child(sourceRow);
-        if (child->updateRange() == Item::ur_child)
-            return true;
-    }
-    return repos.contains(sourceModel()->data(ix1).toString());
+//     qDebug() << m_repositories << sourceRow << sourceParent;
+//     if (sourceParent == QModelIndex() )
+//     {
+//         QModelIndex pmi = sourceModel()->index(sourceRow,0,sourceParent);
+//         for (uint i=0,iEnd=sourceModel()->rowCount(pmi);i<iEnd;i++)
+//         {
+//             QModelIndex vx = sourceModel()->index(i,Item::io_repository,pmi);
+//             if (m_repositories.contains(sourceModel()->data(vx).toString()))
+//                 return true;
+//         }
+//         return false;
+        return true;
+//     }
+//     QModelIndex ix1 = sourceModel()->index(sourceRow,Item::io_repository,sourceParent);
+//     return m_repositories.contains(sourceModel()->data(ix1).toString());
 }

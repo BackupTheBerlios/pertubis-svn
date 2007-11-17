@@ -81,7 +81,7 @@ namespace pertubis
             QVariant headerData(int section, Qt::Orientation orientation, int role) const;
             void setHorizontalHeaderLabels ( const QStringList & labels );
 
-            QSet<QString> activeRepositories() const;
+            const QSet<QString>& activeRepositories() const;
 
             Qt::ItemFlags flags(const QModelIndex &mix) const;
 

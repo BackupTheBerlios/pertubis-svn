@@ -65,7 +65,7 @@ bool pertubis::InstallTask::changeParentStates(Item* item, int newState)
 
 bool pertubis::InstallTask::changeChildStates(Item* item, int newState)
 {
-//     qDebug() << "InstallTask::changeChildStates - start" <<  newState;
+    qDebug() << "InstallTask::changeChildStates - start" <<  *item << newState;
     QList<Item*>::iterator iStart(item->parent()->childBegin());
     QList<Item*>::iterator iEnd(item->parent()->childEnd());
 

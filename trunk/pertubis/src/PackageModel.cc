@@ -71,20 +71,27 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
 
     if (role == Qt::ForegroundRole)
     {
-        if (ix.column() == Item::io_installed)
-            return QBrush(QColor(0,0,255));
-        if (ix.column() == Item::io_selected)
-            return QBrush(QColor(0,255,0));
-        if (ix.column() == Item::io_mask_reasons)
-            return QBrush(QColor(255,0,0));
-        if (ix.column() == Item::io_package)
+        switch (ix.column())
         {
-            if (item->state() == Item::is_stable)
-                return QBrush(QColor(0,255,0));
-            if (item->state() == Item::is_unstable)
-                return QBrush(QColor(255,200,0));
-            if (item->state() == Item::is_masked)
+            case Item::io_installed:
+                return QBrush(QColor(0,0,255));
+                break;
+            case Item::io_mask_reasons:
                 return QBrush(QColor(255,0,0));
+                break;
+            default:
+                return QBrush(QColor(0,0,0));
+                break;
+
+                // case Item::io_package:
+                //  {
+                //      if (item->state() == Item::is_stable)
+                //           return QBrush(QColor(0,255,0));
+                //      if (item->state() == Item::is_unstable)
+                //          return QBrush(QColor(255,200,0));
+                //      if (item->state() == Item::is_masked)
+                //          return QBrush(QColor(255,0,0));
+                //  }
         }
     }
 
@@ -170,27 +177,29 @@ int pertubis::PackageModel::columnCount(const QModelIndex &pmi) const
         return 0;
 }
 
-void pertubis::PackageModel::slotSetRoot(Item* item)
+void pertubis::PackageModel::slotClear()
 {
     if (m_root != 0)
+    {
         delete m_root;
-    m_root = item;
-    reset();
+        m_root = new Item();
+        reset();
+    }
 }
 
 void pertubis::PackageModel::slotAppendPackage(Item* item)
 {
     if (m_root != 0)
     {
-        m_root->appendChild(item);
-        reset();
+        m_root->prependChild(item);
+        layoutChanged();
     }
 }
 
 bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taskid, bool mystate)
 {
     Item* item = static_cast<Item*>(ix.internalPointer());
-//     qDebug() << "PackageModel::setSelectionData() - start" << ix << taskid << mystate << *item;
+    qDebug() << "PackageModel::setSelectionData() - start" << ix << taskid << mystate << *item;
     Item::UpdateRange range = item->updateRange();
     switch (range)
     {
@@ -203,7 +212,7 @@ bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taski
             if (m_box->task(taskid)->changeChildStates(item,mystate) )
             {
                 QModelIndex p = parent(ix);
-                QModelIndex last = index(rowCount(p)-1,0,p);
+                QModelIndex last = index(rowCount(p)-1,2,p);
 //                 emit dataChanged(p,last);
                 emit layoutChanged();
             }

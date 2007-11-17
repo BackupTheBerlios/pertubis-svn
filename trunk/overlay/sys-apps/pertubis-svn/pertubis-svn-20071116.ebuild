@@ -32,6 +32,8 @@ src_setup() {
     ewarn
     ewarn "This is an Subversion snapshot, so no functionality is"
     ewarn "guaranteed!"
+    replace-flags -Os -O2
+    replace-flags -O3 -O2
     subversion_fetch
     # Enable debug via use flag switch
     if use debug; then

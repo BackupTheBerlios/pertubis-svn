@@ -57,7 +57,7 @@ namespace
             {
             }
 
-            void visit(const paludis::MetadataSetKey<paludis::IUseFlagSet> & k)
+            void visit(const paludis::MetadataCollectionKey<paludis::IUseFlagSet> & k)
             {
                 if (k.type() == type)
                 {
@@ -65,7 +65,7 @@ namespace
                 }
             }
 
-            void visit(const paludis::MetadataSetKey<paludis::UseFlagNameSet> & k)
+            void visit(const paludis::MetadataCollectionKey<paludis::UseFlagNameSet> & k)
             {
                 if (k.type() == type)
                 {
@@ -73,7 +73,7 @@ namespace
                 }
             }
 
-            void visit(const paludis::MetadataSetKey<paludis::Set<std::string> > & k)
+            void visit(const paludis::MetadataCollectionKey<paludis::Set<std::string> > & k)
             {
                 if (k.type() == type)
                 {
@@ -82,11 +82,20 @@ namespace
                 }
             }
 
-            void visit(const paludis::MetadataSetKey<paludis::KeywordNameSet> & k)
+            void visit(const paludis::MetadataCollectionKey<paludis::KeywordNameSet> & k)
             {
                 if (k.type() == type)
                 {
                     thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>")));
+                }
+            }
+
+            void visit(const paludis::MetadataCollectionKey<paludis::FSEntrySequence> & k)
+            {
+                if (k.type() == type)
+                {
+                    pertubis::HtmlFormatter formatter;
+                    thread->appendOutput(pertubis::make_row(k.human_name() + ":",k.pretty_print_flat(formatter)));
                 }
             }
 
@@ -147,7 +156,7 @@ namespace
                 }
             }
 
-            void visit(const paludis::MetadataSetKey<paludis::PackageIDSequence> & k)
+            void visit(const paludis::MetadataCollectionKey<paludis::PackageIDSequence> & k)
             {
                 pertubis::HtmlFormatter formatter;
                 thread->appendOutput(pertubis::make_row(k.human_name(),k.pretty_print_flat(formatter)));
@@ -164,6 +173,18 @@ namespace
                 if (k.type() == type)
                 {
                     thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(k.value())));
+                }
+            }
+
+            void visit(const paludis::MetadataSectionKey & k)
+            {
+                if (k.type() == type)
+                {
+                    thread->appendOutput(pertubis::make_row(k.human_name() + ":",""));
+
+                    Displayer v(thread, env, id, type);
+                    std::for_each(paludis::indirect_iterator(k.begin_metadata()), paludis::indirect_iterator(k.end_metadata()),
+                                  paludis::accept_visitor(v));
                 }
             }
 
@@ -207,15 +228,15 @@ void pertubis::DetailsThread::appendOutput(std::string text)
     m_output.append(QString::fromStdString(text));
 }
 
-void pertubis::DetailsThread::search( paludis::tr1::shared_ptr<const paludis::PackageID> id)
+void pertubis::DetailsThread::start( paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
     m_id = id;
-    start();
+    QThread::start();
 }
 
 void pertubis::DetailsThread::run()
 {
-    qDebug() << "PackageDetails::fetchDetails() - start";
+    qDebug() << "PackageThread::run() - start";
 
     m_output = QString(
 "<html>\n"

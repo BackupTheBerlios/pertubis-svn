@@ -17,40 +17,96 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
+#include <QDebug>
 #include "DeinstallTask.hh"
 #include "Item.hh"
-#include <QAction>
+#include "DatabaseView.hh"
+// #include "ItemDeinstallTask.hh"
+#include "MessageOutput.hh"
+#include <paludis/package_id.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/set-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
-bool pertubis::DeinstallTask::changeParentStates(pertubis::Item* /*item*/, int /*mystate*/)
+bool pertubis::DeinstallTask::available(Item* item) const
 {
-//     QList<Item*>::iterator iStart(item->childBegin());
-//     QList<Item*>::iterator iEnd(item->childEnd());
-//     bool inUse=false;
-//     switch (mystate)
+    return (item->available() && item->data(Item::io_installed).toInt() != Qt::Unchecked);
+}
+
+bool pertubis::DeinstallTask::changeParentStates(Item* item, int newState)
+{
+//     qDebug() << "DeinstallTask::changeParentStates - start" <<  newState;
+    QList<Item*>::iterator iStart(item->childBegin());
+    QList<Item*>::iterator iEnd(item->childEnd());
+    switch (newState)
+    {
+        case Qt::PartiallyChecked:
+        case Qt::Checked:
+            changeEntry(item->ID(),true);
+            item->setTaskState(m_taskid,Qt::PartiallyChecked);
+            if (item->bestChild() != 0)
+                item->bestChild()->setTaskState(m_taskid,Qt::Checked);
+            break;
+        case Qt::Unchecked:
+            item->setTaskState(m_taskid,Qt::Unchecked);
+            while(iStart != iEnd)
+            {
+                changeEntry((*iStart)->ID(),false);
+                (*iStart)->setTaskState(m_taskid,Qt::Unchecked);
+                ++iStart;
+            }
+            break;
+        default:
+            ;
+    }
+    return true;
+}
+
+bool pertubis::DeinstallTask::changeChildStates(Item* item, int newState)
+{
+//     qDebug() << "DeinstallTask::changeChildStates - start" <<  newState;
+//     QList<Item*>::iterator iStart(item->parent()->childBegin());
+//     QList<Item*>::iterator iEnd(item->parent()->childEnd());
+//     if (item->data(Item::io_installed).toInt() != Qt::Unchecked)
+//         return false;
+//
+//     int i=0;
+//     switch (newState)
 //     {
 //         case Qt::Unchecked:
-//             item->setTaskState(m_taskid,mystate);
+//             changeEntry(item->ID(),false);
+//             item->setTaskState(m_taskid,Qt::Unchecked);
+//
 //             while(iStart != iEnd)
 //             {
-//                 (*iStart)->setTaskState(m_taskid,Qt::Unchecked);
+//                 if ( (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
+//                     ++i;
+//                 ++iStart;
 //             }
+//             if (i  == 0)
+//                 item->parent()->setTaskState(m_taskid,Qt::Unchecked);
+//             else
+//                 item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
 //             break;
 //         case Qt::PartiallyChecked:
 //         case Qt::Checked:
+//             changeEntry(item->ID(),true);
+//             item->setTaskState(m_taskid,Qt::Checked);
 //             while(iStart != iEnd)
 //             {
-//                 if ( (*iStart)->data(Item::io_installed).toBool() )
-//                 {
-//                     (*iStart)->setTaskState(m_taskid,Qt::Checked);
-//                     inUse=true;
-//                     ++iStart;
-//                 }
+//                 QVariantList list((*iStart)->data(Item::io_selected).toList());
+// //                 qDebug() << "DeinstallTask::changeChildStates - list" << list;
+//                 int mystate(list.value(m_taskid).toInt());
+// //                 qDebug() << "DeinstallTask::changeChildStates - state" << mystate;
+//                 if ( mystate != Qt::Unchecked )
+//                     ++i;
+//                 ++iStart;
 //             }
-//             if (inUse)
-//             {
-//                 item->setTaskState(m_taskid,Qt::Checked);
-//                 return true;
-//             }
+//             if (i == item->parent()->childCount() )
+//                 item->parent()->setTaskState(m_taskid,Qt::Checked);
+//             else
+//                 item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
 //             break;
 //         default:
 //             ;
@@ -58,62 +114,23 @@ bool pertubis::DeinstallTask::changeParentStates(pertubis::Item* /*item*/, int /
     return false;
 }
 
-bool pertubis::DeinstallTask::available(Item* item) const
-{
-    return item->data(Item::io_installed).toBool();
-}
-
-bool pertubis::DeinstallTask::changeChildStates(pertubis::Item* /*item*/, int /*newState*/)
-{
-//     bool inUse=false;
-//     QtCheckState oldState = (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt();
-//     if (newState)
-//     {
-//         if (oldState == Qt::Unchecked)
-//         {
-//             item->setTaskState(m_taskid,mystate);
-//             QList<Item*>::iterator iStart(item->childBegin());
-//             QList<Item*>::iterator iEnd(item->childEnd());
-//             while (iStart != iEnd)
-//             {
-//                 if ( (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
-//                 {
-//                     inUse=true;
-//                     break;
-//                 }
-//                 ++iStart;
-//             }
-//             if (!inUse)
-//             {
-//                 item->parent()->setTaskState(m_taskid,Qt::Unchecked);
-//             }
-//         }
-//         else if (oldState == Qt::Checked)
-//         {
-//             if (item->data(Item::io_installed).toBool())
-//             {
-//                 item->setTaskState(m_taskid,Qt::Checked);
-//                 item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
-//                 return true;
-//             }
-//         }
-//     }
-//     else
-//     {
-//
-//     }
-    return true;
-}
-
-void pertubis::DeinstallTask::startTask(DatabaseView* /*main*/)
+void pertubis::DeinstallTask::startTask(DatabaseView* main)
 {
 //     paludis::DepListOptions options;
-//     pertubis::Install task(m_env,options,m_env->default_destinations());
+//     if (m_task)
+//         delete m_task;
+//     m_task = new Install(this,main->getEnv().get(),options,main->getEnv()->default_destinations());
+//     connect(m_task,
+//             SIGNAL(sendMessage(QString)),
+//             main->messages(),
+//             SLOT(receiveMessage(QString)),
+//             Qt::AutoConnection);
+//
 //     for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
 //          i != i_end ; ++i)
 //     {
-//         task.add_target(i->get()->canonical_form(paludis::idcf_full);
+//         m_task->add_exact_package(*i);
 //     }
-//     task.execute();
+//     m_task->run();
+//     m_data.empty();
 }
-

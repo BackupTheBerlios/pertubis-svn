@@ -22,7 +22,7 @@
 #include <QHeaderView>
 #include <QDebug>
 #include <paludis/repository.hh>
-#include <paludis/repository_info.hh>
+// #include <paludis/repository_info.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/package_database.hh>

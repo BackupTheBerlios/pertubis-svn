@@ -22,7 +22,7 @@ SET(PERTUBIS_SRCS
     PackageModel.cc
     PackagesThread.cc
     RegexMatcher.cc
-    RepositoryInfoModel.cc
+#     RepositoryInfoModel.cc
     RepositoryListModel.cc
     SearchThread.cc
     SearchWindow.cc
@@ -53,7 +53,7 @@ SET(PERTUBIS_MOC_HDRS
     PackageFilterModel.hh
     PackageModel.hh
     PackagesThread.hh
-    RepositoryInfoModel.hh
+#     RepositoryInfoModel.hh
     RepositoryListModel.hh
     SearchThread.hh
     SearchWindow.hh

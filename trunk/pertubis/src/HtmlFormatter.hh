@@ -26,6 +26,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 namespace pertubis
 {
@@ -43,7 +44,8 @@ namespace pertubis
         public paludis::CanFormat<paludis::LicenseDepSpec>,
         public paludis::CanFormat<paludis::FetchableURIDepSpec>,
         public paludis::CanFormat<paludis::NamedSetDepSpec>,
-        public paludis::CanFormat<paludis::tr1::shared_ptr<const paludis::PackageID> >,
+        public paludis::CanFormat<paludis::FSEntry>,
+        public paludis::CanFormat<paludis::PackageID>,
         public paludis::CanFormat<std::string>,
         public paludis::CanSpace
     {
@@ -106,9 +108,13 @@ namespace pertubis
 
             std::string format(const paludis::BlockDepSpec &, const paludis::format::Plain &) const;
 
-            std::string format(const paludis::tr1::shared_ptr<const paludis::PackageID> &, const paludis::format::Plain &) const;
-            std::string format(const paludis::tr1::shared_ptr<const paludis::PackageID> &, const paludis::format::Installed &) const;
-            std::string format(const paludis::tr1::shared_ptr<const paludis::PackageID> &, const paludis::format::Installable &) const;
+            std::string format(const paludis::PackageID &, const paludis::format::Plain &) const;
+            std::string format(const paludis::PackageID &, const paludis::format::Installed &) const;
+            std::string format(const paludis::PackageID &, const paludis::format::Installable &) const;
+
+            std::string format(const paludis::FSEntry &, const paludis::format::Plain &) const;
+            std::string format(const paludis::FSEntry &, const paludis::format::Installed &) const;
+            std::string format(const paludis::FSEntry &, const paludis::format::Installable &) const;
 
             std::string newline() const;
             std::string indent(const int) const;

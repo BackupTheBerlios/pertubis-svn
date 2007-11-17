@@ -33,16 +33,20 @@ namespace pertubis
     {
         Q_OBJECT
 
-    public:
+        public:
 
-        DeinstallTask() {}
-        DeinstallTask(QObject* pobject,
-                    QAction* myaction,
-                      QString tname) : Task(pobject,myaction,tname) {}
-        bool available(Item* item) const;
-        bool changeParentStates(Item* item, int mystate);
-        void startTask(DatabaseView* main);
-        bool changeChildStates(Item* item, int mystate);
+            DeinstallTask() {}
+            DeinstallTask(QObject* pobject,
+                        QAction* myaction,
+                        QString tname) : Task(pobject,myaction,tname) {}
+            bool available(Item* item) const;
+            void startTask(DatabaseView* main);
+            bool changeChildStates(Item* item, int mystate);
+            bool changeParentStates(Item* item, int mystate);
+
+        private:
+
+//             Install* m_task;
     };
 }
 

@@ -39,7 +39,7 @@ namespace pertubis
 
         signals:
 
-            void sendRoot(Item* item);
+            void appendPackage(Item* item);
 
         protected:
 

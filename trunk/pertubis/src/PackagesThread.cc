@@ -24,6 +24,7 @@
 #include "Item.hh"
 #include "TaskBox.hh"
 #include "Task.hh"
+#include <QList>
 
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -32,6 +33,7 @@
 #include <paludis/package_database.hh>
 
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/query.hh>
 #include <paludis/util/indirect_iterator.hh>
@@ -49,96 +51,96 @@ pertubis::PackagesThread::~PackagesThread()
 {
 }
 
-void pertubis::PackagesThread::searchPackages(QString str)
+void pertubis::PackagesThread::start(QString str)
 {
     m_query = str;
-    start();
+    QThread::start();
 }
 
 void pertubis::PackagesThread::run()
 {
     using namespace paludis;
 
-    Item* root = new Item();
-    QMap<QString,Item*> map;
     TaskBox* box(m_main->taskbox());
     CategoryNamePart cat(m_query.toLatin1().data());
     const tr1::shared_ptr< const PackageIDSequence > packageIds(
-    m_main->getEnv()->package_database()->query(
-                query::Category(cat),
+        m_main->getEnv()->package_database()->query(
+                query::Category(cat) &
+                query::SupportsAction<InstallAction>(),
                 qo_order_by_version));
 
-    int maskedPackageCount=0;
-    int installedPackageCount=0;
-    for (PackageIDSequence::ConstIterator vstart(packageIds->begin()),vend(packageIds->end());
+    int maskedVersionCount=0;
+    QualifiedPackageName old_qpn("OLD/OLD");
+    Item* p_item=0;
+    QSet<QString> pReasons;
+    for (PackageIDSequence::ReverseConstIterator vstart(packageIds->rbegin()),vend(packageIds->rend());
          vstart != vend;
          ++vstart)
     {
-
-        if ( (*vstart)->repository()->format() == "virtuals" ||
-            (*vstart)->repository()->format() == "vdb" ||
-            (*vstart)->repository()->format() == "installed_virtuals")
-            continue;
-
-        // get the package name once
-        QString name(QString::fromStdString(stringify((*vstart)->name().package)));
-        QString repo(QString::fromStdString(stringify((*vstart)->repository()->name())));
-        Item* p_item=0;
-
-        // test the presence of a package item node with the name
-        if (map.constEnd() == map.find(name) )
+        if (old_qpn != (*vstart)->name() )
         {
-            p_item = makePackageItem(*packageIds->last(),
+            if (p_item != 0)
+            {
+                if (maskedVersionCount == p_item->childCount())
+                    p_item->setState(Item::is_masked);
+                maskedVersionCount=0;
+
+                QStringList tmp(pReasons.toList());
+                p_item->setData(Item::io_mask_reasons,tmp.join(", "));
+                pReasons.clear();
+            }
+
+            p_item = makePackageItem(*vstart,
                                     box->tasks(),
-                                    name,
+                                    QString::fromStdString(stringify((*vstart)->name().package)),
                                     QString::fromStdString(stringify((*vstart)->name().category)),
-                                    repo,
-                                    false,
+                                    Qt::Unchecked,
                                     Item::is_stable,
                                     Item::ur_parent,
-                                    root,
+                                    0,
                                     "");
-            map.insert(name,p_item);
-            root->appendChild(p_item);
-        }
-        else
-        {
-            p_item = map.find(name).value();
+
+            qDebug() << "pertubis::PackagesThread::run()" << *p_item;
+            old_qpn = (*vstart)->name();
+            emit addPackage(p_item);
         }
 
-        QString reasons;
+        QSet<QString> vReasons;
         for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
                 m != m_end ; ++m)
         {
-            reasons.append(stringify((*m)->description()).c_str());
+            vReasons.insert(stringify((*m)->description()).c_str());
         }
+        pReasons.unite(vReasons);
+
+        QStringList vstm(pReasons.toList());
 
         Item* v_item = makeVersionItem(*vstart,
                                     box->tasks(),
                                     stringify((*vstart)->version()).c_str(),
-                                    repo,
-                                    /*( ((*vstart)->supports_action(UninstallAction()) ? Qt::Checked : Qt::Unchecked)*/ 0,
-                                    Item::is_stable,
+                                    QString::fromStdString(stringify((*vstart)->repository()->name())),
+                                    ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
+                                    (vReasons.isEmpty() ? Item::is_stable : Item::is_masked),
                                     Item::ur_child,
                                     p_item,
-                                    reasons);
-        if (v_item->data(Item::io_installed).toInt() != 0)
-            ++installedPackageCount;
-        p_item->appendChild(v_item);
+                                    vstm.join(", "));
+
         box->setItemTasks(v_item);
-        if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
+        if (v_item->data(Item::io_installed).toInt() != Qt::Unchecked)
+            p_item->setData(Item::io_installed,Qt::Checked);
+        if (!v_item->available() )
         {
-            v_item->setState(Item::is_masked);
-            ++maskedPackageCount;
+            ++maskedVersionCount;
         }
         else
-            p_item->setBestChild(v_item);
+        {
+            if (p_item->bestChild() == 0)
+            {
+                p_item->setBestChild(v_item);
+                if (v_item->data(Item::io_installed).toInt() == Qt::Unchecked)
+                    v_item->setData(Item::io_change,"new version");
+            }
+        }
+        p_item->prependChild(v_item);
     }
-
-//     if ( installedPackageCount > 0 )
-//         p_item->setData(Item::io_installed,Qt::Checked);
-//     if (maskedPackageCount == p_item->childCount())
-//         p_item->setState(Item::is_masked);
-
-    emit packagesResult(root);
 }

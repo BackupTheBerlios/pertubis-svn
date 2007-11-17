@@ -29,7 +29,9 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/query.hh>
+#include <paludis/mask.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -74,27 +76,25 @@ void pertubis::SearchThread::run()
             r != r_end ; ++r)
     {
 //         qDebug() << "1 a" << stringify(r->format()).c_str();
-        if (r->format() != "ebuild")
+        if (r->format_key()->value() != "ebuild")
             continue;
-        qDebug() << "1 b";
+
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        qDebug() << "1 c";
+
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
-            qDebug() << "1 d";
+
             tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            qDebug() << "1 e";
+
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end());
                  p != p_end; ++p)
             {
                 tr1::shared_ptr<const PackageIDSequence> version_ids(r->package_ids(*p));
 
-                qDebug() << "2";
                 if (version_ids->empty())
                     continue;
 
-                qDebug() << "3";
                 tr1::shared_ptr<const PackageID> display_entry(*version_ids->begin());
                 for (PackageIDSequence::ConstIterator i(version_ids->begin()),
                         i_end(version_ids->end()) ; i != i_end ; ++i)
@@ -129,8 +129,7 @@ void pertubis::SearchThread::run()
                                             tasks,
                                             QString::fromStdString(stringify(*dps.package_name_part_ptr())),
                                             QString::fromStdString(stringify(*dps.category_name_part_ptr())),
-                                            QString::fromStdString(stringify(*dps.repository_ptr())),
-                                            false,
+                                            Qt::Unchecked,
                                             Item::is_stable,
                                             Item::ur_child,
                                             0,
@@ -142,8 +141,7 @@ void pertubis::SearchThread::run()
                                             tasks,
                                             QString::fromStdString(stringify(display_entry->name().package)),
                                             QString::fromStdString(stringify(display_entry->name().category)) ,
-                                            QString::fromStdString(stringify(display_entry->repository()->name())),
-                                            false,
+                                            Qt::Unchecked,
                                             Item::is_stable,
                                             Item::ur_child,
                                             0,
@@ -156,15 +154,22 @@ void pertubis::SearchThread::run()
                 for (PackageIDSequence::ConstIterator vstart(versionIds->begin()),vend(versionIds->end());
                     vstart != vend; ++vstart)
                 {
+                    QString reasons;
+                    for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
+                         m != m_end ; ++m)
+                    {
+                        reasons.append(stringify((*m)->description()).c_str());
+                    }
                     Item* v_item = makeVersionItem(*vstart,
                                                     m_main->taskbox()->tasks(),
                                                     QString::fromStdString(stringify((*vstart)->version())),
                                                     QString::fromStdString(stringify((*vstart)->repository()->name())),
-                                                    false,
-                                                    Item::is_stable,
+                                                    ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
+                                                    (reasons.isEmpty() ? Item::is_stable : Item::is_masked),
                                                     Item::ur_child,
                                                     p_item,
                                                     "");
+
 
                     if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
                     {

@@ -22,28 +22,28 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H 1
 
 #include <QSortFilterProxyModel>
-#include <QVariant>
-#include <QModelIndex>
+
+#include <QSet>
+#include <QString>
+
+class QModelIndex;
 
 namespace pertubis
 {
-    class RepositoryListModel;
-
     class PackageFilterModel : public QSortFilterProxyModel
     {
         Q_OBJECT
         public:
 
-            PackageFilterModel(QObject * pobj,const RepositoryListModel& main);
+            PackageFilterModel(QObject * pobj);
 
+            void setFilter(const QSet<QString>& repos) { m_repositories = repos;}
             bool filterAcceptsRow(int sourceRow,
                              const QModelIndex &sourceParent) const;
 
         private:
 
-            const RepositoryListModel& m_model;
-
-
+            QSet<QString> m_repositories;
     };
 
 }

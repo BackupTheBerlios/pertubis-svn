@@ -74,6 +74,7 @@ namespace pertubis
             virtual ~Item();
 
             virtual void appendChild(Item *child);
+            virtual void prependChild(Item *child);
             virtual void setTaskState(int taskid, Qt::CheckState state);
 
             virtual void setData(int column, QVariant data);
@@ -119,8 +120,7 @@ namespace pertubis
                                 QVariantList selections,
                                 QString pack,
                                 QString cat,
-                                QString rep,
-                                bool isInstalled,
+                                Qt::CheckState isInstalled,
                                 Item::ItemState mystate,
                                 Item::UpdateRange ur,
                                 Item* pitem,
@@ -128,12 +128,13 @@ namespace pertubis
     {
         QVariantList list;
         list <<
-            QVariant(selections) <<
-            pack <<
-            cat <<
-            rep <<
-            (isInstalled ? Qt::Checked : Qt::Unchecked) <<
-            mask_reasons;
+            QVariant(selections) <<  // io_selected
+            pack << // io_package
+            cat <<  // io_category
+            "" << // io_repository
+            QVariant(static_cast<int>(isInstalled)) <<  // io_installed
+            mask_reasons << // io_mask_reasons
+            "";  // io_change
         return new Item(id,list,mystate,ur,pitem);
     }
 
@@ -144,7 +145,7 @@ namespace pertubis
         QVariantList selections,
         QString version,
         QString rep,
-        bool isInstalled,
+        Qt::CheckState isInstalled,
         Item::ItemState mystate,
         Item::UpdateRange ur,
         Item* pitem,
@@ -152,12 +153,13 @@ namespace pertubis
     {
         QVariantList list;
         list <<
-            QVariant(selections) <<
-            version <<
-            "" <<
-            rep <<
-            (isInstalled ? Qt::Checked : Qt::Unchecked) <<
-            mask_reasons;
+            QVariant(selections) << // io_selected
+            version << // io_package
+            "" << // io_category
+            rep << // io_repository
+            isInstalled <<  // io_installed
+            mask_reasons <<  // io_mask_reasons
+            ""; // io_change
         return new Item(id,list,mystate,ur,pitem);
     }
 }
