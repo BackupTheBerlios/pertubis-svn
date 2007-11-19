@@ -41,15 +41,15 @@ bool pertubis::ThreadBase::installed(paludis::tr1::shared_ptr<const paludis::Pac
     paludis::tr1::shared_ptr<paludis::VersionRequirements> req(new paludis::VersionRequirements());
     req->push_back(paludis::VersionRequirement(paludis::VersionOperator(paludis::vo_equal),id->version()));
     paludis::tr1::shared_ptr<const paludis::PackageIDSequence> ipacks(
-            m_main->getEnv()->package_database()->query(
-                           paludis::query::InstalledAtRoot(m_main->getEnv()->root()) &
+        m_main->getEnv()->package_database()->query(
+            paludis::query::InstalledAtRoot(m_main->getEnv()->root()) &
             paludis::query::Matches(paludis::PackageDepSpec(
-                                    paludis::tr1::shared_ptr<paludis::QualifiedPackageName>(new paludis::QualifiedPackageName(id->name())),
-            paludis::tr1::shared_ptr<paludis::CategoryNamePart>(),
-                    paludis::tr1::shared_ptr<paludis::PackageNamePart>(),
-                            req,
-                            paludis::vr_and,
-                            paludis::tr1::shared_ptr<paludis::SlotName>(new paludis::SlotName(id->slot())))),
+                paludis::tr1::shared_ptr<paludis::QualifiedPackageName>(new paludis::QualifiedPackageName(id->name())),
+                paludis::tr1::shared_ptr<paludis::CategoryNamePart>(),
+                paludis::tr1::shared_ptr<paludis::PackageNamePart>(),
+                req,
+                paludis::vr_and,
+                paludis::tr1::shared_ptr<paludis::SlotName>(new paludis::SlotName(id->slot())))),
             paludis::qo_order_by_version));
     return (ipacks->begin() != ipacks->end());
 }

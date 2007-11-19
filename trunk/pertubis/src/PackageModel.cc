@@ -79,6 +79,9 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
             case Item::io_mask_reasons:
                 return QBrush(QColor(255,0,0));
                 break;
+            case Item::io_change:
+                return QBrush(QColor(0,255,0));
+                break;
             default:
                 return QBrush(QColor(0,0,0));
                 break;

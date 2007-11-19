@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit subversion cmake-utils
+inherit subversion cmake-utils flag-o-matic
 
 ESVN_REPO_URI="svn://svn.berlios.de/pertubis/trunk/pertubis/"
 ESVN_PROJECT="pertubis-svn"
@@ -39,7 +39,7 @@ src_setup() {
         mycmakeargs="${mycmakeargs} -DCMAKE_BUILD_TYPE=Debug"
     fi
 
-    cmake_utils_configureout
+    cmake-utils_configureout
 }
 
 src_compile() {
@@ -50,4 +50,5 @@ src_compile() {
 src_install() {
 
     cmake-utils_src_install
+    dodoc AUTHORS README TODO
 }

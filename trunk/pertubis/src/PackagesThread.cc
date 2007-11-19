@@ -137,9 +137,12 @@ void pertubis::PackagesThread::run()
             if (p_item->bestChild() == 0)
             {
                 p_item->setBestChild(v_item);
-                if (v_item->data(Item::io_installed).toInt() == Qt::Unchecked)
-                    v_item->setData(Item::io_change,"new version");
             }
+//             if (v_item->data(Item::io_installed).toInt() == Qt::Unchecked)
+//             {
+//                 v_item->setData(Item::io_change,"new version");
+// //                     p_item->setData(Item::io_change,"new version");
+//             }
         }
         p_item->prependChild(v_item);
     }

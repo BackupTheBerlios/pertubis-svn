@@ -185,6 +185,7 @@ void pertubis::DatabaseView::initGUI()
     createOptionsMenu(); // no deps
     createWindowSearch();
     createTrayMenu();
+    statusBar()->show();
 }
 
 void pertubis::DatabaseView::initLayout()
