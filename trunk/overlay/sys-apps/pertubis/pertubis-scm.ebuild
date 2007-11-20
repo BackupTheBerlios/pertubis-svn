@@ -47,6 +47,13 @@ src_compile() {
     cmake-utils_src_compile
 }
 
+src_test() {
+
+    pushd 'test'
+    emake "test"  || die "Make test failed"
+    popd
+}
+
 src_install() {
 
     cmake-utils_src_install
