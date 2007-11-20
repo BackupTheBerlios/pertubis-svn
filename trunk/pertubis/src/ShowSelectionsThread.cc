@@ -24,6 +24,7 @@
 #include "Task.hh"
 #include "Item.hh"
 
+#include <QDebug>
 #include <QVector>
 #include <QVariant>
 #include <paludis/util/stringify.hh>
@@ -34,6 +35,7 @@
 
 void pertubis::ShowSelectionsThread::run()
 {
+    qDebug() << "pertubis::ShowSelectionsThread::run()";
     for (TaskBox::Iterator tStart(m_main->taskbox()->taskBegin()),
          tEnd(m_main->taskbox()->taskEnd());
          tStart != tEnd;
@@ -57,4 +59,5 @@ void pertubis::ShowSelectionsThread::run()
             emit appendPackage(new Item(*idStart,list,Item::is_stable,Item::ur_node,0));
         }
     }
+    qDebug() << "pertubis::ShowSelectionsThread::run() - done";
 }

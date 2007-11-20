@@ -207,6 +207,50 @@ QString pertubis::stateDescription(Item::ItemState status)
     }
 }
 
+pertubis::Item* pertubis::makePackageItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                             QVariantList selections,
+                             QString pack,
+                             QString cat,
+                             Qt::CheckState isInstalled,
+                             Item::ItemState mystate,
+                             Item::UpdateRange ur,
+                             Item* pitem,
+                             QString mask_reasons)
+{
+    QVariantList list;
+    list <<
+            QVariant(selections) <<  // io_selected
+            pack << // io_package
+            cat <<  // io_category
+            "" << // io_repository
+            QVariant(static_cast<int>(isInstalled)) <<  // io_installed
+            mask_reasons << // io_mask_reasons
+            "";  // io_change
+    return new Item(id,list,mystate,ur,pitem);
+}
+
+pertubis::Item* pertubis::makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                                 QVariantList selections,
+                                 QString version,
+                                 QString rep,
+                                 Qt::CheckState isInstalled,
+                                 Item::ItemState mystate,
+                                 Item::UpdateRange ur,
+                                 Item* pitem,
+                                 QString mask_reasons)
+{
+    QVariantList list;
+    list <<
+            QVariant(selections) << // io_selected
+            version << // io_package
+            "" << // io_category
+            rep << // io_repository
+            QVariant(static_cast<int>(isInstalled)) <<  // io_installed
+            mask_reasons <<  // io_mask_reasons
+            ""; // io_change
+    return new Item(id,list,mystate,ur,pitem);
+}
+
 #ifndef QT_NO_DEBUG
 QDebug operator<<(QDebug dbg, const pertubis::Item &item)
 {

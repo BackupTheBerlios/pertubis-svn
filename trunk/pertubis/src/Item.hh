@@ -121,35 +121,24 @@ namespace pertubis
     QString status(Item::ItemState status);
 
     /*! \brief helps us creating a PackageItem
-     *
-     */
-
-    inline Item* makePackageItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
-                                QVariantList selections,
-                                QString pack,
-                                QString cat,
-                                Qt::CheckState isInstalled,
-                                Item::ItemState mystate,
-                                Item::UpdateRange ur,
-                                Item* pitem,
-                                QString mask_reasons)
-    {
-        QVariantList list;
-        list <<
-            QVariant(selections) <<  // io_selected
-            pack << // io_package
-            cat <<  // io_category
-            "" << // io_repository
-            QVariant(static_cast<int>(isInstalled)) <<  // io_installed
-            mask_reasons << // io_mask_reasons
-            "";  // io_change
-        return new Item(id,list,mystate,ur,pitem);
-    }
+    *
+    */
+    Item* makePackageItem(
+        paludis::tr1::shared_ptr<const paludis::PackageID> id,
+        QVariantList selections,
+        QString pack,
+        QString cat,
+        Qt::CheckState isInstalled,
+        Item::ItemState mystate,
+        Item::UpdateRange ur,
+        Item* pitem,
+        QString mask_reasons);
 
     /*! \brief helps us creating a VersionItem
     *
     */
-    inline Item* makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+    Item* makeVersionItem(
+        paludis::tr1::shared_ptr<const paludis::PackageID> id,
         QVariantList selections,
         QString version,
         QString rep,
@@ -157,19 +146,7 @@ namespace pertubis
         Item::ItemState mystate,
         Item::UpdateRange ur,
         Item* pitem,
-        QString mask_reasons)
-    {
-        QVariantList list;
-        list <<
-            QVariant(selections) << // io_selected
-            version << // io_package
-            "" << // io_category
-            rep << // io_repository
-            isInstalled <<  // io_installed
-            mask_reasons <<  // io_mask_reasons
-            ""; // io_change
-        return new Item(id,list,mystate,ur,pitem);
-    }
+        QString mask_reasons);
 }
 
 QDebug operator<<(QDebug dbg, const pertubis::Item &c);

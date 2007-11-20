@@ -566,6 +566,11 @@ void pertubis::DatabaseView::createConnections()
             m_packageModel,
             SLOT(slotAppendPackage(Item*)));
 
+    connect(m_selectionsThread,
+            SIGNAL(finished()),
+            this,
+            SLOT(slotResultCount()));
+
     connect(m_repoListModel,
             SIGNAL(modelReset()),
             this,
