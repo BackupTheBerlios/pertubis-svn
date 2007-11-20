@@ -37,6 +37,7 @@
  */
 
 #include "name_extractor.hh"
+#include "matcher.hh"
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
 #include <paludis/util/stringify.hh>
@@ -46,9 +47,7 @@ pertubis::NameExtractor::NameExtractor(const paludis::Environment * const env) :
 {
 }
 
-std::string pertubis::NameExtractor::operator() (const paludis::PackageID& id) const
+bool pertubis::NameExtractor::operator() (const Matcher& m, const paludis::PackageID& id) const
 {
-    return paludis::stringify(id.name());
+    return m(paludis::stringify(id.name()));
 }
-
-

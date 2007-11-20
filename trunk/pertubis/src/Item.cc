@@ -136,12 +136,22 @@ void pertubis::Item::setData(int column, QVariant dats)
     }
 }
 
-QList<pertubis::Item*>::iterator pertubis::Item::childBegin()
+pertubis::Item::ConstIterator pertubis::Item::constChildBegin()
 {
     return m_children.begin();
 }
 
-QList<pertubis::Item*>::iterator pertubis::Item::childEnd()
+pertubis::Item::Iterator pertubis::Item::childBegin()
+{
+    return m_children.begin();
+}
+
+pertubis::Item::ConstIterator pertubis::Item::constChildEnd()
+{
+    return m_children.end();
+}
+
+pertubis::Item::Iterator pertubis::Item::childEnd()
 {
     return m_children.end();
 }
@@ -159,14 +169,16 @@ void pertubis::Item::setState(ItemState s)
 void pertubis::Item::setTaskState(int taskid, Qt::CheckState mystate)
 {
     QVariantList states = data(io_selected).toList();
-    qDebug() << "Item::setTaskState() - start" << states << taskid << mystate;
+//     qDebug() << "Item::setTaskState() - start" << states << taskid << mystate;
     states[taskid] = mystate;
     setData(io_selected,states);
-    qDebug() << "Item::setTaskState() - done";
+//     qDebug() << "Item::setTaskState() - done";
 }
 
 paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Item::ID()
 {
+    if (m_bestChild != 0)
+        return m_bestChild->ID();
     return m_id;
 }
 

@@ -41,20 +41,17 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_NAME_EXTRACTOR_H 1
 
 #include "extractor.hh"
-
-namespace paludis
-{
-    class PackageID;
-}
+#include <paludis/package_id-fwd.hh>
 
 namespace pertubis
 {
+
     class NameExtractor : public Extractor
     {
         public:
             NameExtractor(const paludis::Environment * const env);
 
-            std::string operator() (const paludis::PackageID& id) const;
+            bool operator() (const Matcher& m, const paludis::PackageID& id) const;
     };
 }
 

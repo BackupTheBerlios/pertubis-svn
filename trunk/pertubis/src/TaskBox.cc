@@ -46,7 +46,7 @@ int pertubis::TaskBox::addTask(Task* t)
 
 pertubis::Task* pertubis::TaskBox::task(int taskid) const
 {
-    qDebug() << "pertubis::TaskBox::task()" << taskid;
+//     qDebug() << "pertubis::TaskBox::task()" << taskid;
     return m_tasks.value(taskid);
 }
 
@@ -58,13 +58,13 @@ QVariantList pertubis::TaskBox::tasks() const
     {
         list.push_back(Qt::Unchecked);
     }
-    qDebug() << "pertubis::TaskBox::tasks()" << list;
+//     qDebug() << "pertubis::TaskBox::tasks()" << list;
     return list;
 }
 
 bool pertubis::TaskBox::hasTask(int taskid) const
 {
-    qDebug() << "pertubis::TaskBox::hasTask()" << taskid;
+//     qDebug() << "pertubis::TaskBox::hasTask()" << taskid;
     if (m_tasks.count() > taskid && m_tasks.value(taskid) != 0 )
         return true;
     return false;
@@ -72,7 +72,7 @@ bool pertubis::TaskBox::hasTask(int taskid) const
 
 void pertubis::TaskBox::slotTaskChanged(paludis::tr1::shared_ptr<const paludis::PackageID> id,int taskid, bool mystate)
 {
-    qDebug() << "pertubis::TaskBox::slotTaskChanged()" << taskid << mystate;
+//     qDebug() << "pertubis::TaskBox::slotTaskChanged()" << taskid << mystate;
     Task* t = task(taskid);
     if(t == 0)
         return;

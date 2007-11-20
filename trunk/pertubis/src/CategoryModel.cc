@@ -22,7 +22,8 @@
 
 #include <QString>
 #include <QDebug>
-
+#include <QColor>
+#include <QBrush>
 
 bool CategoryItemSorter(pertubis::CategoryItem* a,pertubis::CategoryItem* b)
 {
@@ -75,6 +76,20 @@ int pertubis::CategoryModel::columnCount( const QModelIndex & pobj ) const
     return pobj.isValid() ? 0 : m_header.count();
 }
 
+void pertubis::CategoryModel::slotChangeInCat( QString cat)
+{
+    CategoryItem* item;
+    foreach ( item,m_data)
+    {
+        if (item->name() == cat)
+        {
+            item->setChange(true);
+            emit layoutChanged();
+            break;
+        }
+    }
+}
+
 QVariant pertubis::CategoryModel::data ( const QModelIndex & mix, int role) const
 {
     if (!mix.isValid())
@@ -83,10 +98,23 @@ QVariant pertubis::CategoryModel::data ( const QModelIndex & mix, int role) cons
     if (mix.row() >= m_data.size())
          return QVariant();
 
-     if (role == Qt::DisplayRole)
-         return m_data.at(mix.row())->name();
-     else
-         return QVariant();
+    if (role == Qt::ForegroundRole)
+    {
+        if (data(mix,Qt::CheckStateRole) != Qt::Unchecked)
+            return QBrush(QColor(0,255,0));
+        else
+            return QBrush(QColor(0,0,0));
+    }
+
+    if (role == Qt::DisplayRole)
+    {
+        if (mix.column() == 0)
+            return m_data.at(mix.row())->name();
+    }
+    if (role == Qt::CheckStateRole)
+        if (mix.column() == 0)
+            return m_data.at(mix.row())->change();
+    return QVariant();
 }
 
 QModelIndex pertubis::CategoryModel::index(int row, int column, const QModelIndex &parentIndex) const

@@ -79,6 +79,7 @@ namespace pertubis
     public slots:
 
         void slotAppendPackage(Item* item);
+        void slotPrependPackage(Item* item);
         void slotClear();
 
     private:

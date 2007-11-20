@@ -45,13 +45,15 @@
 
 namespace pertubis
 {
+    class Matcher;
+
     class Extractor
     {
         public:
             Extractor(const paludis::Environment * const env);
             virtual ~Extractor();
 
-            virtual std::string operator() (const paludis::PackageID& id) const = 0;
+            virtual bool operator() (const Matcher& m, const paludis::PackageID& id) const = 0;
 
         private:
 

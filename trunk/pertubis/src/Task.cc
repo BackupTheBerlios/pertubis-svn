@@ -45,14 +45,14 @@ void pertubis::Task::setTaskid(int id)
 
 void pertubis::Task::addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
-    qDebug() << "pertubis::Task::addEntry()" << id->canonical_form(paludis::idcf_full).c_str();
+//     qDebug() << "pertubis::Task::addEntry()" << id->canonical_form(paludis::idcf_full).c_str();
     if (!hasEntry(id))
         m_data.insert(id);
 }
 
 void pertubis::Task::deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
-    qDebug() << "pertubis::Task::deleteEntry()" << id->canonical_form(paludis::idcf_full).c_str();
+//     qDebug() << "pertubis::Task::deleteEntry()" << id->canonical_form(paludis::idcf_full).c_str();
     paludis::PackageIDSet::ConstIterator iter = m_data.find(id);
     if (iter != m_data.end())
         m_data.erase(*iter);
@@ -60,7 +60,7 @@ void pertubis::Task::deleteEntry(const paludis::tr1::shared_ptr<const paludis::P
 
 bool pertubis::Task::hasEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) const
 {
-    qDebug() << "pertubis::Task::hasEntry()" << id->canonical_form(paludis::idcf_full).c_str();
+//     qDebug() << "pertubis::Task::hasEntry()" << id->canonical_form(paludis::idcf_full).c_str();
     Iterator iter = m_data.find(id);
     if (iter != m_data.end())
         return true;
@@ -69,7 +69,7 @@ bool pertubis::Task::hasEntry(const paludis::tr1::shared_ptr<const paludis::Pack
 
 void pertubis::Task::fillAction(Item* item)
 {
-    qDebug() << "pertubis::Task::fillAction()" << *item;
+//     qDebug() << "pertubis::Task::fillAction()" << *item;
     if (item->ID().get() != 0)
         m_action->setChecked( (hasEntry(item->ID())) ? Qt::Checked : Qt::Unchecked);
     else
@@ -78,6 +78,6 @@ void pertubis::Task::fillAction(Item* item)
 
 void pertubis::Task::changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id,bool mystate)
 {
-    qDebug() << "pertubis::Task::changeEntry()" << id->canonical_form(paludis::idcf_full).c_str() << mystate;
+//     qDebug() << "pertubis::Task::changeEntry()" << id->canonical_form(paludis::idcf_full).c_str() << mystate;
     (mystate) ? addEntry(id) : deleteEntry(id);
 }

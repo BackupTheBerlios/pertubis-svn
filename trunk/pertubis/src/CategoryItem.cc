@@ -19,7 +19,7 @@
 
 #include "CategoryItem.hh"
 
-pertubis::CategoryItem::CategoryItem(const QString& catname, const QSet<QString>& reps) : m_name(catname),m_repos(reps)
+pertubis::CategoryItem::CategoryItem(const QString& catname, const QSet<QString>& reps) : m_name(catname),m_repos(reps),m_change(false)
 {
 }
 
@@ -32,4 +32,3 @@ QSet<QString> pertubis::CategoryItem::repos() const
 {
     return m_repos;
 }
-

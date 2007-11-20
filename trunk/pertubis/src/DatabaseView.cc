@@ -249,7 +249,7 @@ void pertubis::DatabaseView::createCatbar()
     m_dockCat->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
     m_catModel = new CategoryModel(this);
-    m_catModel->setHorizontalHeaderLabels(QStringList(tr("category")) );
+    m_catModel->setHorizontalHeaderLabels(QStringList() << tr("category"));
 
     m_categoryFilterModel = new CategoryFilterModel(this,*m_repoListModel);
     m_categoryFilterModel->setSourceModel(m_catModel);
@@ -529,7 +529,17 @@ void pertubis::DatabaseView::createConnections()
     connect(m_packageViewThread,
             SIGNAL(addPackage(Item*)),
             m_packageModel,
-            SLOT(slotAppendPackage(Item*)));
+            SLOT(slotPrependPackage(Item*)));
+
+    connect(m_packageViewThread,
+            SIGNAL(finished()),
+            this,
+            SLOT(slotResultCount()));
+
+    connect(m_packageViewThread,
+            SIGNAL(changeInCat(QString)),
+            m_catModel,
+            SLOT(slotChangeInCat(QString)));
 
     connect(m_packageView,
             SIGNAL(clicked( const QModelIndex&)),
@@ -540,11 +550,6 @@ void pertubis::DatabaseView::createConnections()
             SIGNAL(clicked(const QModelIndex&)),
             this,
             SLOT(slotOptionsMenu(const QModelIndex&)));
-
-    connect(m_packageViewThread,
-            SIGNAL(finished()),
-            this,
-            SLOT(slotResultCount()));
 
     connect(m_searchThread,
             SIGNAL(itemResult(Item*)),
@@ -580,11 +585,6 @@ void pertubis::DatabaseView::createConnections()
             SIGNAL(clicked( const QModelIndex&)),
             this,
             SLOT(slotResultCount()) );
-
-//     connect(m_repoInfoThread,
-//             SIGNAL(sendResult(QList<QVariantList>)),
-//             m_repoInfoModel,
-//             SLOT(slotResult(QList<QVariantList>)));
 
     connect(m_windowSearch,
             SIGNAL(search()),

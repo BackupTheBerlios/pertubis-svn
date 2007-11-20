@@ -32,7 +32,7 @@ namespace pertubis
 
         protected:
 
-            std::string operator() (const paludis::PackageID& id) const;
+            bool operator() (const Matcher& m, const paludis::PackageID& id) const;
     };
 }
 

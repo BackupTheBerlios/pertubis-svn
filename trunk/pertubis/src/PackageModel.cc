@@ -194,10 +194,20 @@ void pertubis::PackageModel::slotAppendPackage(Item* item)
 {
     if (m_root != 0)
     {
+        m_root->appendChild(item);
+        layoutChanged();
+    }
+}
+
+void pertubis::PackageModel::slotPrependPackage(Item* item)
+{
+    if (m_root != 0)
+    {
         m_root->prependChild(item);
         layoutChanged();
     }
 }
+
 
 bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taskid, bool mystate)
 {
@@ -208,16 +218,16 @@ bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taski
     {
         case Item::ur_parent:
             if (m_box->task(taskid)->changeParentStates(item, mystate) )
-//                 emit dataChanged(ix, index(item->childCount()-1,0,ix));
-                emit layoutChanged();
+                emit dataChanged(ix, index(item->childCount()-1,0,ix));
+//                 emit layoutChanged();
             return true;
         case Item::ur_child:
             if (m_box->task(taskid)->changeChildStates(item,mystate) )
             {
                 QModelIndex p = parent(ix);
                 QModelIndex last = index(rowCount(p)-1,2,p);
-//                 emit dataChanged(p,last);
-                emit layoutChanged();
+                emit dataChanged(p,last);
+//                 emit layoutChanged();
             }
             return true;
         default:

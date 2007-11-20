@@ -56,6 +56,7 @@ namespace pertubis
 
         signals:
             void addPackage(Item* package);
+            void changeInCat(QString);
     };
 }
 #endif

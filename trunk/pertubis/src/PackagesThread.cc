@@ -86,8 +86,48 @@ void pertubis::PackagesThread::run()
                 maskedVersionCount=0;
 
                 QStringList tmp(pReasons.toList());
-                p_item->setData(Item::io_mask_reasons,tmp.join(", "));
                 pReasons.clear();
+                if (p_item->data(Item::io_installed).toInt() != Qt::Unchecked)
+                {
+                    tr1::shared_ptr<const PackageIDSequence> ci(
+                            m_main->getEnv()->package_database()->query(
+                            query::InstalledAtRoot(m_main->getEnv()->root()) &
+                            query::Matches(PackageDepSpec(
+                                    paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p_item->ID()->name())),
+                                    paludis::tr1::shared_ptr<CategoryNamePart>(),
+                                    paludis::tr1::shared_ptr<PackageNamePart>(),
+                                    paludis::tr1::shared_ptr<VersionRequirements>(),
+                                    vr_and,
+                                    paludis::tr1::shared_ptr<SlotName>(new SlotName(p_item->ID()->slot())))),
+                            qo_order_by_version));
+
+                    tr1::shared_ptr<const PackageIDSequence> av(
+                            m_main->getEnv()->package_database()->query(
+                            query::SupportsAction<InstallAction>() &
+                            query::Matches(PackageDepSpec(
+                                    paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p_item->ID()->name())),
+                                    paludis::tr1::shared_ptr<CategoryNamePart>(),
+                                    paludis::tr1::shared_ptr<PackageNamePart>(),
+                                    paludis::tr1::shared_ptr<VersionRequirements>(),
+                                    vr_and,
+                                    paludis::tr1::shared_ptr<SlotName>(new SlotName(p_item->ID()->slot())))) &
+                            query::NotMasked(),
+                            qo_order_by_version));
+                    if (! ci->empty())
+                    {
+                        if (! av->empty())
+                        {
+                            if ((*av->last())->version() < (*ci->last())->version() ||
+                                (*av->last())->version() > (*ci->last())->version())
+                            {
+                                p_item->setData(Item::io_change,"upgradable");
+                                emit changeInCat(QString::fromStdString(stringify((*vstart)->name().category)));
+                            }
+                        }
+                    }
+                }
+
+                p_item->setData(Item::io_mask_reasons,tmp.join(", "));
             }
 
             p_item = makePackageItem(*vstart,
@@ -100,20 +140,19 @@ void pertubis::PackagesThread::run()
                                     0,
                                     "");
 
-            qDebug() << "pertubis::PackagesThread::run()" << *p_item;
+//             qDebug() << "pertubis::PackagesThread::run()" << *p_item;
             old_qpn = (*vstart)->name();
+
             emit addPackage(p_item);
         }
 
-        QSet<QString> vReasons;
+        QStringList vReasons;
         for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
                 m != m_end ; ++m)
         {
-            vReasons.insert(stringify((*m)->description()).c_str());
+            vReasons.push_back(stringify((*m)->description()).c_str());
         }
-        pReasons.unite(vReasons);
-
-        QStringList vstm(pReasons.toList());
+        pReasons.unite(vReasons.toSet());
 
         Item* v_item = makeVersionItem(*vstart,
                                     box->tasks(),
@@ -123,11 +162,14 @@ void pertubis::PackagesThread::run()
                                     (vReasons.isEmpty() ? Item::is_stable : Item::is_masked),
                                     Item::ur_child,
                                     p_item,
-                                    vstm.join(", "));
+                                    vReasons.join(", "));
 
         box->setItemTasks(v_item);
         if (v_item->data(Item::io_installed).toInt() != Qt::Unchecked)
+        {
             p_item->setData(Item::io_installed,Qt::Checked);
+        }
+
         if (!v_item->available() )
         {
             ++maskedVersionCount;
@@ -135,15 +177,9 @@ void pertubis::PackagesThread::run()
         else
         {
             if (p_item->bestChild() == 0)
-            {
                 p_item->setBestChild(v_item);
-            }
-//             if (v_item->data(Item::io_installed).toInt() == Qt::Unchecked)
-//             {
-//                 v_item->setData(Item::io_change,"new version");
-// //                     p_item->setData(Item::io_change,"new version");
-//             }
         }
+
         p_item->prependChild(v_item);
     }
 }

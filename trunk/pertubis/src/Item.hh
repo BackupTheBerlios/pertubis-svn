@@ -22,6 +22,7 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_ITEM_H
 
 #include <QList>
+#include <QMutableListIterator>
 #include <QDebug>
 #include <QVariant>
 #include <paludis/util/tr1_memory.hh>
@@ -58,6 +59,9 @@ namespace pertubis
             */
             enum UpdateRange { ur_nothing, ur_node, ur_parent, ur_child, ur_both};
 
+            typedef QList<Item*>::const_iterator ConstIterator;
+            typedef QList<Item*>::iterator Iterator;
+
             Item();
 
             Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
@@ -73,29 +77,33 @@ namespace pertubis
 
             virtual ~Item();
 
-            virtual void appendChild(Item *child);
-            virtual void prependChild(Item *child);
-            virtual void setTaskState(int taskid, Qt::CheckState state);
+            void appendChild(Item *child);
+            void prependChild(Item *child);
+            void setTaskState(int taskid, Qt::CheckState state);
 
-            virtual void setData(int column, QVariant data);
-            virtual void setParent(Item* pitem);
-            virtual void setState(ItemState s);
-            virtual void setBestChild(Item* item);
+            void setData(int column, QVariant data);
+            void setParent(Item* pitem);
+            void setState(ItemState s);
+            void setBestChild(Item* item);
 
-            virtual Item* bestChild() const;
-            virtual bool available() const;
-            virtual ItemState state() const;
-            virtual Item *child(int row) const;
-            virtual int indexOf(Item* item) const;
-            virtual int childCount() const;
-            virtual int columnCount() const;
-            virtual QVariant data(int column) const;
-            virtual int row() const;
-            virtual UpdateRange updateRange() const;
-            virtual Item *parent() const;
-            virtual paludis::tr1::shared_ptr<const paludis::PackageID> ID();
-            QList<Item*>::iterator childBegin();
-            QList<Item*>::iterator childEnd();
+            Item* bestChild() const;
+            bool available() const;
+            ItemState state() const;
+            Item *child(int row) const;
+            int indexOf(Item* item) const;
+            int childCount() const;
+            int columnCount() const;
+            QVariant data(int column) const;
+            int row() const;
+            UpdateRange updateRange() const;
+            Item *parent() const;
+            void setID(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) { m_id = id;}
+            paludis::tr1::shared_ptr<const paludis::PackageID> ID();
+            ConstIterator constChildBegin();
+            Iterator childBegin();
+            ConstIterator constChildEnd();
+            Iterator childEnd();
+            QMutableListIterator<Item*> lastChild() {return QMutableListIterator<Item*>(m_children);}
 
         protected:
 

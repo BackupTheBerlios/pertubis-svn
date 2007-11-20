@@ -26,6 +26,7 @@
 #include "text_matcher.hh"
 #include "SearchThread.hh"
 
+#include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -42,8 +43,87 @@
 #include <QVariant>
 #include <set>
 
+struct Matches
+{
+    typedef bool result;
+
+    const std::list<paludis::tr1::shared_ptr<pertubis::Matcher> > & matchers;
+    const std::list<paludis::tr1::shared_ptr<pertubis::Extractor> > & extractors;
+
+    Matches(
+            const std::list<paludis::tr1::shared_ptr<pertubis::Matcher> > & m,
+            const std::list<paludis::tr1::shared_ptr<pertubis::Extractor> > & e) :
+            matchers(m),
+            extractors(e)
+    {
+    }
+
+    bool operator() (const paludis::PackageID & id) const
+    {
+        for (std::list<paludis::tr1::shared_ptr<pertubis::Extractor> >::const_iterator e(extractors.begin()), e_end(extractors.end()) ;
+            e != e_end ; ++e)
+            for (std::list<paludis::tr1::shared_ptr<pertubis::Matcher> >::const_iterator m(matchers.begin()), m_end(matchers.end()) ;
+                m != m_end ; ++m)
+                if ((**e)(**m, id))
+                    return true;
+
+        return false;
+    }
+};
+
+paludis::tr1::shared_ptr<const paludis::PackageID> fetch_id(
+    const paludis::Environment & env,
+    const paludis::tr1::shared_ptr<const paludis::Repository> & r,
+    const paludis::QualifiedPackageName & q,
+    const paludis::tr1::function<bool (const paludis::PackageID &)> & m)
+{
+    paludis::tr1::shared_ptr<const paludis::PackageIDSequence> ids(r->package_ids(q));
+    if (ids->empty())
+        return paludis::tr1::shared_ptr<const paludis::PackageID>();
+    else
+    {
+        std::list<paludis::tr1::shared_ptr<const paludis::PackageID> > sids(ids->begin(), ids->end());
+        paludis::PackageIDComparator c(env.package_database().get());
+        sids.sort(paludis::tr1::ref(c));
+
+        for (std::list<paludis::tr1::shared_ptr<const paludis::PackageID> >::const_reverse_iterator i(sids.rbegin()), i_end(sids.rend()) ;
+             i != i_end ; ++i)
+            if (m(**i))
+                return *i;
+
+        return paludis::tr1::shared_ptr<const paludis::PackageID>();
+    }
+}
+
+void set_id(
+            const paludis::Environment & env,
+            const std::list<paludis::tr1::shared_ptr<const paludis::Repository> > & repos,
+            std::pair<const paludis::QualifiedPackageName, paludis::tr1::shared_ptr<const paludis::PackageID> > & q,
+            const paludis::tr1::function<bool (const paludis::PackageID &)> & m)
+{
+    paludis::tr1::shared_ptr<const paludis::PackageID> best_id;
+    for (std::list<paludis::tr1::shared_ptr<const paludis::Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+         r != r_end ; ++r)
+    {
+        paludis::tr1::shared_ptr<const paludis::PackageID> id(fetch_id(env, *r, q.first, m));
+        if (id)
+        {
+            if (best_id)
+            {
+                paludis::PackageIDComparator c(env.package_database().get());
+                if (c(best_id, id))
+                    best_id = id;
+            }
+            else
+                best_id = id;
+        }
+    }
+
+    q.second = best_id;
+}
+
 pertubis::SearchThread::SearchThread(QObject* pobj,
-                                           DatabaseView* main) : ThreadBase(pobj,main)
+                                    DatabaseView* main) : ThreadBase(pobj,main)
 {
 }
 
@@ -70,127 +150,118 @@ void pertubis::SearchThread::run()
     if (m_optDesc )
         extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_main->getEnv().get())));
 
-    qDebug() << "1";
-    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-            r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
-            r != r_end ; ++r)
+    std::list<tr1::shared_ptr<const Repository> > repos;
+    for (PackageDatabase::RepositoryConstIterator r(m_main->getEnv()->package_database()->begin_repositories()),
+         r_end(m_main->getEnv()->package_database()->end_repositories()) ;
+         r != r_end ; ++r)
     {
 //         qDebug() << "1 a" << stringify(r->format()).c_str();
-        if (r->format_key()->value() != "ebuild")
+        if (! (*r)->some_ids_might_support_action(paludis::SupportsActionTest<paludis::InstallAction>()))
+            continue;
+        repos.push_back(*r);
+    }
+
+    std::set<CategoryNamePart> cats;
+    for (std::list<tr1::shared_ptr<const paludis::Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+         r != r_end ; ++r)
+    {
+        tr1::shared_ptr<const paludis::CategoryNamePartSet> c((*r)->category_names());
+        std::copy(c->begin(), c->end(), std::inserter(cats, cats.begin()));
+    }
+
+    std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > ids;
+    for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+         r != r_end ; ++r)
+        for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
+             c != c_end ; ++c)
+    {
+        tr1::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
+        for (QualifiedPackageNameSet::ConstIterator i(q->begin()), i_end(q->end()) ;
+             i != i_end ; ++i)
+            ids.insert(std::make_pair(*i, tr1::shared_ptr<const PackageID>()));
+    }
+
+//         bool match(false);
+//         for (std::list<tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
+//                 x_end(extractors.end()) ; x != x_end && ! match ; ++x)
+//         {
+//             std::string xx((**x)(*display_entry));
+//             for (std::list<tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
+//                     m_end(matchers.end()) ; m != m_end && ! match ; ++m)
+//                 if ((**m)(xx))
+//                     match = true;
+//         }
+//
+//         if (! match)
+//             continue;
+
+    Matches matches(
+                    matchers,
+                    extractors
+                   );
+
+    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*m_main->getEnv()), tr1::cref(repos), tr1::placeholders::_1, matches));
+
+    for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
+         i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
+    {
+        if (! i->second)
             continue;
 
-        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
 
-        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
-                c != c_end ; ++c)
+        QVariantList tasks(m_main->taskbox()->tasks());
+        paludis::tr1::shared_ptr<const paludis::PackageIDSequence> version_ids(i->second->repository()->package_ids(i->first));
+        if (version_ids->empty())
+            continue;
+        Item* p_item = makePackageItem(*version_ids->last(),
+                                tasks,
+                                QString::fromStdString(stringify(i->first.package)),
+                                QString::fromStdString(stringify(i->first.category)),
+                                Qt::Unchecked,
+                                Item::is_stable,
+                                Item::ur_child,
+                                0,
+                                "");
+
+        int mp=0;
+        int ip=0;
+        for (PackageIDSequence::ConstIterator vstart(version_ids->begin()),vend(version_ids->end());
+            vstart != vend; ++vstart)
         {
-
-            tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-
-            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end());
-                 p != p_end; ++p)
+            QSet<QString> vReasons;
+            for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
+                    m != m_end ; ++m)
             {
-                tr1::shared_ptr<const PackageIDSequence> version_ids(r->package_ids(*p));
-
-                if (version_ids->empty())
-                    continue;
-
-                tr1::shared_ptr<const PackageID> display_entry(*version_ids->begin());
-                for (PackageIDSequence::ConstIterator i(version_ids->begin()),
-                        i_end(version_ids->end()) ; i != i_end ; ++i)
-                    if (! (*i)->masked())
-                        display_entry = *i;
-                qDebug() << "4";
-                bool match(false);
-                for (std::list<tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
-                        x_end(extractors.end()) ; x != x_end && ! match ; ++x)
-                {
-                    std::string xx((**x)(*display_entry));
-                    for (std::list<tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
-                            m_end(matchers.end()) ; m != m_end && ! match ; ++m)
-                        if ((**m)(xx))
-                            match = true;
-                }
-
-
-                qDebug() << "5";
-                if (! match)
-                    continue;
-                qDebug() << "6";
-                PackageDepSpec dps(stringify(*p),pds_pm_eapi_0_strict);
-                qDebug() << "7";
-                Item* p_item=0;
-                QVariantList tasks(m_main->taskbox()->tasks());
-                tr1::shared_ptr<const PackageIDSequence> versionIds(r->package_ids(*p));
-                qDebug() << "8";
-                if (dps.version_requirements_ptr() || dps.slot_ptr() || dps.use_requirements_ptr() || dps.repository_ptr())
-                {
-                    p_item = makePackageItem(display_entry,
-                                            tasks,
-                                            QString::fromStdString(stringify(*dps.package_name_part_ptr())),
-                                            QString::fromStdString(stringify(*dps.category_name_part_ptr())),
-                                            Qt::Unchecked,
-                                            Item::is_stable,
-                                            Item::ur_child,
-                                            0,
-                                            "");
-                }
-                else
-                {
-                    p_item = makePackageItem(*versionIds->last(),
-                                            tasks,
-                                            QString::fromStdString(stringify(display_entry->name().package)),
-                                            QString::fromStdString(stringify(display_entry->name().category)) ,
-                                            Qt::Unchecked,
-                                            Item::is_stable,
-                                            Item::ur_child,
-                                            0,
-                                            "");
-                }
-
-                qDebug() << "9";
-                int mp=0;
-                int ip=0;
-                for (PackageIDSequence::ConstIterator vstart(versionIds->begin()),vend(versionIds->end());
-                    vstart != vend; ++vstart)
-                {
-                    QString reasons;
-                    for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
-                         m != m_end ; ++m)
-                    {
-                        reasons.append(stringify((*m)->description()).c_str());
-                    }
-                    Item* v_item = makeVersionItem(*vstart,
-                                                    m_main->taskbox()->tasks(),
-                                                    QString::fromStdString(stringify((*vstart)->version())),
-                                                    QString::fromStdString(stringify((*vstart)->repository()->name())),
-                                                    ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
-                                                    (reasons.isEmpty() ? Item::is_stable : Item::is_masked),
-                                                    Item::ur_child,
-                                                    p_item,
-                                                    "");
-
-
-                    if (! ( (*vstart)->begin_masks()  == (*vstart)->end_masks() ) )
-                    {
-                        v_item->setState(Item::is_masked);
-                        ++mp;
-                    }
-                    else
-                        p_item->setBestChild(v_item);
-
-                    p_item->appendChild(v_item);
-                }
-
-                if ( ip > 0 )
-                    p_item->setData(Item::io_installed,Qt::Checked);
-                if (mp == p_item->childCount())
-                    p_item->setState(Item::is_masked);
-                emit itemResult(p_item);
-                ++count;
+                vReasons.insert(QString::fromStdString(stringify((*m)->description())));
             }
+            QStringList tmp(vReasons.toList());
+            Item* v_item = makeVersionItem(*vstart,
+                                            m_main->taskbox()->tasks(),
+                                            QString::fromStdString(stringify((*vstart)->version())),
+                                            QString::fromStdString(stringify((*vstart)->repository()->name())),
+                                            ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
+                                            (tmp.isEmpty() ? Item::is_stable : Item::is_masked),
+                                            Item::ur_child,
+                                            p_item,
+                                            tmp.join(", "));
+
+            if (v_item->state() == Item::is_masked)
+            {
+                ++mp;
+            }
+            else
+                p_item->setBestChild(v_item);
+
+            p_item->appendChild(v_item);
         }
+
+        if ( ip > 0 )
+            p_item->setData(Item::io_installed,Qt::Checked);
+        if (mp == p_item->childCount())
+            p_item->setState(Item::is_masked);
+        emit itemResult(p_item);
+        ++count;
     }
-    qDebug() << "2";
+
     emit finished(count);
 }

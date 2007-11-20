@@ -41,7 +41,7 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
                                     m_slave_fd(-1)
 {
     redirectOutput();
-    paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
+    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
     paludis::Log::get_instance()->set_program_name("pertubis");
     QVBoxLayout* mylayout = new QVBoxLayout;
     mylayout->setMargin(0);
@@ -60,10 +60,9 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
 
 void pertubis::Thread::run()
 {
-    static char buf[515];
+    static char buf[512];
     while (m_atwork)
     {
-        errno=0;
         int res = read(m_fd,&buf,512);
         if (errno == 0)
         {

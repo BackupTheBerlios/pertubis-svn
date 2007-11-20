@@ -38,11 +38,15 @@ namespace pertubis
 
             QString name() const;
             QSet<QString> repos() const;
+            bool change() const { return m_change;}
+
+            void setChange(bool c) { m_change=c;}
 
         private:
 
             QString     m_name;
             QSet<QString> m_repos;
+            bool           m_change;
     };
 
 }

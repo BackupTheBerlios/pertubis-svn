@@ -57,6 +57,7 @@ namespace pertubis
 
         public slots:
             void slotAppendCategory(QMap<QString, QSet<QString> > map);
+            void slotChangeInCat(QString);
     };
 }
 #endif

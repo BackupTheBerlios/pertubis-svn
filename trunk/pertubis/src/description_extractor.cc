@@ -21,7 +21,7 @@
 #include "description_extractor.hh"
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-
+#include "matcher.hh"
 
 pertubis::DescriptionExtractor::DescriptionExtractor(const paludis::Environment * const env) : Extractor(env)
 {
@@ -31,9 +31,10 @@ pertubis::DescriptionExtractor::~DescriptionExtractor()
 {
 }
 
-std::string pertubis::DescriptionExtractor::operator() (const paludis::PackageID& id) const
+bool pertubis::DescriptionExtractor::operator() (const Matcher& m, const paludis::PackageID& id) const
 {
-    if (id.short_description_key())
-        return id.short_description_key()->value();
-    return "";
+    if (!id.short_description_key())
+        return false;
+
+    return m(id.short_description_key()->value());
 }
