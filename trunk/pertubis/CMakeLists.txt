@@ -61,7 +61,7 @@ SET(PERTUBIS_CFLAGS "$ENV{CXXFLAGS} ${PALUDIS_CFLAGS} -Wall -Wextra -Wold-style-
     "combines your CXXFLAGS paludis and pertubis flags"
     FORCE)
 
-SET(CMAKE_CXX_FLAGS_DEBUG "${PERTUBIS_CFLAGS} -g"
+SET(CMAKE_CXX_FLAGS_DEBUG "${PERTUBIS_CFLAGS} -ggdb"
     CACHE STRING
     "The compiler flags you want for the debugging target"
     FORCE)
