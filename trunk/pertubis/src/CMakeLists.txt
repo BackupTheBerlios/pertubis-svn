@@ -1,9 +1,5 @@
 INCLUDE(${QT_USE_FILE})
 
-SET(PERTUBIS_SU_TOOL
-    CACHE STRING
-    "use this to determine the desktop su tool")
-
 SET(PERTUBIS_SRCS
     CategoriesThread.cc
     CategoryFilterModel.cc

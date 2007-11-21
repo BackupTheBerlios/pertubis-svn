@@ -180,9 +180,10 @@ void pertubis::TaskBoxTest::setItemTasks()
         pitem->setBestChild(vitem);
         box->setItemTasks(vitem);
         QVariantList list = vitem->data(Item::io_selected).toList();
-        qDebug() << *vitem;
     }
 
+	qDebug() << *pitem;
+	qDebug() << *pitem->bestChild();
     QCOMPARE(install->hasEntry(pitem->ID()),true);
     QCOMPARE(pitem->data(Item::io_selected).toList(),QVariantList() << QVariant(2) );
     QCOMPARE(pitem->bestChild()->data(Item::io_selected).toList(),QVariantList() << QVariant(2) );
@@ -191,7 +192,7 @@ void pertubis::TaskBoxTest::setItemTasks()
     box->setItemTasks(pitem->bestChild());
 
     qDebug() << *pitem;
-    qDebug() << *pitem->bestChild();
+	qDebug() << *pitem->bestChild();
     QCOMPARE(install->hasEntry(pitem->ID()),false );
     QCOMPARE(pitem->bestChild()->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::Unchecked));
     QCOMPARE(pitem->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::PartiallyChecked) );
