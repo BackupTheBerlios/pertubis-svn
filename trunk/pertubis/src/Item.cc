@@ -24,6 +24,7 @@
 
 pertubis::Item::Item()  :
     m_data(QList<QVariant>() << QVariant(QVariantList()) << "" << "" << "" << Qt::Unchecked << "" << ""),
+    m_id(paludis::tr1::shared_ptr<const paludis::PackageID>()),
     m_parent(0),
     m_bestChild(0),
     m_state(Item::is_stable),
@@ -45,17 +46,17 @@ pertubis::Item::Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
 {
 }
 
-pertubis::Item::Item(const QList<QVariant> &dats,
-                    ItemState mystate,
-                    UpdateRange ur,
-                    Item* pitem)  :
-                    m_data(dats),
-                    m_parent(pitem),
-                    m_bestChild(0),
-                    m_state(mystate),
-                    m_ur(ur)
-{
-}
+// pertubis::Item::Item(const QList<QVariant> &dats,
+//                     ItemState mystate,
+//                     UpdateRange ur,
+//                     Item* pitem)  :
+//                     m_data(dats),
+//                     m_parent(pitem),
+//                     m_bestChild(0),
+//                     m_state(mystate),
+//                     m_ur(ur)
+// {
+// }
 
 pertubis::Item::~Item()
 {
@@ -254,15 +255,16 @@ pertubis::Item* pertubis::makeVersionItem(paludis::tr1::shared_ptr<const paludis
 #ifndef QT_NO_DEBUG
 QDebug operator<<(QDebug dbg, const pertubis::Item &item)
 {
-    dbg.nospace() <<
-            item.data(pertubis::Item::io_selected).toList() << ", " <<
-            item.data(pertubis::Item::io_package).toString() << ", " <<
-            item.data(pertubis::Item::io_category).toString() << ", " <<
-            item.data(pertubis::Item::io_repository).toString() << ", " <<
-            item.data(pertubis::Item::io_installed).toString() << ", " <<
-            item.data(pertubis::Item::io_change).toString() << ", " <<
-            item.childCount() << ", " <<
-            item.columnCount() << ")";
+    dbg.space() << "\n Item(" <<
+            "selected" << item.data(pertubis::Item::io_selected).toList() << "\n" <<
+            "package" << item.data(pertubis::Item::io_package).toString() << "\n" <<
+            "cat" << item.data(pertubis::Item::io_category).toString() << "\n" <<
+            "repository" << item.data(pertubis::Item::io_repository).toString() << "\n" <<
+            "installed" << item.data(pertubis::Item::io_installed).toString() << "\n" <<
+            "mask_reasons" << item.data(pertubis::Item::io_mask_reasons).toString() << "\n" <<
+            "change" << item.data(pertubis::Item::io_change).toString() << "\n" <<
+            "state" << item.state() << "\n" <<
+            "range" << item.updateRange() << ")";
     return dbg.space();
 }
 #endif

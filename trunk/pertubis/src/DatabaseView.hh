@@ -214,7 +214,7 @@ namespace pertubis
         void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
     };
 
-    bool rootTest();
+    bool rootTest(const QString& message="");
 }
 
 #endif

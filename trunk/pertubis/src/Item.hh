@@ -70,40 +70,39 @@ namespace pertubis
                  UpdateRange ur,
                  Item* parent);
 
-            Item(const QList<QVariant> &dats,
-                 ItemState mystate,
-                 UpdateRange ur,
-                 Item* pitem);
+//             Item(const QList<QVariant> &dats,
+//                  ItemState mystate,
+//                  UpdateRange ur,
+//                  Item* pitem);
 
             virtual ~Item();
 
-            void appendChild(Item *child);
-            void prependChild(Item *child);
-            void setTaskState(int taskid, Qt::CheckState state);
+            void appendChild(Item *child); // test
+            void prependChild(Item *child);  // test
+            void setTaskState(int taskid, Qt::CheckState state);  // test
 
-            void setData(int column, QVariant data);
-            void setParent(Item* pitem);
-            void setState(ItemState s);
-            void setBestChild(Item* item);
+            void setData(int column, QVariant data);  // test
+            void setParent(Item* pitem);  // test
+            void setState(ItemState s);  // test
+            void setBestChild(Item* item);  // test
 
-            Item* bestChild() const;
-            bool available() const;
-            ItemState state() const;
-            Item *child(int row) const;
+            Item* bestChild() const;  // test
+            bool available() const;  // test
+            ItemState state() const;  // test
+            Item *child(int row) const;  // test
             int indexOf(Item* item) const;
-            int childCount() const;
+            int childCount() const;  // test
             int columnCount() const;
             QVariant data(int column) const;
             int row() const;
             UpdateRange updateRange() const;
             Item *parent() const;
-            void setID(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) { m_id = id;}
-            paludis::tr1::shared_ptr<const paludis::PackageID> ID();
+            void setID(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) { m_id = id;} // test
+            paludis::tr1::shared_ptr<const paludis::PackageID> ID(); // test
             ConstIterator constChildBegin();
             Iterator childBegin();
             ConstIterator constChildEnd();
             Iterator childEnd();
-            QMutableListIterator<Item*> lastChild() {return QMutableListIterator<Item*>(m_children);}
 
         protected:
 

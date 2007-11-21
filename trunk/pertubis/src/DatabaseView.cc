@@ -105,15 +105,22 @@ namespace pertubis
     };
 }
 
-bool pertubis::rootTest()
+bool pertubis::rootTest(const QString& message)
 {
     if (0 != getuid() )
     {
-        QMessageBox::warning(0,
-                            QObject::tr("unpriviledged mode"),
-                            QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
-                                   QMessageBox::Ok,
-                                   QMessageBox::Ok);
+        if (!message.isEmpty())
+            QMessageBox::warning(0,
+                                QObject::tr("unpriviledged mode"),
+                                message,
+                                QMessageBox::Ok,
+                                QMessageBox::Ok);
+        else
+            QMessageBox::warning(0,
+                                QObject::tr("unpriviledged mode"),
+                                QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
+                                QMessageBox::Ok,
+                                QMessageBox::Ok);
         return true;
     }
     return false;
@@ -163,7 +170,7 @@ pertubis::DatabaseView::DatabaseView() :
     loadSettings();
     m_repoListThread->start();
     slotRefreshCategories();
-//     rootTest();
+    rootTest();
 }
 
 pertubis::DatabaseView::~DatabaseView()
@@ -706,7 +713,7 @@ void pertubis::DatabaseView::slotResultCount()
 void pertubis::DatabaseView::slotCategoryChanged( const QModelIndex& /*proxyIndex*/ )
 {
     QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categories->currentIndex()));
-    if ( !origIndex.isValid() || m_packageViewThread->isRunning())
+    if ( !origIndex.isValid() || origIndex.column() != 0 || m_packageViewThread->isRunning())
         return;
     QString cat = m_catModel->data(origIndex).toString();
     qDebug() << "pertubis::DatabaseView::slotCategoryChanged()" << cat;
@@ -759,7 +766,8 @@ void pertubis::DatabaseView::slotDeinstallTask(bool mystate)
 
 void pertubis::DatabaseView::slotFinish()
 {
-    m_box->doPendingTasks(this);
+    if (rootTest(tr("This feature is only available for system administrators")))
+        m_box->doPendingTasks(this);
 //     QMessageBox::information(0,
 //                          QObject::tr("information"),
 //                                      QObject::tr("feature is under development"),

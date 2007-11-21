@@ -31,9 +31,9 @@ bool pertubis::PackageFilterModel::filterAcceptsRow(int sourceRow,
     const QModelIndex &sourceParent) const
 {
 //     qDebug() << m_repositories << sourceRow << sourceParent;
-    if (sourceParent == QModelIndex() )
+    QModelIndex pmi = sourceModel()->index(sourceRow,0,sourceParent);
+    if (sourceParent == QModelIndex() && sourceModel()->rowCount(pmi) > 0)
     {
-        QModelIndex pmi = sourceModel()->index(sourceRow,0,sourceParent);
         for (uint i=0,iEnd=sourceModel()->rowCount(pmi);i<iEnd;i++)
         {
             QModelIndex vx = sourceModel()->index(i,Item::io_repository,pmi);

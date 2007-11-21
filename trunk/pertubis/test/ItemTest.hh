@@ -42,11 +42,40 @@ namespace pertubis
 
 	private slots:
 
-        /*! \brief Combined simple hierachy test with PackageItem and VersionItem as aprent and child
+        /*! \brief testing Item::appendChild and Item::child
         *
         */
 		void appendChild();
+
+        /*! \brief testing Item::prependChild and Item::child
+         *
+         */
+        void prependChild();
+
+        /*! \brief testing Item::setTaskState and Item::taskState
+         *
+         */
         void setTaskState();
+
+        /*! \brief testing Item::setState and Item::state
+         *
+         */
+        void setState();
+
+        /*! \brief testing Item::setState and Item::available
+         *
+         */
+        void available();
+
+        /*! \brief testing Item::setBestChild and Item::bestChild
+         *
+         */
+        void setBestChild();
+
+        /*! \brief testing Item::setBestChild and Item::bestChild
+         *
+         */
+        void setID();
 	};
 }
 

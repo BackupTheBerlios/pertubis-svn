@@ -43,6 +43,7 @@ namespace pertubis
         void startTask(DatabaseView* main);
         bool changeChildStates(Item* item, int mystate);
         bool changeParentStates(Item* item, int mystate);
+        bool changeNodeStates(Item* item, int newState);
 
     private:
 

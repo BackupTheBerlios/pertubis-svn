@@ -49,14 +49,31 @@ void pertubis::ShowSelectionsThread::run()
             QString repo(QString::fromStdString(paludis::stringify((*idStart)->repository()->name())));
             QVariantList list;
             list <<
-                    QVariant(m_main->taskbox()->selectionData(*idStart)) <<
-                    QString::fromStdString(paludis::stringify((*idStart)->name().package)).append("-"+QString::fromStdString(paludis::stringify((*idStart)->version()))) <<
+                    QVariant(m_main->taskbox()->tasks()) <<
+                    QString("%1-%2").arg(QString::fromStdString(paludis::stringify((*idStart)->name().package))).arg(QString::fromStdString(paludis::stringify((*idStart)->version()))) <<
                     QString::fromStdString(paludis::stringify((*idStart)->name().category)) <<
                     QString::fromStdString(paludis::stringify((*idStart)->repository()->name())) <<
-                    ( installed(*idStart) ? Qt::Checked : Qt::Unchecked) <<
+                    ( installed(*idStart) ? Qt::PartiallyChecked : Qt::Unchecked) <<
                     "" <<
                     "";
-            emit appendPackage(new Item(*idStart,list,Item::is_stable,Item::ur_node,0));
+
+            qDebug() << "pertubis::ShowSelectionsThread::run() - 1";
+            Item* pitem=0;
+            try
+            {
+                pitem = new Item(*idStart,list,Item::is_stable,Item::ur_node,0);
+            }
+            catch(std::bad_alloc)
+            {
+                qDebug() << "pertubis::ShowSelectionsThread::run() - new error";
+                continue;
+            }
+            qDebug() << "pertubis::ShowSelectionsThread::run()" << *pitem;
+            qDebug() << "pertubis::ShowSelectionsThread::run() - 2";
+            m_main->taskbox()->setItemTasks(pitem);
+            qDebug() << "pertubis::ShowSelectionsThread::run() - 3";
+
+            emit appendPackage(pitem);
         }
     }
     qDebug() << "pertubis::ShowSelectionsThread::run() - done";

@@ -130,6 +130,11 @@ namespace pertubis
         */
         virtual bool changeParentStates(Item* item, int mystate)=0;
 
+        /*! \brief changes only the nodes' selection state
+        *
+        */
+        virtual bool changeNodeStates(Item* item, int newState)=0;
+
         /*! \brief actually change
         *
         */

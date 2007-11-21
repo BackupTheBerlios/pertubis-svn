@@ -20,7 +20,9 @@ LICENSE="GPL-2"
 SLOT="0"
 IUSE="debug"
 
-RDEPEND=">=x11-libs/qt-4.3.0"
+RDEPEND=">=x11-libs/qt-4.3.0
+        kde? (>=kde-base/kdesu-3.6 || >=kde-base/kdebase-3.6)
+        gnome? (>=x11-libs/gksu-1.9.1)"
 
 DEPEND="${RDEPEND}
         >=dev-util/cmake-2.4.7"
@@ -39,6 +41,13 @@ src_setup() {
         mycmakeargs="${mycmakeargs} -DCMAKE_BUILD_TYPE=Debug"
     fi
 
+    if use kde; then
+        mycmakeargs="${mycmakeargs} -DDESKTOP_SU_TOOL=kdesu"
+    fi
+    elif use gnome; then
+        mycmakeargs="${mycmakeargs} -DDESKTOP_SU_TOOL=gksu"
+    fi
+
     cmake-utils_configureout
 }
 
@@ -49,9 +58,7 @@ src_compile() {
 
 src_test() {
 
-    pushd 'test'
-    emake "test"  || die "Make test failed"
-    popd
+    cmake-utils_src_test
 }
 
 src_install() {

@@ -36,7 +36,7 @@ bool pertubis::InstallTask::available(Item* item) const
 
 bool pertubis::InstallTask::changeParentStates(Item* item, int newState)
 {
-//     qDebug() << "InstallTask::changeParentStates - start" <<  newState;
+    qDebug() << "InstallTask::changeParentStates - start" <<  newState;
     Item::Iterator iStart(item->childBegin());
     Item::Iterator iEnd(item->childEnd());
     switch (newState)
@@ -46,13 +46,11 @@ bool pertubis::InstallTask::changeParentStates(Item* item, int newState)
             changeEntry(item->ID(),true);
             item->setTaskState(m_taskid,Qt::PartiallyChecked);
             if (item->bestChild() != 0)
-            {
                 item->bestChild()->setTaskState(m_taskid,Qt::Checked);
-            }
             break;
         case Qt::Unchecked:
             item->setTaskState(m_taskid,Qt::Unchecked);
-            while(iStart != iEnd)
+            while (iStart!= iEnd)
             {
                 changeEntry((*iStart)->ID(),false);
                 (*iStart)->setTaskState(m_taskid,Qt::Unchecked);
@@ -114,6 +112,24 @@ bool pertubis::InstallTask::changeChildStates(Item* item, int newState)
     return true;
 }
 
+bool pertubis::InstallTask::changeNodeStates(Item* item, int newState)
+{
+    switch (newState)
+    {
+        case Qt::Unchecked:
+            changeEntry(item->ID(),false);
+            item->setTaskState(m_taskid,Qt::Unchecked);
+            break;
+        case Qt::Checked:
+            changeEntry(item->ID(),true);
+            item->setTaskState(m_taskid,Qt::Checked);
+            break;
+        default:
+            ;
+    }
+    return true;
+}
+
 void pertubis::InstallTask::startTask(DatabaseView* main)
 {
     paludis::DepListOptions options;
@@ -132,5 +148,5 @@ void pertubis::InstallTask::startTask(DatabaseView* main)
         m_task->add_exact_package(*i);
     }
     m_task->run();
-    m_data.empty();
+    int res __attribute__ ((unused)) = m_data.empty();
 }

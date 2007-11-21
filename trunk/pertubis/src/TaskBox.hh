@@ -66,7 +66,7 @@ namespace pertubis
         */
         QVariantList selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id);
 
-        /*! \brief sets the (visual) setting for each stored Task in the Item given
+        /*! \brief sets each Task selection status for the given Item
         *
         */
         void setItemTasks(Item* item);

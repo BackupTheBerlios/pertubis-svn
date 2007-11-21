@@ -65,7 +65,7 @@ bool pertubis::DeinstallTask::changeParentStates(Item* item, int newState)
 
 bool pertubis::DeinstallTask::changeChildStates(Item* item, int newState)
 {
-    qDebug() << "DeinstallTask::changeChildStates - start" <<  newState;
+//      qDebug() << "DeinstallTask::changeChildStates - start" <<  newState;
     QList<Item*>::iterator iStart(item->parent()->childBegin());
     QList<Item*>::iterator iEnd(item->parent()->childEnd());
     if (item->data(Item::io_installed).toInt() != Qt::Unchecked)
@@ -110,6 +110,24 @@ bool pertubis::DeinstallTask::changeChildStates(Item* item, int newState)
                 item->parent()->setTaskState(m_taskid,Qt::Checked);
             else
                 item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
+            break;
+        default:
+            ;
+    }
+    return true;
+}
+
+bool pertubis::DeinstallTask::changeNodeStates(Item* item, int newState)
+{
+    switch (newState)
+    {
+        case Qt::Unchecked:
+            changeEntry(item->ID(),false);
+            item->setTaskState(m_taskid,Qt::Unchecked);
+            break;
+        case Qt::Checked:
+            changeEntry(item->ID(),true);
+            item->setTaskState(m_taskid,Qt::Checked);
             break;
         default:
             ;

@@ -212,7 +212,7 @@ void pertubis::PackageModel::slotPrependPackage(Item* item)
 bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taskid, bool mystate)
 {
     Item* item = static_cast<Item*>(ix.internalPointer());
-    qDebug() << "PackageModel::setSelectionData() - start" << ix << taskid << mystate << *item;
+//     qDebug() << "PackageModel::setSelectionData() - start" << ix << taskid << mystate << *item;
     Item::UpdateRange range = item->updateRange();
     switch (range)
     {
@@ -221,6 +221,7 @@ bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taski
                 emit dataChanged(ix, index(item->childCount()-1,0,ix));
 //                 emit layoutChanged();
             return true;
+            break;
         case Item::ur_child:
             if (m_box->task(taskid)->changeChildStates(item,mystate) )
             {
@@ -230,8 +231,15 @@ bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taski
 //                 emit layoutChanged();
             }
             return true;
+            break;
+        case Item::ur_node:
+            if (m_box->task(taskid)->changeNodeStates(item, mystate) )
+                emit dataChanged(ix, ix);
+            return true;
+            break;
         default:
             return true;
+            break;
     }
     return false;
 }

@@ -1,5 +1,9 @@
 INCLUDE(${QT_USE_FILE})
 
+SET(PERTUBIS_SU_TOOL
+    CACHE STRING
+    "use this to determine the desktop su tool")
+
 SET(PERTUBIS_SRCS
     CategoriesThread.cc
     CategoryFilterModel.cc
@@ -22,7 +26,6 @@ SET(PERTUBIS_SRCS
     PackageModel.cc
     PackagesThread.cc
     RegexMatcher.cc
-#     RepositoryInfoModel.cc
     RepositoryListModel.cc
     SearchThread.cc
     SearchWindow.cc
@@ -46,21 +49,20 @@ SET(PERTUBIS_MOC_HDRS
     DeinstallTask.hh
     DetailsThread.hh
     InstallTask.hh
-    ItemInstallTask.hh
     Item.hh
+    ItemInstallTask.hh
     MessageOutput.hh
     OptionsDelegate.hh
     PackageFilterModel.hh
     PackageModel.hh
     PackagesThread.hh
-#     RepositoryInfoModel.hh
     RepositoryListModel.hh
     SearchThread.hh
     SearchWindow.hh
     Settings.hh
     ShowSelectionsThread.hh
-    Task.hh
     TaskBox.hh
+    Task.hh
     ThreadBase.hh
 )
 
@@ -78,12 +80,16 @@ ADD_EXECUTABLE(pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SR
 LINK_DIRECTORIES(${PALUDIS_LINK_DIR} )
 TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
 
+MESSAGE("CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
+MESSAGE("CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}")
+CONFIGURE_FILE(../utils/desktop-integration/pertubis.desktop.template ${CMAKE_CURRENT_BINARY_DIR}/pertubis.desktop)
 ######################################################
 # install
 ######################################################
 
+
 INSTALL(TARGETS pertubis DESTINATION /usr/sbin)
-INSTALL(FILES ../utils/desktop-integration/pertubis.desktop DESTINATION /usr/share/applnk/Settings/System)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/pertubis.desktop DESTINATION /usr/share/applnk/Settings/System)
 INSTALL(FILES ../utils/icons/16x16/apps/pertubis.png DESTINATION /usr/share/icons/hicolor/16x16/apps)
 INSTALL(FILES ../utils/icons/22x22/apps/pertubis.png DESTINATION /usr/share/icons/hicolor/22x22/apps)
 INSTALL(FILES ../utils/icons/32x32/apps/pertubis.png DESTINATION /usr/share/icons/hicolor/32x32/apps)
