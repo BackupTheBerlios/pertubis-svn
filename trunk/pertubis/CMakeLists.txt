@@ -2,6 +2,16 @@ PROJECT (PERTUBIS)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.0)
 
+# choose the DE su tool. For kde take kdesu, for gnome take gksu
+SET(PERTUBIS_SU_TOOL
+    CACHE STRING
+    "use this to determine the desktop su tool")
+
+# should we optionally build the tests? set this to 1 if yes
+SET(PERTUBIS_BUILD_TESTS 0
+    CACHE STRING
+    "set this to 1 if you want to run the ctest suite")
+
 # choose the build mode = Debug | Release
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release
@@ -9,6 +19,10 @@ IF(NOT CMAKE_BUILD_TYPE)
     "Choose the type of build, options are: Debug Release."
     FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
+
+IF (CAKE_BUILD_TYPE MATCHES "debug")
+	SET(CMAKE_BUILD_TYPE Debug)
+ENDIF (CAKE_BUILD_TYPE MATCHES "debug")
 
 # make the build process more verbose
 IF(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -18,14 +32,6 @@ ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
 FIND_PACKAGE(Qt4 REQUIRED)
 
 INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR})
-
-SET(PERTUBIS_SU_TOOL
-    CACHE STRING
-    "use this to determine the desktop su tool")
-
-SET(PERTUBIS_BUILD_TESTS 0
-    CACHE STRING
-    "set this to 1 if you want to run the ctest suite")
 
 # MESSAGE("CMAKE_CURRENT_SOURCE_DIR  = ${CMAKE_CURRENT_SOURCE_DIR}")
 

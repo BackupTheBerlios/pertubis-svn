@@ -37,7 +37,6 @@ SET(PERTUBIS_SRCS
 
 SET(PERTUBIS_MOC_HDRS
     ../src/CategoryModel.hh
-    ../src/CategoryItem.hh
     ../src/CategoryFilterModel.hh
     ../src/DatabaseView.hh
     ../src/DeinstallTask.hh

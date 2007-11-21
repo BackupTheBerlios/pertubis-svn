@@ -2,41 +2,43 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+# inherit subversion cmake-utils flag-o-matic
 inherit subversion cmake-utils flag-o-matic
 
 ESVN_REPO_URI="svn://svn.berlios.de/pertubis/trunk/pertubis/"
-ESVN_PROJECT="pertubis-svn"
-
-ESVN_STORE_DIR="${DISTDIR}/svn-src"
 
 DESCRIPTION="a graphical frontend for paludis using qt4 ( development version )"
 HOMEPAGE="http://www.pertubis.berlios.de"
 
 SRC_URI=""
 
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~x86"
 LICENSE="GPL-2"
 
 SLOT="0"
-IUSE="debug"
+IUSE="debug gnome kde tests"
 
+# TODO: kde and gnome should be exclusive or, or if both are set, prefer kde?/gnome?
+# the su tool
 RDEPEND=">=x11-libs/qt-4.3.0
-	kde? ( >=kde-base/kdesu-3.5.5 )  : ( >=kde-base/kdebase-3.5.5 )
+	kde? ( >=kde-base/kdesu-3.5.5 ) || ( >=kde-base/kdebase-3.5.5 )
 	gnome? ( >=x11-libs/gksu-1.9.1 )"
 
 DEPEND="${RDEPEND}
 	>=dev-util/cmake-2.4.7"
 
-S="${WORKDIR}"/pertubis
-
 src_setup() {
-	ewarn
-	ewarn "This is an Subversion snapshot, so no functionality is"
-	ewarn "guaranteed!"
+
+	subversion_fetch
+	clean
+}
+
+src_compile() {
+
+	einfo "This is an Subversion snapshot, so no functionality is guaranteed!"
+
 	replace-flags -Os -O2
 	replace-flags -O3 -O2
-	subversion_fetch
-	# Enable debug via use flag switch
 	if use debug; then
 		mycmakeargs="${mycmakeargs} -DCMAKE_BUILD_TYPE=Debug"
 	fi
@@ -51,19 +53,17 @@ src_setup() {
 		mycmakeargs="${mycmakeargs} -DPERTUBIS_BUILD_TESTS=1"
 	fi
 
-	cmake-utils_configureout || die "cmake configure failed"
-}
+	# mycmakeargs should be ="-DCMAKE_BUILD_TYPE=Debug -DPERTUBIS_SU_TOOL=kdesu -DPERTUBIS_BUILD_TESTS=1"
+	# but the ebuild configures cmake with e.g. -DCMAKE_BUILD_TYPE=debug (see cmake . ${WORKDIR}
+	einfo "mycmakeargs ${mycmakeargs}"
 
-src_compile() {
 
-	cmake-utils_src_compile || die "cmake-utils_src_compile failed"
+ 	cmake-utils_src_compile || die "cmake-utils_src_compile failed"
 }
 
 src_test() {
 
-	if use tests; then
-		cmake-utils_src_test || die "tests failed"
-	if
+	cmake-utils_src_test || die "tests failed"
 }
 
 src_install() {
