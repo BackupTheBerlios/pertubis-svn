@@ -48,7 +48,8 @@ namespace pertubis
 
     protected:
 
-        bool installed(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+        bool installed(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+        bool hasVersionChange(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
         DatabaseView*     m_main;
     };

@@ -156,9 +156,7 @@ namespace pertubis
 
     };
 
-    inline bool operator!=(const Task& a,const Task& b) { return a.name() != b.name();}
-
-    inline bool operator==(const Task& a,const Task& b) { return a.name() == b.name();}
+//     inline bool operator==(const Task& a,const Task& b) { return a.name() == b.name();}
 
 }
 

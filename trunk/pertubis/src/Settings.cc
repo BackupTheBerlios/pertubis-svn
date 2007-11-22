@@ -36,6 +36,37 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
+static QStringList findTranslationFiles()
+{
+    QDir dir(":i18n");
+    QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files,
+                                          QDir::Name);
+
+    QMutableStringListIterator i(fileNames);
+
+    while (i.hasNext())
+    {
+        i.next();
+        QFileInfo info(i.value());
+        QString tmp(dir.filePath(info.baseName()));
+        qDebug() << "\033[32mfound translation file =" << tmp << "\033[0m";
+        i.setValue(tmp);
+    }
+
+    return fileNames;
+}
+
+
+static QString languageName(const QString &qmFile)
+{
+    QString prefix(qmFile.split("-").value(1));
+    if (prefix == "de")
+        return ("Deutsch");
+    if (prefix == "fr")
+        return ("Français");
+    return ("English");
+}
+
 pertubis::I18NPage::I18NPage(QWidget *pobj)
      : QWidget(pobj)
 {
@@ -46,7 +77,7 @@ pertubis::I18NPage::I18NPage(QWidget *pobj)
 
     loadSettings();
 
-    QStringList list = findQmFiles();
+    QStringList list = findTranslationFiles();
     QString filename;
     int i=0;
     foreach (filename,list)
@@ -111,16 +142,6 @@ void pertubis::I18NPage::languageChanged(const QString& language)
     msgBox.information(this,tr("pertubis info"),tr("language setting changes will be applied after a restart"));
 }
 
-QString pertubis::languageName(const QString &qmFile)
-{
-    QString prefix(qmFile.split("-").value(1));
-    if (prefix == "de")
-        return ("Deutsch");
-    if (prefix == "fr")
-        return ("Français");
-    return ("English");
-}
-
 pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj)
 {
     contentsWidget = new QListWidget;
@@ -179,22 +200,3 @@ void pertubis::Settings::changePage(QListWidgetItem *current, QListWidgetItem *p
     pagesWidget->setCurrentIndex(contentsWidget->row(current));
 }
 
-QStringList pertubis::findQmFiles()
-{
-    QDir dir(":i18n");
-    QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files,
-                                        QDir::Name);
-
-    QMutableStringListIterator i(fileNames);
-
-    while (i.hasNext())
-    {
-        i.next();
-         QFileInfo info(i.value());
-        QString tmp(dir.filePath(info.baseName()));
-        qDebug() << "\033[32mfound translation file =" << tmp << "\033[0m";
-        i.setValue(tmp);
-    }
-
-    return fileNames;
-}

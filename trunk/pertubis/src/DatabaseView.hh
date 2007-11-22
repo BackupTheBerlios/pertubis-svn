@@ -25,6 +25,7 @@
 #include <QSystemTrayIcon>
 #include <QTreeView>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/environment-fwd.hh>
 
 class QDockWidget;
 class QMenu;
@@ -37,37 +38,27 @@ class QToolBar;
 class QTabWidget;
 class QUrl;
 
-namespace paludis
-{
-    class Environment;
-}
-
 namespace pertubis
 {
+    class CategoriesThread;
     class CategoryFilterModel;
     class CategoryModel;
+    class DetailsThread;
     class Item;
     class MessageOutput;
     class PackageDetails;
-    class PackageModel;
     class PackageFilterModel;
-    class ReleaseEater;
-    class SearchWindow;
-    class OurSyncTask;
-    class RepositoryListModel;
-    class RepositoryInfoModel;
-    class RepositoryListView;
-    class RepositoryInfoView;
-    class Settings;
-    class TaskBox;
-    class CategoriesThread;
-    class DetailsThread;
-    class SearchThread;
-    class RepositoryListThread;
-    class RepositoryInfoThread;
-    class ShowSelectionsThread;
+    class PackageModel;
     class PackagesThread;
-    class UseFlagEditor;
+    class PertubisSyncTask;
+    class ReleaseEater;
+    class RepositoryListModel;
+    class RepositoryListThread;
+    class SearchThread;
+    class SearchWindow;
+    class Settings;
+    class ShowSelectionsThread;
+    class TaskBox;
 
     /*! \brief This class only exists since we need correct mouse coordinates
     *
@@ -137,7 +128,7 @@ namespace pertubis
         DetailsThread*          m_detailsThread;
         Item*                   m_current;
         MessageOutput*          m_output;
-        OurSyncTask*            m_syncTask;
+        PertubisSyncTask*       m_syncTask;
         PackageModel*           m_packageModel;
         PackageFilterModel*     m_packageFilterModel;
         PackagesThread*         m_packageViewThread;
@@ -166,14 +157,11 @@ namespace pertubis
         QMenu*                  m_trayMenu;
         QSplitter*              m_vSplit;
         QTableView*             m_categories;
-//         QTableView*             m_repoInfoView;
         QTableView*             m_repoListView;
         QTabWidget*             m_tabs;
         QTextBrowser*           m_details;
         QToolBar*               m_toolBar;
         ReleaseEater*           m_filter;
-//         RepositoryInfoModel*    m_repoInfoModel;
-//         RepositoryInfoThread*   m_repoInfoThread;
         RepositoryListModel*    m_repoListModel;
         RepositoryListThread*   m_repoListThread;
         SearchThread*           m_searchThread;
@@ -181,7 +169,6 @@ namespace pertubis
         Settings*               m_settings;
         ShowSelectionsThread*   m_selectionsThread;
         TaskBox*                m_box;
-//         UseFlagEditor*          m_useflagEditor;
         int                     m_tidInstall;
         int                     m_tidDeinstall;
         int                     m_repoViewTabID;
@@ -213,8 +200,6 @@ namespace pertubis
         void slotToggleSettings();
         void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
     };
-
-    bool rootTest(const QString& message="");
 }
 
 #endif

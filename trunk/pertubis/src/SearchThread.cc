@@ -181,20 +181,6 @@ void pertubis::SearchThread::run()
             ids.insert(std::make_pair(*i, tr1::shared_ptr<const PackageID>()));
     }
 
-//         bool match(false);
-//         for (std::list<tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
-//                 x_end(extractors.end()) ; x != x_end && ! match ; ++x)
-//         {
-//             std::string xx((**x)(*display_entry));
-//             for (std::list<tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
-//                     m_end(matchers.end()) ; m != m_end && ! match ; ++m)
-//                 if ((**m)(xx))
-//                     match = true;
-//         }
-//
-//         if (! match)
-//             continue;
-
     Matches matches(
                     matchers,
                     extractors
@@ -208,24 +194,23 @@ void pertubis::SearchThread::run()
         if (! i->second)
             continue;
 
-
-        QVariantList tasks(m_main->taskbox()->tasks());
         paludis::tr1::shared_ptr<const paludis::PackageIDSequence> version_ids(i->second->repository()->package_ids(i->first));
         if (version_ids->empty())
             continue;
+
+        QVariantList tasks(m_main->taskbox()->tasks());
         Item* p_item = makePackageItem(*version_ids->last(),
                                 tasks,
                                 QString::fromStdString(stringify(i->first.package)),
                                 QString::fromStdString(stringify(i->first.category)),
                                 Qt::Unchecked,
                                 Item::is_stable,
-                                Item::ur_child,
                                 0,
                                 "");
-
+        QSet<QString> pReasons;
         int mp=0;
         int ip=0;
-        for (PackageIDSequence::ConstIterator vstart(version_ids->begin()),vend(version_ids->end());
+        for (PackageIDSequence::ReverseConstIterator vstart(version_ids->rbegin()),vend(version_ids->rend());
             vstart != vend; ++vstart)
         {
             QSet<QString> vReasons;
@@ -236,24 +221,31 @@ void pertubis::SearchThread::run()
             }
             QStringList tmp(vReasons.toList());
             Item* v_item = makeVersionItem(*vstart,
-                                            m_main->taskbox()->tasks(),
+                                            tasks,
                                             QString::fromStdString(stringify((*vstart)->version())),
                                             QString::fromStdString(stringify((*vstart)->repository()->name())),
                                             ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
                                             (tmp.isEmpty() ? Item::is_stable : Item::is_masked),
-                                            Item::ur_child,
                                             p_item,
                                             tmp.join(", "));
-
+            pReasons.unite(vReasons);
             if (v_item->state() == Item::is_masked)
             {
                 ++mp;
             }
-            else
+            else if (p_item->bestChild() == 0)
                 p_item->setBestChild(v_item);
 
-            p_item->appendChild(v_item);
+            p_item->prependChild(v_item);
         }
+        QStringList ptmp(pReasons.toList());
+        if (p_item->data(Item::io_installed).toInt() != Qt::Unchecked &&
+            hasVersionChange(p_item->ID()))
+        {
+            p_item->setData(Item::io_change,tr("version change"));
+            emit changeInCat(QString::fromStdString(stringify(p_item->ID()->name().category)));
+        }
+        p_item->setData(Item::io_mask_reasons,ptmp.join(", "));
 
         if ( ip > 0 )
             p_item->setData(Item::io_installed,Qt::Checked);

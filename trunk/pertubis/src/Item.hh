@@ -116,8 +116,7 @@ namespace pertubis
     };
 
 
-    QString stateDescription(Item::ItemState status);
-    QString status(Item::ItemState status);
+//     QString stateDescription(Item::ItemState status);
 
     /*! \brief helps us creating a PackageItem
     *
@@ -129,7 +128,6 @@ namespace pertubis
         QString cat,
         Qt::CheckState isInstalled,
         Item::ItemState mystate,
-        Item::UpdateRange ur,
         Item* pitem,
         QString mask_reasons);
 
@@ -143,7 +141,6 @@ namespace pertubis
         QString rep,
         Qt::CheckState isInstalled,
         Item::ItemState mystate,
-        Item::UpdateRange ur,
         Item* pitem,
         QString mask_reasons);
 }

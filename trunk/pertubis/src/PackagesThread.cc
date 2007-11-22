@@ -87,45 +87,12 @@ void pertubis::PackagesThread::run()
 
                 QStringList tmp(pReasons.toList());
                 pReasons.clear();
-                if (p_item->data(Item::io_installed).toInt() != Qt::Unchecked)
-                {
-                    tr1::shared_ptr<const PackageIDSequence> ci(
-                            m_main->getEnv()->package_database()->query(
-                            query::InstalledAtRoot(m_main->getEnv()->root()) &
-                            query::Matches(PackageDepSpec(
-                                    paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p_item->ID()->name())),
-                                    paludis::tr1::shared_ptr<CategoryNamePart>(),
-                                    paludis::tr1::shared_ptr<PackageNamePart>(),
-                                    paludis::tr1::shared_ptr<VersionRequirements>(),
-                                    vr_and,
-                                    paludis::tr1::shared_ptr<SlotName>(new SlotName(p_item->ID()->slot())))),
-                            qo_order_by_version));
-
-                    tr1::shared_ptr<const PackageIDSequence> av(
-                            m_main->getEnv()->package_database()->query(
-                            query::SupportsAction<InstallAction>() &
-                            query::Matches(PackageDepSpec(
-                                    paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p_item->ID()->name())),
-                                    paludis::tr1::shared_ptr<CategoryNamePart>(),
-                                    paludis::tr1::shared_ptr<PackageNamePart>(),
-                                    paludis::tr1::shared_ptr<VersionRequirements>(),
-                                    vr_and,
-                                    paludis::tr1::shared_ptr<SlotName>(new SlotName(p_item->ID()->slot())))) &
-                            query::NotMasked(),
-                            qo_order_by_version));
-                    if (! ci->empty())
+                if (p_item->data(Item::io_installed).toInt() != Qt::Unchecked &&
+                    hasVersionChange(p_item->ID()))
                     {
-                        if (! av->empty())
-                        {
-                            if ((*av->last())->version() < (*ci->last())->version() ||
-                                (*av->last())->version() > (*ci->last())->version())
-                            {
-                                p_item->setData(Item::io_change,"upgradable");
-                                emit changeInCat(QString::fromStdString(stringify((*vstart)->name().category)));
-                            }
-                        }
+                        p_item->setData(Item::io_change,"version change");
+                        emit changeInCat(QString::fromStdString(stringify((*vstart)->name().category)));
                     }
-                }
 
                 p_item->setData(Item::io_mask_reasons,tmp.join(", "));
             }
@@ -136,11 +103,9 @@ void pertubis::PackagesThread::run()
                                     QString::fromStdString(stringify((*vstart)->name().category)),
                                     Qt::Unchecked,
                                     Item::is_stable,
-                                    Item::ur_parent,
                                     0,
                                     "");
 
-//             qDebug() << "pertubis::PackagesThread::run()" << *p_item;
             old_qpn = (*vstart)->name();
 
             emit addPackage(p_item);
@@ -160,11 +125,10 @@ void pertubis::PackagesThread::run()
                                     QString::fromStdString(stringify((*vstart)->repository()->name())),
                                     ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
                                     (vReasons.isEmpty() ? Item::is_stable : Item::is_masked),
-                                    Item::ur_child,
                                     p_item,
                                     vReasons.join(", "));
-
-        box->setItemTasks(v_item);
+        qDebug() << *v_item;
+        box->setTasksInItem(v_item);
         if (v_item->data(Item::io_installed).toInt() != Qt::Unchecked)
         {
             p_item->setData(Item::io_installed,Qt::Checked);

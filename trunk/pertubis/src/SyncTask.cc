@@ -27,36 +27,36 @@
 #include <iostream>
 #include <string>
 
-void pertubis::OurSyncTask::on_sync_all_pre()
+void pertubis::PertubisSyncTask::on_sync_all_pre()
 {
 }
 
-void pertubis::OurSyncTask::on_sync_pre(const paludis::RepositoryName & r)
+void pertubis::PertubisSyncTask::on_sync_pre(const paludis::RepositoryName & r)
 {
     m_output->append(QString::fromStdString(color(stringify(r),"magenta")));
 }
 
-void pertubis::OurSyncTask::on_sync_post(const paludis::RepositoryName &)
+void pertubis::PertubisSyncTask::on_sync_post(const paludis::RepositoryName &)
 {
 }
 
-void pertubis::OurSyncTask::on_sync_skip(const paludis::RepositoryName & r)
+void pertubis::PertubisSyncTask::on_sync_skip(const paludis::RepositoryName & r)
 {
     m_output->append(QString("Sync %1 skipped").arg(paludis::stringify(r).c_str()));
 }
 
-void pertubis::OurSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
+void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
 {
     m_output->append(QString("Sync %1 completed").arg(paludis::stringify(r).c_str()));
 }
 
-void pertubis::OurSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
+void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
 {
     _return_code |= 1;
     qWarning("Sync error: * %s %s",e.backtrace("\n  * ").c_str(), e.message().c_str());
 }
 
-void pertubis::OurSyncTask::on_sync_all_post()
+void pertubis::PertubisSyncTask::on_sync_all_post()
 {
     m_output->append("");
 }

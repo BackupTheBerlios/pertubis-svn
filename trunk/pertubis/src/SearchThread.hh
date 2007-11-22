@@ -55,6 +55,7 @@ namespace pertubis
 
     signals:
         void itemResult(Item* root);
+        void changeInCat(QString cat);
         void finished(int resultCount);
     };
 }

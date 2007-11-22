@@ -37,7 +37,8 @@
 
 namespace
 {
-    class Displayer : public paludis::ConstVisitor<paludis::MetadataKeyVisitorTypes>
+    class Displayer :
+        public paludis::ConstVisitor<paludis::MetadataKeyVisitorTypes>
     {
         private:
             pertubis::DetailsThread* thread;

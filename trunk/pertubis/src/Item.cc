@@ -193,20 +193,20 @@ pertubis::Item* pertubis::Item::bestChild() const
     return m_bestChild;
 }
 
-QString pertubis::stateDescription(Item::ItemState status)
-{
-    switch (status)
-    {
-        case Item::is_stable:
-            return "stable";
-        case Item::is_unstable:
-            return "possibly unstable";
-        case Item::is_masked:
-            return "not avaliable since masked";
-        default:
-            return "unknown package status";
-    }
-}
+// QString pertubis::stateDescription(Item::ItemState status)
+// {
+//     switch (status)
+//     {
+//         case Item::is_stable:
+//             return "stable";
+//         case Item::is_unstable:
+//             return "possibly unstable";
+//         case Item::is_masked:
+//             return "not avaliable since masked";
+//         default:
+//             return "unknown package status";
+//     }
+// }
 
 pertubis::Item* pertubis::makePackageItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                              QVariantList selections,
@@ -214,7 +214,6 @@ pertubis::Item* pertubis::makePackageItem(paludis::tr1::shared_ptr<const paludis
                              QString cat,
                              Qt::CheckState isInstalled,
                              Item::ItemState mystate,
-                             Item::UpdateRange ur,
                              Item* pitem,
                              QString mask_reasons)
 {
@@ -227,7 +226,7 @@ pertubis::Item* pertubis::makePackageItem(paludis::tr1::shared_ptr<const paludis
             QVariant(static_cast<int>(isInstalled)) <<  // io_installed
             mask_reasons << // io_mask_reasons
             "";  // io_change
-    return new Item(id,list,mystate,ur,pitem);
+    return new Item(id,list,mystate,Item::ur_parent,pitem);
 }
 
 pertubis::Item* pertubis::makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
@@ -236,7 +235,6 @@ pertubis::Item* pertubis::makeVersionItem(paludis::tr1::shared_ptr<const paludis
                                  QString rep,
                                  Qt::CheckState isInstalled,
                                  Item::ItemState mystate,
-                                 Item::UpdateRange ur,
                                  Item* pitem,
                                  QString mask_reasons)
 {
@@ -249,7 +247,7 @@ pertubis::Item* pertubis::makeVersionItem(paludis::tr1::shared_ptr<const paludis
             QVariant(static_cast<int>(isInstalled)) <<  // io_installed
             mask_reasons <<  // io_mask_reasons
             ""; // io_change
-    return new Item(id,list,mystate,ur,pitem);
+    return new Item(id,list,mystate,Item::ur_child,pitem);
 }
 
 #ifndef QT_NO_DEBUG

@@ -36,20 +36,63 @@ pertubis::ThreadBase::ThreadBase(QObject* pobj,
 {
 }
 
-bool pertubis::ThreadBase::installed(paludis::tr1::shared_ptr<const paludis::PackageID> id)
+bool pertubis::ThreadBase::installed(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
-    paludis::tr1::shared_ptr<paludis::VersionRequirements> req(new paludis::VersionRequirements());
-    req->push_back(paludis::VersionRequirement(paludis::VersionOperator(paludis::vo_equal),id->version()));
-    paludis::tr1::shared_ptr<const paludis::PackageIDSequence> ipacks(
+    using namespace paludis;
+    tr1::shared_ptr<VersionRequirements> req(new VersionRequirements());
+    req->push_back(VersionRequirement(VersionOperator(vo_equal),id->version()));
+    tr1::shared_ptr<const PackageIDSequence> ipacks(
         m_main->getEnv()->package_database()->query(
-            paludis::query::InstalledAtRoot(m_main->getEnv()->root()) &
-            paludis::query::Matches(paludis::PackageDepSpec(
-                paludis::tr1::shared_ptr<paludis::QualifiedPackageName>(new paludis::QualifiedPackageName(id->name())),
-                paludis::tr1::shared_ptr<paludis::CategoryNamePart>(),
-                paludis::tr1::shared_ptr<paludis::PackageNamePart>(),
+            query::InstalledAtRoot(m_main->getEnv()->root()) &
+            query::Matches(PackageDepSpec(
+                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
+                tr1::shared_ptr<CategoryNamePart>(),
+                tr1::shared_ptr<PackageNamePart>(),
                 req,
-                paludis::vr_and,
-                paludis::tr1::shared_ptr<paludis::SlotName>(new paludis::SlotName(id->slot())))),
-            paludis::qo_order_by_version));
+                vr_and,
+                tr1::shared_ptr<SlotName>(new SlotName(id->slot())))),
+            qo_order_by_version));
     return (ipacks->begin() != ipacks->end());
 }
+
+bool pertubis::ThreadBase::hasVersionChange(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
+{
+    using namespace paludis;
+    tr1::shared_ptr<const PackageIDSequence> ci(
+        m_main->getEnv()->package_database()->query(
+            query::InstalledAtRoot(m_main->getEnv()->root()) &
+            query::Matches(PackageDepSpec(
+                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
+                tr1::shared_ptr<CategoryNamePart>(),
+                tr1::shared_ptr<PackageNamePart>(),
+                tr1::shared_ptr<VersionRequirements>(),
+                vr_and,
+                tr1::shared_ptr<SlotName>(new SlotName(id->slot())))),
+            qo_order_by_version));
+
+        tr1::shared_ptr<const PackageIDSequence> av(
+            m_main->getEnv()->package_database()->query(
+                query::SupportsAction<InstallAction>() &
+                query::Matches(PackageDepSpec(
+                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
+                    tr1::shared_ptr<CategoryNamePart>(),
+                    tr1::shared_ptr<PackageNamePart>(),
+                    tr1::shared_ptr<VersionRequirements>(),
+                    vr_and,
+                    tr1::shared_ptr<SlotName>(new SlotName(id->slot())))) &
+                query::NotMasked(),
+                                    qo_order_by_version));
+    if (! ci->empty())
+    {
+        if (! av->empty())
+        {
+            if ((*av->last())->version() < (*ci->last())->version() ||
+                (*av->last())->version() > (*ci->last())->version())
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+

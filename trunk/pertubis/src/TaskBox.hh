@@ -69,7 +69,7 @@ namespace pertubis
         /*! \brief sets each Task selection status for the given Item
         *
         */
-        void setItemTasks(Item* item);
+		void setTasksInItem(Item* item);
 
         void doPendingTasks(DatabaseView* main);
 

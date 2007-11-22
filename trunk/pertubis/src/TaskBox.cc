@@ -82,7 +82,7 @@ void pertubis::TaskBox::slotTaskChanged(paludis::tr1::shared_ptr<const paludis::
         t->deleteEntry(id);
 }
 
-void pertubis::TaskBox::setItemTasks(Item* item)
+void pertubis::TaskBox::setTasksInItem(Item* item)
 {
 //     qDebug() << "pertubis::TaskBox::setItemTasks()" << *item;
     for (Iterator mytask(taskBegin()), taskend(taskEnd());
@@ -91,17 +91,19 @@ void pertubis::TaskBox::setItemTasks(Item* item)
     {
         Qt::CheckState mystate( ((*mytask)->hasEntry(item->ID() ) ) ? Qt::Checked : Qt::Unchecked);
         Item::UpdateRange range = item->updateRange();
-        if (range == Item::ur_parent)
+        switch (range)
         {
-            (*mytask)->changeParentStates(item, mystate);
-        }
-        if (range == Item::ur_child)
-        {
-            (*mytask)->changeChildStates(item, mystate);
-        }
-        if (range == Item::ur_node)
-        {
-            (*mytask)->changeNodeStates(item, mystate);
+            case Item::ur_parent:
+                (*mytask)->changeParentStates(item, mystate);
+                break;
+            case Item::ur_child:
+                (*mytask)->changeChildStates(item, mystate);
+                break;
+            case Item::ur_node:
+                (*mytask)->changeNodeStates(item, mystate);
+                break;
+            default:
+                ;
         }
     }
 }

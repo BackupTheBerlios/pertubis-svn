@@ -70,7 +70,7 @@ void pertubis::ShowSelectionsThread::run()
             }
             qDebug() << "pertubis::ShowSelectionsThread::run()" << *pitem;
             qDebug() << "pertubis::ShowSelectionsThread::run() - 2";
-            m_main->taskbox()->setItemTasks(pitem);
+            m_main->taskbox()->setTasksInItem(pitem);
             qDebug() << "pertubis::ShowSelectionsThread::run() - 3";
 
             emit appendPackage(pitem);

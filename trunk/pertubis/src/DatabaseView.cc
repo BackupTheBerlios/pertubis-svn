@@ -17,22 +17,21 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
+
 #include "CategoriesThread.hh"
-#include "CategoryModel.hh"
 #include "CategoryFilterModel.hh"
+#include "CategoryModel.hh"
 #include "DatabaseView.hh"
 #include "DeinstallTask.hh"
 #include "DetailsThread.hh"
 #include "FormatterUtils.hh"
 #include "InstallTask.hh"
 #include "Item.hh"
-
 #include "MessageOutput.hh"
 #include "OptionsDelegate.hh"
 #include "PackageFilterModel.hh"
 #include "PackageModel.hh"
 #include "PackagesThread.hh"
-// #include "RepositoryInfoModel.hh"
 #include "RepositoryListModel.hh"
 #include "SearchThread.hh"
 #include "SearchWindow.hh"
@@ -44,8 +43,8 @@
 #include <paludis/args/install_args_group.hh>
 #include <paludis/environment_maker.hh>
 #include <paludis/name.hh>
-#include <paludis/package_id.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
@@ -78,6 +77,27 @@
 
 #include <iostream>
 
+static bool rootTest(const QString& message)
+{
+    if (0 != getuid() )
+    {
+        if (!message.isEmpty())
+            QMessageBox::warning(0,
+                                 QObject::tr("unpriviledged mode"),
+                                             message,
+                                             QMessageBox::Ok,
+                                             QMessageBox::Ok);
+        else
+            QMessageBox::warning(0,
+                                 QObject::tr("unpriviledged mode"),
+                                             QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
+                                                     QMessageBox::Ok,
+                                                             QMessageBox::Ok);
+        return true;
+    }
+    return false;
+}
+
 namespace pertubis
 {
     /*! \brief We only need press events and filter release events
@@ -103,27 +123,6 @@ namespace pertubis
             }
         }
     };
-}
-
-bool pertubis::rootTest(const QString& message)
-{
-    if (0 != getuid() )
-    {
-        if (!message.isEmpty())
-            QMessageBox::warning(0,
-                                QObject::tr("unpriviledged mode"),
-                                message,
-                                QMessageBox::Ok,
-                                QMessageBox::Ok);
-        else
-            QMessageBox::warning(0,
-                                QObject::tr("unpriviledged mode"),
-                                QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
-                                QMessageBox::Ok,
-                                QMessageBox::Ok);
-        return true;
-    }
-    return false;
 }
 
 pertubis::PackageView::PackageView(QWidget* pWidget) : QTreeView(pWidget)
@@ -170,7 +169,7 @@ pertubis::DatabaseView::DatabaseView() :
     loadSettings();
     m_repoListThread->start();
     slotRefreshCategories();
-    rootTest();
+    rootTest("");
 }
 
 pertubis::DatabaseView::~DatabaseView()
@@ -223,7 +222,7 @@ void pertubis::DatabaseView::initLayout()
     m_selectionsThread = new ShowSelectionsThread(this,this);
     m_repoListThread = new RepositoryListThread(this,this);
 //     m_repoInfoThread = new RepositoryInfoThread(this,this);
-    m_syncTask = new OurSyncTask(m_env,this,m_output->output());
+    m_syncTask = new PertubisSyncTask(m_env,this,m_output->output());
     createConnections();
     qDebug() << "pertubis::DatabaseView::initLayout() - done";
 }
@@ -548,6 +547,11 @@ void pertubis::DatabaseView::createConnections()
             m_catModel,
             SLOT(slotChangeInCat(QString)));
 
+    connect(m_searchThread,
+            SIGNAL(changeInCat(QString)),
+            m_catModel,
+            SLOT(slotChangeInCat(QString)));
+
     connect(m_packageView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
@@ -865,17 +869,14 @@ void pertubis::DatabaseView::slotSearchItem()
 void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& mix)
 {
     QModelIndex index(m_packageFilterModel->mapToSource(mix));
-    m_current= static_cast<Item*>(index.internalPointer());
-    qDebug() << "DatabaseView::slotOptionsMenu() - start" << index << *m_current;
-
+    qDebug() << "DatabaseView::slotOptionsMenu() - start" << index;
     if (index.column() != Item::io_selected)
         return;
 
     m_options->clear();
-
+	m_current= static_cast<Item*>(index.internalPointer());
     QVector<Task*>::const_iterator tStart(m_box->taskBegin());
     QVector<Task*>::const_iterator tEnd(m_box->taskEnd());
-
     while (tStart != tEnd )
     {
         if ((*tStart)->available(m_current) )

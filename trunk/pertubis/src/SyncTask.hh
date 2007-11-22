@@ -29,7 +29,7 @@ class QTextEdit;
 
 namespace pertubis
 {
-    class OurSyncTask :
+    class PertubisSyncTask :
         public paludis::SyncTask,
         public QThread
     {
@@ -42,7 +42,7 @@ namespace pertubis
             void run() { execute();}
 
         public:
-            OurSyncTask(paludis::tr1::shared_ptr<paludis::Environment> env, QObject* pobj, QTextEdit* output) :
+            PertubisSyncTask(paludis::tr1::shared_ptr<paludis::Environment> env, QObject* pobj, QTextEdit* output) :
                 SyncTask(env.get(),true),
                 QThread(pobj),
                 _return_code(0),
@@ -50,7 +50,7 @@ namespace pertubis
             {
             }
 
-            ~OurSyncTask() {}
+            ~PertubisSyncTask() {}
 
             virtual void on_sync_all_pre();
             virtual void on_sync_pre(const paludis::RepositoryName &);

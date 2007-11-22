@@ -40,21 +40,10 @@ namespace pertubis
         return QString("<font color=\"%1\">%2</font>").arg(color).arg(text);
     }
 
-    inline QString make_row(const QString& col_1, const QString& col_2)
-    {
-        return QString("<tr><td>%1</td><td>%2</td></tr>").arg(col_1).arg(col_2);
-    }
-
     inline std::string make_row(const std::string& col_1, const std::string& col_2)
     {
         return std::string("<tr><td>"+col_1 + "</td><td>" + col_2 +" </td></tr>");
     }
-
-//     inline QString link(const QString& link, const QString& text="")
-//     {
-//         QString tmp(text);
-//         return QString("<a href=\"%1\">%2</a>").arg(link).arg(tmp.remove(QRegExp("/$"))+" hallo");
-//     }
 
     inline std::string link(const std::string& link, const std::string& text)
     {
@@ -70,11 +59,6 @@ namespace pertubis
     inline std::string header(const std::string& text)
     {
         return std::string("<h1>"+ text + "</h1>");
-    }
-
-    inline QString bold(const QString& text)
-    {
-        return QString("<b>%1</b>").arg(text);
     }
 
     inline std::string bold(const std::string& text)

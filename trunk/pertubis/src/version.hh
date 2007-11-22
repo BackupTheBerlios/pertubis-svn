@@ -1,6 +1,6 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_VERSION_H
 #define _PERTUBIS_ENTRY_PROTECTOR_VERSION_H 1
 
-#define VERSION "0.0.1"
+#define VERSION "0.1.0"
 
 #endif

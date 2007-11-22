@@ -33,7 +33,7 @@ pertubis::OptionsDelegate::OptionsDelegate(QWidget *pobj,PackageFilterModel* pro
 
 void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
                                         const QStyleOptionViewItem& option,
-                                          const QModelIndex& mix) const
+                                        const QModelIndex& mix) const
 {
     if (!mix.isValid())
         return;

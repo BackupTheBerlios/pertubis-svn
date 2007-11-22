@@ -32,9 +32,6 @@ class QTranslator;
 
 namespace pertubis
 {
-    QStringList findQmFiles();
-    QString languageName(const QString &qmFile);
-
 
     /*! \brief This settings group handles language and localization specific options.
     *
