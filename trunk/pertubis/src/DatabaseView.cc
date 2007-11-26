@@ -362,7 +362,7 @@ void pertubis::DatabaseView::createRepositoryBar()
 
     m_acToggleRepoBar = m_dockRepo->toggleViewAction();
     m_acToggleRepoBar->setText(tr("repository list"));
-    m_acToggleRepoBar->setIcon(QPixmap(":images/repositories_22.xpm"));
+    m_acToggleRepoBar->setIcon(QPixmap(":images/repobar_22.xpm"));
     m_acToggleRepoBar->setShortcut( tr("F10"));
     m_acToggleRepoBar->setToolTip( html_tooltip(tr("enable/disable the repository sidebar"),m_acToggleRepoBar->text()) );
 }
@@ -470,7 +470,7 @@ void pertubis::DatabaseView::createActions()
     m_acFinish->setShortcut( tr("CTRL+F12"));
     m_acFinish->setToolTip(html_tooltip( tr("starts all pending tasks you selected"),m_acFinish->text()) );
 
-    m_acSync = new QAction( QPixmap(":images/reload_22.xpm"), tr("sync"),this);
+    m_acSync = new QAction( QPixmap(":images/sync_22.xpm"), tr("sync"),this);
     m_acSync->setToolTip(html_tooltip(tr("To get the latest releases and bugfixes it is neccessary to update the package database.<br><br>It is sufficient to sync your repositories once a day"),m_acSync->text()));
 
     m_acQuit = new QAction( QPixmap(":images/quit_22.xpm"),tr("quit") ,this);
