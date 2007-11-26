@@ -22,7 +22,6 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_ITEM_H
 
 #include <QList>
-#include <QMutableListIterator>
 #include <QDebug>
 #include <QVariant>
 #include <paludis/util/tr1_memory.hh>

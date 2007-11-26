@@ -23,8 +23,6 @@
 
 #include "ThreadBase.hh"
 
-#include <paludis/util/tr1_memory.hh>
-
 #include <QString>
 #include <string>
 
@@ -47,7 +45,8 @@ namespace pertubis
     public:
 
         DetailsThread(QObject* pobj,
-                           pertubis::DatabaseView* main);
+                      const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                     TaskBox* box);
         void start(paludis::tr1::shared_ptr<const paludis::PackageID> id);
         void appendOutput(std::string text);
 

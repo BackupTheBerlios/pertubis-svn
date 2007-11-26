@@ -17,7 +17,6 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "DatabaseView.hh"
 #include "description_extractor.hh"
 #include "name_extractor.hh"
 #include "Item.hh"
@@ -28,11 +27,11 @@
 
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
+#include <paludis/mask.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
-#include <paludis/metadata_key.hh>
 #include <paludis/query.hh>
-#include <paludis/mask.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -41,6 +40,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <QDebug>
 #include <QVariant>
+#include <QStringList>
 #include <set>
 
 struct Matches
@@ -123,7 +123,8 @@ void set_id(
 }
 
 pertubis::SearchThread::SearchThread(QObject* pobj,
-                                    DatabaseView* main) : ThreadBase(pobj,main)
+                                     paludis::tr1::shared_ptr<paludis::Environment>  env,
+                                     TaskBox* box) : ThreadBase(pobj,env,box)
 {
 }
 
@@ -146,13 +147,13 @@ void pertubis::SearchThread::run()
     matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
     int count(0);
     if (m_optName )
-        extractors.push_back(tr1::shared_ptr<NameExtractor>( new NameExtractor(m_main->getEnv().get()) )    );
+        extractors.push_back(tr1::shared_ptr<NameExtractor>( new NameExtractor(m_env.get()) )    );
     if (m_optDesc )
-        extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_main->getEnv().get())));
+        extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_env.get())));
 
     std::list<tr1::shared_ptr<const Repository> > repos;
-    for (PackageDatabase::RepositoryConstIterator r(m_main->getEnv()->package_database()->begin_repositories()),
-         r_end(m_main->getEnv()->package_database()->end_repositories()) ;
+    for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
+         r_end(m_env->package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
 //         qDebug() << "1 a" << stringify(r->format()).c_str();
@@ -186,7 +187,7 @@ void pertubis::SearchThread::run()
                     extractors
                    );
 
-    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*m_main->getEnv()), tr1::cref(repos), tr1::placeholders::_1, matches));
+    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*m_env), tr1::cref(repos), tr1::placeholders::_1, matches));
 
     for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
          i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
@@ -198,7 +199,7 @@ void pertubis::SearchThread::run()
         if (version_ids->empty())
             continue;
 
-        QVariantList tasks(m_main->taskbox()->tasks());
+        QVariantList tasks(m_taskbox->tasks());
         Item* p_item = makePackageItem(*version_ids->last(),
                                 tasks,
                                 QString::fromStdString(stringify(i->first.package)),

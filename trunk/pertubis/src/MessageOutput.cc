@@ -40,7 +40,6 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
                                     m_master_fd(-1),
                                     m_slave_fd(-1)
 {
-    redirectOutput();
     paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
     paludis::Log::get_instance()->set_program_name("pertubis");
     QVBoxLayout* mylayout = new QVBoxLayout;
@@ -56,15 +55,16 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
     m_output->setAutoFillBackground(true);
     mylayout->addWidget(m_output);
     show();
+    redirectOutput();
 }
 
 void pertubis::Thread::run()
 {
-    static char buf[512];
+    static char buf[1024];
     while (m_atwork)
     {
-        int res = read(m_fd,&buf,512);
-        if (errno == 0)
+        int res = read(m_fd,&buf,1024);
+        if (res > 0)
         {
             sendMessage(QString::fromLocal8Bit(buf,res));
         }
@@ -88,8 +88,7 @@ void pertubis::MessageOutput::redirectOutput()
     connect(m_thread,
             SIGNAL(sendMessage(QString)),
             this,
-            SLOT(receiveMessage(QString)),
-            Qt::AutoConnection);
+            SLOT(receiveMessage(QString)));
     m_thread->start();
 }
 

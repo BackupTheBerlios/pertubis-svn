@@ -18,8 +18,8 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORIES_THREAD_H
-#define _PERTUBIS_ENTRY_PROTECTOR_CATEGORIES_THREAD_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_THREAD_H
+#define _PERTUBIS_ENTRY_PROTECTOR_CATEGORY_THREAD_H 1
 
 #include "ThreadBase.hh"
 #include <QList>
@@ -29,19 +29,22 @@
 
 namespace pertubis
 {
-    class KeywordManager;
     class CategoryItem;
+    class Taskbox;
 
     /*! \brief thread for fetching categories from repositories and returns a list of names
     *
     */
-    class CategoriesThread : public ThreadBase
+    class CategoryThread : public ThreadBase
     {
         Q_OBJECT
 
     public:
 
-        CategoriesThread(QObject* parent, DatabaseView* main);
+        CategoryThread(QObject* parent,
+                   const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                   TaskBox* box);
+
 
     protected:
 

@@ -32,7 +32,7 @@ namespace pertubis
 {
     class Task;
     class Item;
-    class DatabaseView;
+    class MessageOutput;
 
     /*! \brief manages the tasks pertubis knows about
     *
@@ -71,7 +71,7 @@ namespace pertubis
         */
 		void setTasksInItem(Item* item);
 
-        void doPendingTasks(DatabaseView* main);
+        void doPendingTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
 
         Iterator taskBegin();
 

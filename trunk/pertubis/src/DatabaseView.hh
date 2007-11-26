@@ -40,9 +40,9 @@ class QUrl;
 
 namespace pertubis
 {
-    class CategoriesThread;
     class CategoryFilterModel;
     class CategoryModel;
+    class CategoryThread;
     class DetailsThread;
     class Item;
     class MessageOutput;
@@ -56,9 +56,12 @@ namespace pertubis
     class RepositoryListThread;
     class SearchThread;
     class SearchWindow;
+    class SetModel;
+    class SetThread;
     class Settings;
     class ShowSelectionsThread;
     class TaskBox;
+
 
     /*! \brief This class only exists since we need correct mouse coordinates
     *
@@ -87,10 +90,6 @@ namespace pertubis
 
         DatabaseView();
         virtual ~DatabaseView();
-        paludis::tr1::shared_ptr<paludis::Environment> getEnv() const;
-        TaskBox* taskbox() const { return m_box;}
-        MessageOutput* messages() const { return m_output;}
-        RepositoryListModel* repositoryListModel() const { return m_repoListModel;}
 
     protected:
 
@@ -108,6 +107,7 @@ namespace pertubis
         void createRepositoryBar();
         void createRepositoryView();
         void createSettings();
+        void createSetListView();
         void createTab();
         void createTaskBox();
         void createTasks();
@@ -122,8 +122,9 @@ namespace pertubis
         void saveSettings();
 
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
-        CategoriesThread*       m_categoriesThread;
+        CategoryThread*         m_categoryThread;
         CategoryFilterModel*    m_categoryFilterModel;
+        CategoryFilterModel*    m_setFilterModel;
         CategoryModel*          m_catModel;
         DetailsThread*          m_detailsThread;
         Item*                   m_current;
@@ -148,16 +149,19 @@ namespace pertubis
         QAction*                m_acTogglePackageView;
         QAction*                m_acToggleRepoBar;
         QAction*                m_acToggleSearchWindow;
+        QAction*                m_acToggleSetBar;
         QAction*                m_acToggleUseBar;
         QDockWidget*            m_dockCat;
         QDockWidget*            m_dockDetails;
         QDockWidget*            m_dockRepo;
+        QDockWidget*            m_dockSet;
         QDockWidget*            m_dockUse;
         QMenu*                  m_options;
         QMenu*                  m_trayMenu;
         QSplitter*              m_vSplit;
         QTableView*             m_categories;
         QTableView*             m_repoListView;
+        QTableView*             m_setListView;
         QTabWidget*             m_tabs;
         QTextBrowser*           m_details;
         QToolBar*               m_toolBar;
@@ -165,6 +169,8 @@ namespace pertubis
         RepositoryListModel*    m_repoListModel;
         RepositoryListThread*   m_repoListThread;
         SearchThread*           m_searchThread;
+        SetModel*               m_setModel;
+        SetThread*              m_setThread;
         SearchWindow*           m_windowSearch;
         Settings*               m_settings;
         ShowSelectionsThread*   m_selectionsThread;
@@ -186,7 +192,6 @@ namespace pertubis
         void slotOpenURL(const QUrl&);
         void slotOptionsMenu(const QModelIndex& index);
         void slotQuit();
-        void slotRefreshCategories();
         void slotRepositoryChanged( const QModelIndex& index );
         void slotReposChanged();
         void slotSearchItem();

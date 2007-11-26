@@ -17,22 +17,21 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "DatabaseView.hh"
+
 #include "ThreadBase.hh"
 
 #include <paludis/environment.hh>
+#include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
 #include <paludis/query.hh>
-
+#include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/package_id.hh>
-#include <paludis/package_database.hh>
-#include <paludis/util/sequence.hh>
-
 
 pertubis::ThreadBase::ThreadBase(QObject* pobj,
-                                DatabaseView* main) : QThread(pobj), m_main(main)
+                                const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                                TaskBox* box) : QThread(pobj), m_env(env), m_taskbox(box)
 {
 }
 
@@ -42,8 +41,8 @@ bool pertubis::ThreadBase::installed(const paludis::tr1::shared_ptr<const paludi
     tr1::shared_ptr<VersionRequirements> req(new VersionRequirements());
     req->push_back(VersionRequirement(VersionOperator(vo_equal),id->version()));
     tr1::shared_ptr<const PackageIDSequence> ipacks(
-        m_main->getEnv()->package_database()->query(
-            query::InstalledAtRoot(m_main->getEnv()->root()) &
+        m_env->package_database()->query(
+            query::InstalledAtRoot(m_env->root()) &
             query::Matches(PackageDepSpec(
                 tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
                 tr1::shared_ptr<CategoryNamePart>(),
@@ -59,8 +58,8 @@ bool pertubis::ThreadBase::hasVersionChange(const paludis::tr1::shared_ptr<const
 {
     using namespace paludis;
     tr1::shared_ptr<const PackageIDSequence> ci(
-        m_main->getEnv()->package_database()->query(
-            query::InstalledAtRoot(m_main->getEnv()->root()) &
+        m_env->package_database()->query(
+            query::InstalledAtRoot(m_env->root()) &
             query::Matches(PackageDepSpec(
                 tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
                 tr1::shared_ptr<CategoryNamePart>(),
@@ -71,7 +70,7 @@ bool pertubis::ThreadBase::hasVersionChange(const paludis::tr1::shared_ptr<const
             qo_order_by_version));
 
         tr1::shared_ptr<const PackageIDSequence> av(
-            m_main->getEnv()->package_database()->query(
+            m_env->package_database()->query(
                 query::SupportsAction<InstallAction>() &
                 query::Matches(PackageDepSpec(
                     tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
@@ -95,4 +94,3 @@ bool pertubis::ThreadBase::hasVersionChange(const paludis::tr1::shared_ptr<const
     }
     return false;
 }
-

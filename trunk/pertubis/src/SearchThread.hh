@@ -27,7 +27,6 @@
 namespace pertubis
 {
     class Item;
-    class DatabaseView;
 
     /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
     *
@@ -39,7 +38,8 @@ namespace pertubis
     public:
 
         SearchThread(QObject* parent,
-                    DatabaseView* main);
+                     paludis::tr1::shared_ptr<paludis::Environment>  env,
+                     TaskBox* box);
 
         void start(const QString& str,bool name,bool desc);
 

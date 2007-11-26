@@ -19,31 +19,30 @@
 
 
 #include "PackagesThread.hh"
-#include "DatabaseView.hh"
 #include "RepositoryListModel.hh"
 #include "Item.hh"
 #include "TaskBox.hh"
 #include "Task.hh"
 #include <QList>
 
-#include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
-#include <paludis/package_database.hh>
-
-#include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/action.hh>
+#include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
 #include <paludis/query.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 pertubis::PackagesThread::PackagesThread( QObject* pobject,
-                                                    DatabaseView* main) : ThreadBase(pobject,main)
+                                          const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                                          TaskBox* box) : ThreadBase(pobject,env,box)
 {
 }
 
@@ -60,11 +59,9 @@ void pertubis::PackagesThread::start(QString str)
 void pertubis::PackagesThread::run()
 {
     using namespace paludis;
-
-    TaskBox* box(m_main->taskbox());
     CategoryNamePart cat(m_query.toLatin1().data());
     const tr1::shared_ptr< const PackageIDSequence > packageIds(
-        m_main->getEnv()->package_database()->query(
+        m_env->package_database()->query(
                 query::Category(cat) &
                 query::SupportsAction<InstallAction>(),
                 qo_order_by_version));
@@ -98,7 +95,7 @@ void pertubis::PackagesThread::run()
             }
 
             p_item = makePackageItem(*vstart,
-                                    box->tasks(),
+                                    m_taskbox->tasks(),
                                     QString::fromStdString(stringify((*vstart)->name().package)),
                                     QString::fromStdString(stringify((*vstart)->name().category)),
                                     Qt::Unchecked,
@@ -120,15 +117,14 @@ void pertubis::PackagesThread::run()
         pReasons.unite(vReasons.toSet());
 
         Item* v_item = makeVersionItem(*vstart,
-                                    box->tasks(),
+                                    m_taskbox->tasks(),
                                     stringify((*vstart)->version()).c_str(),
                                     QString::fromStdString(stringify((*vstart)->repository()->name())),
                                     ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
                                     (vReasons.isEmpty() ? Item::is_stable : Item::is_masked),
                                     p_item,
                                     vReasons.join(", "));
-        qDebug() << *v_item;
-        box->setTasksInItem(v_item);
+        m_taskbox->setTasksInItem(v_item);
         if (v_item->data(Item::io_installed).toInt() != Qt::Unchecked)
         {
             p_item->setData(Item::io_installed,Qt::Checked);

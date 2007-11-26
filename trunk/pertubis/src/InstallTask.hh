@@ -26,6 +26,8 @@
 namespace pertubis
 {
     class Install;
+
+
     /*! \brief stores the PackageIDs and bundles information what must be done with packages which are about to be installed
 
     */
@@ -35,15 +37,13 @@ namespace pertubis
 
     public:
 
-        InstallTask() {}
+        InstallTask();
         InstallTask(QObject* pobject,
                     QAction* myaction,
-                    QString tname) : Task(pobject,myaction,tname),m_task(0) {}
+                    QString tname);
         bool available(Item* item) const;
-        void startTask(DatabaseView* main);
-        bool changeChildStates(Item* item, int mystate);
-        bool changeParentStates(Item* item, int mystate);
-        bool changeNodeStates(Item* item, int newState);
+        void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
+        bool changeStates(Item* item, int mystate);
 
     private:
 

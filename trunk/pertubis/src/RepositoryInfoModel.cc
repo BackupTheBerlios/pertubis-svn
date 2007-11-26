@@ -18,7 +18,6 @@
 */
 
 #include "RepositoryInfoModel.hh"
-#include "DatabaseView.hh"
 #include <QHeaderView>
 #include <QDebug>
 #include <paludis/repository.hh>

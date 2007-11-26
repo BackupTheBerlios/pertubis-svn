@@ -18,49 +18,42 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGES_THREAD_H
-#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGES_THREAD_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_SET_THREAD_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SET_THREAD_H 1
 
 #include "ThreadBase.hh"
-
+#include <QList>
+#include <QMap>
+#include <QSet>
 #include <QString>
-
 
 namespace pertubis
 {
-    class Item;
+    class CategoryItem;
+    class Taskbox;
 
-    /*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
-    *
-    */
-    class PackagesThread : public ThreadBase
+    /*! \brief thread for fetching categories from repositories and returns a list of names
+     *
+     */
+    class SetThread : public ThreadBase
     {
         Q_OBJECT
 
         public:
 
-            PackagesThread(QObject* parent,
+            SetThread(QObject* parent,
                            const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                            TaskBox* box);
 
-            ~PackagesThread();
+
+        protected:
 
             void run();
 
-            void start(QString str);
-
-        private:
-
-            void fetchPackages();
-
-            QString                                    m_query;
-
         signals:
-            void addPackage(Item* package);
-            void changeInCat(QString);
+
+            void sendSet(QMap<QString, QSet<QString> >);
     };
 }
+
 #endif
-
-
-

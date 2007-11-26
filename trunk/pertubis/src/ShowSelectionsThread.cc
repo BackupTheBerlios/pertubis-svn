@@ -20,10 +20,8 @@
 
 #include "ShowSelectionsThread.hh"
 #include "TaskBox.hh"
-#include "DatabaseView.hh"
 #include "Task.hh"
 #include "Item.hh"
-
 #include <QDebug>
 #include <QVector>
 #include <QVariant>
@@ -36,8 +34,8 @@
 void pertubis::ShowSelectionsThread::run()
 {
     qDebug() << "pertubis::ShowSelectionsThread::run()";
-    for (TaskBox::Iterator tStart(m_main->taskbox()->taskBegin()),
-         tEnd(m_main->taskbox()->taskEnd());
+    for (TaskBox::Iterator tStart(m_taskbox->taskBegin()),
+         tEnd(m_taskbox->taskEnd());
          tStart != tEnd;
          ++tStart)
     {
@@ -49,7 +47,7 @@ void pertubis::ShowSelectionsThread::run()
             QString repo(QString::fromStdString(paludis::stringify((*idStart)->repository()->name())));
             QVariantList list;
             list <<
-                    QVariant(m_main->taskbox()->tasks()) <<
+                    QVariant(m_taskbox->tasks()) <<
                     QString("%1-%2").arg(QString::fromStdString(paludis::stringify((*idStart)->name().package))).arg(QString::fromStdString(paludis::stringify((*idStart)->version()))) <<
                     QString::fromStdString(paludis::stringify((*idStart)->name().category)) <<
                     QString::fromStdString(paludis::stringify((*idStart)->repository()->name())) <<
@@ -70,7 +68,7 @@ void pertubis::ShowSelectionsThread::run()
             }
             qDebug() << "pertubis::ShowSelectionsThread::run()" << *pitem;
             qDebug() << "pertubis::ShowSelectionsThread::run() - 2";
-            m_main->taskbox()->setTasksInItem(pitem);
+            m_taskbox->setTasksInItem(pitem);
             qDebug() << "pertubis::ShowSelectionsThread::run() - 3";
 
             emit appendPackage(pitem);

@@ -18,7 +18,6 @@
 */
 
 #include "RepositoryListModel.hh"
-#include "DatabaseView.hh"
 #include <paludis/environment.hh>
 #include <paludis/name.hh>
 #include <paludis/package_database.hh>
@@ -56,7 +55,7 @@ void pertubis::RepositoryListThread::run()
     QList<QVariantList> list;
     QList<RepositoryListItem*> names;
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-         r((*m_main->getEnv()).package_database()->begin_repositories()), r_end((*m_main->getEnv()).package_database()->end_repositories()) ;
+         r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
         names << new RepositoryListItem(r->name());

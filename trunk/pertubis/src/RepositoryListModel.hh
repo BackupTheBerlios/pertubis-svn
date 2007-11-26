@@ -31,7 +31,6 @@
 #include <QList>
 #include <QSet>
 #include <QVariant>
-#include <list>
 
 namespace pertubis
 {
@@ -55,7 +54,8 @@ namespace pertubis
         Q_OBJECT
         public:
             RepositoryListThread(QObject* pobj,
-                             DatabaseView* main) : ThreadBase(pobj,main) {}
+                                 paludis::tr1::shared_ptr<paludis::Environment>  env,
+                                TaskBox* box) : ThreadBase(pobj,env,box) {}
 
             void run();
 

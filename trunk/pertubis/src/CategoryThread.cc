@@ -17,7 +17,7 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "CategoriesThread.hh"
+#include "CategoryThread.hh"
 #include "CategoryItem.hh"
 #include "DatabaseView.hh"
 #include <paludis/environment.hh>
@@ -34,18 +34,19 @@
 #include <QSet>
 #include <QStringList>
 
-pertubis::CategoriesThread::CategoriesThread(QObject* pobj,
-        DatabaseView* main) : ThreadBase(pobj,main)
+pertubis::CategoryThread::CategoryThread(QObject* pobj,
+                                         const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                                         TaskBox* box) : ThreadBase(pobj,env,box)
 {
 }
 
-void pertubis::CategoriesThread::run()
+void pertubis::CategoryThread::run()
 {
     using namespace paludis;
-    qDebug() << "CategoriesThread.run() - starting";
+    qDebug() << "CategoryThread.run() - starting";
     QMap<QString, QSet<QString> > cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
-         r(m_main->getEnv()->package_database()->begin_repositories()), r_end(m_main->getEnv()->package_database()->end_repositories()) ;
+         r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
         paludis::tr1::shared_ptr<const paludis::CategoryNamePartSet> cat_names(r->category_names());
@@ -58,6 +59,5 @@ void pertubis::CategoriesThread::run()
 
     emit sendCategory(cats);
 
-    qDebug() << "CategoriesThread.run() - done";
+    qDebug() << "CategoryThread.run() - done";
 }
-

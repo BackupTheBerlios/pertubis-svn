@@ -23,15 +23,12 @@
 
 #include <QThread>
 #include <paludis/util/tr1_memory.hh>
-
-namespace paludis
-{
-    class PackageID;
-}
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 namespace pertubis
 {
-    class DatabaseView;
+    class TaskBox;
 
     /*! \brief provides the paludis infrastructure we need for the threads
     *
@@ -43,7 +40,8 @@ namespace pertubis
     public:
 
         ThreadBase(QObject* parent,
-                   DatabaseView* main);
+                    const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                    TaskBox* box);
 
 
     protected:
@@ -51,7 +49,8 @@ namespace pertubis
         bool installed(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
         bool hasVersionChange(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
-        DatabaseView*     m_main;
+        paludis::tr1::shared_ptr<paludis::Environment>  m_env;
+        TaskBox*                                        m_taskbox;
     };
 }
 

@@ -17,9 +17,8 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-
-#include "CategoriesThread.hh"
 #include "CategoryFilterModel.hh"
+#include "CategoryThread.hh"
 #include "CategoryModel.hh"
 #include "DatabaseView.hh"
 #include "DeinstallTask.hh"
@@ -35,6 +34,8 @@
 #include "RepositoryListModel.hh"
 #include "SearchThread.hh"
 #include "SearchWindow.hh"
+#include "SetModel.hh"
+#include "SetThread.hh"
 #include "Settings.hh"
 #include "ShowSelectionsThread.hh"
 #include "SyncTask.hh"
@@ -136,7 +137,7 @@ void pertubis::PackageView::mousePressEvent(QMouseEvent* ev)
 }
 
 pertubis::DatabaseView::DatabaseView() :
-    m_categoriesThread(0),
+    m_categoryThread(0),
     m_categoryFilterModel(0),
     m_catModel(0),
     m_detailsThread(0),
@@ -168,7 +169,8 @@ pertubis::DatabaseView::DatabaseView() :
     initLayout();
     loadSettings();
     m_repoListThread->start();
-    slotRefreshCategories();
+    m_categoryThread->start();
+    m_setThread->start();
     rootTest("");
 }
 
@@ -185,6 +187,7 @@ void pertubis::DatabaseView::initGUI()
     createTasks(); // createTaskBox()
     createRepositoryBar(); // no deps
     createCatbar(); // createRepositoryBar()
+    createSetListView(); // no deps
     createPackageView(); // createRepositoryBar()
     createToolBar(); // createActions()
     createSettings(); // no deps
@@ -208,6 +211,7 @@ void pertubis::DatabaseView::initLayout()
     setCentralWidget(m_vSplit);
     addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
     addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
+    addDockWidget(Qt::LeftDockWidgetArea, m_dockSet);
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -215,12 +219,13 @@ void pertubis::DatabaseView::initLayout()
     show();
     m_filter = new ReleaseEater(this);
     installEventFilter(m_filter);
-    m_searchThread = new SearchThread(this,this);
-    m_categoriesThread = new CategoriesThread(this,this);
-    m_packageViewThread = new PackagesThread(this,this);
-    m_detailsThread = new DetailsThread(this,this);
-    m_selectionsThread = new ShowSelectionsThread(this,this);
-    m_repoListThread = new RepositoryListThread(this,this);
+    m_searchThread = new SearchThread(this,m_env,m_box);
+    m_categoryThread = new CategoryThread(this,m_env,m_box);
+    m_packageViewThread = new PackagesThread(this,m_env,m_box);
+    m_detailsThread = new DetailsThread(this,m_env,m_box);
+    m_selectionsThread = new ShowSelectionsThread(this,m_env,m_box);
+    m_setThread = new SetThread(this,m_env,m_box);
+    m_repoListThread = new RepositoryListThread(this,m_env,m_box);
 //     m_repoInfoThread = new RepositoryInfoThread(this,this);
     m_syncTask = new PertubisSyncTask(m_env,this,m_output->output());
     createConnections();
@@ -239,20 +244,13 @@ void pertubis::DatabaseView::closeEvent(QCloseEvent* ev)
     ev->ignore();
 }
 
-paludis::tr1::shared_ptr<paludis::Environment> pertubis::DatabaseView::getEnv() const
-{
-    return m_env;
-}
-
 void pertubis::DatabaseView::createCatbar()
 {
     qDebug() << "pertubis::DatabaseView::createCatbar()";
     // deps:
     // - createRepositoryBar()
     //
-    m_dockCat = new QDockWidget(tr("category list"),this);
-    m_dockCat->layout()->setMargin(0);
-    m_dockCat->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
 
     m_catModel = new CategoryModel(this);
     m_catModel->setHorizontalHeaderLabels(QStringList() << tr("category"));
@@ -266,12 +264,13 @@ void pertubis::DatabaseView::createCatbar()
     m_categories->setModel(m_categoryFilterModel);
     m_categories->setShowGrid(false);
 
+    m_dockCat = new QDockWidget(tr("category list"),this);
+    m_dockCat->layout()->setMargin(0);
+    m_dockCat->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     m_dockCat->setWidget(m_categories);
 
     m_acToggleCatBar = m_dockCat->toggleViewAction();
-
     m_acToggleCatBar->setText(tr("catbar"));
-
     m_acToggleCatBar->setIcon(QPixmap(":images/catbar_22.xpm"));
     m_acToggleCatBar->setShortcut(tr("F9"));
     m_acToggleCatBar->setToolTip(html_tooltip(tr("enable/disable the category sidebar"),m_acToggleCatBar->text()) );
@@ -322,6 +321,7 @@ void pertubis::DatabaseView::createToolBar()
     m_toolBar->addAction(m_acToggleRepoBar);
     m_toolBar->addAction(m_acTogglePackageView);
     m_toolBar->addAction(m_acToggleSearchWindow);
+    m_toolBar->addAction(m_acToggleSetBar);
     m_toolBar->addAction(m_acSelection);
     m_toolBar->addAction(m_acFinish);
     m_toolBar->addAction(m_acPref);
@@ -364,6 +364,34 @@ void pertubis::DatabaseView::createRepositoryBar()
     m_acToggleRepoBar->setToolTip( html_tooltip(tr("enable/disable the repository sidebar"),m_acToggleRepoBar->text()) );
     qDebug() << "pertubis::DatabaseView::createRepositoryBar() - end";
 }
+
+void pertubis::DatabaseView::createSetListView()
+{
+    m_dockSet = new QDockWidget(tr("set list"),this);
+    m_dockSet->layout()->setMargin(0);
+    m_dockSet->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
+    m_setModel = new SetModel(this);
+    m_setModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
+
+    m_setFilterModel = new CategoryFilterModel(this,*m_repoListModel);
+    m_setFilterModel->setSourceModel(m_setModel);
+    m_setListView = new QTableView(this);
+    m_setListView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    m_setListView->horizontalHeader()->setVisible(false);
+    m_setListView->verticalHeader()->setVisible(false);
+    m_setListView->setModel(m_setFilterModel);
+    m_setListView->setShowGrid(false);
+
+    m_dockSet->setWidget(m_setListView);
+    m_acToggleSetBar = m_dockSet->toggleViewAction();
+    m_acToggleSetBar->setText(tr("setbar"));
+    m_acToggleSetBar->setIcon(QPixmap(":images/catbar_22.xpm"));
+    m_acToggleSetBar->setShortcut(tr("F10"));
+    m_acToggleSetBar->setToolTip(html_tooltip(tr("enable/disable the set sidebar"),m_acToggleSetBar->text()) );
+    m_setListView->setRowHidden(0,false);
+}
+
 
 // void pertubis::DatabaseView::createRepositoryView()
 // {
@@ -517,7 +545,7 @@ void pertubis::DatabaseView::createConnections()
             this,
             SLOT(slotCategoryChanged( const QModelIndex& )) );
 
-    connect(m_categoriesThread,
+    connect(m_categoryThread,
             SIGNAL(sendCategory(QMap<QString, QSet<QString> >)),
             m_catModel,
             SLOT(slotAppendCategory(QMap<QString, QSet<QString> >)));
@@ -581,6 +609,11 @@ void pertubis::DatabaseView::createConnections()
             SIGNAL(finished()),
             this,
             SLOT(slotResultCount()));
+
+    connect(m_setThread,
+            SIGNAL(sendSet(QMap<QString, QSet<QString> >)),
+            m_setModel,
+            SLOT(slotAppendSet(QMap<QString, QSet<QString> >)));
 
     connect(m_repoListModel,
             SIGNAL(modelReset()),
@@ -703,12 +736,6 @@ void pertubis::DatabaseView::saveSettings()
     qDebug() << "pertubis::DatabaseView::saveSettings() - done";
 }
 
-void pertubis::DatabaseView::slotRefreshCategories()
-{
-    if (!m_categoriesThread->isRunning())
-        m_categoriesThread->start();
-}
-
 void pertubis::DatabaseView::slotResultCount()
 {
     statusBar()->showMessage(QString(tr("%1 packages found")).arg(m_packageFilterModel->rowCount()));
@@ -739,6 +766,7 @@ void pertubis::DatabaseView::slotRepositoryChanged( const QModelIndex& index )
         m_packageFilterModel->setFilter(m_repoListModel->activeRepositories());
         m_packageFilterModel->invalidate();
         m_categoryFilterModel->invalidate();
+        m_setFilterModel->invalidate();
     }
 
 //     if (index.column() == 1 )
@@ -771,7 +799,7 @@ void pertubis::DatabaseView::slotDeinstallTask(bool mystate)
 void pertubis::DatabaseView::slotFinish()
 {
     if (rootTest(tr("This feature is only available for system administrators")))
-        m_box->doPendingTasks(this);
+        m_box->doPendingTasks(m_env,m_output);
 //     QMessageBox::information(0,
 //                          QObject::tr("information"),
 //                                      QObject::tr("feature is under development"),
@@ -893,10 +921,7 @@ void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& mix)
 
 }
 
-void pertubis::DatabaseView::slotToggleSettings()
-{
-    m_settings->exec();
-}
+
 
 void pertubis::DatabaseView::slotOpenURL(const QUrl& url)
 {
@@ -945,4 +970,9 @@ void pertubis::DatabaseView::slotToggleTrayIcon(QSystemTrayIcon::ActivationReaso
 void pertubis::DatabaseView::slotToggleMainWindow()
 {
     setVisible(!isVisible());
+}
+
+void pertubis::DatabaseView::slotToggleSettings()
+{
+    m_settings->exec();
 }

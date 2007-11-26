@@ -23,9 +23,7 @@
 
 #include <QDialog>
 
-class QGroupBox;
 class QLineEdit;
-class QLabel;
 class QCheckBox;
 class QDialogButtonBox;
 

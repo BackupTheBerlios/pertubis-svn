@@ -1,7 +1,7 @@
-INCLUDE(${QT_USE_FILE})
+
 
 SET(PERTUBIS_SRCS
-    CategoriesThread.cc
+    CategoryThread.cc
     CategoryFilterModel.cc
     CategoryItem.cc
     CategoryModel.cc
@@ -25,6 +25,8 @@ SET(PERTUBIS_SRCS
     RepositoryListModel.cc
     SearchThread.cc
     SearchWindow.cc
+    SetModel.cc
+    SetThread.cc
     Settings.cc
     ShowSelectionsThread.cc
     SyncTask.cc
@@ -38,7 +40,7 @@ SET(PERTUBIS_MAIN_SRCS
     main.cc)
 
 SET(PERTUBIS_MOC_HDRS
-    CategoriesThread.hh
+    CategoryThread.hh
     CategoryFilterModel.hh
     CategoryModel.hh
     DatabaseView.hh
@@ -55,6 +57,8 @@ SET(PERTUBIS_MOC_HDRS
     RepositoryListModel.hh
     SearchThread.hh
     SearchWindow.hh
+    SetModel.hh
+    SetThread.hh
     Settings.hh
     ShowSelectionsThread.hh
     TaskBox.hh
@@ -75,6 +79,8 @@ INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} )
 ADD_EXECUTABLE(pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
 LINK_DIRECTORIES(${PALUDIS_LINK_DIR} )
 TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
+
+
 
 ######################################################
 # install

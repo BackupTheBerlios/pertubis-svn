@@ -19,11 +19,8 @@
 
 
 #include "DetailsThread.hh"
-
-#include "DatabaseView.hh"
 #include "FormatterUtils.hh"
 #include "HtmlFormatter.hh"
-
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
@@ -220,7 +217,8 @@ namespace
 }
 
 pertubis::DetailsThread::DetailsThread(QObject* pobj,
-        DatabaseView* main) : ThreadBase(pobj,main)
+                                        const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                                        TaskBox* box) : ThreadBase(pobj,env,box)
 {
 }
 
@@ -252,9 +250,9 @@ void pertubis::DetailsThread::run()
 "            </tr>\n"
 "            <tbody >\n").arg(stringify(m_id->name()).c_str()).arg(stringify(m_id->version()).c_str());
 
-    Displayer ds(this,m_main->getEnv().get(),m_id,paludis::mkt_significant);
-    Displayer dn(this,m_main->getEnv().get(),m_id,paludis::mkt_normal);
-    Displayer dp(this,m_main->getEnv().get(),m_id,paludis::mkt_dependencies);
+    Displayer ds(this,m_env.get(),m_id,paludis::mkt_significant);
+    Displayer dn(this,m_env.get(),m_id,paludis::mkt_normal);
+    Displayer dp(this,m_env.get(),m_id,paludis::mkt_dependencies);
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(ds));
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dn));
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dp));

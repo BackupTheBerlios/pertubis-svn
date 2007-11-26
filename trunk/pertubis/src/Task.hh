@@ -32,14 +32,13 @@
 #include <paludis/package_id.hh>
 #include <paludis/environment-fwd.hh>
 
-
 class QAction;
 
 namespace pertubis
 {
     class Item;
     class TaskBox;
-    class DatabaseView;
+    class MessageOutput;
 
 //     class IDCompare
 //     {
@@ -69,7 +68,7 @@ namespace pertubis
         /*! \brief starts the corresponding paludis task
         *
         */
-        virtual void startTask(DatabaseView* main)=0;
+        virtual void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)=0;
 
         /*! \brief adds a selection specified by PackageID
         *
@@ -118,22 +117,12 @@ namespace pertubis
 
         virtual bool available(Item* item) const = 0;
 
-        /*! \brief Use this class if you want to process a child items' selection change and its side effects on items' parent (The UpdateRange )
+        /*! \brief Use this class if you want to process an items' selection change and its side effects on items' relatives (The UpdateRange )
         * \param item The item to process
         * \param mystate one of the values of Qt::CheckRole
         * We have to process every change here since only the task exactly knows how to deal with it. The task must be able to ask the item for the UpdateRange
         */
-        virtual bool changeChildStates(Item* item, int mystate)=0;
-
-        /*! \brief Use this class if you want to process a parent items' selection change and its side effects on all of its childs.
-        *
-        */
-        virtual bool changeParentStates(Item* item, int mystate)=0;
-
-        /*! \brief changes only the nodes' selection state
-        *
-        */
-        virtual bool changeNodeStates(Item* item, int newState)=0;
+        virtual bool changeStates(Item* item, int mystate)=0;
 
         /*! \brief actually change
         *

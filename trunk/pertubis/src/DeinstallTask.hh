@@ -22,8 +22,6 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_DEINSTALL_TASK_H 1
 
 #include "Task.hh"
-#include <paludis/environment-fwd.hh>
-
 
 namespace pertubis
 {
@@ -40,10 +38,8 @@ namespace pertubis
                         QAction* myaction,
                         QString tname) : Task(pobject,myaction,tname) {}
             bool available(Item* item) const;
-            void startTask(DatabaseView* main);
-            bool changeChildStates(Item* item, int mystate);
-            bool changeParentStates(Item* item, int mystate);
-            bool changeNodeStates(Item* item, int newState);
+            void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
+            bool changeStates(Item* item, int mystate);
 
         private:
 

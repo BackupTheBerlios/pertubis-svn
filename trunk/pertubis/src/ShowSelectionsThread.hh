@@ -33,7 +33,9 @@ namespace pertubis
 
         public:
 
-            ShowSelectionsThread(QObject* pobj, DatabaseView* main) : ThreadBase(pobj,main)
+            ShowSelectionsThread(QObject* pobj,
+                                 const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                                 TaskBox* box) : ThreadBase(pobj,env,box)
             {
             }
 

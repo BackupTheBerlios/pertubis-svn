@@ -17,128 +17,136 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include <QDebug>
 #include "InstallTask.hh"
 #include "Item.hh"
-#include "DatabaseView.hh"
 #include "ItemInstallTask.hh"
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include "MessageOutput.hh"
 #include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/stringify.hh>
 #include <paludis/util/set-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/stringify.hh>
+#include <QDebug>
+
+pertubis::InstallTask::InstallTask() : m_task(0)
+{
+}
+
+pertubis::InstallTask::InstallTask(QObject* pobject,
+        QAction* myaction,
+        QString tname) : Task(pobject,myaction,tname),m_task(0)
+{
+}
 
 bool pertubis::InstallTask::available(Item* item) const
 {
     return item->available();
 }
 
-bool pertubis::InstallTask::changeParentStates(Item* item, int newState)
+bool pertubis::InstallTask::changeStates(Item* item, int newState)
 {
-    qDebug() << "InstallTask::changeParentStates - start" <<  newState;
     Item::Iterator iStart(item->childBegin());
     Item::Iterator iEnd(item->childEnd());
-    switch (newState)
-    {
-        case Qt::PartiallyChecked:
-        case Qt::Checked:
-            changeEntry(item->ID(),true);
-            item->setTaskState(m_taskid,Qt::PartiallyChecked);
-            if (item->bestChild() != 0)
-                item->bestChild()->setTaskState(m_taskid,Qt::Checked);
-            break;
-        case Qt::Unchecked:
-            item->setTaskState(m_taskid,Qt::Unchecked);
-            while (iStart!= iEnd)
-            {
-                changeEntry((*iStart)->ID(),false);
-                (*iStart)->setTaskState(m_taskid,Qt::Unchecked);
-                ++iStart;
-            }
-            break;
-        default:
-            ;
-    }
-    return true;
-}
-
-bool pertubis::InstallTask::changeChildStates(Item* item, int newState)
-{
-//     qDebug() << "InstallTask::changeChildStates - start" <<  *item << newState;
-    QList<Item*>::iterator iStart(item->parent()->childBegin());
-    QList<Item*>::iterator iEnd(item->parent()->childEnd());
-
+    Item::Iterator piStart(item->parent()->childBegin());
+    Item::Iterator piEnd(item->parent()->childEnd());
     int i=0;
-    switch (newState)
+    switch (item->updateRange())
     {
-        case Qt::Unchecked:
-            changeEntry(item->ID(),false);
-            item->setTaskState(m_taskid,Qt::Unchecked);
-
-            while(iStart != iEnd)
+        case Item::ur_parent:
+            switch (newState)
             {
-                if ( (*iStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
-                    ++i;
-                ++iStart;
+                case Qt::PartiallyChecked:
+                case Qt::Checked:
+                    changeEntry(item->ID(),true);
+                    item->setTaskState(m_taskid,Qt::PartiallyChecked);
+                    if (item->bestChild() != 0)
+                        item->bestChild()->setTaskState(m_taskid,Qt::Checked);
+                    break;
+                case Qt::Unchecked:
+                    item->setTaskState(m_taskid,Qt::Unchecked);
+                    while (iStart!= iEnd)
+                    {
+                        changeEntry((*iStart)->ID(),false);
+                        (*iStart)->setTaskState(m_taskid,Qt::Unchecked);
+                        ++iStart;
+                    }
+                    break;
+                default:
+                    ;
             }
-            if (i  == 0)
-                item->parent()->setTaskState(m_taskid,Qt::Unchecked);
-            else
-                item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
             break;
-        case Qt::PartiallyChecked:
-        case Qt::Checked:
-            changeEntry(item->ID(),true);
-            item->setTaskState(m_taskid,Qt::Checked);
-            while(iStart != iEnd)
+        case Item::ur_child:
+            switch (newState)
             {
-                QVariantList list((*iStart)->data(Item::io_selected).toList());
-//                 qDebug() << "InstallTask::changeChildStates - list" << list;
-                int mystate(list.value(m_taskid).toInt());
-//                 qDebug() << "InstallTask::changeChildStates - state" << mystate;
-                if ( mystate != Qt::Unchecked )
-                    ++i;
-                ++iStart;
+                case Qt::Unchecked:
+                    changeEntry(item->ID(),false);
+                    item->setTaskState(m_taskid,Qt::Unchecked);
+
+                    while(piStart != piEnd)
+                    {
+                        if ( (*piStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
+                            ++i;
+                        ++piStart;
+                    }
+                    if (i  == 0)
+                        item->parent()->setTaskState(m_taskid,Qt::Unchecked);
+                    else
+                        item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
+                    break;
+                case Qt::PartiallyChecked:
+                case Qt::Checked:
+                    changeEntry(item->ID(),true);
+                    item->setTaskState(m_taskid,Qt::Checked);
+                    while(piStart != piEnd)
+                    {
+                        QVariantList list((*piStart)->data(Item::io_selected).toList());
+        //                 qDebug() << "InstallTask::changeChildStates - list" << list;
+                        int mystate(list.value(m_taskid).toInt());
+        //                 qDebug() << "InstallTask::changeChildStates - state" << mystate;
+                        if ( mystate != Qt::Unchecked )
+                            ++i;
+                        ++piStart;
+                    }
+                    if (i == item->parent()->childCount() )
+                        item->parent()->setTaskState(m_taskid,Qt::Checked);
+                    else
+                        item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
+                    break;
+                default:
+                    ;
             }
-            if (i == item->parent()->childCount() )
-                item->parent()->setTaskState(m_taskid,Qt::Checked);
-            else
-                item->parent()->setTaskState(m_taskid,Qt::PartiallyChecked);
+            break;
+        case Item::ur_node:
+            switch (newState)
+            {
+                case Qt::Unchecked:
+                    changeEntry(item->ID(),false);
+                    item->setTaskState(m_taskid,Qt::Unchecked);
+                    break;
+                case Qt::Checked:
+                    changeEntry(item->ID(),true);
+                    item->setTaskState(m_taskid,Qt::Checked);
+                    break;
+                default:
+                    ;
+            }
             break;
         default:
             ;
+            qDebug() << "InstallTask::changeStates - ur_node end";
     }
     return true;
 }
 
-bool pertubis::InstallTask::changeNodeStates(Item* item, int newState)
-{
-    switch (newState)
-    {
-        case Qt::Unchecked:
-            changeEntry(item->ID(),false);
-            item->setTaskState(m_taskid,Qt::Unchecked);
-            break;
-        case Qt::Checked:
-            changeEntry(item->ID(),true);
-            item->setTaskState(m_taskid,Qt::Checked);
-            break;
-        default:
-            ;
-    }
-    return true;
-}
-
-void pertubis::InstallTask::startTask(DatabaseView* main)
+void pertubis::InstallTask::startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)
 {
     paludis::DepListOptions options;
     if (m_task)
         delete m_task;
-    m_task = new Install(this,main->getEnv().get(),options,main->getEnv()->default_destinations());
+    m_task = new Install(this,env.get(),options,env->default_destinations());
     connect(m_task,
             SIGNAL(sendMessage(QString)),
-            main->messages(),
+            output,
             SLOT(receiveMessage(QString)),
             Qt::AutoConnection);
 

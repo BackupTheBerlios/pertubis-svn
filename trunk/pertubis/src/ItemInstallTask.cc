@@ -23,7 +23,6 @@
 #include "ItemInstallTask.hh"
 #include "FormatterUtils.hh"
 #include "MessageOutput.hh"
-#include "DatabaseView.hh"
 #include <paludis/util/system.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/version_operator.hh>

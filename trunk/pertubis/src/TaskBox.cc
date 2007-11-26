@@ -21,7 +21,6 @@
 #include "Task.hh"
 #include "Item.hh"
 #include <paludis/package_id.hh>
-
 #include <QDebug>
 
 QVariantList pertubis::TaskBox::selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id)
@@ -90,28 +89,14 @@ void pertubis::TaskBox::setTasksInItem(Item* item)
         ++mytask)
     {
         Qt::CheckState mystate( ((*mytask)->hasEntry(item->ID() ) ) ? Qt::Checked : Qt::Unchecked);
-        Item::UpdateRange range = item->updateRange();
-        switch (range)
-        {
-            case Item::ur_parent:
-                (*mytask)->changeParentStates(item, mystate);
-                break;
-            case Item::ur_child:
-                (*mytask)->changeChildStates(item, mystate);
-                break;
-            case Item::ur_node:
-                (*mytask)->changeNodeStates(item, mystate);
-                break;
-            default:
-                ;
-        }
+        (*mytask)->changeStates(item, mystate);
     }
 }
 
-void pertubis::TaskBox::doPendingTasks(DatabaseView* main)
+void pertubis::TaskBox::doPendingTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)
 {
     for (Iterator i(m_tasks.begin()),i_end(m_tasks.end());i!= i_end;++i)
     {
-        (*i)->startTask(main);
+        (*i)->startTask(env,output);
     }
 }
