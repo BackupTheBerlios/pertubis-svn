@@ -1,69 +1,29 @@
-
-INCLUDE_DIRECTORIES(. ../src/ ${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} )
 
 SET(PERTUBIS_SRCS
-    ../src/CategoriesThread.cc
-    ../src/CategoryFilterModel.cc
-    ../src/CategoryItem.cc
-    ../src/CategoryModel.cc
-    ../src/DatabaseView.cc
-    ../src/DeinstallTask.cc
-    ../src/description_extractor.cc
-    ../src/DetailsThread.cc
-    ../src/extractor.cc
-    ../src/HtmlFormatter.cc
     ../src/InstallTask.cc
-    ../src/Item.cc
     ../src/ItemInstallTask.cc
-    ../src/matcher.cc
-    ../src/MessageOutput.cc
-    ../src/name_extractor.cc
-    ../src/OptionsDelegate.cc
-    ../src/PackageFilterModel.cc
-    ../src/PackageModel.cc
-    ../src/PackagesThread.cc
-    ../src/RegexMatcher.cc
-    ../src/RepositoryListModel.cc
-    ../src/SearchThread.cc
-    ../src/SearchWindow.cc
-    ../src/Settings.cc
-    ../src/ShowSelectionsThread.cc
-    ../src/SyncTask.cc
+    ../src/Item.cc
     ../src/TaskBox.cc
     ../src/Task.cc
     ../src/text_matcher.cc
     ../src/ThreadBase.cc
+    ../src/matcher.cc
 )
 
+SET(PERTUBIS_MAIN_SRCS
+    main.cc)
+
 SET(PERTUBIS_MOC_HDRS
-    ../src/CategoryModel.hh
-    ../src/CategoryFilterModel.hh
-    ../src/DatabaseView.hh
-    ../src/DeinstallTask.hh
     ../src/InstallTask.hh
-    ../src/Item.hh
     ../src/ItemInstallTask.hh
-    ../src/MessageOutput.hh
-    ../src/OptionsDelegate.hh
-    ../src/PackageFilterModel.hh
-    ../src/PackageModel.hh
-    ../src/RepositoryListModel.hh
-    ../src/SearchWindow.hh
-    ../src/Settings.hh
+    ../src/Item.hh
     ../src/TaskBox.hh
-    ../src/Task.hh
     ../src/ThreadBase.hh
-    ../src/CategoriesThread.hh
-    ../src/PackagesThread.hh
-    ../src/SearchThread.hh
-    ../src/DetailsThread.hh
-    ../src/ShowSelectionsThread.hh
+    ../src/Task.hh
 )
 
 QT4_WRAP_CPP(PERTUBIS_MOC_SRCS ${PERTUBIS_MOC_HDRS} )
-QT4_ADD_RESOURCES(PERTUBIS_RCCS_SRCS ${PERTUBIS_RCCS} )
-
-INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} )
 
 ##################################
 # Item test
