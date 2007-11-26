@@ -53,6 +53,9 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
     {
         iStart = item->childBegin();
         iEnd = item->childEnd();
+    }
+    if (parent() != 0)
+    {
         piStart = item->parent()->childBegin();
         piEnd = item->parent()->childEnd();
     }

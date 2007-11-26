@@ -182,7 +182,6 @@ void pertubis::TaskBoxTest::setItemTasks()
         pitem->appendChild(vitem);
         pitem->setBestChild(vitem);
         box->setTasksInItem(vitem);
-        qDebug() << *vitem;
     }
 
     qDebug() << "pitem" << *pitem;
@@ -192,14 +191,10 @@ void pertubis::TaskBoxTest::setItemTasks()
     QCOMPARE(pitem->bestChild()->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::Checked) );
 
     install->deleteEntry(pitem->ID());
-    box->setTasksInItem(pitem);
-
-    qDebug() << *pitem;
-    qDebug() << *pitem->bestChild();
     QCOMPARE(install->hasEntry(pitem->ID()),false );
+    box->setTasksInItem(pitem);
     QCOMPARE(pitem->bestChild()->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::Unchecked));
     QCOMPARE(pitem->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::Unchecked) );
-
     delete box;
     delete install;
     delete pitem;
