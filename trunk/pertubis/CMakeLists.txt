@@ -8,33 +8,36 @@ SET(PERTUBIS_SU_TOOL
     "use this to determine the desktop su tool")
 
 # should we optionally build the tests? set this to 1 if yes
-SET(PERTUBIS_BUILD_TESTS 0
-    CACHE STRING
-    "set this to 1 if you want to run the ctest suite")
+SET(PERTUBIS_BUILD_TESTS OFF
+    CACHE BOOL
+    "set this to ON if you want to run the ctest suite")
 
-# choose the build mode = Debug | Release
+# should we optionally build the ypi docs? set this to O if yes
+SET(PERTUBIS_BUILD_DOCS OFF
+    CACHE BOOL
+    "set this to ON for generating pertubis api documenation")
+
+SET(PERTUBIS_DOC_PATH /usr/share/doc/pertubis-scm/
+    CACHE STRING
+    "set this to the appropriate doc path")
+
+# choose the build mode = debug | release
 IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Release
+  SET(CMAKE_BUILD_TYPE release
     CACHE STRING
     "Choose the type of build, options are: Debug Release."
     FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-IF (CAKE_BUILD_TYPE MATCHES "debug")
-	SET(CMAKE_BUILD_TYPE Debug)
-ENDIF (CAKE_BUILD_TYPE MATCHES "debug")
-
 # make the build process more verbose
 SET(CMAKE_VERBOSE_MAKEFILE 1)
 
 FIND_PACKAGE(Qt4 REQUIRED)
+INCLUDE(${QT_USE_FILE})
 
 INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR})
 
-# MESSAGE("CMAKE_CURRENT_SOURCE_DIR  = ${CMAKE_CURRENT_SOURCE_DIR}")
-
 INCLUDE(UsePkgConfig)
-# SET( ENV{PKG_CONFIG_PATH} ENV{PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig )
 PKGCONFIG(paludis PALUDIS_INCLUDE_DIR PALUDIS_LINK_DIR PALUDIS_LINK_FLAGS PALUDIS_CFLAGS)
 
 FIND_LIBRARY(PALUDIS_UTIL_LIB NAMES paludisutil
@@ -66,14 +69,16 @@ SET(CMAKE_CXX_FLAGS_RELEASE "${PERTUBIS_CFLAGS} -DQT_NO_DEBUG -DQT_NO_DEBUG_OUTP
     "The compiler flags you want for the release target"
     FORCE)
 
-FIND_PATH(MODELTEST_DIR modeltest/modeltest.h
-    PATHS ${CMAKE_CURRENT_SOURCE_DIR})
-
+MESSAGE("CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE}\n\n"
+        "CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(utils)
-ADD_SUBDIRECTORY(doc)
-if (PERTUBIS_BUILD_TESTS MATCHES "1")
-	ADD_SUBDIRECTORY(test)
-	ENABLE_TESTING()
-ENDIF (PERTUBIS_BUILD_TESTS MATCHES "1")
+
+IF (PERTUBIS_BUILD_DOCS MATCHES ON)
+    ADD_SUBDIRECTORY(doc)
+ENDIF (PERTUBIS_BUILD_DOCS MATCHES ON)
+if (PERTUBIS_BUILD_TESTS MATCHES ON)
+    ADD_SUBDIRECTORY(test)
+    ENABLE_TESTING()
+ENDIF (PERTUBIS_BUILD_TESTS MATCHES ON)

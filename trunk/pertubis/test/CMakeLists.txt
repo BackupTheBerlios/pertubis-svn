@@ -6,9 +6,7 @@ SET(PERTUBIS_SRCS
     ../src/Item.cc
     ../src/TaskBox.cc
     ../src/Task.cc
-    ../src/text_matcher.cc
     ../src/ThreadBase.cc
-    ../src/matcher.cc
 )
 
 SET(PERTUBIS_MAIN_SRCS

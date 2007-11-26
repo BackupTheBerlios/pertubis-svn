@@ -88,13 +88,18 @@ void pertubis::TaskBoxTest::tasks()
 
 void pertubis::TaskBoxTest::selectionData()
 {
+    qDebug() << "1";
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
+    qDebug() << "2";
     paludis::Log::get_instance()->set_program_name("TaskBoxTest");
+    qDebug() << "3";
     paludis::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
-
+    qDebug() << "4";
     TaskBox* box = new TaskBox(this);
+    qDebug() << "5";
     InstallTask* install = new InstallTask();
     box->addTask(install);
+
 
     // first quering 2 id sequences
     paludis::tr1::shared_ptr<const paludis::PackageIDSequence> packageIDs(
@@ -103,15 +108,17 @@ void pertubis::TaskBoxTest::selectionData()
             paludis::query::InstalledAtRoot(env->root()),
                                             paludis::qo_order_by_version));
 
+    qDebug() << "3";
     if (packageIDs->empty() )
         QFAIL("no packages found");
-
+    qDebug() << "4";
     paludis::tr1::shared_ptr<const paludis::PackageIDSequence> ids_2(
             env->package_database()->query(
             paludis::query::Matches(paludis::PackageDepSpec("app-shells/bash", paludis::pds_pm_eapi_0_strict)) &
             paludis::query::InstalledAtRoot(env->root()),
                                             paludis::qo_order_by_version));
 
+    qDebug() << "5";
     if (ids_2->empty() )
         QFAIL("no packages found");
 

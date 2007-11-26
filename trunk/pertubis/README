@@ -26,3 +26,14 @@ will immediately restore the correct state.
 * the pertubis project at berlios
 
     https://developers.berlios.de/projects/pertubis/
+
+cmake options that affect pertubis
+__________________________________
+
+-DCMAKE_BUILD_TYPE:STRING=Release
+
+-DPERTUBIS_BUILD_DOCS:BOOL=OFF
+
+-DPERTUBIS_DOC_PATH:STRING=/usr/share/doc/pertubis
+
+-DPERTUBIS_BUILD_TESTS:BOOL=OFF
