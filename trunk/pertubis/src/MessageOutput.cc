@@ -47,7 +47,7 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
     setLayout(mylayout);
     m_output = new QTextEdit(this);
     m_output->setReadOnly(true);
-    m_output->document()->setMaximumBlockCount(1000);
+//     m_output->document()->setMaximumBlockCount(1000);
     QPalette p(m_output->palette());
     p.setColor(QPalette::Base,QColor(0,0,0)); // background color  = black
     p.setColor(QPalette::Text,QColor(255,255,255)); // text color  = white
@@ -60,10 +60,10 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
 
 void pertubis::Thread::run()
 {
-    static char buf[1024];
+    static char buf[512];
     while (m_atwork)
     {
-        int res = read(m_fd,&buf,1024);
+        int res = read(m_fd,&buf,512);
         if (res > 0)
         {
             sendMessage(QString::fromLocal8Bit(buf,res));

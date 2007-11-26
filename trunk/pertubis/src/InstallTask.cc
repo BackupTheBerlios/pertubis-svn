@@ -49,21 +49,13 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
     Item::Iterator iEnd;
     Item::Iterator piStart;
     Item::Iterator piEnd;
-    if (item->childCount() > 0)
-    {
-        iStart = item->childBegin();
-        iEnd = item->childEnd();
-    }
-    if (parent() != 0)
-    {
-        piStart = item->parent()->childBegin();
-        piEnd = item->parent()->childEnd();
-    }
 
     int i=0;
     switch (item->updateRange())
     {
         case Item::ur_parent:
+            iStart = item->childBegin();
+            iEnd = item->childEnd();
             switch (newState)
             {
                 case Qt::PartiallyChecked:
@@ -87,12 +79,13 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
             }
             break;
         case Item::ur_child:
+            piStart = item->parent()->childBegin();
+            piEnd = item->parent()->childEnd();
             switch (newState)
             {
                 case Qt::Unchecked:
                     changeEntry(item->ID(),false);
                     item->setTaskState(m_taskid,Qt::Unchecked);
-
                     while(piStart != piEnd)
                     {
                         if ( (*piStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )

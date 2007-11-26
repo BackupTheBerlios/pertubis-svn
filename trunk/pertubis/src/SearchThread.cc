@@ -33,6 +33,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/query.hh>
 #include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -156,9 +157,9 @@ void pertubis::SearchThread::run()
          r_end(m_env->package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
-//         qDebug() << "1 a" << stringify(r->format()).c_str();
         if (! (*r)->some_ids_might_support_action(paludis::SupportsActionTest<paludis::InstallAction>()))
             continue;
+        qDebug() << "take repository" << stringify((*r)->name()).c_str() << "into account";
         repos.push_back(*r);
     }
 
@@ -195,12 +196,16 @@ void pertubis::SearchThread::run()
         if (! i->second)
             continue;
 
-        paludis::tr1::shared_ptr<const paludis::PackageIDSequence> version_ids(i->second->repository()->package_ids(i->first));
-        if (version_ids->empty())
+        const tr1::shared_ptr< const PackageIDSequence > versionIds(
+                m_env->package_database()->query(
+                query::Matches(PackageDepSpec(make_shared_ptr(new QualifiedPackageName(i->first)))) &
+                query::SupportsAction<InstallAction>(),
+                qo_order_by_version));
+        if (versionIds->empty())
             continue;
 
         QVariantList tasks(m_taskbox->tasks());
-        Item* p_item = makePackageItem(*version_ids->last(),
+        Item* p_item = makePackageItem(*versionIds->last(),
                                 tasks,
                                 QString::fromStdString(stringify(i->first.package)),
                                 QString::fromStdString(stringify(i->first.category)),
@@ -211,7 +216,8 @@ void pertubis::SearchThread::run()
         QSet<QString> pReasons;
         int mp=0;
         int ip=0;
-        for (PackageIDSequence::ReverseConstIterator vstart(version_ids->rbegin()),vend(version_ids->rend());
+
+        for (PackageIDSequence::ReverseConstIterator vstart(versionIds->rbegin()),vend(versionIds->rend());
             vstart != vend; ++vstart)
         {
             QSet<QString> vReasons;

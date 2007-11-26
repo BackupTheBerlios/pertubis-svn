@@ -83,7 +83,7 @@ void pertubis::TaskBox::slotTaskChanged(paludis::tr1::shared_ptr<const paludis::
 
 void pertubis::TaskBox::setTasksInItem(Item* item)
 {
-    qDebug() << "pertubis::TaskBox::setTasksInItem()" << *item;
+//     qDebug() << "pertubis::TaskBox::setTasksInItem()" << *item;
     for (Iterator mytask(taskBegin()), taskend(taskEnd());
         mytask != taskend;
         ++mytask)
@@ -91,7 +91,7 @@ void pertubis::TaskBox::setTasksInItem(Item* item)
         Qt::CheckState mystate( ((*mytask)->hasEntry(item->ID() ) ) ? Qt::Checked : Qt::Unchecked);
         (*mytask)->changeStates(item, mystate);
     }
-    qDebug() << "pertubis::TaskBoxTest::setTasksInItem() - done";
+//     qDebug() << "pertubis::TaskBoxTest::setTasksInItem() - done";
 }
 
 void pertubis::TaskBox::doPendingTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)
