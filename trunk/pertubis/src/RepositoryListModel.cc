@@ -29,6 +29,8 @@
 #include <QSet>
 #include <QString>
 #include <QDebug>
+#include <QColor>
+#include <QBrush>
 
 pertubis::RepositoryListItem::RepositoryListItem() : m_data(QList<QVariant>() << Qt::Checked << "")
 {
@@ -78,7 +80,7 @@ Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const
     switch (mix.column())
     {
         case 0:
-            return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable;
+            return Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
             break;
         default:
             return 0;
@@ -145,13 +147,18 @@ QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int 
     if (!m_index.isValid())
          return QVariant();
 
+    if (role == Qt::ForegroundRole)
+    {
+        return QBrush(QColor(0,0,0));
+    }
+
     if (role == Qt::CheckStateRole && m_index.column() == 0)
     {
 //         qDebug() << "RepositoryListModel::data() - 0" << m_data.value(m_index.row())->data(0);
         return m_data.value(m_index.row())->data(0);
     }
 
-    if (role == Qt::DisplayRole && m_index.column() == 1)
+    if (role == Qt::DisplayRole && m_index.column() == 0)
     {
 //         qDebug() << "RepositoryListModel::data() - 1" << m_data.value(m_index.row())->data(1);
         return m_data.value(m_index.row())->data(1);

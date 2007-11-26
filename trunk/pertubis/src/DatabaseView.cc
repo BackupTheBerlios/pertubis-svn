@@ -56,6 +56,7 @@
 #include <QDebug>
 #include <QDockWidget>
 #include <QFile>
+#include <QFont>
 #include <QHeaderView>
 #include <QLayout>
 #include <QLineEdit>
@@ -72,7 +73,6 @@
 #include <QTableView>
 #include <QTabWidget>
 #include <QTextBrowser>
-#include <QTextStream>
 #include <QToolBar>
 #include <QUrl>
 
@@ -251,18 +251,21 @@ void pertubis::DatabaseView::createCatbar()
     // - createRepositoryBar()
     //
 
-
     m_catModel = new CategoryModel(this);
     m_catModel->setHorizontalHeaderLabels(QStringList() << tr("category"));
 
     m_categoryFilterModel = new CategoryFilterModel(this,*m_repoListModel);
     m_categoryFilterModel->setSourceModel(m_catModel);
+
     m_categories = new QTableView(this);
-    m_categories->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     m_categories->horizontalHeader()->setVisible(false);
     m_categories->verticalHeader()->setVisible(false);
     m_categories->setModel(m_categoryFilterModel);
     m_categories->setShowGrid(false);
+    m_categories->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    QFont myfont(m_categories->font());
+    myfont.setBold(true);
+    m_categories->setFont(myfont);
 
     m_dockCat = new QDockWidget(tr("category list"),this);
     m_dockCat->layout()->setMargin(0);
@@ -270,11 +273,10 @@ void pertubis::DatabaseView::createCatbar()
     m_dockCat->setWidget(m_categories);
 
     m_acToggleCatBar = m_dockCat->toggleViewAction();
-    m_acToggleCatBar->setText(tr("catbar"));
+    m_acToggleCatBar->setText(tr("category list"));
     m_acToggleCatBar->setIcon(QPixmap(":images/catbar_22.xpm"));
-    m_acToggleCatBar->setShortcut(tr("F9"));
+    m_acToggleCatBar->setShortcut(tr("F11"));
     m_acToggleCatBar->setToolTip(html_tooltip(tr("enable/disable the category sidebar"),m_acToggleCatBar->text()) );
-    m_categories->setRowHidden(0,false);
 }
 
 void pertubis::DatabaseView::createSettings()
@@ -300,14 +302,17 @@ void pertubis::DatabaseView::createPackageView()
         tr("change"));
 
     m_packageView = new PackageView(this);
-    m_packageView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_packageFilterModel = new PackageFilterModel(this);
     m_packageFilterModel->setSourceModel(m_packageModel);
+    m_packageView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_packageView->setItemDelegateForColumn(Item::io_selected,new OptionsDelegate(this,m_packageFilterModel));
     m_packageView->setModel(m_packageFilterModel);
-    m_packageView->header()->setResizeMode(QHeaderView::Stretch);
     m_packageView->header()->setVisible(true);
     m_packageView->header()->setResizeMode(QHeaderView::ResizeToContents);
+    m_packageView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    QFont myfont(m_packageView->font());
+    myfont.setBold(true);
+    m_packageView->setFont(myfont);
 }
 
 void pertubis::DatabaseView::createToolBar()
@@ -319,9 +324,9 @@ void pertubis::DatabaseView::createToolBar()
     m_toolBar->addAction(m_acSync);
     m_toolBar->addAction(m_acToggleCatBar);
     m_toolBar->addAction(m_acToggleRepoBar);
+    m_toolBar->addAction(m_acToggleSetBar);
     m_toolBar->addAction(m_acTogglePackageView);
     m_toolBar->addAction(m_acToggleSearchWindow);
-    m_toolBar->addAction(m_acToggleSetBar);
     m_toolBar->addAction(m_acSelection);
     m_toolBar->addAction(m_acFinish);
     m_toolBar->addAction(m_acPref);
@@ -329,69 +334,72 @@ void pertubis::DatabaseView::createToolBar()
 
 void pertubis::DatabaseView::createOutput()
 {
-    qDebug() << "pertubis::DatabaseView::createOutput()";
     m_output = new MessageOutput(this);
 }
 
 void pertubis::DatabaseView::createRepositoryBar()
 {
-    qDebug() << "pertubis::DatabaseView::createRepositoryBar()";
     m_repoListModel = new RepositoryListModel(this);
     m_repoListModel->setHorizontalHeaderLabels(QStringList() <<
-            tr("activated") <<
             tr("Repository name") );
-
-    qDebug() << "pertubis::DatabaseView::createRepositoryBar() - 1";
 
     m_repoListView = new QTableView(this);
     m_repoListView->setModel(m_repoListModel);
+    m_repoListView->horizontalHeader()->setVisible(false);
     m_repoListView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    m_repoListView->horizontalHeader()->setVisible(true);
-    m_repoListView->horizontalHeader()->setToolTip(html_tooltip(tr("Here you can select the repositories pertubis will use.</p><p>Click of a repository name to get more information")));
+    QFont myfont(m_repoListView->font());
+    myfont.setBold(true);
+    m_repoListView->setFont(myfont);
+
     m_repoListView->verticalHeader()->setVisible(false);
     m_repoListView->setShowGrid(false);
+
     m_dockRepo = new QDockWidget(tr("repository list"),this);
     m_dockRepo->layout()->setMargin(0);
     m_dockRepo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     m_dockRepo->setWidget(m_repoListView);
-    qDebug() << "pertubis::DatabaseView::createRepositoryBar() - 2";
+    m_dockRepo->setToolTip(html_tooltip(tr("Here you can select the repositories pertubis will use.</p><p>Click on a repository to enable/disable filtering by this repository")));
 
     m_acToggleRepoBar = m_dockRepo->toggleViewAction();
-    qDebug() << "pertubis::DatabaseView::createRepositoryBar() - 3";
-    m_acToggleRepoBar->setText(tr("repository bar"));
+    m_acToggleRepoBar->setText(tr("repository list"));
     m_acToggleRepoBar->setIcon(QPixmap(":images/repositories_22.xpm"));
     m_acToggleRepoBar->setShortcut( tr("F10"));
     m_acToggleRepoBar->setToolTip( html_tooltip(tr("enable/disable the repository sidebar"),m_acToggleRepoBar->text()) );
-    qDebug() << "pertubis::DatabaseView::createRepositoryBar() - end";
 }
 
 void pertubis::DatabaseView::createSetListView()
 {
-    m_dockSet = new QDockWidget(tr("set list"),this);
-    m_dockSet->layout()->setMargin(0);
-    m_dockSet->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    // deps:
+    // - createRepositoryBar()
+    //
 
     m_setModel = new SetModel(this);
     m_setModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
 
     m_setFilterModel = new CategoryFilterModel(this,*m_repoListModel);
     m_setFilterModel->setSourceModel(m_setModel);
+
     m_setListView = new QTableView(this);
-    m_setListView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    m_setListView->setModel(m_setFilterModel);
+    m_setListView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     m_setListView->horizontalHeader()->setVisible(false);
     m_setListView->verticalHeader()->setVisible(false);
-    m_setListView->setModel(m_setFilterModel);
     m_setListView->setShowGrid(false);
+    QFont myfont(m_setListView->font());
+    myfont.setBold(true);
+    m_setListView->setFont(myfont);
 
+    m_dockSet = new QDockWidget(tr("set list"),this);
     m_dockSet->setWidget(m_setListView);
-    m_acToggleSetBar = m_dockSet->toggleViewAction();
-    m_acToggleSetBar->setText(tr("setbar"));
-    m_acToggleSetBar->setIcon(QPixmap(":images/catbar_22.xpm"));
-    m_acToggleSetBar->setShortcut(tr("F10"));
-    m_acToggleSetBar->setToolTip(html_tooltip(tr("enable/disable the set sidebar"),m_acToggleSetBar->text()) );
-    m_setListView->setRowHidden(0,false);
-}
+    m_dockSet->layout()->setMargin(0);
+    m_dockSet->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
+    m_acToggleSetBar = m_dockSet->toggleViewAction();
+    m_acToggleSetBar->setText(tr("set list"));
+    m_acToggleSetBar->setIcon(QPixmap(":images/setbar_22.xpm"));
+    m_acToggleSetBar->setShortcut(tr("F12"));
+    m_acToggleSetBar->setToolTip(html_tooltip(tr("enable/disable the set sidebar"),m_acToggleSetBar->text()) );
+}
 
 // void pertubis::DatabaseView::createRepositoryView()
 // {

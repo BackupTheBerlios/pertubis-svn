@@ -66,7 +66,7 @@ namespace pertubis
             virtual void on_display_failure_summary_skipped_unsatisfied(const paludis::DepListEntry&, const paludis::PackageDepSpec&) {}
             virtual void on_display_failure_summary_success(const paludis::DepListEntry&) {}
             virtual void on_display_failure_summary_totals(int, int, int, int) {}
-            virtual void on_display_merge_list_entry(const paludis::DepListEntry&);
+            virtual void on_display_merge_list_entry(const paludis::DepListEntry&) {}
             virtual void on_display_merge_list_post() {}
             virtual void on_display_merge_list_pre();
             virtual void on_fetch_action_error(const paludis::FetchActionError&) {}
@@ -96,7 +96,6 @@ namespace pertubis
             virtual void on_update_world_skip(const paludis::PackageDepSpec&, const std::string&) {}
             virtual void on_update_world_skip(const paludis::SetName&, const std::string&) {}
             virtual void on_use_requirements_not_met_error(const paludis::UseRequirementsNotMetError&) {}
-
 
             virtual paludis::HookResult perform_hook(const paludis::Hook & hook) const;
             virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID & c);

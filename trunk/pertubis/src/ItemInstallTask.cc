@@ -45,6 +45,11 @@ pertubis::Install::Install(QObject* pobj,
 {
 }
 
+void pertubis::Install::run()
+{
+    execute();
+}
+
 bool pertubis::Install::want_full_install_reasons() const
 {
     return false;
@@ -94,48 +99,14 @@ void pertubis::Install::on_installed_paludis()
             return;
     }
 
-    std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
-
+//     std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
     emit sendMessage(color(QString("Paludis has just upgraded Paludis"),QString("green")));
-    execl("/bin/sh", "sh", "-c", resume_command.c_str(), static_cast<const char *>(0));
-}
-
-paludis::HookResult pertubis::Install::perform_hook(const paludis::Hook & hook) const
-{
-    std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
-    if (resume_command.empty())
-        return InstallTask::perform_hook(hook);
-    return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command));
-}
-
-std::string pertubis::Install::make_resume_command(const paludis::PackageIDSequence& s) const
-{
-    using namespace paludis;
-    std::string resume_command = environment()->paludis_command()
-            + " --" + QObject::tr("Install following packages").toLocal8Bit().data();
-
-//     resume_command = resume_command + CommandLine::get_instance()->install_args.resume_command_fragment(*this);
-//     resume_command = resume_command + CommandLine::get_instance()->dl_args.resume_command_fragment(*this);
-
-    for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
-         i != i_end ; ++i)
-        resume_command = resume_command + " '=" + stringify(**i) + "'";
-
-    return resume_command;
-}
-
-void pertubis::Install::show_resume_command() const
-{
+//     execl("/bin/sh", "sh", "-c", resume_command.c_str(), static_cast<const char *>(0));
 }
 
 void pertubis::Install::on_display_merge_list_pre()
 {
     emit sendMessage(QString::fromStdString(header(color(std::string("These packages will be installed:"),"green"))));
-}
-
-void pertubis::Install::run()
-{
-    execute();
 }
 
 void pertubis::Install::on_build_deplist_pre()
@@ -164,133 +135,42 @@ void pertubis::Install::on_no_clean_needed(const paludis::DepListEntry &)
 }
 
 void pertubis::Install::on_clean_fail(const paludis::DepListEntry &,
-                                     const paludis::PackageID& /*c*/,
+                                     const paludis::PackageID& c,
                                      const int /*x*/,
                                      const int /*y*/,
                                      const int /*s*/,
                                      const int /*f*/)
 {
-//     emit sendMessage(QString::fromStdString("(" + make_x_of_y(x, y, s, f) + ") Failed cleaning " + stringify(c)));
+    emit sendMessage(QString("(%1 Failed cleaning").arg(QString::fromStdString(stringify(c))));
 }
 
-void pertubis::Install::on_display_merge_list_entry(const paludis::DepListEntry& /*c*/)
+paludis::HookResult pertubis::Install::perform_hook(const paludis::Hook & hook) const
 {
-//     DisplayMode m;
-//
-//     do
-//     {
-//         switch (d.kind)
-//         {
-//             case dlk_provided:
-//             case dlk_virtual:
-//             case dlk_already_installed:
-//                 if (! want_full_install_reasons())
-//                     return;
-//                 m = unimportant_entry;
-//                 continue;
-//
-//             case dlk_package:
-//             case dlk_subpackage:
-//                 m = normal_entry;
-//                 continue;
-//
-//             case dlk_suggested:
-//                 m = suggested_entry;
-//                 continue;
-//
-//             case dlk_masked:
-//             case dlk_block:
-//                 m = error_entry;
-//                 continue;
-//
-//             case last_dlk:
-//                 break;
-//         }
-//
-//         throw InternalError(PALUDIS_HERE, "Bad d.kind");
-//     } while (false);
-//
-//     tr1::shared_ptr<RepositoryName> repo;
-//     if (d.destination)
-//         repo.reset(new RepositoryName(d.destination->name()));
-//
-//     tr1::shared_ptr<const PackageIDSequence> existing_repo(environment()->package_database()->
-//             query(query::Matches(PackageDepSpec(
-//                   tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package_id->name())),
-//             tr1::shared_ptr<CategoryNamePart>(),
-//                                               tr1::shared_ptr<PackageNamePart>(),
-//                                                       tr1::shared_ptr<VersionRequirements>(),
-//                                                               vr_and,
-//                                                                       tr1::shared_ptr<SlotName>(),
-//                                                                               repo)),
-//             qo_order_by_version));
-//
-//     tr1::shared_ptr<const PackageIDSequence> existing_slot_repo(environment()->package_database()->
-//             query(query::Matches(PackageDepSpec(
-//                   tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package_id->name())),
-//             tr1::shared_ptr<CategoryNamePart>(),
-//                                               tr1::shared_ptr<PackageNamePart>(),
-//                                                       tr1::shared_ptr<VersionRequirements>(),
-//                                                               vr_and,
-//                                                                       tr1::shared_ptr<SlotName>(new SlotName(d.package_id->slot())),
-//                                                                               repo)),
-//             qo_order_by_version));
-//
-//     display_merge_list_entry_start(d, m);
-//     display_merge_list_entry_package_name(d, m);
-//     display_merge_list_entry_version(d, m);
-//     display_merge_list_entry_repository(d, m);
-//
-//     if (d.package_id->virtual_for_key())
-//         display_merge_list_entry_for(*d.package_id->virtual_for_key()->value(), m);
-//
-//     display_merge_list_entry_slot(d, m);
-//
-//     display_merge_list_entry_status_and_update_counts(d, existing_repo, existing_slot_repo, m);
-//     display_merge_list_entry_use(d, existing_repo, existing_slot_repo, m);
-//     display_merge_list_entry_tags(d, m);
-//     display_merge_list_entry_end(d, m);
-//
-//     if (d.kind == dlk_masked)
-//         display_merge_list_entry_mask_reasons(d);
+    std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
+    if (resume_command.empty())
+        return InstallTask::perform_hook(hook);
+    return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command));
 }
-
-// void pertubis::Install::InstallTask::_display_task_list()
-// {
-//     using namespace pertubis;
-//     paludis::Context context("When displaying task list:");
-//
-//     if (_imp->pretend &&
-//         0 != perform_hook(Hook("install_pretend_pre")("TARGETS", join(_imp->raw_targets.begin(),
-//                           _imp->raw_targets.end(), " "))).max_exit_status)
-//         throw InstallActionError("Pretend install aborted by hook");
-//
-//     on_display_merge_list_pre();
-//
-//     /* display our task list */
-//     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
-//          dep != dep_end ; ++dep)
-//     {
-//         if (_imp->pretend &&
-//             0 != perform_hook(Hook("install_pretend_display_item_pre")
-//             ("TARGET", stringify(*dep->package_id))
-//             ("KIND", stringify(dep->kind))).max_exit_status)
-//             throw InstallActionError("Pretend install aborted by hook");
-//
-//         on_display_merge_list_entry(*dep);
-//
-//         if (_imp->pretend &&
-//             0 != perform_hook(Hook("install_pretend_display_item_post")
-//             ("TARGET", stringify(*dep->package_id))
-//             ("KIND", stringify(dep->kind))).max_exit_status)
-//             throw InstallActionError("Pretend install aborted by hook");
-//     }
-//
-//     /* we're done displaying our task list */
-//     on_display_merge_list_post();
-// }
 
 void pertubis::Install::display_one_clean_all_pre_list_entry(const paludis::PackageID & c)
 {
     emit sendMessage(QString::fromStdString(color(paludis::stringify(c),"blue")));
 }
+
+std::string pertubis::Install::make_resume_command(const paludis::PackageIDSequence& s) const
+{
+    using namespace paludis;
+    std::string resume_command = environment()->paludis_command()
+            + " --" + QObject::tr("Install following packages").toLocal8Bit().data();
+
+    for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
+         i != i_end ; ++i)
+        resume_command = resume_command + " '=" + stringify(**i) + "'";
+
+    return resume_command;
+}
+
+void pertubis::Install::show_resume_command() const
+{
+}
+

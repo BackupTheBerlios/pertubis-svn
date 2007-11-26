@@ -91,25 +91,15 @@ QVariant pertubis::SetModel::data ( const QModelIndex & mix, int role) const
     if (!mix.isValid())
         return QVariant();
 
-    if (mix.row() >= m_data.size())
-        return QVariant();
-
     if (role == Qt::ForegroundRole)
     {
-        if (data(mix,Qt::CheckStateRole) != Qt::Unchecked)
-            return QBrush(QColor(0,255,0));
-        else
-            return QBrush(QColor(0,0,0));
+        return QBrush(QColor(0,0,0));
     }
 
     if (role == Qt::DisplayRole)
     {
-        if (mix.column() == 0)
-            return m_data.at(mix.row())->name();
+        return m_data.at(mix.row())->name();
     }
-    if (role == Qt::CheckStateRole)
-        if (mix.column() == 0)
-            return m_data.at(mix.row())->change();
     return QVariant();
 }
 

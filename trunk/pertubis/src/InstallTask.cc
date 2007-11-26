@@ -45,10 +45,18 @@ bool pertubis::InstallTask::available(Item* item) const
 
 bool pertubis::InstallTask::changeStates(Item* item, int newState)
 {
-    Item::Iterator iStart(item->childBegin());
-    Item::Iterator iEnd(item->childEnd());
-    Item::Iterator piStart(item->parent()->childBegin());
-    Item::Iterator piEnd(item->parent()->childEnd());
+    Item::Iterator iStart;
+    Item::Iterator iEnd;
+    Item::Iterator piStart;
+    Item::Iterator piEnd;
+    if (item->childCount() > 0)
+    {
+        iStart = item->childBegin();
+        iEnd = item->childEnd();
+        piStart = item->parent()->childBegin();
+        piEnd = item->parent()->childEnd();
+    }
+
     int i=0;
     switch (item->updateRange())
     {
@@ -125,7 +133,9 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
                     break;
                 case Qt::Checked:
                     changeEntry(item->ID(),true);
+                    qDebug() << "InstallTask::changeStates - n 2";
                     item->setTaskState(m_taskid,Qt::Checked);
+                    qDebug() << "InstallTask::changeStates - n 3";
                     break;
                 default:
                     ;
@@ -133,7 +143,6 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
             break;
         default:
             ;
-            qDebug() << "InstallTask::changeStates - ur_node end";
     }
     return true;
 }

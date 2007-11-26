@@ -100,10 +100,7 @@ QVariant pertubis::CategoryModel::data ( const QModelIndex & mix, int role) cons
 
     if (role == Qt::ForegroundRole)
     {
-        if (data(mix,Qt::CheckStateRole) != Qt::Unchecked)
-            return QBrush(QColor(0,255,0));
-        else
-            return QBrush(QColor(0,0,0));
+        return QBrush(QColor(0,0,0));
     }
 
     if (role == Qt::DisplayRole)

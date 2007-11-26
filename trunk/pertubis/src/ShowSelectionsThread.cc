@@ -56,22 +56,11 @@ void pertubis::ShowSelectionsThread::run()
                     "";
 
             qDebug() << "pertubis::ShowSelectionsThread::run() - 1";
-            Item* pitem=0;
-            try
-            {
-                pitem = new Item(*idStart,list,Item::is_stable,Item::ur_node,0);
-            }
-            catch(std::bad_alloc)
-            {
-                qDebug() << "pertubis::ShowSelectionsThread::run() - new error";
-                continue;
-            }
-            qDebug() << "pertubis::ShowSelectionsThread::run()" << *pitem;
+            Item* node = new Item(*idStart,list,Item::is_stable,Item::ur_node,0);
             qDebug() << "pertubis::ShowSelectionsThread::run() - 2";
-            m_taskbox->setTasksInItem(pitem);
+            m_taskbox->setTasksInItem(node);
             qDebug() << "pertubis::ShowSelectionsThread::run() - 3";
-
-            emit appendPackage(pitem);
+            emit appendPackage(node);
         }
     }
     qDebug() << "pertubis::ShowSelectionsThread::run() - done";

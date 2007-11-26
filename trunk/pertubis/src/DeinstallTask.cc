@@ -35,10 +35,17 @@ bool pertubis::DeinstallTask::available(Item* item) const
 bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
 {
 //     qDebug() << "DeinstallTask::changeParentStates - start" <<  newState;
-    QList<Item*>::iterator iStart(item->childBegin());
-    QList<Item*>::iterator iEnd(item->childEnd());
-    QList<Item*>::iterator piStart(item->parent()->childBegin());
-    QList<Item*>::iterator piEnd(item->parent()->childEnd());
+    Item::Iterator iStart;
+    Item::Iterator iEnd;
+    Item::Iterator piStart;
+    Item::Iterator piEnd;
+    if (item->childCount() > 0)
+    {
+        iStart = item->childBegin();
+        iEnd = item->childEnd();
+        piStart = item->parent()->childBegin();
+        piEnd = item->parent()->childEnd();
+    }
     int i=0;
     switch (item->updateRange())
     {
