@@ -27,6 +27,11 @@ namespace pertubis
 {
     class Item;
 
+    /*! \brief installs packages
+     * \ingroup Selection
+     * This threaded class controlls all aspects and steps of installing packages
+     * \todo this thread blocks the main application thread and gui. Find the issue!
+     */
     class DeinstallTask : public Task
     {
         Q_OBJECT

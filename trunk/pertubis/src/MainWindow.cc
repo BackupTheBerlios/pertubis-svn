@@ -643,6 +643,11 @@ void pertubis::MainWindow::createConnections()
             SIGNAL(search()),
             this,
             SLOT(slotSearchItem()));
+
+    connect(m_sysTray,
+            SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this,
+            SLOT(slotToggleTrayIcon(QSystemTrayIcon::ActivationReason)));
 }
 
 void pertubis::MainWindow::createTasks()
@@ -680,10 +685,7 @@ void pertubis::MainWindow::createTrayMenu()
     m_sysTray->setContextMenu(m_trayMenu);
     m_sysTray->show();
 
-    connect(m_sysTray,
-            SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this,
-            SLOT(slotToggleTrayIcon(QSystemTrayIcon::ActivationReason)));
+
 }
 
 void pertubis::MainWindow::loadSettings()
@@ -781,7 +783,6 @@ void pertubis::MainWindow::slotFinish()
 
 void pertubis::MainWindow::slotFinished()
 {
-    qDebug() << "pertubis::MainWindow::slotFinished()";
     m_box->slotClear();
     slotCategoryChanged( QModelIndex());
     slotToggleMainWindow();

@@ -29,8 +29,10 @@ namespace pertubis
     class Item;
 
     /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
-    *
-    */
+     *
+     * \ingroup PaludisAdapter
+     * \ingroup Thread
+     */
     class SearchThread : public ThreadBase
     {
         Q_OBJECT

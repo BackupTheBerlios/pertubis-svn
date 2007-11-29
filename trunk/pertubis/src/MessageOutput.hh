@@ -32,15 +32,16 @@ namespace paludis
     class FDOutputStream;
 }
 
-
-
 namespace pertubis
 {
-    class Thread : public QThread
+    /*! \brief transfering status messages from paludis api to pertubis
+     * \ingroup Thread
+     */
+    class MessageThread : public QThread
     {
         Q_OBJECT
         public:
-            Thread(QObject* pobj,  int fd) : QThread(pobj), m_fd(fd),m_atwork(true)
+            MessageThread(QObject* pobj,  int fd) : QThread(pobj), m_fd(fd),m_atwork(true)
             {
             }
 
@@ -85,7 +86,7 @@ namespace pertubis
         private:
 
             QTextEdit*                                  m_output;
-            Thread*                                     m_thread;
+            MessageThread*                              m_thread;
             paludis::tr1::shared_ptr<paludis::FDOutputStream> messages_stream;
             int                                         m_master_fd;
             int                                         m_slave_fd;

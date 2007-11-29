@@ -36,6 +36,7 @@ namespace pertubis
 
     /*! \brief manages the tasks pertubis knows about
     *
+    * \ingroup Selection
     */
     class TaskBox : public QObject
     {
@@ -69,7 +70,7 @@ namespace pertubis
         /*! \brief sets each Task selection status for the given Item
         *
         */
-		void setTasksInItem(Item* item);
+        void setTasksInItem(Item* item);
 
         void doPendingTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
 

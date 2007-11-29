@@ -44,7 +44,9 @@
 
 namespace pertubis
 {
-
+    /*! \brief abstract base class of a class that tests strings for some conditions
+     * \ingroup PaludisAdapter
+     */
     class Matcher
     {
         public:

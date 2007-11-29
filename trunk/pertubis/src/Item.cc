@@ -67,7 +67,7 @@ pertubis::Item::~Item()
 
 pertubis::Item* pertubis::Item::child(int rindex) const
 {
-    return m_children.value(rindex);
+    return m_children.value(rindex,0);
 }
 
 int pertubis::Item::childCount() const

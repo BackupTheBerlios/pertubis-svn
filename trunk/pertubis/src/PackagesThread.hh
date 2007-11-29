@@ -31,8 +31,9 @@ namespace pertubis
     class Item;
 
     /*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
-    *
-    */
+     * \ingroup PaludisAdapter
+     * \ingroup Threads
+     */
     class PackagesThread : public ThreadBase
     {
         Q_OBJECT
@@ -61,6 +62,3 @@ namespace pertubis
     };
 }
 #endif
-
-
-

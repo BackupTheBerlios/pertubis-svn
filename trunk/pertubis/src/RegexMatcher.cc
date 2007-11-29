@@ -43,7 +43,6 @@ pertubis::RegexMatcher::RegexMatcher(const std::string& pattern) : m_regex(QStri
 {
 }
 
-
 bool pertubis::RegexMatcher::operator() (const std::string & s) const
 {
     return m_regex.indexIn(QString::fromStdString(s)) != -1;

@@ -47,6 +47,9 @@ namespace pertubis
 {
     class Matcher;
 
+    /*! \brief extract some information and judge it against some criteria
+     * \ingroup PaludisAdapter
+     */
     class Extractor
     {
         public:

@@ -24,6 +24,9 @@
 
 namespace pertubis
 {
+    /*! \brief tests if the PackageID's description matches the condition of a Matcher m
+     * \ingroup PaludisAdapter
+     */
     class DescriptionExtractor : public Extractor
     {
         public:

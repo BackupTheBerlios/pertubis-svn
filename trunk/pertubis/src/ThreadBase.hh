@@ -31,8 +31,10 @@ namespace pertubis
     class TaskBox;
 
     /*! \brief provides the paludis infrastructure we need for the threads
-    *
-    */
+     *
+     * \ingroup PaludisAdapter
+     * \ingroup Threads
+     */
     class ThreadBase : public QThread
     {
         Q_OBJECT

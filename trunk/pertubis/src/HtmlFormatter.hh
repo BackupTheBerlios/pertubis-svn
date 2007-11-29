@@ -30,6 +30,9 @@
 
 namespace pertubis
 {
+     /*! \brief paludis output to html pretty printer
+      * \ingroup PaludisAdapter
+      */
     class HtmlFormatter :
         public paludis::CanFormat<paludis::UseFlagName>,
         public paludis::CanFormat<paludis::IUseFlag>,

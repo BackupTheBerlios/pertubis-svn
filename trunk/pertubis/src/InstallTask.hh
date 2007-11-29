@@ -27,8 +27,8 @@ namespace pertubis
 {
     class Install;
 
-    /*! \brief stores the PackageIDs and bundles information what must be done with packages which are about to be installed
-
+    /*! \brief stores the PackageIDs of an Item if it is about to be installed and changes the items' visual state
+    * \ingroup Selection
     */
     class InstallTask : public Task
     {

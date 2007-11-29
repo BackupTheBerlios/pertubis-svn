@@ -18,6 +18,47 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+/*! \mainpage Pertubis
+ *
+ * \section intro_sec Introduction
+ *
+ * pertubis is a graphical frontend for the paludis package manager
+ *
+ * <a href="http://pertubis.berlios.de">http://pertubis.berlios.de</a>
+ *
+ * \section install_sec Installation
+ *
+ * please use the ebuild I'm providing in the project subversion repository
+ *
+ * best regards<br>
+ * Stefan K&ouml;gl \<hotshelf AT users DOT berlios DOT de\><br>
+ * germany, 2007
+ */
+
+/*!
+ * \defgroup Widget Widget classes
+ */
+
+/*! \brief qt4 model subclasses
+ * \defgroup ItemModelClass Item and Model Classes
+ * this classes are subclasses of Qt4 abstract item or model classes
+ */
+
+/*! \brief these classes knows about paludis
+ * \defgroup PaludisAdapter Adapter classes
+ * classes accessing the paludis api and/or transfering information from paludis to pertubis
+ */
+
+/*! \brief subclasses of qt4 QThread
+ * \defgroup Thread Threaded classes
+ *
+ */
+
+/*! \brief selection data storage
+ * \defgroup Selection Selection Storage classes
+ * classes storing and/or handling selection and deselection of packages for destinct tasks
+ */
+
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_MAIN_WINDOW_H
 #define _PERTUBIS_ENTRY_PROTECTOR_MAIN_WINDOW_H 1
 
@@ -62,10 +103,11 @@ namespace pertubis
     class ShowSelectionsThread;
     class TaskBox;
 
-
-    /*! \brief This class only exists since we need correct mouse coordinates
-    *
-    */
+    /*! \brief this widget is the package overview
+     * \ingroup Widget
+     *
+     * This class only exists since we need correct mouse coordinates
+     */
     class PackageView : public QTreeView
     {
         Q_OBJECT
@@ -78,10 +120,11 @@ namespace pertubis
     };
 
     /*! \brief Our main window
-    *
-    * This class is our application configuration. It connects all modules pertubis consists of with
-    * the user.
-    */
+     * \ingroup Widget
+     *
+     * This class is our application configuration. It connects all modules pertubis consists of with
+     * the user.
+     */
     class MainWindow : public QMainWindow
     {
         Q_OBJECT
@@ -94,6 +137,31 @@ namespace pertubis
     protected:
 
         void closeEvent(QCloseEvent* event);
+
+    private slots:
+
+        void initObject();
+        void slotCategoryChanged(  const QModelIndex& index );
+        void slotDeinstallTask(bool mystate);
+        void slotDetailsChanged(const QModelIndex & index);
+        void slotFinish();
+        void slotFinished();
+        void slotInstallTask(bool mystate);
+        void slotOpenURL(const QUrl&);
+        void slotOptionsMenu(const QModelIndex& index);
+        void slotQuit();
+        void slotRepositoryChanged( const QModelIndex& index );
+        void slotReposChanged();
+        void slotSearchItem();
+        void slotResultCount();
+        void slotShowDetails(QString details);
+        void slotShowSelectedPackages();
+        void slotSync();
+        void slotToggleMainWindow();
+        void slotTogglePackageView();
+        void slotToggleSearchWindow();
+        void slotToggleSettings();
+        void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
 
     private:
 
@@ -180,31 +248,6 @@ namespace pertubis
         int                     m_repoViewTabID;
         int                     m_outputTabID;
         int                     m_detailsTabID;
-
-    private slots:
-
-        void initObject();
-        void slotCategoryChanged(  const QModelIndex& index );
-        void slotDeinstallTask(bool mystate);
-        void slotDetailsChanged(const QModelIndex & index);
-        void slotFinish();
-        void slotFinished();
-        void slotInstallTask(bool mystate);
-        void slotOpenURL(const QUrl&);
-        void slotOptionsMenu(const QModelIndex& index);
-        void slotQuit();
-        void slotRepositoryChanged( const QModelIndex& index );
-        void slotReposChanged();
-        void slotSearchItem();
-        void slotResultCount();
-        void slotShowDetails(QString details);
-        void slotShowSelectedPackages();
-        void slotSync();
-        void slotToggleMainWindow();
-        void slotTogglePackageView();
-        void slotToggleSearchWindow();
-        void slotToggleSettings();
-        void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
     };
 }
 

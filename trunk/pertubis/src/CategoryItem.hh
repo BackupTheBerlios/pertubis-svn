@@ -28,7 +28,7 @@ namespace pertubis
 {
 
     /*! \brief stores category name with associated repositories
-    *
+    * \ingroup ItemModelClass
     */
     class CategoryItem
     {

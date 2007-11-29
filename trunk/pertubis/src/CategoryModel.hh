@@ -32,8 +32,9 @@ namespace pertubis
 
     class CategoryItem;
     /*! \brief This qt model class holds all software categories of all repositories it is instructed to store.
-    *
-    */
+     *
+     * \ingroup ItemModelClass
+     */
     class CategoryModel : public QAbstractTableModel
     {
         Q_OBJECT

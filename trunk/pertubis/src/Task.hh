@@ -47,9 +47,10 @@ namespace pertubis
 //                           const paludis::tr1::shared_ptr<const paludis::PackageID>& b) const;
 //     };
 
-    /*! \brief Holds PackageIDs for a special purpose. This is an abstract base class
-    * \see InstallTask, DeinstallTask
-    */
+    /*! \brief Holds PackageIDs for concrete task classes. This is an abstract base class
+     * \see InstallTask, DeinstallTask
+     * \ingroup Selection
+     */
     class Task : public QObject
     {
         friend class TaskBox;

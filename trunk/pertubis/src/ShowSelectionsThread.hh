@@ -27,6 +27,10 @@ namespace pertubis
 {
     class Item;
 
+    /*! \brief gathering information from paludis showing the selected packages the user has selected for tasks
+     * \ingroup PaludisAdapter
+     * \ingroup Thread
+    */
     class ShowSelectionsThread : public ThreadBase
     {
         Q_OBJECT

@@ -26,11 +26,7 @@
 #include "ThreadBase.hh"
 #include <QAbstractTableModel>
 #include <paludis/util/tr1_memory.hh>
-
-namespace paludis
-{
-    class Environment;
-}
+#include <spaludis/environment-fwd.hh>
 
 namespace pertubis
 {

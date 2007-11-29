@@ -45,7 +45,9 @@
 
 namespace pertubis
 {
-
+    /*! \brief tests if the PackageID's name matches the condition of a Matcher m
+     * \ingroup PaludisAdapter
+     */
     class NameExtractor : public Extractor
     {
         public:

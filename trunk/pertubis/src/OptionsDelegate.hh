@@ -32,7 +32,7 @@ namespace pertubis
 
     class PackageFilterModel;
     /*! \brief Used for presenting a customized selections display in PackageView
-    *
+    * \ingroup ItemModelClass
     */
     class OptionsDelegate : public QItemDelegate
     {

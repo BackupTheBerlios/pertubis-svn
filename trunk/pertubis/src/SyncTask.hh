@@ -29,13 +29,17 @@ class QTextEdit;
 
 namespace pertubis
 {
+    /*! \brief syncing repositories
+     * \ingroup PaludisAdapter
+     * \ingroup Thread
+     */
     class PertubisSyncTask :
         public paludis::SyncTask,
         public QThread
     {
         private:
-            int             _return_code;
-            QTextEdit*       m_output;
+            int             m_return_code;
+            QTextEdit*      m_output;
 
         protected:
 
@@ -45,7 +49,7 @@ namespace pertubis
             PertubisSyncTask(paludis::tr1::shared_ptr<paludis::Environment> env, QObject* pobj, QTextEdit* output) :
                 SyncTask(env.get(),true),
                 QThread(pobj),
-                _return_code(0),
+                m_return_code(0),
                 m_output(output)
             {
             }
@@ -61,10 +65,7 @@ namespace pertubis
             virtual void on_sync_succeed(const paludis::RepositoryName &);
             virtual void on_sync_all_post();
 
-            int return_code() const
-            {
-                return _return_code;
-            }
+            int return_code() const  { return m_return_code; }
     };
 }
 

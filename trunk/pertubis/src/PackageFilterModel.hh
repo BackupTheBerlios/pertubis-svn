@@ -29,6 +29,11 @@ class QModelIndex;
 
 namespace pertubis
 {
+    /*! \brief filters packages by repository
+     *
+     * \ingroup ItemModelClass
+     * If any repository of m_repositories does not contain this package, the filter rejects the package
+     */
     class PackageFilterModel : public QSortFilterProxyModel
     {
         Q_OBJECT

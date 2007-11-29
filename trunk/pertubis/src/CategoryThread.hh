@@ -33,8 +33,10 @@ namespace pertubis
     class Taskbox;
 
     /*! \brief thread for fetching categories from repositories and returns a list of names
-    *
-    */
+     *
+     * \ingroup PaludisAdapter
+     * \ingroup Thread
+     */
     class CategoryThread : public ThreadBase
     {
         Q_OBJECT

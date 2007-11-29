@@ -29,6 +29,11 @@ class QModelIndex;
 
 namespace pertubis
 {
+    /*! \brief filters categories by repository
+     *
+     * \ingroup ItemModelClass
+     * If a category is not member of a repository, this filter rejects the category
+     */
     class CategoryFilterModel : public QSortFilterProxyModel
     {
         Q_OBJECT

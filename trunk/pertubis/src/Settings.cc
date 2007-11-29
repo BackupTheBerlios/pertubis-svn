@@ -143,20 +143,20 @@ void pertubis::I18NPage::languageChanged(const QString& language)
 
 pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj)
 {
-    contentsWidget = new QListWidget;
-    contentsWidget->setViewMode(QListView::IconMode);
-    contentsWidget->setIconSize(QSize(96, 84));
-    contentsWidget->setMovement(QListView::Static);
-    contentsWidget->setMaximumWidth(128);
-    contentsWidget->setSpacing(12);
+    m_contentsWidget = new QListWidget;
+    m_contentsWidget->setViewMode(QListView::IconMode);
+    m_contentsWidget->setIconSize(QSize(96, 84));
+    m_contentsWidget->setMovement(QListView::Static);
+    m_contentsWidget->setMaximumWidth(128);
+    m_contentsWidget->setSpacing(12);
 
-    pagesWidget = new QStackedWidget;
+    m_pagesWidget = new QStackedWidget;
     m_i18n = new I18NPage;
-    pagesWidget->addWidget(m_i18n);
+    m_pagesWidget->addWidget(m_i18n);
 
     QPushButton *closeButton = new QPushButton(tr("Close"));
 
-    connect(contentsWidget,
+    connect(m_contentsWidget,
             SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             this,
             SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
@@ -168,8 +168,8 @@ pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj)
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QHBoxLayout *horizontalLayout = new QHBoxLayout;
-    horizontalLayout->addWidget(contentsWidget);
-    horizontalLayout->addWidget(pagesWidget, 1);
+    horizontalLayout->addWidget(m_contentsWidget);
+    horizontalLayout->addWidget(m_pagesWidget, 1);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
     buttonsLayout->addStretch(1);
@@ -182,7 +182,7 @@ pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj)
     mainLayout->addLayout(buttonsLayout);
     setLayout(mainLayout);
 
-    QListWidgetItem *tItem = new QListWidgetItem(contentsWidget);
+    QListWidgetItem *tItem = new QListWidgetItem(m_contentsWidget);
     tItem->setIcon(QIcon(":/images/settings.png"));
     tItem->setText(tr("Configuration"));
     tItem->setTextAlignment(Qt::AlignHCenter);
@@ -196,6 +196,6 @@ void pertubis::Settings::changePage(QListWidgetItem *current, QListWidgetItem *p
     if (!current)
         current = previous;
 
-    pagesWidget->setCurrentIndex(contentsWidget->row(current));
+    m_pagesWidget->setCurrentIndex(m_contentsWidget->row(current));
 }
 

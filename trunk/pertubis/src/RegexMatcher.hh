@@ -45,6 +45,9 @@
 
 namespace pertubis
 {
+    /*! \brief regular expression matching test
+     *
+     */
     class RegexMatcher : public Matcher
     {
         public:

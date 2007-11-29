@@ -25,11 +25,7 @@
 
 #include <QString>
 #include <string>
-
-namespace paludis
-{
-    class PackageID;
-}
+#include <paludis/package_id-fwd.hh>
 
 namespace pertubis
 {

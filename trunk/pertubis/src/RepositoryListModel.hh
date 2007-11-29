@@ -34,6 +34,10 @@
 
 namespace pertubis
 {
+     /*! \brief Represents a repository
+     *
+     * \ingroup ItemModelClass
+     */
     class RepositoryListItem
     {
         public:
@@ -48,6 +52,8 @@ namespace pertubis
 
     /*! \brief not finished
      *
+     * \ingroup Thread
+     * \ingroup PaludisAdapter
      */
     class RepositoryListThread : public ThreadBase
     {
@@ -66,6 +72,7 @@ namespace pertubis
 
     /*! \brief This qt model class holds repositories.
      *
+     * \ingroup ItemModelClass
      */
     class RepositoryListModel : public QAbstractListModel
     {

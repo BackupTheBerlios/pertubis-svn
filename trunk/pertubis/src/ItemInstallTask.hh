@@ -27,6 +27,12 @@
 
 namespace pertubis
 {
+    /*! \brief installs packages
+     *
+     * \ingroup PaludisAdapter
+     * This threaded class controlls all aspects and steps of installing packages
+     * \todo this thread blocks the main application thread and gui. Find the issue!
+     */
     class Install : public QThread,
         public paludis::InstallTask
     {

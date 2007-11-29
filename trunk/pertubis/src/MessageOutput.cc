@@ -58,7 +58,7 @@ pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
     redirectOutput();
 }
 
-void pertubis::Thread::run()
+void pertubis::MessageThread::run()
 {
     static char buf[512];
     while (m_atwork)
@@ -84,7 +84,7 @@ void pertubis::MessageOutput::redirectOutput()
     paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
     fcntl(m_master_fd,F_SETFL,fcntl(m_master_fd,F_GETFL) | O_NONBLOCK);
     paludis::Log::get_instance()->set_log_stream(messages_stream.get());
-    m_thread = new Thread(this,m_master_fd);
+    m_thread = new MessageThread(this,m_master_fd);
     connect(m_thread,
             SIGNAL(sendMessage(QString)),
             this,
