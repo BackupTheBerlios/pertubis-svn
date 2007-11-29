@@ -20,7 +20,6 @@
 #include "InstallTask.hh"
 #include "Item.hh"
 #include "ItemInstallTask.hh"
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include "MessageOutput.hh"
 #include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
@@ -51,9 +50,9 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
     Item::Iterator piEnd;
 
     int i=0;
-    switch (item->updateRange())
+    switch (item->itemType())
     {
-        case Item::ur_parent:
+        case Item::it_parent:
             iStart = item->childBegin();
             iEnd = item->childEnd();
             switch (newState)
@@ -78,7 +77,7 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
                     ;
             }
             break;
-        case Item::ur_child:
+        case Item::it_child:
             piStart = item->parent()->childBegin();
             piEnd = item->parent()->childEnd();
             switch (newState)
@@ -120,7 +119,7 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
                     ;
             }
             break;
-        case Item::ur_node:
+        case Item::it_node_only:
             switch (newState)
             {
                 case Qt::Unchecked:
@@ -145,6 +144,7 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
 
 void pertubis::InstallTask::startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)
 {
+    qDebug() << "pertubis::InstallTask::startTask()";
     paludis::DepListOptions options;
     if (m_task)
         delete m_task;
@@ -152,8 +152,12 @@ void pertubis::InstallTask::startTask(const paludis::tr1::shared_ptr<paludis::En
     connect(m_task,
             SIGNAL(sendMessage(QString)),
             output,
-            SLOT(receiveMessage(QString)),
-            Qt::AutoConnection);
+            SLOT(receiveMessage(QString)));
+
+    connect(m_task,
+            SIGNAL(finished()),
+            this,
+            SLOT(slotFinished()));
 
     for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
          i != i_end ; ++i)
@@ -161,5 +165,10 @@ void pertubis::InstallTask::startTask(const paludis::tr1::shared_ptr<paludis::En
         m_task->add_exact_package(*i);
     }
     m_task->run();
-    int res __attribute__ ((unused)) = m_data.empty();
+}
+
+void pertubis::InstallTask::slotFinished()
+{
+    qDebug() << "pertubis::InstallTask::slotFinished()";
+    emit finished();
 }

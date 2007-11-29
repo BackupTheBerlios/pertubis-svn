@@ -56,7 +56,7 @@ void pertubis::ShowSelectionsThread::run()
                     "";
 
             qDebug() << "pertubis::ShowSelectionsThread::run() - 1";
-            Item* node = new Item(*idStart,list,Item::is_stable,Item::ur_node,0);
+            Item* node = new Item(*idStart,list,Item::is_stable,Item::it_node_only,0);
             qDebug() << "pertubis::ShowSelectionsThread::run() - 2";
             m_taskbox->setTasksInItem(node);
             qDebug() << "pertubis::ShowSelectionsThread::run() - 3";

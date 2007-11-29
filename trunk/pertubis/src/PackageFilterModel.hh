@@ -22,7 +22,6 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H 1
 
 #include <QSortFilterProxyModel>
-
 #include <QSet>
 #include <QString>
 

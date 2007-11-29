@@ -34,19 +34,19 @@ namespace pertubis
     {
         public:
 
-            CategoryItem(const QString& name, const QSet<QString>& repos);
+            CategoryItem(const QString& catname, const QSet<QString>& reps)  : m_name(catname), m_repos(reps), m_change(false) {}
 
-            QString name() const;
-            QSet<QString> repos() const;
+            const QString& name() const {return m_name;}
+            const QSet<QString>& repos() const { return m_repos;}
             bool change() const { return m_change;}
 
             void setChange(bool c) { m_change=c;}
 
         private:
 
-            QString     m_name;
-            QSet<QString> m_repos;
-            bool           m_change;
+            QString         m_name;
+            QSet<QString>   m_repos;
+            bool            m_change;
     };
 
 }

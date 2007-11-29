@@ -47,16 +47,15 @@ namespace pertubis
 
             enum ItemState { is_stable, is_unstable, is_masked };
             enum ItemOrder { io_selected, io_package, io_category, io_repository, io_installed,io_mask_reasons,io_change};
-            enum ItemType { it_category,it_package,it_version};
 
             /*! \brief In which direction we want model updates
-            * \param ur_nothing no update
-            * \param ur_node update only this node
-            * \param ur_parent update this parent node and all child nodes ( down )
-            * \param ur_child update from parent and all child nodes, including this child node ( up )
-            * \param ur_both update parent of this node, all childs and the node itself ( up and down )
+            * \param it_nothing no update
+            * \param it_parent update this parent node and all child nodes ( down )
+            * \param it_child update from parent and all child nodes, including this child node ( up )
+            * \param it_node_full update parent of this node, all childs and the node itself ( up and down )
+            * \param it_node_only update only this node
             */
-            enum UpdateRange { ur_nothing, ur_node, ur_parent, ur_child, ur_both};
+            enum ItemType { it_nothing, it_parent, it_child, it_node_full,it_node_only, };
 
             typedef QList<Item*>::const_iterator ConstIterator;
             typedef QList<Item*>::iterator Iterator;
@@ -66,13 +65,8 @@ namespace pertubis
             Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                  const QList<QVariant> &dats,
                  ItemState mystate,
-                 UpdateRange ur,
+                 ItemType itype,
                  Item* parent);
-
-//             Item(const QList<QVariant> &dats,
-//                  ItemState mystate,
-//                  UpdateRange ur,
-//                  Item* pitem);
 
             virtual ~Item();
 
@@ -94,7 +88,7 @@ namespace pertubis
             int columnCount() const;
             QVariant data(int column) const;
             int row() const;
-            UpdateRange updateRange() const;
+            ItemType itemType() const;
             Item *parent() const;
             void setID(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) { m_id = id;} // test
             paludis::tr1::shared_ptr<const paludis::PackageID> ID(); // test
@@ -111,7 +105,7 @@ namespace pertubis
             Item*               m_parent;
             Item*               m_bestChild;
             ItemState           m_state;
-            UpdateRange         m_ur;
+            ItemType            m_itemType;
     };
 
 

@@ -80,6 +80,11 @@ namespace pertubis
         */
         void deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
+        /*! \brief returns the number of selected Items for this task
+         *
+         */
+        int itemCount() const { return m_data.size();}
+
         /*! \brief sets the action this task is referring to
         *
         */
@@ -129,6 +134,8 @@ namespace pertubis
         */
         void changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id, bool mystate);
 
+        virtual void clear();
+
     protected:
 
         paludis::PackageIDSet m_data;
@@ -141,8 +148,6 @@ namespace pertubis
         /*! \brief only for internal use
          */
         void setTaskid(int id);
-
-
     };
 
 //     inline bool operator==(const Task& a,const Task& b) { return a.name() == b.name();}

@@ -29,12 +29,12 @@ void pertubis::ItemTest::setTaskState()
     Item* pitem = new Item(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                           data,
                           Item::is_stable,
-                          Item::ur_parent,
+                          Item::it_parent,
                           0);
     Item* vitem = new Item(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                            data,
                            Item::is_stable,
-                           Item::ur_child,
+                           Item::it_child,
                            pitem);
     pitem->setTaskState(0,Qt::Checked);
     vitem->setTaskState(1,Qt::Checked);
@@ -56,7 +56,7 @@ void pertubis::ItemTest::setState()
     Item* pitem = new Item(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                            QVariantList(),
                            Item::is_stable,
-                           Item::ur_parent,
+                           Item::it_parent,
                            0);
     pitem->setState(Item::is_unstable);
     QCOMPARE(pitem->state(),Item::is_unstable);
@@ -70,7 +70,7 @@ void pertubis::ItemTest::available()
     Item* pitem = new Item(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                            QVariantList(),
                             Item::is_unstable,
-                            Item::ur_parent,
+                            Item::it_parent,
                             0);
     QCOMPARE(pitem->available(),true);
     pitem->setState(Item::is_stable);

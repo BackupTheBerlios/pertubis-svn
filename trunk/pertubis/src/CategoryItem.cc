@@ -18,17 +18,3 @@
 */
 
 #include "CategoryItem.hh"
-
-pertubis::CategoryItem::CategoryItem(const QString& catname, const QSet<QString>& reps) : m_name(catname),m_repos(reps),m_change(false)
-{
-}
-
-QString pertubis::CategoryItem::name() const
-{
-    return m_name;
-}
-
-QSet<QString> pertubis::CategoryItem::repos() const
-{
-    return m_repos;
-}

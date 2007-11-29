@@ -18,8 +18,8 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H
-#define _PERTUBIS_ENTRY_PROTECTOR_DATABASE_VIEW_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_MAIN_WINDOW_H
+#define _PERTUBIS_ENTRY_PROTECTOR_MAIN_WINDOW_H 1
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
@@ -82,14 +82,14 @@ namespace pertubis
     * This class is our application configuration. It connects all modules pertubis consists of with
     * the user.
     */
-    class DatabaseView : public QMainWindow
+    class MainWindow : public QMainWindow
     {
         Q_OBJECT
 
     public:
 
-        DatabaseView();
-        virtual ~DatabaseView();
+        MainWindow();
+        virtual ~MainWindow();
 
     protected:
 
@@ -113,7 +113,6 @@ namespace pertubis
         void createTasks();
         void createToolBar();
         void createTrayMenu();
-        void createUseflagEditor();
         void createWindowSearch();
         void initGUI();
         void initLayout();
@@ -159,6 +158,7 @@ namespace pertubis
         QMenu*                  m_options;
         QMenu*                  m_trayMenu;
         QSplitter*              m_vSplit;
+        QSystemTrayIcon*        m_sysTray;
         QTableView*             m_categories;
         QTableView*             m_repoListView;
         QTableView*             m_setListView;
@@ -183,11 +183,12 @@ namespace pertubis
 
     private slots:
 
+        void initObject();
         void slotCategoryChanged(  const QModelIndex& index );
         void slotDeinstallTask(bool mystate);
         void slotDetailsChanged(const QModelIndex & index);
-        void slotEditUseTask();
         void slotFinish();
+        void slotFinished();
         void slotInstallTask(bool mystate);
         void slotOpenURL(const QUrl&);
         void slotOptionsMenu(const QModelIndex& index);

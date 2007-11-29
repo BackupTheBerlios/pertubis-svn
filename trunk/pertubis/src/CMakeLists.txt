@@ -5,7 +5,7 @@ SET(PERTUBIS_SRCS
     CategoryFilterModel.cc
     CategoryItem.cc
     CategoryModel.cc
-    DatabaseView.cc
+    MainWindow.cc
     DeinstallTask.cc
     description_extractor.cc
     DetailsThread.cc
@@ -43,7 +43,7 @@ SET(PERTUBIS_MOC_HDRS
     CategoryThread.hh
     CategoryFilterModel.hh
     CategoryModel.hh
-    DatabaseView.hh
+    MainWindow.hh
     DeinstallTask.hh
     DetailsThread.hh
     InstallTask.hh
@@ -79,11 +79,4 @@ INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} )
 ADD_EXECUTABLE(pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
 LINK_DIRECTORIES(${PALUDIS_LINK_DIR} )
 TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
-
-
-
-######################################################
-# install
-######################################################
-
-INSTALL(TARGETS pertubis DESTINATION /usr/sbin)
+INSTALL(TARGETS pertubis DESTINATION /usr/sbin COMPONENT pertubis)

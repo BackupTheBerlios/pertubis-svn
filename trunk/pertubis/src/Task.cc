@@ -81,3 +81,12 @@ void pertubis::Task::changeEntry(const paludis::tr1::shared_ptr<const paludis::P
 //     qDebug() << "pertubis::Task::changeEntry()" << id->canonical_form(paludis::idcf_full).c_str() << mystate;
     (mystate) ? addEntry(id) : deleteEntry(id);
 }
+
+void pertubis::Task::clear()
+{
+    for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
+         i != i_end ; ++i)
+    {
+        m_data.erase(*i);
+    }
+}

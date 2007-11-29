@@ -21,8 +21,6 @@
 #include "PackageFilterModel.hh"
 #include "Item.hh"
 
-#include <QDebug>
-
 pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj)
 {
 }
@@ -30,7 +28,6 @@ pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj) : QSortFilterPr
 bool pertubis::PackageFilterModel::filterAcceptsRow(int sourceRow,
     const QModelIndex &sourceParent) const
 {
-//     qDebug() << m_repositories << sourceRow << sourceParent;
     QModelIndex pmi = sourceModel()->index(sourceRow,0,sourceParent);
     if (sourceParent == QModelIndex() && sourceModel()->rowCount(pmi) > 0)
     {

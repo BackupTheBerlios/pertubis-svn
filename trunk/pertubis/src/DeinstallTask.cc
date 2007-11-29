@@ -40,9 +40,9 @@ bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
     Item::Iterator piStart;
     Item::Iterator piEnd;
     int i=0;
-    switch (item->updateRange())
+    switch (item->itemType())
     {
-        case Item::ur_parent:
+        case Item::it_parent:
             iStart = item->childBegin();
             iEnd = item->childEnd();
             switch (newState)
@@ -67,7 +67,7 @@ bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
                     ;
             }
             break;
-        case Item::ur_child:
+        case Item::it_child:
             if (item->data(Item::io_installed).toInt() != Qt::Unchecked)
                 return false;
             piStart = item->parent()->childBegin();
@@ -115,7 +115,7 @@ bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
                     ;
             }
             break;
-        case Item::ur_node:
+        case Item::it_node_only:
             switch (newState)
             {
                 case Qt::Unchecked:

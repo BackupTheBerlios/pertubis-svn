@@ -212,8 +212,7 @@ void pertubis::PackageModel::slotPrependPackage(Item* item)
 bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taskid, bool mystate)
 {
     Item* item = static_cast<Item*>(ix.internalPointer());
-    Item::UpdateRange range = item->updateRange();
-    if (m_box->task(taskid)->changeStates(item,mystate))
+    if (item != 0 && m_box->task(taskid)->changeStates(item,mystate))
     {
         emit layoutChanged();
         return true;

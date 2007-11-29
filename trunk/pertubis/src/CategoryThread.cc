@@ -19,7 +19,6 @@
 
 #include "CategoryThread.hh"
 #include "CategoryItem.hh"
-#include "DatabaseView.hh"
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/set.hh>
@@ -43,7 +42,6 @@ pertubis::CategoryThread::CategoryThread(QObject* pobj,
 void pertubis::CategoryThread::run()
 {
     using namespace paludis;
-    qDebug() << "CategoryThread.run() - starting";
     QMap<QString, QSet<QString> > cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
@@ -52,12 +50,9 @@ void pertubis::CategoryThread::run()
         paludis::tr1::shared_ptr<const paludis::CategoryNamePartSet> cat_names(r->category_names());
         for (paludis::CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()); c != c_end ; ++c)
         {
-//             qDebug() << QString::fromStdString(stringify(*c));
             cats[QString::fromStdString(stringify(*c))].insert(QString::fromStdString(stringify(r->name())));
         }
     }
 
     emit sendCategory(cats);
-
-    qDebug() << "CategoryThread.run() - done";
 }

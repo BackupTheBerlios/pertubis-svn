@@ -27,7 +27,6 @@ namespace pertubis
 {
     class Install;
 
-
     /*! \brief stores the PackageIDs and bundles information what must be done with packages which are about to be installed
 
     */
@@ -44,6 +43,13 @@ namespace pertubis
         bool available(Item* item) const;
         void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
         bool changeStates(Item* item, int mystate);
+
+    signals:
+        void finished();
+
+    private slots:
+
+        void slotFinished();
 
     private:
 

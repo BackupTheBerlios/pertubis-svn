@@ -36,18 +36,19 @@ void pertubis::PertubisSyncTask::on_sync_pre(const paludis::RepositoryName & r)
     m_output->append(QString::fromStdString(color(stringify(r),"magenta")));
 }
 
-void pertubis::PertubisSyncTask::on_sync_post(const paludis::RepositoryName &)
+void pertubis::PertubisSyncTask::on_sync_post(const paludis::RepositoryName &r)
 {
+    m_output->append(QString("after syncing %1").arg(QString::fromStdString(color(stringify(r),"magenta"))));
 }
 
 void pertubis::PertubisSyncTask::on_sync_skip(const paludis::RepositoryName & r)
 {
-    m_output->append(QString("Sync %1 skipped").arg(paludis::stringify(r).c_str()));
+    m_output->append(QString("Sync %1 skipped").arg(stringify(r).c_str()));
 }
 
 void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
 {
-    m_output->append(QString("Sync %1 completed").arg(paludis::stringify(r).c_str()));
+    m_output->append(QString("Sync %1 completed").arg(stringify(r).c_str()));
 }
 
 void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)

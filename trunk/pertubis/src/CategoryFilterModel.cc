@@ -19,25 +19,24 @@
 */
 
 #include "CategoryFilterModel.hh"
-#include "RepositoryListModel.hh"
 #include "CategoryItem.hh"
 #include <QSet>
-#include <QDebug>
+#include <QModelIndex>
 
-pertubis::CategoryFilterModel::CategoryFilterModel(QObject * pobj,const RepositoryListModel& model) : QSortFilterProxyModel(pobj),m_model(model)
+pertubis::CategoryFilterModel::CategoryFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj)
 {
 }
 
 bool pertubis::CategoryFilterModel::filterAcceptsRow(int sourceRow,
         const QModelIndex &sourceParent) const
 {
-    QSet<QString> repos(m_model.activeRepositories());
-
     QModelIndex ix1 = sourceModel()->index(sourceRow,0,sourceParent);
     CategoryItem* p_item = static_cast<CategoryItem*>(ix1.internalPointer());
-    if (p_item && repos.intersect(p_item->repos()).isEmpty() )
+    for (QSet<QString>::const_iterator start(p_item->repos().constBegin()),end(p_item->repos().constEnd());
+         start!= end;++start)
     {
-        return false;
+        if (m_repositories.contains(*start))
+            return true;
     }
-    return true;
+    return false;
 }

@@ -51,6 +51,8 @@ namespace pertubis
 
         Qt::ItemFlags flags(const QModelIndex &index) const;
 
+        Item* getRootItem() const { return m_root;}
+
         QModelIndex index ( int row, int column,
                             const QModelIndex & parent = QModelIndex() ) const;
 

@@ -81,6 +81,7 @@ namespace pertubis
 
     public slots:
         void slotTaskChanged(paludis::tr1::shared_ptr<const paludis::PackageID> id, int taskid, bool state);
+        void slotClear();
 
     private:
         QVector<Task*>    m_tasks;

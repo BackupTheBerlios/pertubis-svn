@@ -1,69 +1,75 @@
-INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} )
 
-SET(PERTUBIS_SRCS
-    ../src/InstallTask.cc
-    ../src/ItemInstallTask.cc
-    ../src/Item.cc
-    ../src/TaskBox.cc
-    ../src/Task.cc
-    ../src/ThreadBase.cc
-)
+OPTION( PERTUBIS_BUILD_TESTS "if you want to run the ctest suite" OFF )
+IF ( PERTUBIS_BUILD_TESTS )
 
-SET(PERTUBIS_MAIN_SRCS
-    main.cc)
+    INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} )
 
-SET(PERTUBIS_MOC_HDRS
-    ../src/InstallTask.hh
-    ../src/ItemInstallTask.hh
-    ../src/Item.hh
-    ../src/TaskBox.hh
-    ../src/ThreadBase.hh
-    ../src/Task.hh
-)
+    SET(PERTUBIS_SRCS
+        ../src/InstallTask.cc
+        ../src/ItemInstallTask.cc
+        ../src/Item.cc
+        ../src/TaskBox.cc
+        ../src/Task.cc
+        ../src/ThreadBase.cc
+    )
 
-QT4_WRAP_CPP(PERTUBIS_MOC_SRCS ${PERTUBIS_MOC_HDRS} )
+    SET(PERTUBIS_MAIN_SRCS
+        main.cc)
 
-##################################
-# Item test
+    SET(PERTUBIS_MOC_HDRS
+        ../src/InstallTask.hh
+        ../src/ItemInstallTask.hh
+        ../src/Item.hh
+        ../src/TaskBox.hh
+        ../src/ThreadBase.hh
+        ../src/Task.hh
+    )
 
-SET(ITEM_TEST_SRCS
-	ItemTest.cc)
+    QT4_WRAP_CPP(PERTUBIS_MOC_SRCS ${PERTUBIS_MOC_HDRS} )
 
-SET(ITEM_TEST_MOC_HDRS
-	ItemTest.hh)
+    ##################################
+    # Item test
 
-QT4_WRAP_CPP(ITEM_TEST_MOC_SRCS ${ITEM_TEST_MOC_HDRS} )
-ADD_EXECUTABLE (itemtest ${ITEM_TEST_SRCS} ${ITEM_TEST_MOC_SRCS} ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} )
-TARGET_LINK_LIBRARIES(itemtest ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+    SET(ITEM_TEST_SRCS
+        ItemTest.cc)
 
-##################################
+    SET(ITEM_TEST_MOC_HDRS
+        ItemTest.hh)
 
-SET(TASKBOX_TEST_SRCS
-    TaskBoxTest.cc)
+    QT4_WRAP_CPP(ITEM_TEST_MOC_SRCS ${ITEM_TEST_MOC_HDRS} )
+    ADD_EXECUTABLE (itemtest ${ITEM_TEST_SRCS} ${ITEM_TEST_MOC_SRCS} ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} )
+    TARGET_LINK_LIBRARIES(itemtest ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
 
-SET(TASKBOX_TEST_MOC_HDRS
-    TaskBoxTest.hh)
+    ##################################
 
-QT4_WRAP_CPP(TASKBOX_TEST_MOC_SRCS ${TASKBOX_TEST_MOC_HDRS} )
-ADD_EXECUTABLE (taskboxtest ${TASKBOX_TEST_SRCS} ${TASKBOX_TEST_MOC_SRCS} ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} )
-TARGET_LINK_LIBRARIES(taskboxtest ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+    SET(TASKBOX_TEST_SRCS
+        TaskBoxTest.cc)
 
-##################################
-# InstallTask test
+    SET(TASKBOX_TEST_MOC_HDRS
+        TaskBoxTest.hh)
 
-# SET(INSTALLTASK_TEST_SRCS
-#     InstallTaskTest.cc)
-#
-# SET(INSTALLTASK_TEST_MOC_HDRS
-#     InstallTaskTest.hh)
+    QT4_WRAP_CPP(TASKBOX_TEST_MOC_SRCS ${TASKBOX_TEST_MOC_HDRS} )
+    ADD_EXECUTABLE (taskboxtest ${TASKBOX_TEST_SRCS} ${TASKBOX_TEST_MOC_SRCS} ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} )
+    TARGET_LINK_LIBRARIES(taskboxtest ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
 
-# QT4_WRAP_CPP(INSTALLTASK_TEST_MOC_SRCS ${INSTALLTASK_TEST_MOC_HDRS} )
-# ADD_EXECUTABLE (installtasktest ${INSTALLTASK_TEST_SRCS} ${INSTALLTASK_TEST_MOC_SRCS} ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} )
-# TARGET_LINK_LIBRARIES(installtasktest ${PALUDISENV_LIB} ${PALUDIS_ENV_LIB} ${PALUDIS_TASK_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+    ##################################
+    # InstallTask test
 
-#################################
+    # SET(INSTALLTASK_TEST_SRCS
+    #     InstallTaskTest.cc)
+    #
+    # SET(INSTALLTASK_TEST_MOC_HDRS
+    #     InstallTaskTest.hh)
 
-ENABLE_TESTING()
-ADD_TEST(tests_itemtest itemtest)
-# ADD_TEST(tests_installtask installtasktest)
-ADD_TEST(tests_taskbox taskboxtest)
+    # QT4_WRAP_CPP(INSTALLTASK_TEST_MOC_SRCS ${INSTALLTASK_TEST_MOC_HDRS} )
+    # ADD_EXECUTABLE (installtasktest ${INSTALLTASK_TEST_SRCS} ${INSTALLTASK_TEST_MOC_SRCS} ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} )
+    # TARGET_LINK_LIBRARIES(installtasktest ${PALUDISENV_LIB} ${PALUDIS_ENV_LIB} ${PALUDIS_TASK_LIB} ${PCRE_LIB} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+
+    #################################
+
+    ENABLE_TESTING()
+    ADD_TEST(tests_itemtest itemtest)
+    # ADD_TEST(tests_installtask installtasktest)
+    ADD_TEST(tests_taskbox taskboxtest)
+
+ENDIF ( PERTUBIS_BUILD_TESTS )

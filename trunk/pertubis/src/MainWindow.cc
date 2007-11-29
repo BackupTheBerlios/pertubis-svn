@@ -20,7 +20,7 @@
 #include "CategoryFilterModel.hh"
 #include "CategoryThread.hh"
 #include "CategoryModel.hh"
-#include "DatabaseView.hh"
+#include "MainWindow.hh"
 #include "DeinstallTask.hh"
 #include "DetailsThread.hh"
 #include "FormatterUtils.hh"
@@ -73,6 +73,7 @@
 #include <QTableView>
 #include <QTabWidget>
 #include <QTextBrowser>
+#include <QTimer>
 #include <QToolBar>
 #include <QUrl>
 
@@ -94,9 +95,9 @@ static bool rootTest(const QString& message)
                                              QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
                                                      QMessageBox::Ok,
                                                              QMessageBox::Ok);
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 namespace pertubis
@@ -136,7 +137,7 @@ void pertubis::PackageView::mousePressEvent(QMouseEvent* ev)
     QTreeView::mousePressEvent(ev);
 }
 
-pertubis::DatabaseView::DatabaseView() :
+pertubis::MainWindow::MainWindow() :
     m_categoryThread(0),
     m_categoryFilterModel(0),
     m_catModel(0),
@@ -161,26 +162,30 @@ pertubis::DatabaseView::DatabaseView() :
     m_selectionsThread(0),
     m_box(0)
 {
-    m_env = paludis::EnvironmentMaker::get_instance()->make_from_spec("");
-    qRegisterMetaType<QList<RepositoryListItem*> >("QList<RepositoryListItem*>");
-    qRegisterMetaType<QList<QVariantList> >("QList<QVariantList>");
-    qRegisterMetaType<QMap<QString, QSet<QString> > >("QMap<QString, QSet<QString> >");
     initGUI();
     initLayout();
-    loadSettings();
+    QTimer::singleShot(0,this,SLOT(initObject()));
+}
+
+pertubis::MainWindow::~MainWindow()
+{
+    saveSettings();
+}
+
+void pertubis::MainWindow::initObject()
+{
     m_repoListThread->start();
     m_categoryThread->start();
     m_setThread->start();
     rootTest("");
 }
 
-pertubis::DatabaseView::~DatabaseView()
+void pertubis::MainWindow::initGUI()
 {
-    saveSettings();
-}
-
-void pertubis::DatabaseView::initGUI()
-{
+    m_env = paludis::EnvironmentMaker::get_instance()->make_from_spec("");
+    qRegisterMetaType<QList<RepositoryListItem*> >("QList<RepositoryListItem*>");
+    qRegisterMetaType<QList<QVariantList> >("QList<QVariantList>");
+    qRegisterMetaType<QMap<QString, QSet<QString> > >("QMap<QString, QSet<QString> >");
     createActions(); // no deps
     createTab(); // no deps
     createTaskBox(); // no deps
@@ -197,9 +202,8 @@ void pertubis::DatabaseView::initGUI()
     statusBar()->show();
 }
 
-void pertubis::DatabaseView::initLayout()
+void pertubis::MainWindow::initLayout()
 {
-    qDebug() << "pertubis::DatabaseView::initLayout()";
     m_vSplit = new QSplitter(Qt::Vertical, this);
     m_vSplit->addWidget(m_packageView);
     m_vSplit->addWidget(m_tabs);
@@ -229,24 +233,23 @@ void pertubis::DatabaseView::initLayout()
 //     m_repoInfoThread = new RepositoryInfoThread(this,this);
     m_syncTask = new PertubisSyncTask(m_env,this,m_output->output());
     createConnections();
-    qDebug() << "pertubis::DatabaseView::initLayout() - done";
+    loadSettings();
 }
 
-void pertubis::DatabaseView::createTaskBox()
+void pertubis::MainWindow::createTaskBox()
 {
     // no deps
     m_box = new TaskBox(this);
 }
 
-void pertubis::DatabaseView::closeEvent(QCloseEvent* ev)
+void pertubis::MainWindow::closeEvent(QCloseEvent* ev)
 {
     hide();
     ev->ignore();
 }
 
-void pertubis::DatabaseView::createCatbar()
+void pertubis::MainWindow::createCatbar()
 {
-    qDebug() << "pertubis::DatabaseView::createCatbar()";
     // deps:
     // - createRepositoryBar()
     //
@@ -254,7 +257,7 @@ void pertubis::DatabaseView::createCatbar()
     m_catModel = new CategoryModel(this);
     m_catModel->setHorizontalHeaderLabels(QStringList() << tr("category"));
 
-    m_categoryFilterModel = new CategoryFilterModel(this,*m_repoListModel);
+    m_categoryFilterModel = new CategoryFilterModel(this);
     m_categoryFilterModel->setSourceModel(m_catModel);
 
     m_categories = new QTableView(this);
@@ -262,13 +265,14 @@ void pertubis::DatabaseView::createCatbar()
     m_categories->verticalHeader()->setVisible(false);
     m_categories->setModel(m_categoryFilterModel);
     m_categories->setShowGrid(false);
-    m_categories->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    m_categories->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     QFont myfont(m_categories->font());
     myfont.setBold(true);
     m_categories->setFont(myfont);
 
     m_dockCat = new QDockWidget(tr("category list"),this);
     m_dockCat->layout()->setMargin(0);
+    m_dockCat->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     m_dockCat->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     m_dockCat->setWidget(m_categories);
 
@@ -279,17 +283,16 @@ void pertubis::DatabaseView::createCatbar()
     m_acToggleCatBar->setToolTip(html_tooltip(tr("enable/disable the category sidebar"),m_acToggleCatBar->text()) );
 }
 
-void pertubis::DatabaseView::createSettings()
+void pertubis::MainWindow::createSettings()
 {
-    qDebug() << "pertubis::DatabaseView::createSettings()";
+    qDebug() << "pertubis::MainWindow::createSettings()";
     m_settings = new Settings(this);
 }
 
-void pertubis::DatabaseView::createPackageView()
+void pertubis::MainWindow::createPackageView()
 {
     // deps
     // - createRepositoryBar()
-    qDebug() << "pertubis::DatabaseView::createPackageView()";
     m_packageModel = new PackageModel(this);
     m_packageModel->setBox(m_box);
     m_packageModel->setHorizontalHeaderLabels(QStringList() <<
@@ -315,11 +318,10 @@ void pertubis::DatabaseView::createPackageView()
     m_packageView->setFont(myfont);
 }
 
-void pertubis::DatabaseView::createToolBar()
+void pertubis::MainWindow::createToolBar()
 {
     // deps
     // - createActions()
-    qDebug() << "pertubis::DatabaseView::createToolBar()";
     m_toolBar = addToolBar( tr("database toolbar") );
     m_toolBar->addAction(m_acSync);
     m_toolBar->addAction(m_acToggleCatBar);
@@ -332,12 +334,12 @@ void pertubis::DatabaseView::createToolBar()
     m_toolBar->addAction(m_acPref);
 }
 
-void pertubis::DatabaseView::createOutput()
+void pertubis::MainWindow::createOutput()
 {
     m_output = new MessageOutput(this);
 }
 
-void pertubis::DatabaseView::createRepositoryBar()
+void pertubis::MainWindow::createRepositoryBar()
 {
     m_repoListModel = new RepositoryListModel(this);
     m_repoListModel->setHorizontalHeaderLabels(QStringList() <<
@@ -346,7 +348,7 @@ void pertubis::DatabaseView::createRepositoryBar()
     m_repoListView = new QTableView(this);
     m_repoListView->setModel(m_repoListModel);
     m_repoListView->horizontalHeader()->setVisible(false);
-    m_repoListView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    m_repoListView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     QFont myfont(m_repoListView->font());
     myfont.setBold(true);
     m_repoListView->setFont(myfont);
@@ -355,6 +357,7 @@ void pertubis::DatabaseView::createRepositoryBar()
     m_repoListView->setShowGrid(false);
 
     m_dockRepo = new QDockWidget(tr("repository list"),this);
+    m_dockRepo->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     m_dockRepo->layout()->setMargin(0);
     m_dockRepo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     m_dockRepo->setWidget(m_repoListView);
@@ -367,7 +370,7 @@ void pertubis::DatabaseView::createRepositoryBar()
     m_acToggleRepoBar->setToolTip( html_tooltip(tr("enable/disable the repository sidebar"),m_acToggleRepoBar->text()) );
 }
 
-void pertubis::DatabaseView::createSetListView()
+void pertubis::MainWindow::createSetListView()
 {
     // deps:
     // - createRepositoryBar()
@@ -376,7 +379,7 @@ void pertubis::DatabaseView::createSetListView()
     m_setModel = new SetModel(this);
     m_setModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
 
-    m_setFilterModel = new CategoryFilterModel(this,*m_repoListModel);
+    m_setFilterModel = new CategoryFilterModel(this);
     m_setFilterModel->setSourceModel(m_setModel);
 
     m_setListView = new QTableView(this);
@@ -390,6 +393,7 @@ void pertubis::DatabaseView::createSetListView()
     m_setListView->setFont(myfont);
 
     m_dockSet = new QDockWidget(tr("set list"),this);
+    m_dockSet->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     m_dockSet->setWidget(m_setListView);
     m_dockSet->layout()->setMargin(0);
     m_dockSet->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -401,9 +405,9 @@ void pertubis::DatabaseView::createSetListView()
     m_acToggleSetBar->setToolTip(html_tooltip(tr("enable/disable the set sidebar"),m_acToggleSetBar->text()) );
 }
 
-// void pertubis::DatabaseView::createRepositoryView()
+// void pertubis::MainWindow::createRepositoryView()
 // {
-//     qDebug() << "pertubis::DatabaseView::createRepositoryView()";
+//     qDebug() << "pertubis::MainWindow::createRepositoryView()";
 //     m_repoInfoModel = new RepositoryInfoModel(this);
 //     m_repoInfoModel->setHorizontalHeaderLabels(QStringList() <<
 //             tr("name") <<
@@ -420,9 +424,8 @@ void pertubis::DatabaseView::createSetListView()
 //     m_repoInfoView->setPalette(p);
 // }
 
-void pertubis::DatabaseView::createDetails()
+void pertubis::MainWindow::createDetails()
 {
-    qDebug() << "pertubis::DatabaseView::createDetails()";
     m_details = new QTextBrowser(this);
     QPalette p(m_details->palette());
     p.setColor(QPalette::Base,QColor(170,170,170)); // background color  = black
@@ -430,7 +433,7 @@ void pertubis::DatabaseView::createDetails()
     m_details->setOpenLinks(false);
 }
 
-void pertubis::DatabaseView::createTab()
+void pertubis::MainWindow::createTab()
 {
     m_tabs = new QTabWidget(this);
     createDetails();
@@ -441,10 +444,8 @@ void pertubis::DatabaseView::createTab()
     m_outputTabID = m_tabs->addTab(m_output,tr("Messages"));
 }
 
-void pertubis::DatabaseView::createActions()
+void pertubis::MainWindow::createActions()
 {
-    qDebug() << "pertubis::DatabaseView::createActions()";
-
     m_acToggleMainWindow = new QAction( QPixmap(":images/logo.xpm"),tr("main window"),this );
     m_acToggleMainWindow->setCheckable(true);
     m_acToggleMainWindow->setChecked(true);
@@ -491,17 +492,12 @@ void pertubis::DatabaseView::createActions()
     m_acMasking->setToolTip(html_tooltip(tr("toggle the masking for this package") ));
 }
 
-void pertubis::DatabaseView::createConnections()
+void pertubis::MainWindow::createConnections()
 {
     connect(m_acDeinstall,
             SIGNAL(toggled(bool)),
             this,
             SLOT(slotDeinstallTask(bool)));
-
-    connect(m_acEditUse,
-            SIGNAL(triggered()),
-            this,
-            SLOT(slotEditUseTask()));
 
     connect(m_acFinish,
             SIGNAL(triggered()),
@@ -623,8 +619,8 @@ void pertubis::DatabaseView::createConnections()
             m_setModel,
             SLOT(slotAppendSet(QMap<QString, QSet<QString> >)));
 
-    connect(m_repoListModel,
-            SIGNAL(modelReset()),
+    connect(m_repoListThread,
+            SIGNAL(finished()),
             this,
             SLOT(slotReposChanged()));
 
@@ -649,186 +645,150 @@ void pertubis::DatabaseView::createConnections()
             SLOT(slotSearchItem()));
 }
 
-void pertubis::DatabaseView::createTasks()
+void pertubis::MainWindow::createTasks()
 {
     // deps
     // - createTaskBox()
-    m_tidInstall = m_box->addTask(new InstallTask( this,m_acInstall,tr("install")));
+    InstallTask* tmp(new InstallTask( this,m_acInstall,tr("install")));
+    connect(tmp,
+            SIGNAL(finished()),
+            this,
+            SLOT(slotFinished()));
+    m_tidInstall = m_box->addTask(tmp);
     m_tidDeinstall = m_box->addTask(new DeinstallTask( this,m_acDeinstall,tr("deinstall")));
 }
 
-void pertubis::DatabaseView::createWindowSearch()
+void pertubis::MainWindow::createWindowSearch()
 {
-     // deps
-    // - createActions()
     m_windowSearch = new SearchWindow(this);
-
 }
 
-void pertubis::DatabaseView::createUseflagEditor()
+void pertubis::MainWindow::createOptionsMenu()
 {
-    qDebug() << "pertubis::DatabaseView::createUseflagEditor()";
-//     m_useflagEditor = new UseFlagEditor(this,m_env);
-    m_dockUse = new QDockWidget(tr("useflag editor"),this);
-    m_dockUse->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-//     m_dockUse->setWidget(m_useflagEditor);
-    addDockWidget(Qt::RightDockWidgetArea, m_dockUse);
-    m_acToggleUseBar = m_dockUse->toggleViewAction();
-    m_acToggleUseBar->setIcon(QPixmap(":images/useflags_22.xpm"));
-    m_acToggleUseBar->setToolTip(tr("<html><h1><u>useflag editor</u></h1><p>here you can manage useflag settings</html>"));
-    m_toolBar->addAction(m_acToggleUseBar);
-}
-
-void pertubis::DatabaseView::createOptionsMenu()
-{
-    qDebug() << "pertubis::DatabaseView::createOptionsMenu()";
     m_options  = new QMenu(tr("Package Options"),this);
 }
 
-void pertubis::DatabaseView::createTrayMenu()
+void pertubis::MainWindow::createTrayMenu()
 {
-    qDebug() << "pertubis::DatabaseView::createTrayMenu()";
+    qDebug() << "pertubis::MainWindow::createTrayMenu()";
     m_trayMenu = new QMenu(this);
     m_trayMenu->addAction(m_acToggleMainWindow);
     m_trayMenu->addAction(m_acPref);
     m_trayMenu->addAction(m_acQuit);
 
-    QSystemTrayIcon* tray = new QSystemTrayIcon(QPixmap(":images/logo.xpm"),this);
-    tray->setContextMenu(m_trayMenu);
-    tray->show();
+    m_sysTray = new QSystemTrayIcon(QPixmap(":images/logo.xpm"),this);
+    m_sysTray->setContextMenu(m_trayMenu);
+    m_sysTray->show();
 
-    connect(tray,
+    connect(m_sysTray,
             SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this,
             SLOT(slotToggleTrayIcon(QSystemTrayIcon::ActivationReason)));
 }
 
-void pertubis::DatabaseView::loadSettings()
+void pertubis::MainWindow::loadSettings()
 {
     QSettings settings;
-    settings.beginGroup( "DatabaseView" );
+    settings.beginGroup( "MainWindow" );
         setVisible(settings.value("visible",true).toBool());
         resize(settings.value("size",QVariant(QSize(800,600))).toSize());
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
 
         m_acToggleCatBar->setChecked(settings.value("catbar_visible",true ).toBool()  );
         m_acToggleRepoBar->setChecked(settings.value("repobar_visible",true ).toBool()  );
-//         m_acToggleUseBar->setChecked(settings.value("usebar_visible", true).toBool());
 
         m_acTogglePackageView->setChecked(settings.value("packageview_visible",true).toBool() );
         m_vSplit->restoreState(settings.value("vsplt").toByteArray());
 
         m_dockCat->setVisible(m_acToggleCatBar->isChecked());
         m_dockRepo->setVisible(m_acToggleRepoBar->isChecked());
-//         m_dockUse->setVisible(m_acToggleUseBar->isChecked());
         m_vSplit->setVisible(m_acTogglePackageView->isChecked());
     settings.endGroup();
 }
 
-void pertubis::DatabaseView::saveSettings()
+void pertubis::MainWindow::saveSettings()
 {
-    qDebug() << "pertubis::DatabaseView::saveSettings()";
     QSettings settings;
-    settings.beginGroup( "DatabaseView" );
+    settings.beginGroup( "MainWindow" );
         settings.setValue("visible", isVisible() );
         settings.setValue("size", size() );
         settings.setValue("pos", pos());
-
         settings.setValue("catbar_visible", m_acToggleCatBar->isChecked());
         settings.setValue("repobar_visible", m_acToggleRepoBar->isChecked());
-//         settings.setValue("usebar_visible",m_acToggleUseBar->isChecked());
-
         settings.setValue("packageview_visible", m_acTogglePackageView->isChecked());
         settings.setValue("vsplt", m_vSplit->saveState());
     settings.endGroup();
-    qDebug() << "pertubis::DatabaseView::saveSettings() - done";
+    qDebug() << "pertubis::MainWindow::saveSettings() - done";
 }
 
-void pertubis::DatabaseView::slotResultCount()
+void pertubis::MainWindow::slotResultCount()
 {
     statusBar()->showMessage(QString(tr("%1 packages found")).arg(m_packageFilterModel->rowCount()));
 }
 
-void pertubis::DatabaseView::slotCategoryChanged( const QModelIndex& /*proxyIndex*/ )
+void pertubis::MainWindow::slotCategoryChanged( const QModelIndex& /*proxyIndex*/ )
 {
     QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categories->currentIndex()));
     if ( !origIndex.isValid() || origIndex.column() != 0 || m_packageViewThread->isRunning())
         return;
     QString cat = m_catModel->data(origIndex).toString();
-    qDebug() << "pertubis::DatabaseView::slotCategoryChanged()" << cat;
+    qDebug() << "pertubis::MainWindow::slotCategoryChanged()" << cat;
     m_packageModel->slotClear();
     m_packageViewThread->start(cat);
 }
 
-void pertubis::DatabaseView::slotRepositoryChanged( const QModelIndex& index )
+void pertubis::MainWindow::slotRepositoryChanged( const QModelIndex& index )
 {
-    qDebug() << "pertubis::DatabaseView::slotRepositoryChanged()";
     if ( !index.isValid())
         return;
 
-    if (index.column() == 0 )
-    {
-        int state = m_repoListModel->data(index,Qt::CheckStateRole).toInt();
-        qDebug() << "pertubis::DatabaseView::slotRepositoryChanged()" << m_repoListModel->data(index,Qt::CheckStateRole);
-        m_repoListModel->setData(index, (state == Qt::Checked ) ? Qt::Unchecked :Qt::Checked);
-        m_packageFilterModel->setFilter(m_repoListModel->activeRepositories());
-        m_packageFilterModel->invalidate();
-        m_categoryFilterModel->invalidate();
-        m_setFilterModel->invalidate();
-    }
-
-//     if (index.column() == 1 )
-//     {
-//         QString repo = m_repoListModel->data(index).toString();
-//         m_repoInfoThread->getInfo(repo);
-//         m_tabs->setCurrentIndex(m_repoViewTabID);
-//     }
+    int state = m_repoListModel->data(index,Qt::CheckStateRole).toInt();
+    m_repoListModel->setData(index, (state == Qt::Checked ) ? Qt::Unchecked :Qt::Checked);
+    slotReposChanged();
 }
 
-void pertubis::DatabaseView::slotReposChanged()
+void pertubis::MainWindow::slotReposChanged()
 {
     m_packageFilterModel->setFilter(m_repoListModel->activeRepositories());
     m_packageFilterModel->invalidate();
+    m_categoryFilterModel->setFilter(m_repoListModel->activeRepositories());
     m_categoryFilterModel->invalidate();
+    m_setFilterModel->setFilter(m_repoListModel->activeRepositories());
+    m_setFilterModel->invalidate();
 }
 
-void pertubis::DatabaseView::slotInstallTask(bool mystate)
+void pertubis::MainWindow::slotInstallTask(bool mystate)
 {
     QModelIndex origIndex(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
     m_packageModel->setSelectionData(origIndex,m_tidInstall,mystate);
 }
 
-void pertubis::DatabaseView::slotDeinstallTask(bool mystate)
+void pertubis::MainWindow::slotDeinstallTask(bool mystate)
 {
     QModelIndex index(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
     m_packageModel->setSelectionData(index,m_tidDeinstall,mystate);
 }
 
-void pertubis::DatabaseView::slotFinish()
+void pertubis::MainWindow::slotFinish()
 {
     if (rootTest(tr("This feature is only available for system administrators")))
+    {
+        m_sysTray->showMessage(tr("pertubis"),tr("Installing %1, Deleting %2 Items").arg(m_box->task(m_tidInstall)->itemCount()).arg(m_box->task(m_tidDeinstall)->itemCount()));
+        slotToggleMainWindow();
         m_box->doPendingTasks(m_env,m_output);
-//     QMessageBox::information(0,
-//                          QObject::tr("information"),
-//                                      QObject::tr("feature is under development"),
-//                                              QMessageBox::Ok,
-//                                              QMessageBox::Ok);
+    }
 }
 
-void pertubis::DatabaseView::slotEditUseTask()
+void pertubis::MainWindow::slotFinished()
 {
-//     if (m_current != 0)
-//     {
-//         QString cat,pack,ver,rep;
-//         m_current->entryData(cat,pack,ver,rep);
-//         qDebug() << cat << pack << ver << rep;
-//         m_useflagEditor->model()->slotEditItemFlags(cat,pack,ver,rep);
-//     }
+    qDebug() << "pertubis::MainWindow::slotFinished()";
+    m_box->slotClear();
+    slotCategoryChanged( QModelIndex());
+    slotToggleMainWindow();
 }
 
-void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
+void pertubis::MainWindow::slotDetailsChanged(const QModelIndex & index)
 {
-    qDebug() << "DatabaseView::slotDetailsChanged() - start" << index;
     QModelIndex ix = m_packageFilterModel->mapToSource(index);
     Item* item = static_cast<Item*>(ix.internalPointer());
 
@@ -837,29 +797,23 @@ void pertubis::DatabaseView::slotDetailsChanged(const QModelIndex & index)
         ix.column() != Item::io_package)
         return;
     m_detailsThread->start(item->ID());
-    qDebug() << "DatabaseView::slotDetailsChanged() - done" << *item << item->ID()->canonical_form(paludis::idcf_full).c_str();
 }
 
-void pertubis::DatabaseView::slotShowDetails(QString details)
+void pertubis::MainWindow::slotShowDetails(QString details)
 {
-    if (!details.isEmpty())
-    {
-        m_details->setText(details);
-        m_tabs->setCurrentIndex(m_detailsTabID);
-    }
-    else
-    {
-        m_details->clear();
-    }
+    if (details.isEmpty())
+        return;
+    m_details->setText(details);
+    m_tabs->setCurrentIndex(m_detailsTabID);
 }
 
-void pertubis::DatabaseView::slotShowSelectedPackages()
+void pertubis::MainWindow::slotShowSelectedPackages()
 {
     m_packageModel->slotClear();
     m_selectionsThread->start();
 }
 
-void pertubis::DatabaseView::slotSync()
+void pertubis::MainWindow::slotSync()
 {
     if (getuid() != 0 )
     {
@@ -873,7 +827,7 @@ void pertubis::DatabaseView::slotSync()
     m_syncTask->start();
 }
 
-void pertubis::DatabaseView::slotSearchItem()
+void pertubis::MainWindow::slotSearchItem()
 {
     if (m_windowSearch->m_line->text().trimmed().isEmpty())
     {
@@ -894,44 +848,41 @@ void pertubis::DatabaseView::slotSearchItem()
     }
 
     m_windowSearch->hide();
-//     m_acToggleCatBar->setChecked(false);
     m_dockCat->setVisible(false);
     m_packageModel->slotClear();
 
     statusBar()->showMessage(QString(tr("searching for %1...")).arg(m_windowSearch->m_line->text()) );
-    m_searchThread->start(m_windowSearch->m_line->text(),m_windowSearch->m_chkName->isChecked(),m_windowSearch->m_chkDesc->isChecked());
+    m_searchThread->start(m_windowSearch->m_line->text(),
+                        m_windowSearch->m_chkName->isChecked(),
+                        m_windowSearch->m_chkDesc->isChecked());
 }
 
-void pertubis::DatabaseView::slotOptionsMenu(const QModelIndex& mix)
+void pertubis::MainWindow::slotOptionsMenu(const QModelIndex& mix)
 {
     QModelIndex index(m_packageFilterModel->mapToSource(mix));
-    qDebug() << "DatabaseView::slotOptionsMenu() - start" << index;
     if (index.column() != Item::io_selected)
         return;
 
     m_options->clear();
-	m_current= static_cast<Item*>(index.internalPointer());
-    QVector<Task*>::const_iterator tStart(m_box->taskBegin());
-    QVector<Task*>::const_iterator tEnd(m_box->taskEnd());
-    while (tStart != tEnd )
+    m_current= static_cast<Item*>(index.internalPointer());
+
+    for (QVector<Task*>::const_iterator tStart(m_box->taskBegin()),
+        tEnd(m_box->taskEnd());
+        tStart != tEnd; ++tStart )
     {
         if ((*tStart)->available(m_current) )
         {
             (*tStart)->fillAction(m_current);
             m_options->addAction( (*tStart)->action() );
         }
-        ++tStart;
     }
 
     m_options->addAction(m_acEditUse);
     m_options->addAction(m_acMasking);
     m_options->popup(m_packageView->mapToGlobal(m_packageView->m_mousePos));
-
 }
 
-
-
-void pertubis::DatabaseView::slotOpenURL(const QUrl& url)
+void pertubis::MainWindow::slotOpenURL(const QUrl& url)
 {
     QString program = "/usr/bin/xdg-open";
     QStringList arguments;
@@ -940,17 +891,17 @@ void pertubis::DatabaseView::slotOpenURL(const QUrl& url)
     myProcess->start(program, arguments);
 }
 
-void pertubis::DatabaseView::slotQuit()
+void pertubis::MainWindow::slotQuit()
 {
     QApplication::instance()->quit();
 }
 
-void pertubis::DatabaseView::slotTogglePackageView()
+void pertubis::MainWindow::slotTogglePackageView()
 {
     m_packageView->setVisible(!m_packageView->isVisible());
 }
 
-void pertubis::DatabaseView::slotToggleSearchWindow()
+void pertubis::MainWindow::slotToggleSearchWindow()
 {
     if (!m_windowSearch)
         return;
@@ -960,7 +911,7 @@ void pertubis::DatabaseView::slotToggleSearchWindow()
         m_windowSearch->hide();
 }
 
-void pertubis::DatabaseView::slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
+void pertubis::MainWindow::slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason)
     {
@@ -975,12 +926,12 @@ void pertubis::DatabaseView::slotToggleTrayIcon(QSystemTrayIcon::ActivationReaso
     }
 }
 
-void pertubis::DatabaseView::slotToggleMainWindow()
+void pertubis::MainWindow::slotToggleMainWindow()
 {
     setVisible(!isVisible());
 }
 
-void pertubis::DatabaseView::slotToggleSettings()
+void pertubis::MainWindow::slotToggleSettings()
 {
     m_settings->exec();
 }

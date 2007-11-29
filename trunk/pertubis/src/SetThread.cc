@@ -41,7 +41,6 @@ pertubis::SetThread::SetThread(QObject* pobj,
 void pertubis::SetThread::run()
 {
     using namespace paludis;
-    qDebug() << "SetThread.run() - starting";
     QMap<QString, QSet<QString> > result;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
@@ -53,14 +52,9 @@ void pertubis::SetThread::run()
             tr1::shared_ptr<const SetNameSet> sets(i->sets_list());
             for (paludis::SetNameSet::ConstIterator s(sets->begin()), s_end(sets->end()); s != s_end ; ++s)
             {
-//             qDebug() << QString::fromStdString(stringify(*c));
                 result[QString::fromStdString(stringify(*s))].insert(QString::fromStdString(stringify(r->name())));
             }
         }
-
     }
-
     emit sendSet(result);
-    qDebug() << "SetThread.run() - done";
 }
-

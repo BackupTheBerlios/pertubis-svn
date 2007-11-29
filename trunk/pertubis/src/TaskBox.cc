@@ -101,3 +101,12 @@ void pertubis::TaskBox::doPendingTasks(const paludis::tr1::shared_ptr<paludis::E
         (*i)->startTask(env,output);
     }
 }
+
+void pertubis::TaskBox::slotClear()
+{
+    qDebug() << "pertubis::TaskBox::slotClear()";
+    for (Iterator i(m_tasks.begin()),i_end(m_tasks.end());i!= i_end;++i)
+    {
+        (*i)->clear();
+    }
+}

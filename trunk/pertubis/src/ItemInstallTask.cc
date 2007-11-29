@@ -48,6 +48,7 @@ pertubis::Install::Install(QObject* pobj,
 void pertubis::Install::run()
 {
     execute();
+    emit finished();
 }
 
 bool pertubis::Install::want_full_install_reasons() const

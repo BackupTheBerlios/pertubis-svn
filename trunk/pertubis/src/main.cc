@@ -17,7 +17,7 @@
 * along with this program.  If not, see <http:*www.gnu.org/licenses/>.
 */
 
-#include "DatabaseView.hh"
+#include "MainWindow.hh"
 #include "version.hh"
 #include <QApplication>
 #include <QTranslator>
@@ -46,9 +46,9 @@ int main( int argc, char **argv )
         a.setApplicationName("pertubis");
         a.setOrganizationName("pertubis");
         a.installTranslator(&t);
-        pertubis::DatabaseView p;
-        p.show();
+        pertubis::MainWindow p;
         a.setActiveWindow(&p);
+        p.show();
         return a.exec();
     }
 

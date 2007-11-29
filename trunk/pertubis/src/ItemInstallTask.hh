@@ -105,7 +105,16 @@ namespace pertubis
 
         signals:
 
+
+            /*! \brief sending the output of the build and install process to the main thread / window
+            *
+            */
             void sendMessage(const QString& message);
+
+            /*! \brief after updating paludis we must rebuild pertubis
+            *
+            */
+            void rebuildMyself(const QString& message);
 
         private:
 

@@ -28,21 +28,21 @@ pertubis::Item::Item()  :
     m_parent(0),
     m_bestChild(0),
     m_state(Item::is_stable),
-    m_ur(Item::ur_nothing)
+    m_itemType(Item::it_nothing)
 {
 }
 
 pertubis::Item::Item(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                     const QList<QVariant> &dats,
                     ItemState mystate,
-                    UpdateRange ur,
+                    ItemType itype,
                     Item* pitem)  :
                     m_data(dats),
                     m_id(id),
                     m_parent(pitem),
                     m_bestChild(0),
                     m_state(mystate),
-                    m_ur(ur)
+                    m_itemType(itype)
 {
 }
 
@@ -183,9 +183,9 @@ paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Item::ID()
     return m_id;
 }
 
-pertubis::Item::UpdateRange pertubis::Item::updateRange() const
+pertubis::Item::ItemType pertubis::Item::itemType() const
 {
-    return m_ur;
+    return m_itemType;
 }
 
 pertubis::Item* pertubis::Item::bestChild() const
@@ -226,7 +226,7 @@ pertubis::Item* pertubis::makePackageItem(paludis::tr1::shared_ptr<const paludis
             QVariant(static_cast<int>(isInstalled)) <<  // io_installed
             mask_reasons << // io_mask_reasons
             "";  // io_change
-    return new Item(id,list,mystate,Item::ur_parent,pitem);
+    return new Item(id,list,mystate, Item::it_parent, pitem);
 }
 
 pertubis::Item* pertubis::makeVersionItem(paludis::tr1::shared_ptr<const paludis::PackageID> id,
@@ -247,7 +247,7 @@ pertubis::Item* pertubis::makeVersionItem(paludis::tr1::shared_ptr<const paludis
             QVariant(static_cast<int>(isInstalled)) <<  // io_installed
             mask_reasons <<  // io_mask_reasons
             ""; // io_change
-    return new Item(id,list,mystate,Item::ur_child,pitem);
+    return new Item(id,list,mystate,Item::it_child,pitem);
 }
 
 #ifndef QT_NO_DEBUG
@@ -262,7 +262,7 @@ QDebug operator<<(QDebug dbg, const pertubis::Item &item)
             "mask_reasons" << item.data(pertubis::Item::io_mask_reasons).toString() << "\n" <<
             "change" << item.data(pertubis::Item::io_change).toString() << "\n" <<
             "state" << item.state() << "\n" <<
-            "range" << item.updateRange() << ")";
+            "itemType" << item.itemType() << ")";
     return dbg.space();
 }
 #endif

@@ -42,15 +42,14 @@ static QStringList findTranslationFiles()
     QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files,
                                           QDir::Name);
 
-    QMutableStringListIterator i(fileNames);
 
-    while (i.hasNext())
+    for (QList<QString>::iterator i(fileNames.begin()), iEnd(fileNames.end());
+        i != iEnd;++i)
     {
-        i.next();
-        QFileInfo info(i.value());
+        QFileInfo info(*i);
         QString tmp(dir.filePath(info.baseName()));
-        qDebug() << "\033[32mfound translation file =" << tmp << "\033[0m";
-        i.setValue(tmp);
+        qDebug() << "pertubis::findTranslationFiles() - found" << tmp;
+        *i = tmp;
     }
 
     return fileNames;
