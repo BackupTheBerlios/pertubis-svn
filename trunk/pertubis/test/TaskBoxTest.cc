@@ -42,7 +42,7 @@ void pertubis::TaskBoxTest::addTask()
 
     int index(-1);
     TaskBox* box = new TaskBox(this);
-    InstallTask* install = new InstallTask();
+    InstallTask* install = new InstallTask(0,0,"install");
     index = box->addTask(install);
     QCOMPARE(index,0);
     QCOMPARE(box->task(index),install);
@@ -59,7 +59,7 @@ void pertubis::TaskBoxTest::hasTask()
 
     int index(-1);
     TaskBox* box = new TaskBox(this);
-    InstallTask* install = new InstallTask();
+    InstallTask* install = new InstallTask(0,0,"install");
     index = box->addTask(install);
     QCOMPARE(index,0);
     QCOMPARE(box->hasTask(index),true);
@@ -76,7 +76,7 @@ void pertubis::TaskBoxTest::tasks()
 
     int index(-1);
     TaskBox* box = new TaskBox(this);
-    InstallTask* install = new InstallTask();
+    InstallTask* install = new InstallTask(0,0,"install");
     index = box->addTask(install);
     QVariantList list(box->tasks());
 
@@ -97,7 +97,7 @@ void pertubis::TaskBoxTest::selectionData()
     qDebug() << "4";
     TaskBox* box = new TaskBox(this);
     qDebug() << "5";
-    InstallTask* install = new InstallTask();
+    InstallTask* install = new InstallTask(0,0,"install");
     box->addTask(install);
 
 
@@ -146,7 +146,7 @@ void pertubis::TaskBoxTest::setItemTasks()
     paludis::tr1::shared_ptr<paludis::Environment> env(paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
 
     TaskBox* box = new TaskBox(this);
-    InstallTask* install = new InstallTask();
+    InstallTask* install = new InstallTask(0,0,"install");
     box->addTask(install);
 
     // init

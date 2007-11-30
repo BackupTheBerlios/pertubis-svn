@@ -22,7 +22,7 @@ IUSE="debug doc gnome kde tests"
 # the su tool
 RDEPEND=">=sys-apps/paludis-0.26.0_alpha4
 	>=x11-libs/qt-4.3.0
-	kde? ( >=kde-base/kdesu-3.5.5 ) || ( >=kde-base/kdebase-3.5.5 )
+	kde? ( ( >=kde-base/kdesu-3.5.5 ) || ( >=kde-base/kdebase-3.5.5 ) )
 	gnome? ( >=x11-libs/gksu-1.9.1 )"
 
 DEPEND=">=sys-apps/paludis-0.26.0_alpha4
@@ -31,7 +31,6 @@ DEPEND=">=sys-apps/paludis-0.26.0_alpha4
 	doc? ( >=app-doc/doxygen-1.5.3 ) "
 
 src_setup() {
-	clean
 	subversion_fetch
 }
 
@@ -46,9 +45,9 @@ src_compile() {
 	fi
 
 	if use kde; then
-		mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=kdesu -t -i pertubis.png"
+		mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=kdesu -t \-i pertubis.png"
 	elif use gnome; then
-		mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=gksu -t -i pertubis.png"
+		mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=gksu -t \-i pertubis.png"
 	fi
 
 	if use tests; then

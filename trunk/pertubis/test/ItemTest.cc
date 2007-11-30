@@ -58,9 +58,9 @@ void pertubis::ItemTest::setState()
                            Item::is_stable,
                            Item::it_parent,
                            0);
-    pitem->setState(Item::is_unstable);
+    pitem->setItemState(Item::is_unstable);
     QCOMPARE(pitem->state(),Item::is_unstable);
-    pitem->setState(Item::is_masked);
+    pitem->setItemState(Item::is_masked);
     QCOMPARE(pitem->state(),Item::is_masked);
     delete pitem;
 }
@@ -73,9 +73,9 @@ void pertubis::ItemTest::available()
                             Item::it_parent,
                             0);
     QCOMPARE(pitem->available(),true);
-    pitem->setState(Item::is_stable);
+    pitem->setItemState(Item::is_stable);
     QCOMPARE(pitem->available(),true);
-    pitem->setState(Item::is_masked);
+    pitem->setItemState(Item::is_masked);
     QCOMPARE(pitem->available(),false);
     delete pitem;
 }
