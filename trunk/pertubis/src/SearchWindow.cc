@@ -81,3 +81,8 @@ pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
     hide();
 //     qDebug() << "SearchWindow::SearchWindow() - done";
 }
+
+QString pertubis::SearchWindow::query() const
+{
+    return m_line->text().trimmed();
+}

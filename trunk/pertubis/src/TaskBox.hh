@@ -43,54 +43,99 @@ namespace pertubis
         Q_OBJECT
     public:
 
+        /// defines a iterator used for iterating over all Tasks
         typedef QVector<Task*>::iterator Iterator;
+        /// defines a const iterator used for iterating over all Tasks
+        typedef QVector<Task*>::const_iterator ConstIterator;
 
+        ///\name Constructors
+        ///\{
+
+        /// constructs a TaskBox object
         TaskBox(QObject* pobject) : QObject(pobject) {}
-        int addTask(Task* task);
-        Task* task(int taskid) const;
-        bool hasTask(int taskid) const;
+        ///\}
+
+        ///\name Content information
+        ///\{
+
+        /// returns the task with task id, if the id is out of bounds it returns 0
+        Task* task(int taskid) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        /// returns true if TaskBox has Task with task id
+        bool hasTask(int taskid) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
         /*! \brief returns a container format needed for Items with all values set to false
-        *
-        * Use this funtion if you want to contruct an empty but sane Item,
-        * and fill it later with information. One of the drawbacks of the current Item implementation
-        * is the need for the correct value count in this selection data container.
-        * \see selectionData()
-        */
-        QVariantList tasks() const;
+         *
+         * Use this funtion if you want to contruct an empty but sane Item,
+         * and fill it later with information. One of the drawbacks of the current Item implementation
+         * is the need for the correct value count in this selection data container.
+         * \see selectionData()
+         */
+        QVariantList tasks() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
         /*! \brief returns a container format needed for Items with appropriate values
-        *
-        * Use this funtion if you want to contruct an Item with correct selection formation.
-        * This function is more expensive than tasks!
-        * \see tasks()
-        */
-        QVariantList selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+         *
+         * Use this funtion if you want to contruct an Item with correct selection information.
+         * This function is more expensive than tasks!
+         * \see tasks()
+         */
+        QVariantList selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id) const PALUDIS_ATTRIBUTE((warn_unused_result));
+        ///\}
+
+        ///\name Content modification
+        ///\{
+
+        /// adds a Task to this container class and returns the task id of Task
+        int addTask(Task* task);
 
         /*! \brief sets each Task selection status for the given Item
         *
         */
         void setTasksInItem(Item* item);
 
-        void doPendingTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
+         /*! \brief starts all known tasks
+          *
+          */
+        void startAllTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
 
-        Iterator taskBegin();
+         ///\name Iteration
+        ///\{
 
-        Iterator taskEnd();
+        /// returns iterator of the first Task
+        Iterator taskBegin() PALUDIS_ATTRIBUTE((warn_unused_result));
+        /// returns iterator of the end Task ( the element after the last Task )
+        Iterator taskEnd() PALUDIS_ATTRIBUTE((warn_unused_result));
 
+        /// returns const iterator of the first Task
+        ConstIterator constTaskBegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        /// returns const iterator of the end Task ( the element after the last Task )
+        ConstIterator constTaskEnd() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        ///\}
+
+        /// QThread overloaded
         void run() {}
 
     public slots:
+
+        /*! \brief add or delete the id from the task
+         */
         void slotTaskChanged(paludis::tr1::shared_ptr<const paludis::PackageID> id, int taskid, bool state);
+
+        /*! \brief clear all task data, but not the tasks
+         */
         void slotClear();
 
     private:
+        /// all tasks are stored here
         QVector<Task*>    m_tasks;
+        /// map task name to task id
         QMap<QString,int> m_index;
     };
 
     inline TaskBox::Iterator TaskBox::taskBegin() { return Iterator(m_tasks.begin());}
     inline TaskBox::Iterator TaskBox::taskEnd() { return Iterator(m_tasks.end());}
+    inline TaskBox::ConstIterator TaskBox::constTaskBegin() const { return Iterator(m_tasks.constBegin());}
+    inline TaskBox::ConstIterator TaskBox::constTaskEnd() const { return Iterator(m_tasks.constEnd());}
 }
 
 #endif

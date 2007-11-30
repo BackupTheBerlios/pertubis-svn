@@ -27,10 +27,6 @@
 #include <paludis/util/stringify.hh>
 #include <QDebug>
 
-pertubis::InstallTask::InstallTask() : m_task(0)
-{
-}
-
 pertubis::InstallTask::InstallTask(QObject* pobject,
         QAction* myaction,
         QString tname) : Task(pobject,myaction,tname),m_task(0)

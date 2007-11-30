@@ -34,18 +34,43 @@ namespace pertubis
     {
         public:
 
-            CategoryItem(const QString& catname, const QSet<QString>& reps)  : m_name(catname), m_repos(reps), m_change(false) {}
+            ///@name Constructors
+            ///@{
 
+            /// std constructor
+            CategoryItem(const QString& catname, const QSet<QString>& reps)  : m_name(catname), m_repos(reps), m_change(false) {}
+            ///@}
+
+            ///@name Content modification
+            ///@{
+
+            /// returns the category name
             const QString& name() const {return m_name;}
+
+            /// returns the repositories in which this category exists
             const QSet<QString>& repos() const { return m_repos;}
+
+            /// sets a flag
+            void setChange(bool c) { m_change=c;}
+
+            ///\}
+
+            ///@name Content information
+            ///@{
+
+            /// returns the change state
             bool change() const { return m_change;}
 
-            void setChange(bool c) { m_change=c;}
 
         private:
 
+            /// name of this category ( paludis::CategoryNamePart )
             QString         m_name;
+
+            /// the repositories in which this category exists
             QSet<QString>   m_repos;
+
+            /// shows if there are new packages in this category
             bool            m_change;
     };
 

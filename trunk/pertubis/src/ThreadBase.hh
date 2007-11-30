@@ -41,17 +41,32 @@ namespace pertubis
 
     public:
 
+        ///\name Constructors
+        ///\{
+
+        /// std constructor
         ThreadBase(QObject* parent,
                     const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                     TaskBox* box);
-
+        ///\}
 
     protected:
 
-        bool installed(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
-        bool hasVersionChange(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
+        ///\name Content information
+        ///\{
+
+        /// queries the paludis database if the PackageID is installed
+        bool installed(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+
+        /// queries the paludis database if the PackageID can be up- or downgraded
+        bool hasVersionChange(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+        ///\}
+
+        /// the environment
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
+
+        /// ptr to TaskBox
         TaskBox*                                        m_taskbox;
     };
 }

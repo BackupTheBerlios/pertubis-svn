@@ -32,26 +32,50 @@ namespace pertubis
     /*! \brief provides a text input and option checkboxes the user may select or deselect.
      *
      * \ingroup Widget
+     * \todo This class should display a dropdown menu allowing the user to choose the metadata keys to search in
      */
     class SearchWindow : public QDialog
     {
         Q_OBJECT
 
     public:
+
+        ///\name Constructors
+        ///\{
+
+        /// constructs a SearchWindow object
         SearchWindow( QWidget *pwid = 0);
+        ///@}
 
-        QLineEdit*            m_line;
-        QCheckBox*            m_chkDesc;
-        QCheckBox*            m_chkName;
-        QCheckBox*            m_chkRegex;
-        QDialogButtonBox*    m_dbox;
+        /// returns the query string
+        QString query() const;
+        /// returns if name is checked
+        bool inName() const { return m_chkName;}
+        /// returns if description is checked
+        bool inDesc() const { return m_chkDesc;}
+        /// returns if homepage is checked
+        bool inHomepage() const { return m_chkHomepage;}
+        /// returns if "regular expression" is checked
+        bool asRegex() const { return m_chkRegex;}
 
-    protected:
-        void initCategories();
-
-        QCheckBox*            m_chkHomepage;
     signals:
+        /// sends the request to start the search
         void                search();
+
+    private:
+
+        /// line for query input
+        QLineEdit*            m_line;
+        /// a checkbox for searching in package description
+        QCheckBox*            m_chkDesc;
+        /// a checkbox for searching in package name
+        QCheckBox*            m_chkName;
+        /// a checkbox for searching in package homepage
+        QCheckBox*            m_chkHomepage;
+        /// a checkbox to treat the query string as a regular expression
+        QCheckBox*            m_chkRegex;
+        /// a button box for the usual buttons
+        QDialogButtonBox*    m_dbox;
     };
 }
 #endif

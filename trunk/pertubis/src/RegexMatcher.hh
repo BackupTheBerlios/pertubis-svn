@@ -51,11 +51,16 @@ namespace pertubis
     class RegexMatcher : public Matcher
     {
         public:
+
+            /// std constructor
             RegexMatcher(const std::string &);
+            /// std destructor
             virtual ~RegexMatcher();
 
+            /// matches
             bool operator() (const std::string &) const;
 
+            /// the match string / regular expression
             mutable QRegExp m_regex;
     };
 }

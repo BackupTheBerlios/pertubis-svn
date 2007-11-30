@@ -41,17 +41,23 @@ namespace pertubis
 
         public:
 
+            ///\name Constructors
+            ///\{
+
+            /// constructs a SetThread object
             SetThread(QObject* parent,
                            const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                            TaskBox* box);
-
+            ///@}
 
         protected:
 
+            /// overloaded from QThread
             void run();
 
         signals:
 
+            /// sends data for a new Set to create
             void sendSet(QMap<QString, QSet<QString> >);
     };
 }

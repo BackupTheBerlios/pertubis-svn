@@ -82,7 +82,7 @@ pertubis::I18NPage::I18NPage(QWidget *pobj)
     foreach (filename,list)
     {
         QString name = languageName(filename);
-        langToTranslation.insert(name,filename);
+        m_langToTranslation.insert(name,filename);
         choice->addItem(name);
         if (filename == m_currentLanguage)
             choice->setCurrentIndex(i);
@@ -136,7 +136,7 @@ void pertubis::I18NPage::saveSettings()
 
 void pertubis::I18NPage::languageChanged(const QString& language)
 {
-    m_currentLanguage=langToTranslation[language];
+    m_currentLanguage=m_langToTranslation[language];
     QMessageBox msgBox;
     msgBox.information(this,tr("pertubis info"),tr("language setting changes will be applied after a restart"));
 }

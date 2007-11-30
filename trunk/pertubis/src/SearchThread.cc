@@ -257,7 +257,7 @@ void pertubis::SearchThread::run()
         if ( ip > 0 )
             p_item->setData(Item::io_installed,Qt::Checked);
         if (mp == p_item->childCount())
-            p_item->setState(Item::is_masked);
+            p_item->setItemState(Item::is_masked);
         emit itemResult(p_item);
         ++count;
     }

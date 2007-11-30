@@ -31,9 +31,9 @@ namespace pertubis
 {
 
     class CategoryItem;
-    /*! \brief This qt model class holds all software categories of all repositories it is instructed to store.
+    /*! @brief This qt model class holds all software categories of all repositories it is instructed to store.
      *
-     * \ingroup ItemModelClass
+     * @ingroup ItemModelClass
      */
     class CategoryModel : public QAbstractTableModel
     {
@@ -41,24 +41,62 @@ namespace pertubis
 
         public:
 
+            ///@name Constructors
+            ///@{
+
+            /// std constructor
             CategoryModel( QObject* parent);
+            ///@}
+
             ~CategoryModel();
 
-            QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+            /// @name Content modification
+            ///@{
+
+            /// sets the header data
             void setHorizontalHeaderLabels ( const QStringList & labels );
 
+            ///@}
+
+            /// @name Content information
+            ///@{
+
+            /// returns the column data of the header
+            QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+            /*! @brief creates a QModelIndex for the CategoryItem descibed by the parameters
+             * @param row the row of the cell seen from parentIndex' perspective
+             * @param column the row of the cell seen from parentIndex' perspective
+             * @param parentIndex the parent or the CategoryItems' value to descibe
+             * @returns the new QModelIndex
+             */
             QModelIndex index(int row, int column, const QModelIndex &parentIndex) const;
+
+            /// returns the number of rows the CategoryItem descibed by QModelIndex has
             int rowCount( const QModelIndex & index ) const;
+
+            /// returns the number of columns the CategoryItem descibed by QModelIndex has
             int columnCount( const QModelIndex & index ) const;
-            QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+
+            /// returns the data in cell with QModelIndex index and Qt::DisplayRole role
+            QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole) const;
+            ///@}
 
         private:
+
+            /// table rows / a container of CategoryItem
             QList<CategoryItem*> m_data;
+
+            /// the header data
             QStringList        m_header;
 
         public slots:
+
+            /// receives the data for a new CategoryItem to append and creates it
             void slotAppendCategory(QMap<QString, QSet<QString> > map);
-            void slotChangeInCat(QString);
+
+            /// sets for category cat the change attribute to true
+            void slotChangeInCat(QString cat);
     };
 }
 #endif

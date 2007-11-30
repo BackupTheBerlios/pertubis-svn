@@ -37,18 +37,25 @@ namespace pertubis
 
         public:
 
+            ///@name Constructors
+            ///@{
+
+            /// std constructor
             ShowSelectionsThread(QObject* pobj,
                                  const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                                  TaskBox* box) : ThreadBase(pobj,env,box)
             {
             }
+            ///@}
 
         signals:
 
+            /// sends an new Item to append
             void appendPackage(Item* item);
 
         protected:
 
+            /// overloaded from QThread
             void run();
 
     };

@@ -53,33 +53,40 @@ namespace pertubis
      */
     class Task : public QObject
     {
+
         friend class TaskBox;
         Q_OBJECT
 
     public:
 
+        /// defines a const iterator
         typedef paludis::PackageIDSet::ConstIterator Iterator;
 
-        Task() : m_taskid(-1) {}
-        Task(QObject* pobject,QString name);
+        ///@name Constructors
+        ///@{
+
+        /// creates a Task object
         Task(QObject* pobject,
             QAction* action,
             QString name);
+        ///@}
 
-        /*! \brief starts the corresponding paludis task
-        *
-        */
-        virtual void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)=0;
+        ///\name Content modification
+        ///\{
 
-        /*! \brief adds a selection specified by PackageID
-        *
-        */
-        void addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+        /*! \brief Use this class if you want to process an items' selection change and its side effects on items' relatives (The UpdateRange )
+         * \param item The item to process
+         * \param mystate one of the values of Qt::CheckRole
+         * We have to process every change here since only the task exactly knows how to deal with it. The task must be able to ask the item for the UpdateRange
+         */
+        virtual bool changeStates(Item* item, int mystate)=0;
 
-        /*! \brief deletes a selection specified by PackageID
-        *
-        */
-        void deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+        /*! \brief actually change
+         *
+         */
+        void changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id, bool mystate);
+
+        virtual void clear();
 
         /*! \brief returns the number of selected Items for this task
          *
@@ -87,14 +94,34 @@ namespace pertubis
         int itemCount() const { return m_data.size();}
 
         /*! \brief sets the action this task is referring to
-        *
-        */
+         *
+         */
         void setAction(QAction* myaction) {m_action = myaction;}
 
         /*! \brief sets Qt::Checked or Qt::Unchecked as result of hasEntry(item)
-        *
-        */
+         *
+         */
         void fillAction(Item* item);
+
+        /*! \brief adds a selection specified by PackageID
+         *
+         */
+        void addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+
+        /*! \brief deletes a selection specified by PackageID
+         *
+         */
+        void deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+
+        /*! \brief starts the corresponding paludis task
+         *
+         */
+        virtual void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)=0;
+
+        ///\}
+
+        ///\name Content information
+        ///\{
 
         /*! \brief returns the action connected with this task
         *
@@ -123,25 +150,19 @@ namespace pertubis
 
         virtual bool available(Item* item) const = 0;
 
-        /*! \brief Use this class if you want to process an items' selection change and its side effects on items' relatives (The UpdateRange )
-        * \param item The item to process
-        * \param mystate one of the values of Qt::CheckRole
-        * We have to process every change here since only the task exactly knows how to deal with it. The task must be able to ask the item for the UpdateRange
-        */
-        virtual bool changeStates(Item* item, int mystate)=0;
+        ///\}
 
-        /*! \brief actually change
-        *
-        */
-        void changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id, bool mystate);
-
-        virtual void clear();
 
     protected:
 
+        /// stores the PackageID of packages that are about to be used for this task
         paludis::PackageIDSet m_data;
+        /// the QAction which triggers the execution of this task
         QAction*        m_action;
+        /// the translated name of this task
         QString         m_name;
+
+        /// this internal task number of this task are used for mapping the selection data in an Item to the correct task
         int             m_taskid;
 
     private:

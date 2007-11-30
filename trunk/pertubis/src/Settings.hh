@@ -41,17 +41,36 @@ namespace pertubis
         Q_OBJECT
 
         public:
+
+            ///@name Constructors
+            ///@{
+
+            /// std constructor
             I18NPage(QWidget *parent = 0);
+            ///@}
+
             ~I18NPage();
 
+            ///@name Content modification
+            ///@{
+
+            /// loads all settings for the gui
             void loadSettings();
+
+            /// saves all settings for the gui
             void saveSettings();
 
+            ///@}
 
-            QMap<QString,QString> langToTranslation;
+            /// maps language to translation file
+            QMap<QString,QString>  m_langToTranslation;
+
+            /// the current language to display
             QString                m_currentLanguage;
 
         public slots:
+
+            /// changes the actual language
             void languageChanged(const QString& language);
 
     };
@@ -65,17 +84,34 @@ namespace pertubis
 
         public:
 
-            Settings(QWidget* parent);
+            ///@name Constructors
+            ///@{
 
-            const QString& currentLang() const { return m_i18n->m_currentLanguage;}
+            /// std constructor
+            Settings(QWidget* parent);
+            ///@}
+
+            ///@name Content information
+            ///@{
+
+            /// returns the current language
+            QString currentLang() const { return m_i18n->m_currentLanguage;}
+            ///@}
 
         public slots:
-             void changePage(QListWidgetItem *current, QListWidgetItem *previous);
+
+            /// changes the actual settings page to display to current
+            void changePage(QListWidgetItem *current, QListWidgetItem *previous);
 
         private:
 
+            /// a list widget
             QListWidget*        m_contentsWidget;
+
+            /// stacked pages
             QStackedWidget*     m_pagesWidget;
+
+            /// the language settings page
             I18NPage*           m_i18n;
     };
 }

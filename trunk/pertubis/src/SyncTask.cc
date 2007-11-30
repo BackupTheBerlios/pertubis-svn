@@ -20,8 +20,6 @@
 #include "SyncTask.hh"
 #include "FormatterUtils.hh"
 #include <paludis/util/stringify.hh>
-#include <QtGlobal>
-#include <QTextEdit>
 #include <paludis/syncer.hh>
 #include <iomanip>
 #include <iostream>
@@ -33,22 +31,22 @@ void pertubis::PertubisSyncTask::on_sync_all_pre()
 
 void pertubis::PertubisSyncTask::on_sync_pre(const paludis::RepositoryName & r)
 {
-    m_output->append(QString::fromStdString(color(stringify(r),"magenta")));
+    sendMessage(QString::fromStdString(color(stringify(r),"magenta")));
 }
 
 void pertubis::PertubisSyncTask::on_sync_post(const paludis::RepositoryName &r)
 {
-    m_output->append(QString("after syncing %1").arg(QString::fromStdString(color(stringify(r),"magenta"))));
+    sendMessage(QString("after syncing %1").arg(QString::fromStdString(color(stringify(r),"magenta"))));
 }
 
 void pertubis::PertubisSyncTask::on_sync_skip(const paludis::RepositoryName & r)
 {
-    m_output->append(QString("Sync %1 skipped").arg(stringify(r).c_str()));
+    sendMessage(QString("Sync %1 skipped").arg(stringify(r).c_str()));
 }
 
 void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
 {
-    m_output->append(QString("Sync %1 completed").arg(stringify(r).c_str()));
+    sendMessage(QString("Sync %1 completed").arg(stringify(r).c_str()));
 }
 
 void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
@@ -59,5 +57,5 @@ void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*
 
 void pertubis::PertubisSyncTask::on_sync_all_post()
 {
-    m_output->append("");
+    sendMessage("");
 }

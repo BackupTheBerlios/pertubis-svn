@@ -36,23 +36,49 @@ namespace pertubis
 
     public:
 
-        InstallTask();
+        /// @name Constructors
+        ///@{
+
+
+        /// std constructor
         InstallTask(QObject* pobject,
                     QAction* myaction,
                     QString tname);
+        ///@}
+
+        /// @name Content modification
+        ///@{
+
+            /// returns if its not masked
         bool available(Item* item) const;
-        void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
+
+        /*! @brief makes the actual changes in this object and in the Item object when a user visually changes the selection state
+         * @param item the Item to be changed
+         * @param mystate the new selection state for this Task
+        */
         bool changeStates(Item* item, int mystate);
+        ///@}
+
+        /// @name Content modification
+        ///@{
+
+        /// starts m_task
+        void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
+            ///@}
 
     signals:
+
+        /// says "I and the paludis install tasks are finished"
         void finished();
 
     private slots:
 
+        /// forwards a QThread::finished() signal
         void slotFinished();
 
     private:
 
+        /// the paludis install task
         Install* m_task;
     };
 }

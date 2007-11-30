@@ -90,11 +90,6 @@ pertubis::Item* pertubis::Item::parent() const
     return m_parent;
 }
 
-int pertubis::Item::indexOf(Item* item) const
-{
-    return m_children.indexOf(item);
-}
-
 bool pertubis::Item::available() const
 {
     return (m_state != Item::is_masked);
@@ -117,13 +112,6 @@ void pertubis::Item::prependChild(Item *item)
     item->setParent(this);
 }
 
-int pertubis::Item::row() const
-{
-    if (m_parent)
-        return m_parent->indexOf( const_cast< Item* >(this) );
-    return 0;
-}
-
 void pertubis::Item::setBestChild(Item *item)
 {
     m_bestChild = item;
@@ -137,32 +125,12 @@ void pertubis::Item::setData(int column, QVariant dats)
     }
 }
 
-pertubis::Item::ConstIterator pertubis::Item::constChildBegin()
-{
-    return m_children.begin();
-}
-
-pertubis::Item::Iterator pertubis::Item::childBegin()
-{
-    return m_children.begin();
-}
-
-pertubis::Item::ConstIterator pertubis::Item::constChildEnd()
-{
-    return m_children.end();
-}
-
-pertubis::Item::Iterator pertubis::Item::childEnd()
-{
-    return m_children.end();
-}
-
 void pertubis::Item::setParent(Item* pitem)
 {
     m_parent=pitem;
 }
 
-void pertubis::Item::setState(ItemState s)
+void pertubis::Item::setItemState(ItemState s)
 {
      m_state = s;
 }
@@ -176,22 +144,14 @@ void pertubis::Item::setTaskState(int taskid, Qt::CheckState mystate)
 //     qDebug() << "Item::setTaskState() - done";
 }
 
-paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Item::ID()
+paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Item::ID() const
 {
     if (m_bestChild != 0)
         return m_bestChild->ID();
     return m_id;
 }
 
-pertubis::Item::ItemType pertubis::Item::itemType() const
-{
-    return m_itemType;
-}
 
-pertubis::Item* pertubis::Item::bestChild() const
-{
-    return m_bestChild;
-}
 
 // QString pertubis::stateDescription(Item::ItemState status)
 // {

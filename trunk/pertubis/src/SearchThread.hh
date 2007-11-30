@@ -39,25 +39,51 @@ namespace pertubis
 
     public:
 
+        ///@name Constructors
+        ///@{
+
+        /// std constructor
         SearchThread(QObject* parent,
                      paludis::tr1::shared_ptr<paludis::Environment>  env,
                      TaskBox* box);
+        ///@}
 
-        void start(const QString& str,bool name,bool desc);
+
+        ///@name Content modification
+        ///@{
+
+        /*! @brief fills the search with data and starts the execution
+         * @param query the string to query for
+         * @param useName search in paludis::PackageNamePart
+         * @param useDesc paludis::PackageNamePart
+         */
+        void start(const QString& query,bool useName,bool useDesc);
+        ///@}
 
     protected:
 
+        /// overloaded from QThread
         void run();
 
     private:
 
+        /// the string to search for
         QString                                 m_query;
+
+        /// if m_query shall be compared with paludis::PackageNamePart
         bool                                    m_optName;
+
+        /// if m_query shall be compared with PackageIDs description metadata
         bool                                    m_optDesc;
 
     signals:
+
+        /// sends an new complete Item tree to the model
         void itemResult(Item* root);
+        /// requests to modify the changeState of an Category
         void changeInCat(QString cat);
+
+        /// sends the number of hits for the actual search result when finished
         void finished(int resultCount);
     };
 }

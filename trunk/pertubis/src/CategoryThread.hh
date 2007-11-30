@@ -43,17 +43,23 @@ namespace pertubis
 
     public:
 
+        ///@name Constructors
+        ///@{
+
+        /// std constructor
         CategoryThread(QObject* parent,
                    const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                    TaskBox* box);
-
+        ///@}
 
     protected:
 
+        /// overloaded from QThread
         void run();
 
     signals:
 
+        /// sends data for a new CategoryItem
         void sendCategory(QMap<QString, QSet<QString> >);
     };
 }

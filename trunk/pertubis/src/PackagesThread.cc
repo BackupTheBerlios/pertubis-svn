@@ -79,7 +79,7 @@ void pertubis::PackagesThread::run()
             if (p_item != 0)
             {
                 if (maskedVersionCount == p_item->childCount())
-                    p_item->setState(Item::is_masked);
+                    p_item->setItemState(Item::is_masked);
                 maskedVersionCount=0;
 
                 QStringList tmp(pReasons.toList());

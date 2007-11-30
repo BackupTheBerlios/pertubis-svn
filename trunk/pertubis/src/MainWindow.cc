@@ -109,9 +109,12 @@ namespace pertubis
     {
 
     public:
+
+        /// std constructor
         ReleaseEater(QObject* pobj) : QObject(pobj) {}
     protected:
 
+        /// filters out release events
         bool eventFilter( QObject *o, QEvent *e )
         {
             Q_UNUSED(o);
@@ -231,7 +234,7 @@ void pertubis::MainWindow::initLayout()
     m_setThread = new SetThread(this,m_env,m_box);
     m_repoListThread = new RepositoryListThread(this,m_env,m_box);
 //     m_repoInfoThread = new RepositoryInfoThread(this,this);
-    m_syncTask = new PertubisSyncTask(m_env,this,m_output->output());
+    m_syncTask = new PertubisSyncTask(m_env,this);
     createConnections();
     loadSettings();
 }
@@ -648,6 +651,11 @@ void pertubis::MainWindow::createConnections()
             SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this,
             SLOT(slotToggleTrayIcon(QSystemTrayIcon::ActivationReason)));
+
+    connect(m_syncTask,
+            SIGNAL(sendMessage(QString)),
+            m_output,
+            SLOT(receiveMessage(QString)));
 }
 
 void pertubis::MainWindow::createTasks()
@@ -777,7 +785,7 @@ void pertubis::MainWindow::slotFinish()
     {
         m_sysTray->showMessage(tr("pertubis"),tr("Installing %1, Deleting %2 Items").arg(m_box->task(m_tidInstall)->itemCount()).arg(m_box->task(m_tidDeinstall)->itemCount()));
         slotToggleMainWindow();
-        m_box->doPendingTasks(m_env,m_output);
+        m_box->startAllTasks(m_env,m_output);
     }
 }
 
@@ -830,11 +838,11 @@ void pertubis::MainWindow::slotSync()
 
 void pertubis::MainWindow::slotSearchItem()
 {
-    if (m_windowSearch->m_line->text().trimmed().isEmpty())
+    if (m_windowSearch->query().isEmpty())
     {
         return;
     }
-
+    QString query(m_windowSearch->query());
     if (m_searchThread->isRunning())
     {
         int res = QMessageBox::question( this, tr("Warning"),
@@ -852,10 +860,10 @@ void pertubis::MainWindow::slotSearchItem()
     m_dockCat->setVisible(false);
     m_packageModel->slotClear();
 
-    statusBar()->showMessage(QString(tr("searching for %1...")).arg(m_windowSearch->m_line->text()) );
-    m_searchThread->start(m_windowSearch->m_line->text(),
-                        m_windowSearch->m_chkName->isChecked(),
-                        m_windowSearch->m_chkDesc->isChecked());
+    statusBar()->showMessage(QString(tr("searching for %1...")).arg(query) );
+    m_searchThread->start(query,
+                        m_windowSearch->inName(),
+                        m_windowSearch->inDesc());
 }
 
 void pertubis::MainWindow::slotOptionsMenu(const QModelIndex& mix)

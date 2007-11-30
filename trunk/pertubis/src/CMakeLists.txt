@@ -61,6 +61,7 @@ SET(PERTUBIS_MOC_HDRS
     SetThread.hh
     Settings.hh
     ShowSelectionsThread.hh
+    SyncTask.hh
     TaskBox.hh
     Task.hh
     ThreadBase.hh
@@ -80,3 +81,4 @@ ADD_EXECUTABLE(pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SR
 LINK_DIRECTORIES(${PALUDIS_LINK_DIR} )
 TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
 INSTALL(TARGETS pertubis DESTINATION /usr/sbin COMPONENT pertubis)
+

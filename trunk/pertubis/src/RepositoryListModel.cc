@@ -136,10 +136,10 @@ int pertubis::RepositoryListModel::rowCount( const QModelIndex & pobj ) const
     return pobj.isValid() ? 0 : m_data.count();
 }
 
-int pertubis::RepositoryListModel::columnCount( const QModelIndex & pobj ) const
-{
-    return pobj.isValid() ? 0 : m_header.count();
-}
+// int pertubis::RepositoryListModel::columnCount( const QModelIndex & pobj ) const
+// {
+//     return pobj.isValid() ? 0 : m_header.count();
+// }
 
 QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int role) const
 {

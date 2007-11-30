@@ -23,10 +23,10 @@
 #include <paludis/package_id.hh>
 #include <QDebug>
 
-QVariantList pertubis::TaskBox::selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id)
+QVariantList pertubis::TaskBox::selectionData(paludis::tr1::shared_ptr<const paludis::PackageID> id) const
 {
     QVariantList list;
-    for (Iterator mytask(taskBegin()), taskend(taskEnd());
+    for (ConstIterator mytask(constTaskBegin()), taskend(constTaskEnd());
          mytask != taskend;
          ++mytask)
     {
@@ -94,7 +94,7 @@ void pertubis::TaskBox::setTasksInItem(Item* item)
 //     qDebug() << "pertubis::TaskBoxTest::setTasksInItem() - done";
 }
 
-void pertubis::TaskBox::doPendingTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)
+void pertubis::TaskBox::startAllTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)
 {
     for (Iterator i(m_tasks.begin()),i_end(m_tasks.end());i!= i_end;++i)
     {

@@ -112,10 +112,17 @@ namespace pertubis
     {
         Q_OBJECT
     public:
-        PackageView(QWidget *parent);
 
+        ///@name Constructors
+        ///@{
+
+        /// std constructor
+        PackageView(QWidget *parent);
+        ///@}
+        /// saves the mouse coordinates into m_mousePos
         void mousePressEvent(QMouseEvent* event);
 
+        /// actual mouse coordinates
         QPoint m_mousePos;
     };
 
@@ -131,40 +138,87 @@ namespace pertubis
 
     public:
 
+        ///@name Constructors
+        ///@{
+
+        /// std constructor
         MainWindow();
+
+        /// std destructor
         virtual ~MainWindow();
 
     protected:
 
+        /// requests exit application
         void closeEvent(QCloseEvent* event);
 
     private slots:
 
+        /// @name Creation methods
+        ///@{
+
+        /// starts threads and query for data
         void initObject();
+        ///@}
+
+        /// do the actual work when a category changed, query for the packages in that category
         void slotCategoryChanged(  const QModelIndex& index );
+
+        /// @name Action starting slots
+        ///@{
+
+        /// task state changed
         void slotDeinstallTask(bool mystate);
+        /// query for new detail data
         void slotDetailsChanged(const QModelIndex & index);
+        /// starts all tasks
         void slotFinish();
+        /// clean data structures and refetch displayed information
         void slotFinished();
+        /// task state changed
         void slotInstallTask(bool mystate);
+        /// open an browser with link
         void slotOpenURL(const QUrl&);
+        /// opens an context menu to select tasks
         void slotOptionsMenu(const QModelIndex& index);
+        /// exit
         void slotQuit();
+        /// changes filter attribute and restart filtering
         void slotRepositoryChanged( const QModelIndex& index );
+        /// restart filtering
         void slotReposChanged();
+
+
+        /// @name Displaying slots
+        ///@{
+
+        /// start search
         void slotSearchItem();
+        /// displayes number of fetch results
         void slotResultCount();
+        /// displayes item details
         void slotShowDetails(QString details);
+        /// displayes selected items
         void slotShowSelectedPackages();
+        /// sync selected repositories
         void slotSync();
+        /// show/hide main window
         void slotToggleMainWindow();
+        /// show/hide package window
         void slotTogglePackageView();
+        /// show/hide search window
         void slotToggleSearchWindow();
+        /// show/hide settings window
         void slotToggleSettings();
+        /// activate system tray window
         void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
+        ///@}
 
     private:
 
+        /// @name Creation methods
+        ///@{
+        /// create all needed model, view and control objects
         void createActions();
         void createCatbar();
         void createConnections();
@@ -184,10 +238,18 @@ namespace pertubis
         void createWindowSearch();
         void initGUI();
         void initLayout();
-        void loadCategories();
+        ///@}
+
+        /// @name Session management
+        ///@{
+        /// manages loading and saving application settings
         void loadSettings();
         void saveSettings();
+        ///@}
 
+        /// @name gui elements
+        ///@{
+        /// -
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
         CategoryThread*         m_categoryThread;
         CategoryFilterModel*    m_categoryFilterModel;
@@ -248,6 +310,7 @@ namespace pertubis
         int                     m_repoViewTabID;
         int                     m_outputTabID;
         int                     m_detailsTabID;
+        ///@}
     };
 }
 

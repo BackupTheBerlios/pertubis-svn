@@ -29,9 +29,9 @@ class QModelIndex;
 
 namespace pertubis
 {
-    /*! \brief filters categories by repository
+    /*! @brief filters categories by repository
      *
-     * \ingroup ItemModelClass
+     * @ingroup ItemModelClass
      * If a category is not member of a repository, this filter rejects the category
      */
     class CategoryFilterModel : public QSortFilterProxyModel
@@ -39,14 +39,32 @@ namespace pertubis
         Q_OBJECT
         public:
 
+            ///@name Constructors
+            ///@{
+            /// std constructor
             CategoryFilterModel(QObject * pobj);
+            ///@}
 
+            ///@name Content modification
+            ///@{
+
+            /*! @brief sets the whitelist for the filter
+             * @param repos repositoris, which will be accepted by this filter
+             *
+             */
             void setFilter(const QSet<QString>& repos) { m_repositories = repos;}
-            bool filterAcceptsRow(int sourceRow,
-                                  const QModelIndex &sourceParent) const;
+            ///@}
+
+            /*! @brief filter a row
+             * @param sourceRow the row ( CategoryItem ) to be filtered
+             * @param sourceParent the parent row which has the sourceRow CategoryItem as child Item
+             * filters a row (Item) from the source model if CategoryItem::m_repos has no repository common with CategoryFilterModel::m_repositories
+             */
+            bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
 
         private:
 
+            /// a whitelist of repositoris to accept when filtering
             QSet<QString> m_repositories;
     };
 
