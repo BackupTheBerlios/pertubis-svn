@@ -1,11 +1,9 @@
 
-
 SET(PERTUBIS_SRCS
-    CategoryThread.cc
     CategoryFilterModel.cc
     CategoryItem.cc
     CategoryModel.cc
-    MainWindow.cc
+    CategoryThread.cc
     DeinstallTask.cc
     description_extractor.cc
     DetailsThread.cc
@@ -14,6 +12,7 @@ SET(PERTUBIS_SRCS
     InstallTask.cc
     Item.cc
     ItemInstallTask.cc
+    MainWindow.cc
     matcher.cc
     MessageOutput.cc
     name_extractor.cc
@@ -40,15 +39,15 @@ SET(PERTUBIS_MAIN_SRCS
     main.cc)
 
 SET(PERTUBIS_MOC_HDRS
-    CategoryThread.hh
     CategoryFilterModel.hh
     CategoryModel.hh
-    MainWindow.hh
+    CategoryThread.hh
     DeinstallTask.hh
     DetailsThread.hh
     InstallTask.hh
     Item.hh
     ItemInstallTask.hh
+    MainWindow.hh
     MessageOutput.hh
     OptionsDelegate.hh
     PackageFilterModel.hh
@@ -77,8 +76,6 @@ QT4_ADD_RESOURCES(PERTUBIS_RCCS_SRCS ${PERTUBIS_RCCS} )
 
 INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} )
 
-ADD_EXECUTABLE(pertubis ${PERTUBIS_SRCS} ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
-LINK_DIRECTORIES(${PALUDIS_LINK_DIR} )
+ADD_EXECUTABLE(pertubis ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
 TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
 INSTALL(TARGETS pertubis DESTINATION /usr/sbin COMPONENT pertubis)
-

@@ -1,20 +1,21 @@
 
-/* Copyright (C) 2007 Stefan Koegl.
+/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of pertubis.
+* This file is part of pertubis
 *
-* pertubis is free software; you can redistribute it and/or modify
+* This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
+* the Free Software Foundation; either version 2 of the License, or
 * (at your option) any later version.
 *
-* pertubis is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http:*www.gnu.org/licenses/>.
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "MessageOutput.hh"
@@ -34,33 +35,30 @@
 #include <errno.h>
 #include <unistd.h>
 
-pertubis::MessageOutput::MessageOutput(QWidget* mywidget) : QWidget(mywidget),
-                                    m_output(0),
+pertubis::MessageOutput::MessageOutput(QWidget* pObj) : QTextEdit(pObj),
                                     m_thread(0),
                                     m_master_fd(-1),
                                     m_slave_fd(-1)
 {
-    paludis::Log::get_instance()->set_log_level(paludis::ll_debug);
+    paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name("pertubis");
     QVBoxLayout* mylayout = new QVBoxLayout;
     mylayout->setMargin(0);
     setLayout(mylayout);
-    m_output = new QTextEdit(this);
-    m_output->setReadOnly(true);
-//     m_output->document()->setMaximumBlockCount(1000);
-    QPalette p(m_output->palette());
+    setReadOnly(true);
+    document()->setMaximumBlockCount(1000);
+    QPalette p(palette());
     p.setColor(QPalette::Base,QColor(0,0,0)); // background color  = black
     p.setColor(QPalette::Text,QColor(255,255,255)); // text color  = white
-    m_output->setPalette(p);
-    m_output->setAutoFillBackground(true);
-    mylayout->addWidget(m_output);
+    setPalette(p);
+    setAutoFillBackground(true);
     show();
     redirectOutput();
 }
 
 void pertubis::MessageThread::run()
 {
-    static char buf[512];
+    char buf[512];
     while (m_atwork)
     {
         int res = read(m_fd,&buf,512);
@@ -68,7 +66,7 @@ void pertubis::MessageThread::run()
         {
             sendMessage(QString::fromLocal8Bit(buf,res));
         }
-        msleep(50);
+        msleep(100);
     }
 }
 
@@ -88,13 +86,8 @@ void pertubis::MessageOutput::redirectOutput()
     connect(m_thread,
             SIGNAL(sendMessage(QString)),
             this,
-            SLOT(receiveMessage(QString)));
+            SLOT(append(QString)));
     m_thread->start();
-}
-
-void pertubis::MessageOutput::receiveMessage(QString message)
-{
-    m_output->append(message);
 }
 
 pertubis::MessageOutput::~MessageOutput()

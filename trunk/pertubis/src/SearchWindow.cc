@@ -1,20 +1,21 @@
 
-/* Copyright (C) 2007 Stefan Koegl.
+/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of pertubis.
+* This file is part of pertubis
 *
-* pertubis is free software; you can redistribute it and/or modify
+* This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
+* the Free Software Foundation; either version 2 of the License, or
 * (at your option) any later version.
 *
-* pertubis is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http:*www.gnu.org/licenses/>.
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "SearchWindow.hh"
@@ -64,17 +65,27 @@ pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
     QPushButton* bFind = new QPushButton(tr("&Start"));
     bFind->setDefault(true);
     m_dbox->addButton(bFind, QDialogButtonBox::ActionRole);
+
+    QPushButton* bStop = new QPushButton(tr("&Stop"));
+    bStop->setDefault(true);
+    m_dbox->addButton(bStop, QDialogButtonBox::ActionRole);
+
     QPushButton* bClose = m_dbox->button(QDialogButtonBox::Close);
 
     connect(bClose,
             SIGNAL(clicked()),
             this,
-               SLOT(hide()));
+            SLOT(hide()));
 
     connect(bFind,
             SIGNAL(clicked()),
             this,
-               SIGNAL(search()));
+            SIGNAL(search()));
+
+    connect(bStop,
+            SIGNAL(clicked()),
+            this,
+            SIGNAL(stopSearch()));
 
     setWindowTitle(tr("Search Dialog"));
     setWindowModality(Qt::WindowModal);

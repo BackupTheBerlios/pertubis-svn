@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of the pertubis frontend for paludis package manager.
+* This file is part of pertubis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 * with this program; if not, write to the Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+
 
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGES_THREAD_H
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGES_THREAD_H 1

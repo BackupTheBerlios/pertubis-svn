@@ -1,20 +1,21 @@
 
-/* Copyright (C) 2007 Stefan Koegl.
+/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of pertubis.
+* This file is part of pertubis
 *
-* pertubis is free software; you can redistribute it and/or modify
+* This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
+* the Free Software Foundation; either version 2 of the License, or
 * (at your option) any later version.
 *
-* pertubis is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http:*www.gnu.org/licenses/>.
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "description_extractor.hh"
@@ -151,7 +152,6 @@ void pertubis::SearchThread::run()
         extractors.push_back(tr1::shared_ptr<NameExtractor>( new NameExtractor(m_env.get()) )    );
     if (m_optDesc )
         extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_env.get())));
-
     std::list<tr1::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
          r_end(m_env->package_database()->end_repositories()) ;
@@ -163,6 +163,8 @@ void pertubis::SearchThread::run()
         repos.push_back(*r);
     }
 
+    if (m_stopExec)
+        return;
     std::set<CategoryNamePart> cats;
     for (std::list<tr1::shared_ptr<const paludis::Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
          r != r_end ; ++r)
@@ -171,6 +173,8 @@ void pertubis::SearchThread::run()
         std::copy(c->begin(), c->end(), std::inserter(cats, cats.begin()));
     }
 
+    if (m_stopExec)
+        return;
     std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > ids;
     for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
          r != r_end ; ++r)
@@ -183,10 +187,10 @@ void pertubis::SearchThread::run()
             ids.insert(std::make_pair(*i, tr1::shared_ptr<const PackageID>()));
     }
 
-    Matches matches(
-                    matchers,
-                    extractors
-                   );
+    if (m_stopExec)
+        return;
+
+    Matches matches(matchers,extractors);
 
     std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*m_env), tr1::cref(repos), tr1::placeholders::_1, matches));
 
@@ -195,6 +199,8 @@ void pertubis::SearchThread::run()
     {
         if (! i->second)
             continue;
+        if (m_stopExec)
+            return;
 
         const tr1::shared_ptr< const PackageIDSequence > versionIds(
                 m_env->package_database()->query(

@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of the pertubis frontend for paludis package manager.
+* This file is part of pertubis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,9 @@ namespace pertubis
                     TaskBox* box);
         ///\}
 
+
+        void stopExec() { m_stopExec=true;}
+
     protected:
 
 
@@ -68,6 +71,8 @@ namespace pertubis
 
         /// ptr to TaskBox
         TaskBox*                                        m_taskbox;
+
+        bool                                            m_stopExec;
     };
 }
 

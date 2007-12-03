@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of the pertubis frontend for paludis package manager.
+* This file is part of pertubis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -62,11 +62,10 @@ namespace pertubis
             bool        m_atwork;
     };
 
-
     /*! \brief output window for messages from paludis
     *
     */
-    class MessageOutput : public QWidget
+    class MessageOutput : public QTextEdit
     {
         Q_OBJECT
 
@@ -75,21 +74,14 @@ namespace pertubis
             MessageOutput(QWidget* mywidget);
             ~MessageOutput();
 
-            void append(QString text) { m_output->append(text);}
-            QTextEdit* output() const { return m_output;}
             void redirectOutput();
-
-        public slots:
-
-            void receiveMessage(QString message);
 
         private:
 
-            QTextEdit*                                  m_output;
-            MessageThread*                              m_thread;
-            paludis::tr1::shared_ptr<paludis::FDOutputStream> messages_stream;
-            int                                         m_master_fd;
-            int                                         m_slave_fd;
+            paludis::tr1::shared_ptr<paludis::FDOutputStream>   messages_stream;
+            MessageThread*                                      m_thread;
+            int                                                 m_master_fd;
+            int                                                 m_slave_fd;
     };
 }
 

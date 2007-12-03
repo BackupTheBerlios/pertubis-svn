@@ -1,20 +1,21 @@
 
-/* Copyright (C) 2007 Stefan Koegl.
+/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of pertubis.
+* This file is part of pertubis
 *
-* pertubis is free software; you can redistribute it and/or modify
+* This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
+* the Free Software Foundation; either version 2 of the License, or
 * (at your option) any later version.
 *
-* pertubis is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http:*www.gnu.org/licenses/>.
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "CategoryFilterModel.hh"
@@ -53,6 +54,7 @@
 
 #include <QApplication>
 #include <QCheckBox>
+#include <QCursor>
 #include <QDebug>
 #include <QDockWidget>
 #include <QFile>
@@ -100,7 +102,7 @@ static bool rootTest(const QString& message)
     return true;
 }
 
-namespace pertubis
+namespace
 {
     /*! \brief We only need press events and filter release events
     *
@@ -152,15 +154,11 @@ pertubis::MainWindow::MainWindow() :
     m_packageFilterModel(0),
     m_packageViewThread(0),
     m_packageView(0),
-//     m_repoInfoView(0),
     m_repoListView(0),
-    m_filter(0),
-//     m_repoInfoModel(0),
-//     m_repoInfoThread(0),
     m_repoListModel(0),
     m_repoListThread(0),
     m_searchThread(0),
-    m_windowSearch(0),
+    m_searchWindow(0),
     m_settings(0),
     m_selectionsThread(0),
     m_box(0)
@@ -224,8 +222,8 @@ void pertubis::MainWindow::initLayout()
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
     show();
-    m_filter = new ReleaseEater(this);
-    installEventFilter(m_filter);
+    ReleaseEater* filter = new ReleaseEater(this);
+    installEventFilter(filter);
     m_searchThread = new SearchThread(this,m_env,m_box);
     m_categoryThread = new CategoryThread(this,m_env,m_box);
     m_packageViewThread = new PackagesThread(this,m_env,m_box);
@@ -239,16 +237,16 @@ void pertubis::MainWindow::initLayout()
     loadSettings();
 }
 
-void pertubis::MainWindow::createTaskBox()
-{
-    // no deps
-    m_box = new TaskBox(this);
-}
-
 void pertubis::MainWindow::closeEvent(QCloseEvent* ev)
 {
     hide();
     ev->ignore();
+}
+
+void pertubis::MainWindow::createTaskBox()
+{
+    // no deps
+    m_box = new TaskBox(this);
 }
 
 void pertubis::MainWindow::createCatbar()
@@ -500,32 +498,32 @@ void pertubis::MainWindow::createConnections()
     connect(m_acDeinstall,
             SIGNAL(toggled(bool)),
             this,
-            SLOT(slotDeinstallTask(bool)));
+            SLOT(onDeinstallTask(bool)));
 
     connect(m_acFinish,
             SIGNAL(triggered()),
             this,
-            SLOT(slotFinish()));
+            SLOT(onStartTasks()));
 
     connect(m_acInstall,
             SIGNAL(toggled(bool)),
             this,
-            SLOT(slotInstallTask(bool)));
+            SLOT(onInstallTask(bool)));
 
     connect(m_acSync,
             SIGNAL(triggered()),
             this,
-            SLOT(slotSync()));
+            SLOT(onSync()));
 
     connect(m_acSelection,
             SIGNAL(triggered()),
             this,
-            SLOT(slotShowSelectedPackages()));
+            SLOT(displaySelectedPackages()));
 
     connect(m_acPref,
             SIGNAL(triggered()),
             this,
-            SLOT(slotToggleSettings()));
+            SLOT(toggleSettings()));
 
     connect(m_acQuit,
             SIGNAL(triggered()),
@@ -535,22 +533,22 @@ void pertubis::MainWindow::createConnections()
     connect(m_acToggleMainWindow,
             SIGNAL(triggered()),
             this,
-            SLOT(slotToggleMainWindow()));
+            SLOT(toggleMainWindow()));
 
     connect(m_acTogglePackageView,
             SIGNAL(triggered()),
             this,
-            SLOT(slotTogglePackageView()));
+            SLOT(togglePackageView()));
 
     connect(m_acToggleSearchWindow,
             SIGNAL(triggered()),
             this,
-            SLOT(slotToggleSearchWindow()));
+            SLOT(toggleSearchWindow()));
 
     connect(m_categories,
             SIGNAL(clicked( const QModelIndex&)),
             this,
-            SLOT(slotCategoryChanged( const QModelIndex& )) );
+            SLOT(onCategoryChanged( const QModelIndex& )) );
 
     connect(m_categoryThread,
             SIGNAL(sendCategory(QMap<QString, QSet<QString> >)),
@@ -560,12 +558,12 @@ void pertubis::MainWindow::createConnections()
     connect(m_details,
             SIGNAL(anchorClicked(const QUrl&)),
             this,
-            SLOT(slotOpenURL(const QUrl&)));
+            SLOT(onOpenURL(const QUrl&)));
 
     connect(m_detailsThread,
             SIGNAL(detailsResult(QString)),
             this,
-            SLOT(slotShowDetails(QString)));
+            SLOT(displayPackageDetails(QString)));
 
     connect(m_packageViewThread,
             SIGNAL(addPackage(Item*)),
@@ -575,7 +573,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_packageViewThread,
             SIGNAL(finished()),
             this,
-            SLOT(slotResultCount()));
+            SLOT(displayResultCount()));
 
     connect(m_packageViewThread,
             SIGNAL(changeInCat(QString)),
@@ -590,22 +588,27 @@ void pertubis::MainWindow::createConnections()
     connect(m_packageView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
-            SLOT(slotDetailsChanged( const QModelIndex& )) );
+            SLOT(onDetailsChanged( const QModelIndex& )) );
 
     connect(m_packageView,
             SIGNAL(clicked(const QModelIndex&)),
             this,
-            SLOT(slotOptionsMenu(const QModelIndex&)));
+            SLOT(displayOptionsMenu(const QModelIndex&)));
 
     connect(m_searchThread,
             SIGNAL(itemResult(Item*)),
             m_packageModel,
             SLOT(slotAppendPackage(Item*)));
 
+    connect(m_searchWindow,
+            SIGNAL(stopSearch()),
+            this,
+            SLOT(onSearchStopped()));
+
     connect(m_searchThread,
             SIGNAL(finished(int)),
             this,
-            SLOT(slotResultCount()));
+            SLOT(displayResultCount()));
 
     connect(m_selectionsThread,
             SIGNAL(appendPackage(Item*)),
@@ -615,7 +618,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_selectionsThread,
             SIGNAL(finished()),
             this,
-            SLOT(slotResultCount()));
+            SLOT(displayResultCount()));
 
     connect(m_setThread,
             SIGNAL(sendSet(QMap<QString, QSet<QString> >)),
@@ -625,7 +628,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_repoListThread,
             SIGNAL(finished()),
             this,
-            SLOT(slotReposChanged()));
+            SLOT(onReposChanged()));
 
     connect(m_repoListThread,
             SIGNAL(sendNames(QList<RepositoryListItem*>)),
@@ -635,27 +638,27 @@ void pertubis::MainWindow::createConnections()
     connect(m_repoListView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
-            SLOT(slotRepositoryChanged( const QModelIndex& )) );
+            SLOT(onRepositoryChanged( const QModelIndex& )) );
 
     connect(m_repoListView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
-            SLOT(slotResultCount()) );
+            SLOT(displayResultCount()) );
 
-    connect(m_windowSearch,
+    connect(m_searchWindow,
             SIGNAL(search()),
             this,
-            SLOT(slotSearchItem()));
+            SLOT(onSearch()));
 
     connect(m_sysTray,
             SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this,
-            SLOT(slotToggleTrayIcon(QSystemTrayIcon::ActivationReason)));
+            SLOT(toggleTrayIcon(QSystemTrayIcon::ActivationReason)));
 
     connect(m_syncTask,
             SIGNAL(sendMessage(QString)),
             m_output,
-            SLOT(receiveMessage(QString)));
+            SLOT(append(QString)));
 }
 
 void pertubis::MainWindow::createTasks()
@@ -666,14 +669,14 @@ void pertubis::MainWindow::createTasks()
     connect(tmp,
             SIGNAL(finished()),
             this,
-            SLOT(slotFinished()));
+            SLOT(onTasksFinished()));
     m_tidInstall = m_box->addTask(tmp);
     m_tidDeinstall = m_box->addTask(new DeinstallTask( this,m_acDeinstall,tr("deinstall")));
 }
 
 void pertubis::MainWindow::createWindowSearch()
 {
-    m_windowSearch = new SearchWindow(this);
+    m_searchWindow = new SearchWindow(this);
 }
 
 void pertubis::MainWindow::createOptionsMenu()
@@ -692,8 +695,6 @@ void pertubis::MainWindow::createTrayMenu()
     m_sysTray = new QSystemTrayIcon(QPixmap(":images/logo.xpm"),this);
     m_sysTray->setContextMenu(m_trayMenu);
     m_sysTray->show();
-
-
 }
 
 void pertubis::MainWindow::loadSettings()
@@ -731,84 +732,13 @@ void pertubis::MainWindow::saveSettings()
     qDebug() << "pertubis::MainWindow::saveSettings() - done";
 }
 
-void pertubis::MainWindow::slotResultCount()
+void pertubis::MainWindow::displayResultCount()
 {
-    statusBar()->showMessage(QString(tr("%1 packages found")).arg(m_packageFilterModel->rowCount()));
+    statusBar()->showMessage(tr("%1 packages found").arg(m_packageFilterModel->rowCount()));
+    QApplication::restoreOverrideCursor();
 }
 
-void pertubis::MainWindow::slotCategoryChanged( const QModelIndex& /*proxyIndex*/ )
-{
-    QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categories->currentIndex()));
-    if ( !origIndex.isValid() || origIndex.column() != 0 || m_packageViewThread->isRunning())
-        return;
-    QString cat = m_catModel->data(origIndex).toString();
-    qDebug() << "pertubis::MainWindow::slotCategoryChanged()" << cat;
-    m_packageModel->slotClear();
-    m_packageViewThread->start(cat);
-}
-
-void pertubis::MainWindow::slotRepositoryChanged( const QModelIndex& index )
-{
-    if ( !index.isValid())
-        return;
-
-    int state = m_repoListModel->data(index,Qt::CheckStateRole).toInt();
-    m_repoListModel->setData(index, (state == Qt::Checked ) ? Qt::Unchecked :Qt::Checked);
-    slotReposChanged();
-}
-
-void pertubis::MainWindow::slotReposChanged()
-{
-    m_packageFilterModel->setFilter(m_repoListModel->activeRepositories());
-    m_packageFilterModel->invalidate();
-    m_categoryFilterModel->setFilter(m_repoListModel->activeRepositories());
-    m_categoryFilterModel->invalidate();
-    m_setFilterModel->setFilter(m_repoListModel->activeRepositories());
-    m_setFilterModel->invalidate();
-}
-
-void pertubis::MainWindow::slotInstallTask(bool mystate)
-{
-    QModelIndex origIndex(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
-    m_packageModel->setSelectionData(origIndex,m_tidInstall,mystate);
-}
-
-void pertubis::MainWindow::slotDeinstallTask(bool mystate)
-{
-    QModelIndex index(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
-    m_packageModel->setSelectionData(index,m_tidDeinstall,mystate);
-}
-
-void pertubis::MainWindow::slotFinish()
-{
-    if (rootTest(tr("This feature is only available for system administrators")))
-    {
-        m_sysTray->showMessage(tr("pertubis"),tr("Installing %1, Deleting %2 Items").arg(m_box->task(m_tidInstall)->itemCount()).arg(m_box->task(m_tidDeinstall)->itemCount()));
-        slotToggleMainWindow();
-        m_box->startAllTasks(m_env,m_output);
-    }
-}
-
-void pertubis::MainWindow::slotFinished()
-{
-    m_box->slotClear();
-    slotCategoryChanged( QModelIndex());
-    slotToggleMainWindow();
-}
-
-void pertubis::MainWindow::slotDetailsChanged(const QModelIndex & index)
-{
-    QModelIndex ix = m_packageFilterModel->mapToSource(index);
-    Item* item = static_cast<Item*>(ix.internalPointer());
-
-    if (!ix.isValid() ||
-        m_detailsThread->isRunning() ||
-        ix.column() != Item::io_package)
-        return;
-    m_detailsThread->start(item->ID());
-}
-
-void pertubis::MainWindow::slotShowDetails(QString details)
+void pertubis::MainWindow::displayPackageDetails(QString details)
 {
     if (details.isEmpty())
         return;
@@ -816,57 +746,13 @@ void pertubis::MainWindow::slotShowDetails(QString details)
     m_tabs->setCurrentIndex(m_detailsTabID);
 }
 
-void pertubis::MainWindow::slotShowSelectedPackages()
+void pertubis::MainWindow::displaySelectedPackages()
 {
     m_packageModel->slotClear();
     m_selectionsThread->start();
 }
 
-void pertubis::MainWindow::slotSync()
-{
-    if (getuid() != 0 )
-    {
-        QMessageBox::critical(this,
-                            tr("authentification error"),
-                            tr("You must be root for syncing repositories"));
-        return;
-    }
-
-    paludis::Context context("When performing sync action from command line:");
-    m_syncTask->start();
-}
-
-void pertubis::MainWindow::slotSearchItem()
-{
-    if (m_windowSearch->query().isEmpty())
-    {
-        return;
-    }
-    QString query(m_windowSearch->query());
-    if (m_searchThread->isRunning())
-    {
-        int res = QMessageBox::question( this, tr("Warning"),
-                        tr("Search is already running! Yes for starting the new one or no for waiting until the pending is finished?"),QMessageBox::Yes,QMessageBox::No);
-        if (res == QMessageBox::No )
-        {
-            m_windowSearch->hide();
-            return;
-        }
-        if (res == QMessageBox::Yes )
-            m_searchThread->terminate();
-    }
-
-    m_windowSearch->hide();
-    m_dockCat->setVisible(false);
-    m_packageModel->slotClear();
-
-    statusBar()->showMessage(QString(tr("searching for %1...")).arg(query) );
-    m_searchThread->start(query,
-                        m_windowSearch->inName(),
-                        m_windowSearch->inDesc());
-}
-
-void pertubis::MainWindow::slotOptionsMenu(const QModelIndex& mix)
+void pertubis::MainWindow::displayOptionsMenu(const QModelIndex& mix)
 {
     QModelIndex index(m_packageFilterModel->mapToSource(mix));
     if (index.column() != Item::io_selected)
@@ -876,8 +762,8 @@ void pertubis::MainWindow::slotOptionsMenu(const QModelIndex& mix)
     m_current= static_cast<Item*>(index.internalPointer());
 
     for (QVector<Task*>::const_iterator tStart(m_box->taskBegin()),
-        tEnd(m_box->taskEnd());
-        tStart != tEnd; ++tStart )
+         tEnd(m_box->taskEnd());
+         tStart != tEnd; ++tStart )
     {
         if ((*tStart)->available(m_current) )
         {
@@ -891,7 +777,129 @@ void pertubis::MainWindow::slotOptionsMenu(const QModelIndex& mix)
     m_options->popup(m_packageView->mapToGlobal(m_packageView->m_mousePos));
 }
 
-void pertubis::MainWindow::slotOpenURL(const QUrl& url)
+void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ )
+{
+    QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categories->currentIndex()));
+    if ( !origIndex.isValid() || origIndex.column() != 0 || m_packageViewThread->isRunning())
+        return;
+    QString cat = m_catModel->data(origIndex).toString();
+    qDebug() << "pertubis::MainWindow::slotCategoryChanged()" << cat;
+    m_packageModel->slotClear();
+    m_packageViewThread->start(cat);
+}
+
+void pertubis::MainWindow::onRepositoryChanged( const QModelIndex& index )
+{
+    if ( !index.isValid())
+        return;
+
+    int state = m_repoListModel->data(index,Qt::CheckStateRole).toInt();
+    m_repoListModel->setData(index, (state == Qt::Checked ) ? Qt::Unchecked :Qt::Checked);
+    onReposChanged();
+}
+
+void pertubis::MainWindow::onReposChanged()
+{
+    m_packageFilterModel->setFilter(m_repoListModel->activeRepositories());
+    m_packageFilterModel->invalidate();
+    m_categoryFilterModel->setFilter(m_repoListModel->activeRepositories());
+    m_categoryFilterModel->invalidate();
+    m_setFilterModel->setFilter(m_repoListModel->activeRepositories());
+    m_setFilterModel->invalidate();
+}
+
+void pertubis::MainWindow::onInstallTask(bool mystate)
+{
+    QModelIndex origIndex(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
+    m_packageModel->setSelectionData(origIndex,m_tidInstall,mystate);
+}
+
+void pertubis::MainWindow::onDeinstallTask(bool mystate)
+{
+    QModelIndex index(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
+    m_packageModel->setSelectionData(index,m_tidDeinstall,mystate);
+}
+
+void pertubis::MainWindow::onStartTasks()
+{
+    if (rootTest(tr("This feature is only available for system administrators")))
+    {
+        m_sysTray->showMessage(tr("pertubis"),tr("Installing %1, Deleting %2 Items").arg(m_box->task(m_tidInstall)->itemCount()).arg(m_box->task(m_tidDeinstall)->itemCount()));
+        toggleMainWindow();
+        m_box->startAllTasks(m_env,m_output);
+    }
+}
+
+void pertubis::MainWindow::onTasksFinished()
+{
+    m_box->slotClear();
+    onCategoryChanged( QModelIndex());
+    toggleMainWindow();
+}
+
+void pertubis::MainWindow::onDetailsChanged(const QModelIndex & index)
+{
+    QModelIndex ix = m_packageFilterModel->mapToSource(index);
+    Item* item = static_cast<Item*>(ix.internalPointer());
+
+    if (!ix.isValid() ||
+         m_detailsThread->isRunning() ||
+         ix.column() != Item::io_package)
+        return;
+    m_detailsThread->start(item->ID());
+}
+
+void pertubis::MainWindow::onSync()
+{
+    if (getuid() != 0 )
+    {
+        QMessageBox::critical(this,
+                            tr("authentification error"),
+                            tr("You must be root for syncing repositories"));
+        return;
+    }
+
+    paludis::Context context("When performing sync action from command line:");
+    m_syncTask->start();
+}
+
+void pertubis::MainWindow::onSearch()
+{
+    if (m_searchWindow->query().isEmpty())
+    {
+        return;
+    }
+    QApplication::setOverrideCursor(QCursor(Qt::BusyCursor));
+    QString query(m_searchWindow->query());
+    if (m_searchThread->isRunning())
+    {
+        int res = QMessageBox::question( this, tr("Warning"),
+                        tr("Search is already running! Yes for starting the new one or no for waiting until the pending is finished?"),QMessageBox::Yes,QMessageBox::No);
+        if (res == QMessageBox::No )
+        {
+            m_searchWindow->hide();
+            return;
+        }
+        if (res == QMessageBox::Yes )
+            m_searchThread->terminate();
+    }
+
+    m_packageModel->slotClear();
+
+    statusBar()->showMessage(QString(tr("searching for %1...")).arg(query) );
+    m_searchThread->start(query,
+                        m_searchWindow->inName(),
+                        m_searchWindow->inDesc());
+}
+
+void pertubis::MainWindow::onSearchStopped()
+{
+    m_searchThread->stopExec();
+    statusBar()->showMessage(tr("Search stopped"));
+    QApplication::restoreOverrideCursor();
+}
+
+void pertubis::MainWindow::onOpenURL(const QUrl& url)
 {
     QString program = "/usr/bin/xdg-open";
     QStringList arguments;
@@ -900,32 +908,32 @@ void pertubis::MainWindow::slotOpenURL(const QUrl& url)
     myProcess->start(program, arguments);
 }
 
-void pertubis::MainWindow::slotQuit()
+void pertubis::MainWindow::onQuit()
 {
     QApplication::instance()->quit();
 }
 
-void pertubis::MainWindow::slotTogglePackageView()
+void pertubis::MainWindow::togglePackageView()
 {
     m_packageView->setVisible(!m_packageView->isVisible());
 }
 
-void pertubis::MainWindow::slotToggleSearchWindow()
+void pertubis::MainWindow::toggleSearchWindow()
 {
-    if (!m_windowSearch)
+    if (!m_searchWindow)
         return;
-    if (m_windowSearch->isHidden())
-        m_windowSearch->exec();
+    if (m_searchWindow->isHidden())
+        m_searchWindow->exec();
     else
-        m_windowSearch->hide();
+        m_searchWindow->hide();
 }
 
-void pertubis::MainWindow::slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
+void pertubis::MainWindow::toggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason)
     {
         case QSystemTrayIcon::Trigger:
-            slotToggleMainWindow();
+            toggleMainWindow();
             break;
         case QSystemTrayIcon::Context:
             m_trayMenu->show();
@@ -935,12 +943,12 @@ void pertubis::MainWindow::slotToggleTrayIcon(QSystemTrayIcon::ActivationReason 
     }
 }
 
-void pertubis::MainWindow::slotToggleMainWindow()
+void pertubis::MainWindow::toggleMainWindow()
 {
     setVisible(!isVisible());
 }
 
-void pertubis::MainWindow::slotToggleSettings()
+void pertubis::MainWindow::toggleSettings()
 {
     m_settings->exec();
 }

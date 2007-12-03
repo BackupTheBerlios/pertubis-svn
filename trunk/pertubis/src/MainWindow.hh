@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of the pertubis frontend for paludis package manager.
+* This file is part of pertubis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -87,12 +87,10 @@ namespace pertubis
     class DetailsThread;
     class Item;
     class MessageOutput;
-    class PackageDetails;
     class PackageFilterModel;
     class PackageModel;
     class PackagesThread;
     class PertubisSyncTask;
-    class ReleaseEater;
     class RepositoryListModel;
     class RepositoryListThread;
     class SearchThread;
@@ -138,11 +136,12 @@ namespace pertubis
 
     public:
 
-        ///@name Constructors
+        /// @name Constructors
         ///@{
 
         /// std constructor
         MainWindow();
+        ///@}
 
         /// std destructor
         virtual ~MainWindow();
@@ -162,56 +161,77 @@ namespace pertubis
         ///@}
 
         /// do the actual work when a category changed, query for the packages in that category
-        void slotCategoryChanged(  const QModelIndex& index );
+        void onCategoryChanged(  const QModelIndex& index );
 
         /// @name Action starting slots
         ///@{
 
         /// task state changed
-        void slotDeinstallTask(bool mystate);
-        /// query for new detail data
-        void slotDetailsChanged(const QModelIndex & index);
-        /// starts all tasks
-        void slotFinish();
-        /// clean data structures and refetch displayed information
-        void slotFinished();
-        /// task state changed
-        void slotInstallTask(bool mystate);
-        /// open an browser with link
-        void slotOpenURL(const QUrl&);
-        /// opens an context menu to select tasks
-        void slotOptionsMenu(const QModelIndex& index);
-        /// exit
-        void slotQuit();
-        /// changes filter attribute and restart filtering
-        void slotRepositoryChanged( const QModelIndex& index );
-        /// restart filtering
-        void slotReposChanged();
+        void onDeinstallTask(bool mystate);
 
+        /// query for new detail data
+        void onDetailsChanged(const QModelIndex & index);
+
+        /// starts all tasks
+        void onStartTasks();
+
+        /// clean data structures and refetch displayed information
+        void onTasksFinished();
+
+        /// task state changed
+        void onInstallTask(bool mystate);
+
+        /// open an browser with link
+        void onOpenURL(const QUrl&);
+
+        /// exit
+        void onQuit();
+
+        /// changes filter attribute and restart filtering
+        void onRepositoryChanged( const QModelIndex& index );
+
+        /// restart filtering
+        void onReposChanged();
+
+        /// start search
+        void onSearch();
+
+        /// stopping a search
+        void onSearchStopped();
+
+        /// sync selected repositories
+        void onSync();
+        ///@}
 
         /// @name Displaying slots
         ///@{
 
-        /// start search
-        void slotSearchItem();
+        /// opens an context menu to select tasks
+        void displayOptionsMenu(const QModelIndex& index);
+
         /// displayes number of fetch results
-        void slotResultCount();
+        void displayResultCount();
+
         /// displayes item details
-        void slotShowDetails(QString details);
+        void displayPackageDetails(QString details);
+
         /// displayes selected items
-        void slotShowSelectedPackages();
-        /// sync selected repositories
-        void slotSync();
+        void displaySelectedPackages();
+        ///@}
+
+        /// @name Layout modification
+        ///@{
+
         /// show/hide main window
-        void slotToggleMainWindow();
+        void toggleMainWindow();
         /// show/hide package window
-        void slotTogglePackageView();
+        void togglePackageView();
         /// show/hide search window
-        void slotToggleSearchWindow();
+        void toggleSearchWindow();
         /// show/hide settings window
-        void slotToggleSettings();
+        void toggleSettings();
         /// activate system tray window
-        void slotToggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
+        void toggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
         ///@}
 
     private:
@@ -247,9 +267,6 @@ namespace pertubis
         void saveSettings();
         ///@}
 
-        /// @name gui elements
-        ///@{
-        /// -
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
         CategoryThread*         m_categoryThread;
         CategoryFilterModel*    m_categoryFilterModel;
@@ -295,13 +312,12 @@ namespace pertubis
         QTabWidget*             m_tabs;
         QTextBrowser*           m_details;
         QToolBar*               m_toolBar;
-        ReleaseEater*           m_filter;
         RepositoryListModel*    m_repoListModel;
         RepositoryListThread*   m_repoListThread;
         SearchThread*           m_searchThread;
         SetModel*               m_setModel;
         SetThread*              m_setThread;
-        SearchWindow*           m_windowSearch;
+        SearchWindow*           m_searchWindow;
         Settings*               m_settings;
         ShowSelectionsThread*   m_selectionsThread;
         TaskBox*                m_box;
@@ -310,7 +326,6 @@ namespace pertubis
         int                     m_repoViewTabID;
         int                     m_outputTabID;
         int                     m_detailsTabID;
-        ///@}
     };
 }
 
