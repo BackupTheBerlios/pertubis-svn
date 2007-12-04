@@ -52,11 +52,25 @@ void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName &
 
 void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
 {
-    m_return_code |= 1;
     qWarning("Sync error: * %s %s",e.backtrace("\n  * ").c_str(), e.message().c_str());
 }
 
 void pertubis::PertubisSyncTask::on_sync_all_post()
 {
     sendMessage("");
+}
+
+void pertubis::PertubisSyncTask::start(const QSet<QString>& repos)
+{
+    for (QSet<QString>::const_iterator rStart(repos.constBegin()),rEnd(repos.constEnd());
+         rStart != rEnd; ++rStart)
+         add_target(rStart->toStdString());
+    QThread::start();
+}
+
+void pertubis::PertubisSyncTask::run()
+{
+    ThreadBase::lock();
+    execute();
+    ThreadBase::unlock();
 }

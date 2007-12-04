@@ -22,6 +22,8 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_THREAD_BASE_H 1
 
 #include <QThread>
+#include <QMutex>
+
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -50,6 +52,14 @@ namespace pertubis
                     TaskBox* box);
         ///\}
 
+        /// tries to lock the mutex and returns the result
+        static bool tryLock();
+
+        /// tries to lock the mutex and returns the result
+        static void lock();
+
+        /// tries to lock the mutex and returns the result
+        static void unlock();
 
         /// request cancel thread execution
         void stopExec() { m_stopExec=true;}
@@ -64,6 +74,8 @@ namespace pertubis
 
         /// execution will be stopped, if true
         bool                                            m_stopExec;
+
+        static QMutex m_paludisAccess;
     };
 }
 

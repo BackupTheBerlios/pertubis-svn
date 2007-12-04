@@ -33,6 +33,7 @@
 #include <QDebug>
 #include <QSet>
 #include <QStringList>
+#include <QMutexLocker>
 
 pertubis::CategoryThread::CategoryThread(QObject* pobj,
                                          const paludis::tr1::shared_ptr<paludis::Environment>&  env,
@@ -43,6 +44,8 @@ pertubis::CategoryThread::CategoryThread(QObject* pobj,
 void pertubis::CategoryThread::run()
 {
     using namespace paludis;
+    qDebug() << "pertubis::CategoryThread::run()";
+    ThreadBase::lock();
     QMap<QString, QSet<QString> > cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
          r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
@@ -56,4 +59,5 @@ void pertubis::CategoryThread::run()
     }
 
     emit sendCategory(cats);
+    ThreadBase::unlock();
 }

@@ -25,6 +25,7 @@
 #include "TaskBox.hh"
 #include "Task.hh"
 #include <QList>
+#include <QMutexLocker>
 
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -59,6 +60,8 @@ void pertubis::PackagesThread::start(QString str)
 
 void pertubis::PackagesThread::run()
 {
+    qDebug() << "pertubis::PackagesThread::run()";
+    ThreadBase::lock();
     using namespace paludis;
     CategoryNamePart cat(m_query.toLatin1().data());
     const tr1::shared_ptr< const PackageIDSequence > packageIds(
@@ -143,4 +146,5 @@ void pertubis::PackagesThread::run()
 
         p_item->prependChild(v_item);
     }
+    ThreadBase::unlock();
 }

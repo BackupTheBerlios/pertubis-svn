@@ -48,6 +48,7 @@ namespace pertubis
                      TaskBox* box);
         ///@}
 
+        ~SearchThread();
 
         ///@name Content modification
         ///@{

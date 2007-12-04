@@ -208,6 +208,9 @@ namespace pertubis
 
         /// sync selected repositories
         void onSync();
+
+        /// show the End to the user
+        void displaySyncFinished();
         ///@}
 
         /// @name Displaying slots
@@ -224,6 +227,9 @@ namespace pertubis
 
         /// displayes selected items
         void displaySelectedPackages();
+
+        /// change sync icon gimmick
+        void displayNextIcon();
         ///@}
 
         /// @name Layout modification
@@ -277,6 +283,7 @@ namespace pertubis
         void saveSettings();
         ///@}
 
+        QString                 m_currentCat;
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
         CategoryThread*         m_categoryThread;
         CategoryFilterModel*    m_categoryFilterModel;
@@ -316,12 +323,13 @@ namespace pertubis
         QMenu*                  m_trayMenu;
         QSplitter*              m_vSplit;
         QSystemTrayIcon*        m_sysTray;
-        QTableView*             m_categories;
+        QTableView*             m_categoryView;
         QTableView*             m_repoListView;
         QTableView*             m_setListView;
         QTabWidget*             m_tabs;
         QTextBrowser*           m_details;
         QToolBar*               m_toolBar;
+        QTimer*                 m_timer;
         RepositoryListModel*    m_repoListModel;
         RepositoryListThread*   m_repoListThread;
         SearchThread*           m_searchThread;

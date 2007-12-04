@@ -131,6 +131,12 @@ pertubis::SearchThread::SearchThread(QObject* pobj,
 {
 }
 
+pertubis::SearchThread::~SearchThread()
+{
+    m_stopExec=true;
+    wait();
+}
+
 void pertubis::SearchThread::start(const QString& str, bool name, bool desc)
 {
     m_query = str;
@@ -143,6 +149,7 @@ void pertubis::SearchThread::start(const QString& str, bool name, bool desc)
 void pertubis::SearchThread::run()
 {
     using namespace paludis;
+    ThreadBase::lock();
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
     qDebug() << "SearchThread::run() - query string:" << m_query;
@@ -290,4 +297,5 @@ void pertubis::SearchThread::run()
     }
 
     emit finished(count);
+    ThreadBase::unlock();
 }

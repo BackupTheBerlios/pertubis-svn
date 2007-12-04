@@ -21,7 +21,10 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_SYNC_TASK_H
 #define _PERTUBIS_ENTRY_PROTECTOR_SYNC_TASK_H 1
 
-#include <QThread>
+#include "ThreadBase.hh"
+
+#include <QSet>
+#include <QString>
 #include <paludis/sync_task.hh>
 #include <paludis/util/tr1_memory.hh>
 
@@ -32,7 +35,7 @@ namespace pertubis
      * \ingroup Thread
      */
     class PertubisSyncTask :
-        public QThread,
+        public ThreadBase,
         public paludis::SyncTask
     {
         Q_OBJECT
@@ -44,9 +47,8 @@ namespace pertubis
 
             /// constructs a PertubisSyncTask object
             PertubisSyncTask(paludis::tr1::shared_ptr<paludis::Environment> env, QObject* pobj) :
-                QThread(pobj),
-                SyncTask(env.get(),true),
-                m_return_code(0)
+                ThreadBase(pobj,paludis::tr1::shared_ptr<paludis::Environment>(),0),
+                SyncTask(env.get(),true)
             {
             }
             ///@}
@@ -67,13 +69,15 @@ namespace pertubis
             virtual void on_sync_all_post();
             ///@}
 
-            /// returns the return code of paludis
-            int return_code() const  { return m_return_code; }
+            ///
+            void start(const QSet<QString>& repositories);
 
         protected:
 
+
+
             /// overloaded from QThread
-            void run() { execute();}
+            void run();
 
         signals:
 
@@ -82,8 +86,7 @@ namespace pertubis
 
         private:
 
-            /// the actual return code
-            int             m_return_code;
+
     };
 }
 

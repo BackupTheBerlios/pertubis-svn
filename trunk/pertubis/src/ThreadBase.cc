@@ -21,9 +21,27 @@
 #include "ThreadBase.hh"
 #include <paludis/environment.hh>
 
+QMutex pertubis::ThreadBase::m_paludisAccess;
+
+bool pertubis::ThreadBase::tryLock()
+{
+    return m_paludisAccess.tryLock();
+}
+
+void pertubis::ThreadBase::lock()
+{
+    return m_paludisAccess.lock();
+}
+
+void pertubis::ThreadBase::unlock()
+{
+    m_paludisAccess.unlock();
+}
+
 pertubis::ThreadBase::ThreadBase(QObject* pobj,
                                 const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                                 TaskBox* box) : QThread(pobj), m_env(env), m_taskbox(box),m_stopExec(false)
 {
+
 }
 

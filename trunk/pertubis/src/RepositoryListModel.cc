@@ -55,6 +55,7 @@ bool pertubis::RepositoryListItem::setData(int col,const QVariant& value)
 void pertubis::RepositoryListThread::run()
 {
     using namespace paludis;
+    ThreadBase::lock();
     QList<QVariantList> list;
     QList<RepositoryListItem*> names;
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
@@ -64,6 +65,7 @@ void pertubis::RepositoryListThread::run()
         names << new RepositoryListItem(r->name());
     }
     emit sendNames(names);
+    ThreadBase::unlock();
 }
 
 pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj) : QAbstractListModel(pobj)

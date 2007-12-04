@@ -55,6 +55,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QCursor>
+#include <QDataStream>
 #include <QDebug>
 #include <QDockWidget>
 #include <QFile>
@@ -78,7 +79,6 @@
 #include <QTimer>
 #include <QToolBar>
 #include <QUrl>
-
 #include <iostream>
 
 static bool rootTest(const QString& message)
@@ -180,6 +180,8 @@ void pertubis::MainWindow::initObject()
     m_repoListThread->start();
     m_setThread->start();
     m_categoryThread->start();
+    if (!m_currentCat.isEmpty())
+        m_packageViewThread->start(m_currentCat);
     rootTest("");
 }
 
@@ -216,6 +218,7 @@ void pertubis::MainWindow::initGUI()
     m_setThread = new SetThread(this,m_env,m_box);
     m_repoListThread = new RepositoryListThread(this,m_env,m_box);
     m_syncTask = new PertubisSyncTask(m_env,this);
+    m_timer = new QTimer(this);
 }
 
 void pertubis::MainWindow::initLayout()
@@ -260,21 +263,21 @@ void pertubis::MainWindow::createCatbar()
     m_categoryFilterModel = new CategoryFilterModel(this);
     m_categoryFilterModel->setSourceModel(m_catModel);
 
-    m_categories = new QTableView(this);
-    m_categories->horizontalHeader()->setVisible(false);
-    m_categories->verticalHeader()->setVisible(false);
-    m_categories->setModel(m_categoryFilterModel);
-    m_categories->setShowGrid(false);
-    m_categories->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    QFont myfont(m_categories->font());
+    m_categoryView = new QTableView(this);
+    m_categoryView->horizontalHeader()->setVisible(false);
+    m_categoryView->verticalHeader()->setVisible(false);
+    m_categoryView->setModel(m_categoryFilterModel);
+    m_categoryView->setShowGrid(false);
+    m_categoryView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    QFont myfont(m_categoryView->font());
     myfont.setBold(true);
-    m_categories->setFont(myfont);
+    m_categoryView->setFont(myfont);
 
     m_dockCat = new QDockWidget(tr("category list"),this);
     m_dockCat->layout()->setMargin(0);
     m_dockCat->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     m_dockCat->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    m_dockCat->setWidget(m_categories);
+    m_dockCat->setWidget(m_categoryView);
 
     m_acToggleCatBar = m_dockCat->toggleViewAction();
     m_acToggleCatBar->setText(tr("category list"));
@@ -471,7 +474,7 @@ void pertubis::MainWindow::createActions()
     m_acFinish->setShortcut( tr("CTRL+F12"));
     m_acFinish->setToolTip(html_tooltip( tr("starts all pending tasks you selected"),m_acFinish->text()) );
 
-    m_acSync = new QAction( QPixmap(":images/sync_22.xpm"), tr("sync"),this);
+    m_acSync = new QAction( QPixmap(":images/sync_0_22.xpm"), tr("sync"),this);
     m_acSync->setToolTip(html_tooltip(tr("To get the latest releases and bugfixes it is neccessary to update the package database.<br><br>It is sufficient to sync your repositories once a day"),m_acSync->text()));
 
     m_acQuit = new QAction( QPixmap(":images/quit_22.xpm"),tr("quit") ,this);
@@ -544,7 +547,7 @@ void pertubis::MainWindow::createConnections()
             this,
             SLOT(toggleSearchWindow()));
 
-    connect(m_categories,
+    connect(m_categoryView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
             SLOT(onCategoryChanged( const QModelIndex& )) );
@@ -658,6 +661,16 @@ void pertubis::MainWindow::createConnections()
             SIGNAL(sendMessage(QString)),
             m_output,
             SLOT(append(QString)));
+
+    connect(m_syncTask,
+            SIGNAL(finished()),
+            this,
+            SLOT(displaySyncFinished()));
+
+    connect(m_timer,
+            SIGNAL(timeout()),
+            this,
+            SLOT(displayNextIcon()));
 }
 
 void pertubis::MainWindow::createTasks()
@@ -705,6 +718,7 @@ void pertubis::MainWindow::loadSettings()
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
 
         m_acToggleCatBar->setChecked(settings.value("catbar_visible",true ).toBool()  );
+        m_currentCat = settings.value("currentCategory","").toString();
         m_acToggleRepoBar->setChecked(settings.value("repobar_visible",true ).toBool()  );
 
         m_acTogglePackageView->setChecked(settings.value("packageview_visible",true).toBool() );
@@ -724,6 +738,7 @@ void pertubis::MainWindow::saveSettings()
         settings.setValue("size", size() );
         settings.setValue("pos", pos());
         settings.setValue("catbar_visible", m_acToggleCatBar->isChecked());
+        settings.setValue("currentCategory", m_currentCat);
         settings.setValue("repobar_visible", m_acToggleRepoBar->isChecked());
         settings.setValue("packageview_visible", m_acTogglePackageView->isChecked());
         settings.setValue("vsplt", m_vSplit->saveState());
@@ -750,6 +765,34 @@ void pertubis::MainWindow::displaySelectedPackages()
 {
     m_packageModel->slotClear();
     m_selectionsThread->start();
+}
+
+void pertubis::MainWindow::displayNextIcon()
+{
+    static int i=0;
+    ++i;
+    if (i>3)
+        i=0;
+    QString file(QString(":images/sync_%1_22.xpm").arg(i));
+    qDebug() << file;
+    m_acSync->setIcon(QPixmap(file));
+    m_sysTray->setIcon(QPixmap(file));
+}
+
+void pertubis::MainWindow::displaySyncFinished()
+{
+    onEndOfPaludisAction();
+    m_timer->stop();
+    m_acSync->setIcon( QPixmap(":images/sync_0_22.xpm"));
+    m_sysTray->setIcon( QPixmap(":images/logo.xpm"));
+    QMessageBox q(QMessageBox::NoIcon,
+                    tr("information"),
+                    tr("syncing repositories finished"),
+                    QMessageBox::Ok,
+                    this);
+    q.setIconPixmap(QPixmap(":images/repobar_22.xpm"));
+    q.setDefaultButton(QMessageBox::Ok);
+    q.exec();
 }
 
 void pertubis::MainWindow::displayOptionsMenu(const QModelIndex& mix)
@@ -779,14 +822,14 @@ void pertubis::MainWindow::displayOptionsMenu(const QModelIndex& mix)
 
 void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ )
 {
-    QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categories->currentIndex()));
+    QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categoryView->currentIndex()));
     if ( !origIndex.isValid() || 0 != origIndex.column() || m_packageViewThread->isRunning())
         return;
 
     onStartOfPaludisAction();
     m_packageModel->slotClear();
-    QString cat = m_catModel->data(origIndex).toString();
-    m_packageViewThread->start(cat);
+    m_currentCat = m_catModel->data(origIndex).toString();
+    m_packageViewThread->start(m_currentCat);
 }
 
 void pertubis::MainWindow::onRepositoryChanged( const QModelIndex& index )
@@ -811,12 +854,14 @@ void pertubis::MainWindow::onReposChanged()
 
 void pertubis::MainWindow::onInstallTask(bool mystate)
 {
+    qDebug() << "pertubis::MainWindow::onInstallTask()";
     QModelIndex origIndex(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
     m_packageModel->setSelectionData(origIndex,m_tidInstall,mystate);
 }
 
 void pertubis::MainWindow::onDeinstallTask(bool mystate)
 {
+    qDebug() << "pertubis::MainWindow::onDeinstallTask()";
     QModelIndex index(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
     m_packageModel->setSelectionData(index,m_tidDeinstall,mystate);
 }
@@ -859,22 +904,43 @@ void pertubis::MainWindow::onSync()
         return;
     }
     if (m_syncTask->isRunning())
+    {
+        QMessageBox::warning(this,
+                    tr("Request denied"),
+                    "You are already syncing the repositories",
+                    QMessageBox::Ok,
+                    QMessageBox::Ok);
         return;
+    }
 
-    paludis::Context context("When performing sync action from command line:");
-    m_syncTask->start();
+    QSet<QString> repos(m_repoListModel->activeRepositories());
+    QString text;
+    for (QSet<QString>::const_iterator sStart(repos.constBegin()),sEnd(repos.constEnd());
+        sStart != sEnd;++sStart)
+    {
+        text.append(QString("* %1\n").arg(*sStart));
+    }
+    QMessageBox q(QMessageBox::NoIcon,
+                        tr("Question"),
+                        tr("Do you really want syncing the following repositories?\n\n%1").arg(text),
+                        QMessageBox::Ok | QMessageBox::Cancel,
+                        this);
+    q.setIconPixmap(QPixmap(":images/repobar_22.xpm"));
+    q.setDefaultButton(QMessageBox::Ok);
+    if (QMessageBox::Cancel == q.exec())
+        return;
+    m_timer->start(1000);
+    onStartOfPaludisAction();
+    m_syncTask->start(repos);
 }
 
 void pertubis::MainWindow::onStartOfPaludisAction()
 {
-//     m_paludisMutex.lock();
     QApplication::setOverrideCursor(QCursor(Qt::BusyCursor));
 }
 
-
 void pertubis::MainWindow::onEndOfPaludisAction()
 {
-//     m_paludisMutex.unlock();
     QApplication::restoreOverrideCursor();
 }
 
