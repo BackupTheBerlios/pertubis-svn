@@ -86,17 +86,17 @@ static bool rootTest(const QString& message)
     if (0 != getuid() )
     {
         if (!message.isEmpty())
-            QMessageBox::warning(0,
-                                 QObject::tr("unpriviledged mode"),
-                                             message,
-                                             QMessageBox::Ok,
-                                             QMessageBox::Ok);
+            QMessageBox::critical(0,
+                                QObject::tr("unpriviledged mode"),
+                                message,
+                                QMessageBox::Ok,
+                                QMessageBox::Ok);
         else
-            QMessageBox::warning(0,
-                                 QObject::tr("unpriviledged mode"),
-                                             QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
-                                                     QMessageBox::Ok,
-                                                             QMessageBox::Ok);
+            QMessageBox::critical(0,
+                                QObject::tr("unpriviledged mode"),
+                                QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
+                                QMessageBox::Ok,
+                                QMessageBox::Ok);
         return false;
     }
     return true;
@@ -780,7 +780,7 @@ void pertubis::MainWindow::displayOptionsMenu(const QModelIndex& mix)
 void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ )
 {
     QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categories->currentIndex()));
-    if ( !origIndex.isValid() || origIndex.column() != 0 || m_packageViewThread->isRunning())
+    if ( !origIndex.isValid() || 0 != origIndex.column() || m_packageViewThread->isRunning())
         return;
 
     onStartOfPaludisAction();
@@ -854,13 +854,12 @@ void pertubis::MainWindow::onDetailsChanged(const QModelIndex & index)
 
 void pertubis::MainWindow::onSync()
 {
-    if (getuid() != 0 )
+    if ( !rootTest(tr("You must be root for syncing repositories")) )
     {
-        QMessageBox::critical(this,
-                            tr("authentification error"),
-                            tr("You must be root for syncing repositories"));
         return;
     }
+    if (m_syncTask->isRunning())
+        return;
 
     paludis::Context context("When performing sync action from command line:");
     m_syncTask->start();
