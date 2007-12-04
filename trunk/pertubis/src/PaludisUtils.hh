@@ -18,18 +18,23 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "text_matcher.hh"
-#include <string.h>
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_PALUDIS_UTILS_H
+#define _PERTUBIS_ENTRY_PROTECTOR_PALUDIS_UTILS_H 1
 
-pertubis::TextMatcher::TextMatcher(const std::string & s) : m_pattern(s)
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+
+namespace pertubis
 {
+
+    /// queries the paludis database if the PackageID is installed
+    bool installed(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
+                    const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+
+    /// queries the paludis database if the PackageID can be up- or downgraded
+    bool hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
+                        const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 }
 
-bool pertubis::TextMatcher::operator() (const std::string & s) const
-{
-    return 0 != strcasestr(s.c_str(), m_pattern.c_str());
-}
-
-pertubis::TextMatcher::~TextMatcher()
-{
-}
+#endif

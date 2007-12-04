@@ -22,6 +22,7 @@
 #include "TaskBox.hh"
 #include "Task.hh"
 #include "Item.hh"
+#include "PaludisUtils.hh"
 #include <QDebug>
 #include <QVector>
 #include <QVariant>
@@ -51,7 +52,7 @@ void pertubis::ShowSelectionsThread::run()
                     QString("%1-%2").arg(QString::fromStdString(paludis::stringify((*idStart)->name().package))).arg(QString::fromStdString(paludis::stringify((*idStart)->version()))) <<
                     QString::fromStdString(paludis::stringify((*idStart)->name().category)) <<
                     QString::fromStdString(paludis::stringify((*idStart)->repository()->name())) <<
-                    ( installed(*idStart) ? Qt::PartiallyChecked : Qt::Unchecked) <<
+                    ( installed(m_env,*idStart) ? Qt::PartiallyChecked : Qt::Unchecked) <<
                     "" <<
                     "";
 

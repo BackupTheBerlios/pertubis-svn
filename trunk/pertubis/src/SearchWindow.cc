@@ -67,7 +67,6 @@ pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
     m_dbox->addButton(bFind, QDialogButtonBox::ActionRole);
 
     QPushButton* bStop = new QPushButton(tr("&Stop"));
-    bStop->setDefault(true);
     m_dbox->addButton(bStop, QDialogButtonBox::ActionRole);
 
     QPushButton* bClose = m_dbox->button(QDialogButtonBox::Close);

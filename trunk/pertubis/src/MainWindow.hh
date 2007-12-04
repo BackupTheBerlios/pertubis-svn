@@ -64,6 +64,7 @@
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
+
 #include <QTreeView>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/environment-fwd.hh>
@@ -199,6 +200,12 @@ namespace pertubis
         /// stopping a search
         void onSearchStopped();
 
+        /// must be called before every access to paludis api
+        void onEndOfPaludisAction();
+
+        /// must be called after every access to paludis api
+        void onStartOfPaludisAction();
+
         /// sync selected repositories
         void onSync();
         ///@}
@@ -260,10 +267,13 @@ namespace pertubis
         void initLayout();
         ///@}
 
-        /// @name Session management
+        /// @name Session persistence
         ///@{
-        /// manages loading and saving application settings
+
+        /// loading application settings
         void loadSettings();
+
+        /// saving application settings
         void saveSettings();
         ///@}
 

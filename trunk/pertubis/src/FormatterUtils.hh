@@ -30,21 +30,26 @@
 namespace pertubis
 {
 
+    /// colorizes a text string with html colors
     inline std::string color(const std::string& text, const std::string& color)
     {
         return std::string("<font color=\""+ color +"\">" + text + "</font>");
     }
 
+    /// colorizes a text string with html colors
     inline QString color(const QString& text, const QString& color)
     {
         return QString("<font color=\"%1\">%2</font>").arg(color).arg(text);
     }
 
+
+    /// creates a html row with two columns
     inline std::string make_row(const std::string& col_1, const std::string& col_2)
     {
         return std::string("<tr><td>"+col_1 + "</td><td>" + col_2 +" </td></tr>");
     }
 
+    /// creates a html link
     inline std::string link(const std::string& link, const std::string& text)
     {
         // qt is sometimes a little bit strange. We must delete possible trailing slash to be able to render this link as a "QURL"
@@ -56,16 +61,19 @@ namespace pertubis
         return res;
     }
 
+    /// creates a html header
     inline std::string header(const std::string& text)
     {
         return std::string("<h1>"+ text + "</h1>");
     }
 
+    /// creates a bold html text
     inline std::string bold(const std::string& text)
     {
         return std::string("<b>"+text+"</b>");
     }
 
+    /// creates a html text formatted for tooltips
     inline QString html_tooltip(const QString& text,const QString& shortcut="")
     {
         return QString("<html><h1><u>%1</u></h1><p>%2</p></html>").arg(shortcut).arg(text);

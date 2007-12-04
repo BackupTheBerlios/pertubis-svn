@@ -27,6 +27,9 @@ class QLineEdit;
 class QCheckBox;
 class QDialogButtonBox;
 
+/*! \brief all classes and functions are in this namespace
+ *
+ */
 namespace pertubis
 {
     /*! \brief provides a text input and option checkboxes the user may select or deselect.

@@ -165,6 +165,8 @@ pertubis::MainWindow::MainWindow() :
 {
     initGUI();
     initLayout();
+    createConnections();
+    loadSettings();
     QTimer::singleShot(0,this,SLOT(initObject()));
 }
 
@@ -176,8 +178,8 @@ pertubis::MainWindow::~MainWindow()
 void pertubis::MainWindow::initObject()
 {
     m_repoListThread->start();
-    m_categoryThread->start();
     m_setThread->start();
+    m_categoryThread->start();
     rootTest("");
 }
 
@@ -201,6 +203,19 @@ void pertubis::MainWindow::initGUI()
     createWindowSearch();
     createTrayMenu();
     statusBar()->show();
+    ReleaseEater* filter = new ReleaseEater(this);
+    installEventFilter(filter);
+    addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
+    addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
+    addDockWidget(Qt::LeftDockWidgetArea, m_dockSet);
+    m_searchThread = new SearchThread(this,m_env,m_box);
+    m_categoryThread = new CategoryThread(this,m_env,m_box);
+    m_packageViewThread = new PackagesThread(this,m_env,m_box);
+    m_detailsThread = new DetailsThread(this,m_env,m_box);
+    m_selectionsThread = new ShowSelectionsThread(this,m_env,m_box);
+    m_setThread = new SetThread(this,m_env,m_box);
+    m_repoListThread = new RepositoryListThread(this,m_env,m_box);
+    m_syncTask = new PertubisSyncTask(m_env,this);
 }
 
 void pertubis::MainWindow::initLayout()
@@ -214,27 +229,11 @@ void pertubis::MainWindow::initLayout()
     QPixmap logoIcon( ":images/logo.xpm" );
     setWindowIcon(logoIcon);
     setCentralWidget(m_vSplit);
-    addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
-    addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
-    addDockWidget(Qt::LeftDockWidgetArea, m_dockSet);
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
     show();
-    ReleaseEater* filter = new ReleaseEater(this);
-    installEventFilter(filter);
-    m_searchThread = new SearchThread(this,m_env,m_box);
-    m_categoryThread = new CategoryThread(this,m_env,m_box);
-    m_packageViewThread = new PackagesThread(this,m_env,m_box);
-    m_detailsThread = new DetailsThread(this,m_env,m_box);
-    m_selectionsThread = new ShowSelectionsThread(this,m_env,m_box);
-    m_setThread = new SetThread(this,m_env,m_box);
-    m_repoListThread = new RepositoryListThread(this,m_env,m_box);
-//     m_repoInfoThread = new RepositoryInfoThread(this,this);
-    m_syncTask = new PertubisSyncTask(m_env,this);
-    createConnections();
-    loadSettings();
 }
 
 void pertubis::MainWindow::closeEvent(QCloseEvent* ev)
@@ -735,7 +734,7 @@ void pertubis::MainWindow::saveSettings()
 void pertubis::MainWindow::displayResultCount()
 {
     statusBar()->showMessage(tr("%1 packages found").arg(m_packageFilterModel->rowCount()));
-    QApplication::restoreOverrideCursor();
+    onEndOfPaludisAction();
 }
 
 void pertubis::MainWindow::displayPackageDetails(QString details)
@@ -744,6 +743,7 @@ void pertubis::MainWindow::displayPackageDetails(QString details)
         return;
     m_details->setText(details);
     m_tabs->setCurrentIndex(m_detailsTabID);
+    onEndOfPaludisAction();
 }
 
 void pertubis::MainWindow::displaySelectedPackages()
@@ -782,9 +782,10 @@ void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ 
     QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categories->currentIndex()));
     if ( !origIndex.isValid() || origIndex.column() != 0 || m_packageViewThread->isRunning())
         return;
-    QString cat = m_catModel->data(origIndex).toString();
-    qDebug() << "pertubis::MainWindow::slotCategoryChanged()" << cat;
+
+    onStartOfPaludisAction();
     m_packageModel->slotClear();
+    QString cat = m_catModel->data(origIndex).toString();
     m_packageViewThread->start(cat);
 }
 
@@ -825,7 +826,8 @@ void pertubis::MainWindow::onStartTasks()
     if (rootTest(tr("This feature is only available for system administrators")))
     {
         m_sysTray->showMessage(tr("pertubis"),tr("Installing %1, Deleting %2 Items").arg(m_box->task(m_tidInstall)->itemCount()).arg(m_box->task(m_tidDeinstall)->itemCount()));
-        toggleMainWindow();
+//         toggleMainWindow();
+        onStartOfPaludisAction();
         m_box->startAllTasks(m_env,m_output);
     }
 }
@@ -834,7 +836,7 @@ void pertubis::MainWindow::onTasksFinished()
 {
     m_box->slotClear();
     onCategoryChanged( QModelIndex());
-    toggleMainWindow();
+    onEndOfPaludisAction();
 }
 
 void pertubis::MainWindow::onDetailsChanged(const QModelIndex & index)
@@ -846,6 +848,7 @@ void pertubis::MainWindow::onDetailsChanged(const QModelIndex & index)
          m_detailsThread->isRunning() ||
          ix.column() != Item::io_package)
         return;
+    onStartOfPaludisAction();
     m_detailsThread->start(item->ID());
 }
 
@@ -863,29 +866,41 @@ void pertubis::MainWindow::onSync()
     m_syncTask->start();
 }
 
+void pertubis::MainWindow::onStartOfPaludisAction()
+{
+//     m_paludisMutex.lock();
+    QApplication::setOverrideCursor(QCursor(Qt::BusyCursor));
+}
+
+
+void pertubis::MainWindow::onEndOfPaludisAction()
+{
+//     m_paludisMutex.unlock();
+    QApplication::restoreOverrideCursor();
+}
+
 void pertubis::MainWindow::onSearch()
 {
     if (m_searchWindow->query().isEmpty())
     {
         return;
     }
-    QApplication::setOverrideCursor(QCursor(Qt::BusyCursor));
-    QString query(m_searchWindow->query());
+
     if (m_searchThread->isRunning())
     {
         int res = QMessageBox::question( this, tr("Warning"),
                         tr("Search is already running! Yes for starting the new one or no for waiting until the pending is finished?"),QMessageBox::Yes,QMessageBox::No);
         if (res == QMessageBox::No )
         {
-            m_searchWindow->hide();
             return;
         }
         if (res == QMessageBox::Yes )
-            m_searchThread->terminate();
+            m_searchThread->stopExec();
     }
 
+    onStartOfPaludisAction();
     m_packageModel->slotClear();
-
+    QString query(m_searchWindow->query());
     statusBar()->showMessage(QString(tr("searching for %1...")).arg(query) );
     m_searchThread->start(query,
                         m_searchWindow->inName(),
@@ -896,7 +911,7 @@ void pertubis::MainWindow::onSearchStopped()
 {
     m_searchThread->stopExec();
     statusBar()->showMessage(tr("Search stopped"));
-    QApplication::restoreOverrideCursor();
+    onEndOfPaludisAction();
 }
 
 void pertubis::MainWindow::onOpenURL(const QUrl& url)

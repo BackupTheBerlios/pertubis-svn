@@ -51,20 +51,10 @@ namespace pertubis
         ///\}
 
 
+        /// request cancel thread execution
         void stopExec() { m_stopExec=true;}
 
     protected:
-
-
-        ///\name Content information
-        ///\{
-
-        /// queries the paludis database if the PackageID is installed
-        bool installed(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
-
-        /// queries the paludis database if the PackageID can be up- or downgraded
-        bool hasVersionChange(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
-        ///\}
 
         /// the environment
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
@@ -72,6 +62,7 @@ namespace pertubis
         /// ptr to TaskBox
         TaskBox*                                        m_taskbox;
 
+        /// execution will be stopped, if true
         bool                                            m_stopExec;
     };
 }

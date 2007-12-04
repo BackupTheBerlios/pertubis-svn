@@ -18,10 +18,12 @@ SET(PERTUBIS_SRCS
     name_extractor.cc
     OptionsDelegate.cc
     PackageFilterModel.cc
+    PaludisUtils.cc
     PackageModel.cc
     PackagesThread.cc
     RegexMatcher.cc
     RepositoryListModel.cc
+#     SearchPackage.cc
     SearchThread.cc
     SearchWindow.cc
     SetModel.cc

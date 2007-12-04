@@ -20,6 +20,7 @@
 
 #include "PackagesThread.hh"
 #include "RepositoryListModel.hh"
+#include "PaludisUtils.hh"
 #include "Item.hh"
 #include "TaskBox.hh"
 #include "Task.hh"
@@ -85,7 +86,7 @@ void pertubis::PackagesThread::run()
                 QStringList tmp(pReasons.toList());
                 pReasons.clear();
                 if (p_item->data(Item::io_installed).toInt() != Qt::Unchecked &&
-                    hasVersionChange(p_item->ID()))
+                    hasVersionChange(m_env,p_item->ID()))
                     {
                         p_item->setData(Item::io_change,"version change");
                         emit changeInCat(QString::fromStdString(stringify((*vstart)->name().category)));
@@ -120,7 +121,7 @@ void pertubis::PackagesThread::run()
                                     m_taskbox->tasks(),
                                     stringify((*vstart)->version()).c_str(),
                                     QString::fromStdString(stringify((*vstart)->repository()->name())),
-                                    ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
+                                    ( installed(m_env,*vstart) ? Qt::Checked : Qt::Unchecked),
                                     (vReasons.isEmpty() ? Item::is_stable : Item::is_masked),
                                     p_item,
                                     vReasons.join(", "));

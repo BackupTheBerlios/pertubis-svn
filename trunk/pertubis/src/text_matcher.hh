@@ -25,7 +25,7 @@
 
 namespace pertubis
 {
-
+    /// case independent substring matching
     class TextMatcher : public Matcher
     {
         public:

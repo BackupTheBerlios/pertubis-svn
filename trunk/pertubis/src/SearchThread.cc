@@ -22,6 +22,7 @@
 #include "name_extractor.hh"
 #include "Item.hh"
 #include "RegexMatcher.hh"
+#include "PaludisUtils.hh"
 #include "TaskBox.hh"
 #include "text_matcher.hh"
 #include "SearchThread.hh"
@@ -135,6 +136,7 @@ void pertubis::SearchThread::start(const QString& str, bool name, bool desc)
     m_query = str;
     m_optName = name;
     m_optDesc = desc;
+    m_stopExec = false;
     QThread::start();
 }
 
@@ -173,19 +175,27 @@ void pertubis::SearchThread::run()
         std::copy(c->begin(), c->end(), std::inserter(cats, cats.begin()));
     }
 
+
     if (m_stopExec)
         return;
     std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > ids;
     for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
          r != r_end ; ++r)
+    {
+        if (m_stopExec)
+            return;
         for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
              c != c_end ; ++c)
-    {
-        tr1::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
-        for (QualifiedPackageNameSet::ConstIterator i(q->begin()), i_end(q->end()) ;
-             i != i_end ; ++i)
-            ids.insert(std::make_pair(*i, tr1::shared_ptr<const PackageID>()));
+        {
+            tr1::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
+            for (QualifiedPackageNameSet::ConstIterator i(q->begin()), i_end(q->end()) ;
+                i != i_end ; ++i)
+            {
+                ids.insert(std::make_pair(*i, tr1::shared_ptr<const PackageID>()));
+            }
+        }
     }
+
 
     if (m_stopExec)
         return;
@@ -193,6 +203,10 @@ void pertubis::SearchThread::run()
     Matches matches(matchers,extractors);
 
     std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*m_env), tr1::cref(repos), tr1::placeholders::_1, matches));
+
+
+    if (m_stopExec)
+        return;
 
     for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
          i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
@@ -223,6 +237,7 @@ void pertubis::SearchThread::run()
         int mp=0;
         int ip=0;
 
+        Qt::CheckState piState(Qt::Unchecked);
         for (PackageIDSequence::ReverseConstIterator vstart(versionIds->rbegin()),vend(versionIds->rend());
             vstart != vend; ++vstart)
         {
@@ -233,15 +248,20 @@ void pertubis::SearchThread::run()
                 vReasons.insert(QString::fromStdString(stringify((*m)->description())));
             }
             QStringList tmp(vReasons.toList());
+            Qt::CheckState iState(installed(m_env,*vstart) ? Qt::Checked : Qt::Unchecked);
             Item* v_item = makeVersionItem(*vstart,
                                             tasks,
                                             QString::fromStdString(stringify((*vstart)->version())),
                                             QString::fromStdString(stringify((*vstart)->repository()->name())),
-                                            ( installed(*vstart) ? Qt::Checked : Qt::Unchecked),
+                                            iState,
                                             (tmp.isEmpty() ? Item::is_stable : Item::is_masked),
                                             p_item,
                                             tmp.join(", "));
             pReasons.unite(vReasons);
+            if (iState == Qt::Checked)
+            {
+                piState = Qt::Checked;
+            }
             if (v_item->state() == Item::is_masked)
             {
                 ++mp;
@@ -252,8 +272,8 @@ void pertubis::SearchThread::run()
             p_item->prependChild(v_item);
         }
         QStringList ptmp(pReasons.toList());
-        if (p_item->data(Item::io_installed).toInt() != Qt::Unchecked &&
-            hasVersionChange(p_item->ID()))
+        if (piState != Qt::Unchecked &&
+            hasVersionChange(m_env,p_item->ID()))
         {
             p_item->setData(Item::io_change,tr("version change"));
             emit changeInCat(QString::fromStdString(stringify(p_item->ID()->name().category)));
@@ -265,6 +285,7 @@ void pertubis::SearchThread::run()
         if (mp == p_item->childCount())
             p_item->setItemState(Item::is_masked);
         emit itemResult(p_item);
+        p_item->setData(Item::io_installed,piState);
         ++count;
     }
 

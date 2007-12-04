@@ -109,9 +109,9 @@ QVariant pertubis::CategoryModel::data ( const QModelIndex & mix, int role) cons
         if (mix.column() == 0)
             return m_data.at(mix.row())->name();
     }
-    if (role == Qt::CheckStateRole)
-        if (mix.column() == 0)
-            return m_data.at(mix.row())->change();
+//     if (role == Qt::CheckStateRole)
+//         if (mix.column() == 0)
+//             return m_data.at(mix.row())->change();
     return QVariant();
 }
 
