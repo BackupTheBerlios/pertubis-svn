@@ -21,7 +21,7 @@
 
 #include "OptionsDelegate.hh"
 #include "PackageFilterModel.hh"
-#include "Item.hh"
+#include "Package.hh"
 #include <QColor>
 #include <QBrush>
 #include <QMenu>
@@ -42,16 +42,16 @@ void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
     painter->save();
 
     QModelIndex index(m_proxy->mapToSource(mix));
-    Item* item = static_cast<Item*>(index.internalPointer());
+    Package* item = static_cast<Package*>(index.internalPointer());
     if (!item)
         return;
-    QVariantList selections = item->data(Item::io_selected).toList();
+    QVariantList selections = item->data(Package::po_selected).toList();
     QBrush in(QColor(0,255,0));
     QBrush out(QColor(255,0,0));
 
     QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     painter->setPen(pen);
-    if (item->state() != Item::is_masked)
+    if (item->state() != Package::ps_masked)
     {
         painter->drawRect(option.rect.x(),option.rect.y()+1,12,12);
         painter->drawRect(option.rect.x()+16,option.rect.y()+1,12,12);
@@ -82,8 +82,8 @@ QSize pertubis::OptionsDelegate::sizeHint(const QStyleOptionViewItem &option,
 {
     QRect decorationRect = rect(option, index, Qt::DecorationRole);
     QRect displayRect;
-//     Item* item = static_cast<Item*>(index.internalPointer());
-    if (index.column() == Item::io_selected)
+//     Package* item = static_cast<Package*>(index.internalPointer());
+    if (index.column() == Package::po_selected)
         displayRect = QRect(QPoint(0,0),QPoint(32,16));
     else
         displayRect = rect(option, index, Qt::DisplayRole);

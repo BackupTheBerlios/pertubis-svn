@@ -49,6 +49,12 @@ namespace pertubis
         return std::string("<tr><td>"+col_1 + "</td><td>" + col_2 +" </td></tr>");
     }
 
+    /// creates a html row with two columns
+    inline QString make_row(const QString& col_1, const QString& col_2)
+    {
+        return QString("<tr><td>%1</td><td>%2</td></tr>").arg(col_1).arg(col_2);
+    }
+
     /// creates a html link
     inline std::string link(const std::string& link, const std::string& text)
     {

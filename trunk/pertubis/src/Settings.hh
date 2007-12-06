@@ -30,13 +30,18 @@ class QTranslator;
 #include <QMap>
 #include <QString>
 
+
 namespace pertubis
 {
+    class DepListSettings;
+    class InstallSettings;
+    class QuerySettings;
+    class UninstallSettings;
 
     /*! \brief This settings group handles language and localization specific options.
     *
     */
-    class I18NPage : public QWidget
+    class LanguageSettings : public QWidget
     {
         Q_OBJECT
 
@@ -46,10 +51,10 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            I18NPage(QWidget *parent = 0);
+            LanguageSettings(QWidget *parent = 0);
             ///@}
 
-            ~I18NPage();
+            ~LanguageSettings();
 
             ///@name Content modification
             ///@{
@@ -91,12 +96,36 @@ namespace pertubis
             Settings(QWidget* parent);
             ///@}
 
+            ~Settings();
+
             ///@name Content information
             ///@{
 
             /// returns the current language
-            QString currentLang() const { return m_i18n->m_currentLanguage;}
+            QString currentLang() const { return m_languageView->m_currentLanguage;}
             ///@}
+
+             /// loads all settings for the gui
+            void loadSettings();
+
+            /// saves all settings for the gui
+            void saveSettings();
+
+
+            /// the language settings page
+            LanguageSettings*   m_languageView;
+
+            /// the install settings page
+            InstallSettings*    m_installView;
+
+            /// the deinstall settings page
+            UninstallSettings*    m_deinstallView;
+
+            /// the language settings page
+            QuerySettings*    m_queryView;
+
+            /// the deplist settings page
+            DepListSettings*    m_depListView;
 
         public slots:
 
@@ -106,13 +135,12 @@ namespace pertubis
         private:
 
             /// a list widget
-            QListWidget*        m_contentsWidget;
+            QListWidget*        m_pagesView;
 
             /// stacked pages
-            QStackedWidget*     m_pagesWidget;
+            QStackedWidget*     m_pagesStore;
 
-            /// the language settings page
-            I18NPage*           m_i18n;
+
     };
 }
 

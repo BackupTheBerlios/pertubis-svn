@@ -21,7 +21,7 @@
 #include "ShowSelectionsThread.hh"
 #include "TaskBox.hh"
 #include "Task.hh"
-#include "Item.hh"
+#include "Package.hh"
 #include "PaludisUtils.hh"
 #include <QDebug>
 #include <QVector>
@@ -35,6 +35,7 @@
 void pertubis::ShowSelectionsThread::run()
 {
     qDebug() << "pertubis::ShowSelectionsThread::run()";
+    int count(0);
     for (TaskBox::Iterator tStart(m_taskbox->taskBegin()),
          tEnd(m_taskbox->taskEnd());
          tStart != tEnd;
@@ -57,12 +58,14 @@ void pertubis::ShowSelectionsThread::run()
                     "";
 
             qDebug() << "pertubis::ShowSelectionsThread::run() - 1";
-            Item* node = new Item(*idStart,list,Item::is_stable,Item::it_node_only,0);
+            Package* node = new Package(*idStart,list,Package::ps_stable,Package::pt_node_only,0);
             qDebug() << "pertubis::ShowSelectionsThread::run() - 2";
-            m_taskbox->setTasksInItem(node);
+            m_taskbox->setTasksInPackage(node);
             qDebug() << "pertubis::ShowSelectionsThread::run() - 3";
             emit appendPackage(node);
+            ++count;
         }
     }
+    emit finished(count);
     qDebug() << "pertubis::ShowSelectionsThread::run() - done";
 }

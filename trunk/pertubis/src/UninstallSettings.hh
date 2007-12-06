@@ -18,52 +18,57 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_THREAD_H
-#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_THREAD_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_UNINSTALL_SETTINGS_H
+#define _PERTUBIS_ENTRY_PROTECTOR_UNINSTALL_SETTINGS_H 1
 
-#include "ThreadBase.hh"
+#include <QWidget>
+
+class QCheckBox;
+class QComboBox;
 
 namespace pertubis
 {
-    class Package;
 
-    /*! \brief gathering information from paludis showing the selected packages the user has selected for tasks
-     * \ingroup PaludisAdapter
-     * \ingroup Thread
-    */
-    class ShowSelectionsThread : public ThreadBase
+    class UninstallSettings : public QWidget
     {
         Q_OBJECT
 
-        public:
+    public:
 
             ///@name Constructors
             ///@{
 
             /// std constructor
-            ShowSelectionsThread(QObject* pobj,
-                                 const paludis::tr1::shared_ptr<paludis::Environment>&  env,
-                                 TaskBox* box) : ThreadBase(pobj,env,box)
-            {
-            }
+            UninstallSettings(QWidget *parent);
             ///@}
 
-        signals:
+            ~UninstallSettings();
 
-            /// sends an new Item to append
-            void appendPackage(Package* item);
+            ///@name Content modification
+            ///@{
 
-            ///
-            void finished(int count);
+            /// loads all settings for the gui
+            void loadSettings();
 
-        protected:
+            /// loads all settings for the gui
+            void setDefaults();
 
-            /// overloaded from QThread
-            void run();
+            /// saves all settings for the gui
+            void saveSettings();
+
+            ///@}
+
+    private:
+
+            /// \name install options
+            ///@{
+            QCheckBox* m_deps;
+            QCheckBox* m_unusedDeps;
+            QCheckBox* m_allVersions;
+            QCheckBox* m_unsafeUninstall;
+            ///@}
 
     };
 }
 
-
 #endif
-

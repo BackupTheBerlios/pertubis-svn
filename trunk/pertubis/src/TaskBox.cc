@@ -20,7 +20,7 @@
 
 #include "TaskBox.hh"
 #include "Task.hh"
-#include "Item.hh"
+#include "Package.hh"
 #include <paludis/package_id.hh>
 #include <QDebug>
 
@@ -82,7 +82,7 @@ void pertubis::TaskBox::slotTaskChanged(paludis::tr1::shared_ptr<const paludis::
         t->deleteEntry(id);
 }
 
-void pertubis::TaskBox::setTasksInItem(Item* item)
+void pertubis::TaskBox::setTasksInPackage(Package* item)
 {
 //     qDebug() << "pertubis::TaskBox::setTasksInItem()" << *item;
     for (Iterator mytask(taskBegin()), taskend(taskEnd());

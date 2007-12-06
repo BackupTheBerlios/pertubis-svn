@@ -36,7 +36,7 @@ class QAction;
 
 namespace pertubis
 {
-    class Item;
+    class Package;
     class TaskBox;
     class MessageOutput;
 
@@ -79,7 +79,7 @@ namespace pertubis
          * \param mystate one of the values of Qt::CheckRole
          * We have to process every change here since only the task exactly knows how to deal with it. The task must be able to ask the item for the UpdateRange
          */
-        virtual bool changeStates(Item* item, int mystate)=0;
+        virtual bool changeStates(Package* item, int mystate)=0;
 
         /*! \brief actually change
          *
@@ -88,7 +88,7 @@ namespace pertubis
 
         virtual void clear();
 
-        /*! \brief returns the number of selected Items for this task
+        /*! \brief returns the number of selected Packages for this task
          *
          */
         int itemCount() const { return m_data.size();}
@@ -101,7 +101,7 @@ namespace pertubis
         /*! \brief sets Qt::Checked or Qt::Unchecked as result of hasEntry(item)
          *
          */
-        void fillAction(Item* item);
+        void fillAction(Package* item);
 
         /*! \brief adds a selection specified by PackageID
          *
@@ -148,7 +148,7 @@ namespace pertubis
         */
         QString name() const { return m_name;}
 
-        virtual bool available(Item* item) const = 0;
+        virtual bool available(Package* item) const = 0;
 
         ///\}
 
@@ -162,7 +162,7 @@ namespace pertubis
         /// the translated name of this task
         QString         m_name;
 
-        /// this internal task number of this task are used for mapping the selection data in an Item to the correct task
+        /// this internal task number of this task are used for mapping the selection data in an Package to the correct task
         int             m_taskid;
 
     private:

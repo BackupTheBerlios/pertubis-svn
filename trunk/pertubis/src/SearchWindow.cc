@@ -19,8 +19,10 @@
 */
 
 #include "SearchWindow.hh"
+#include "QuerySettings.hh"
 
 #include <QCheckBox>
+
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -31,43 +33,37 @@
 #include <QVBoxLayout>
 #include <QDebug>
 
-pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
+pertubis::SearchWindow::SearchWindow( QWidget* pwidQuery, QuerySettings* querySettings) : QDialog(pwidQuery),
+        m_line(new QLineEdit(this)),
+//         m_chkDesc(new QCheckBox(tr("&Description"))),
+//         m_chkName(new QCheckBox(tr("&Name"))),
+//         m_chkHomepage(new QCheckBox(tr("&Homepage"))),
+//         m_chkRegex(new QCheckBox(tr("treat search string as &regular expression"))),
+        m_dbox(new QDialogButtonBox(QDialogButtonBox::Close,Qt::Vertical)),
+        m_bStart(new QPushButton(tr("&Start"))),
+        m_bStop(new QPushButton(tr("&Stop"))),
+        m_querySettings(querySettings)
 {
-
-    setObjectName("m_windowSearch");
-    QGridLayout* main_layout = new QGridLayout;
-    main_layout->setObjectName("layout");
-    QVBoxLayout* leftLayout = new QVBoxLayout;
-
-    m_line = new QLineEdit(this);
-
-    m_dbox = new QDialogButtonBox(QDialogButtonBox::Close,Qt::Vertical);
-
-    m_chkName = new QCheckBox(tr("&Name"));
-    m_chkName->setChecked(true);
-    m_chkDesc = new QCheckBox(tr("&Description"));
-    m_chkHomepage = new QCheckBox(tr("&Homepage"));
-    m_chkRegex = new QCheckBox(tr("treat search string as &regular expression"));
-
     QHBoxLayout* optLayout = new QHBoxLayout;
     optLayout->setMargin(0);
+//     optLayout->addWidget(m_chkName);
+//     optLayout->addWidget(m_chkDesc);
+//     optLayout->addWidget(m_chkHomepage);
+//     optLayout->addWidget(m_chkRegex);
+    optLayout->addWidget(m_querySettings);
 
-    optLayout->addWidget(m_chkName);
-    optLayout->addWidget(m_chkDesc);
-    optLayout->addWidget(m_chkHomepage);
-    optLayout->addWidget(m_chkRegex);
-    main_layout->addLayout(leftLayout,0,0);
-    main_layout->addWidget(m_dbox,0,1);
+    QVBoxLayout* leftLayout = new QVBoxLayout;
     leftLayout->addWidget(m_line);
     leftLayout->addLayout(optLayout);
+    QGridLayout* main_layout = new QGridLayout;
     setLayout(main_layout);
+    main_layout->addLayout(leftLayout,0,0);
+    main_layout->addWidget(m_dbox,0,1);
 
-    QPushButton* bFind = new QPushButton(tr("&Start"));
-    bFind->setDefault(true);
-    m_dbox->addButton(bFind, QDialogButtonBox::ActionRole);
-
-    QPushButton* bStop = new QPushButton(tr("&Stop"));
-    m_dbox->addButton(bStop, QDialogButtonBox::ActionRole);
+    m_bStart->setDefault(true);
+    m_dbox->addButton(m_bStart, QDialogButtonBox::ActionRole);
+    m_bStop->setDisabled(true);
+    m_dbox->addButton(m_bStop, QDialogButtonBox::ActionRole);
 
     QPushButton* bClose = m_dbox->button(QDialogButtonBox::Close);
 
@@ -76,12 +72,12 @@ pertubis::SearchWindow::SearchWindow( QWidget *pwid) : QDialog(pwid)
             this,
             SLOT(hide()));
 
-    connect(bFind,
+    connect(m_bStart,
             SIGNAL(clicked()),
             this,
             SIGNAL(search()));
 
-    connect(bStop,
+    connect(m_bStop,
             SIGNAL(clicked()),
             this,
             SIGNAL(stopSearch()));
@@ -96,3 +92,24 @@ QString pertubis::SearchWindow::query() const
 {
     return m_line->text().trimmed();
 }
+
+void pertubis::SearchWindow::displaySearch(bool start)
+{
+    m_bStart->setDisabled(start);
+    m_bStop->setEnabled(start);
+}
+
+void pertubis::SearchWindow::toggle()
+{
+    if (isHidden())
+    {
+//         m_querySettings->show();
+        exec();
+    }
+    else
+    {
+        hide();
+//         m_querySettings->hide();
+    }
+}
+

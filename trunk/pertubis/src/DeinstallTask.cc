@@ -20,7 +20,7 @@
 
 #include <QDebug>
 #include "DeinstallTask.hh"
-#include "Item.hh"
+#include "Package.hh"
 #include "MessageOutput.hh"
 #include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
@@ -28,21 +28,21 @@
 #include <paludis/util/set-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
-bool pertubis::DeinstallTask::available(Item* item) const
+bool pertubis::DeinstallTask::available(Package* item) const
 {
-    return (item->available() && item->data(Item::io_installed).toInt() != Qt::Unchecked);
+    return (item->available() && item->data(Package::po_installed).toInt() != Qt::Unchecked);
 }
 
-bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
+bool pertubis::DeinstallTask::changeStates(Package* item, int newState)
 {
-    Item::Iterator iStart;
-    Item::Iterator iEnd;
-    Item::Iterator piStart;
-    Item::Iterator piEnd;
+    Package::PackageIterator iStart;
+    Package::PackageIterator iEnd;
+    Package::PackageIterator piStart;
+    Package::PackageIterator piEnd;
     int i=0;
     switch (item->itemType())
     {
-        case Item::it_parent:
+        case Package::pt_parent:
             iStart = item->childBegin();
             iEnd = item->childEnd();
             switch (newState)
@@ -67,8 +67,8 @@ bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
                     break;
             }
             break;
-        case Item::it_child:
-            if (item->data(Item::io_installed).toInt() == Qt::Unchecked)
+        case Package::pt_child:
+            if (item->data(Package::po_installed).toInt() == Qt::Unchecked)
                 return false;
             piStart = item->parent()->childBegin();
             piEnd = item->parent()->childEnd();
@@ -79,7 +79,7 @@ bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
                     item->setTaskState(m_taskid,Qt::Unchecked);
                     while(piStart != piEnd)
                     {
-                        if ( Qt::Checked == (*piStart)->data(Item::io_selected).toList().value(m_taskid).toInt() )
+                        if ( Qt::Checked == (*piStart)->data(Package::po_selected).toList().value(m_taskid).toInt() )
                         {
                             ++i;
                             break;
@@ -97,7 +97,7 @@ bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
                     item->setTaskState(m_taskid,Qt::Checked);
                     while(piStart != piEnd)
                     {
-                        QVariantList list((*piStart)->data(Item::io_selected).toList());
+                        QVariantList list((*piStart)->data(Package::po_selected).toList());
                         if ( Qt::Unchecked != list.value(m_taskid).toInt() )
                             ++i;
                         ++piStart;
@@ -111,7 +111,7 @@ bool pertubis::DeinstallTask::changeStates(Item* item, int newState)
                     break;
             }
             break;
-        case Item::it_node_only:
+        case Package::pt_node_only:
             switch (newState)
             {
                 case Qt::Unchecked:

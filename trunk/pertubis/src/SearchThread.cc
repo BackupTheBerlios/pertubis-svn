@@ -20,12 +20,13 @@
 
 #include "description_extractor.hh"
 #include "name_extractor.hh"
-#include "Item.hh"
-#include "RegexMatcher.hh"
+#include "Package.hh"
 #include "PaludisUtils.hh"
+#include "QuerySettings.hh"
+#include "RegexMatcher.hh"
+#include "SearchThread.hh"
 #include "TaskBox.hh"
 #include "text_matcher.hh"
-#include "SearchThread.hh"
 
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -42,6 +43,9 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <QDebug>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QComboBox>
 #include <QVariant>
 #include <QStringList>
 #include <set>
@@ -127,7 +131,8 @@ void set_id(
 
 pertubis::SearchThread::SearchThread(QObject* pobj,
                                      paludis::tr1::shared_ptr<paludis::Environment>  env,
-                                     TaskBox* box) : ThreadBase(pobj,env,box)
+                                     QuerySettings* querySettings,
+                                     TaskBox* box) : ThreadBase(pobj,env,box), m_querySettings(querySettings)
 {
 }
 
@@ -137,12 +142,9 @@ pertubis::SearchThread::~SearchThread()
     wait();
 }
 
-void pertubis::SearchThread::start(const QString& str, bool name, bool desc)
+void pertubis::SearchThread::start(const QString& str)
 {
     m_query = str;
-    m_optName = name;
-    m_optDesc = desc;
-    m_stopExec = false;
     QThread::start();
 }
 
@@ -152,14 +154,18 @@ void pertubis::SearchThread::run()
     ThreadBase::lock();
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
-    qDebug() << "SearchThread::run() - query string:" << m_query;
-    qDebug() << "SearchThread::run() - searching for name:" << m_optName << m_optDesc;
-    qDebug() << "SearchThread::run() - searching for description: " << m_optDesc;
-    matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
+    if (m_querySettings->m_matcher->item(0,0)->isSelected())
+    {
+        matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
+    }
+    if (m_querySettings->m_matcher->item(1,0)->isSelected())
+    {
+        matchers.push_back( tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data()) ));
+    }
     int count(0);
-    if (m_optName )
+    if (m_querySettings->m_extractor->item(0,0)->isSelected() )
         extractors.push_back(tr1::shared_ptr<NameExtractor>( new NameExtractor(m_env.get()) )    );
-    if (m_optDesc )
+    if (m_querySettings->m_extractor->item(1,0)->isSelected() )
         extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_env.get())));
     std::list<tr1::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
@@ -232,12 +238,12 @@ void pertubis::SearchThread::run()
             continue;
 
         QVariantList tasks(m_taskbox->tasks());
-        Item* p_item = makePackageItem(*versionIds->last(),
+        Package* p_item = makePackagePackage(*versionIds->last(),
                                 tasks,
                                 QString::fromStdString(stringify(i->first.package)),
                                 QString::fromStdString(stringify(i->first.category)),
                                 Qt::Unchecked,
-                                Item::is_stable,
+                                Package::ps_stable,
                                 0,
                                 "");
         QSet<QString> pReasons;
@@ -256,24 +262,24 @@ void pertubis::SearchThread::run()
             }
             QStringList tmp(vReasons.toList());
             Qt::CheckState iState(installed(m_env,*vstart) ? Qt::Checked : Qt::Unchecked);
-            Item* v_item = makeVersionItem(*vstart,
+            Package* v_item = makeVersionPackage(*vstart,
                                             tasks,
                                             QString::fromStdString(stringify((*vstart)->version())),
                                             QString::fromStdString(stringify((*vstart)->repository()->name())),
                                             iState,
-                                            (tmp.isEmpty() ? Item::is_stable : Item::is_masked),
+                                            (tmp.isEmpty() ? Package::ps_stable : Package::ps_masked),
                                             p_item,
                                             tmp.join(", "));
             pReasons.unite(vReasons);
-            if (iState == Qt::Checked)
+            if (Qt::Checked == iState)
             {
                 piState = Qt::Checked;
             }
-            if (v_item->state() == Item::is_masked)
+            if (Package::ps_masked == v_item->state() )
             {
                 ++mp;
             }
-            else if (p_item->bestChild() == 0)
+            else if (0 == p_item->bestChild() )
                 p_item->setBestChild(v_item);
 
             p_item->prependChild(v_item);
@@ -282,20 +288,21 @@ void pertubis::SearchThread::run()
         if (piState != Qt::Unchecked &&
             hasVersionChange(m_env,p_item->ID()))
         {
-            p_item->setData(Item::io_change,tr("version change"));
+            p_item->setData(Package::po_change,tr("version change"));
             emit changeInCat(QString::fromStdString(stringify(p_item->ID()->name().category)));
         }
-        p_item->setData(Item::io_mask_reasons,ptmp.join(", "));
+        p_item->setData(Package::po_mask_reasons,ptmp.join(", "));
 
-        if ( ip > 0 )
-            p_item->setData(Item::io_installed,Qt::Checked);
+        if ( 0 < ip )
+            p_item->setData(Package::po_installed,Qt::Checked);
         if (mp == p_item->childCount())
-            p_item->setItemState(Item::is_masked);
-        emit itemResult(p_item);
-        p_item->setData(Item::io_installed,piState);
+            p_item->setPackageState(Package::ps_masked);
+        emit packageResult(p_item);
+        p_item->setData(Package::po_installed,piState);
         ++count;
     }
 
     emit finished(count);
     ThreadBase::unlock();
 }
+

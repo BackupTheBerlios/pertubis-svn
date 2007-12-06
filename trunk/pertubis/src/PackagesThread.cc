@@ -21,7 +21,7 @@
 #include "PackagesThread.hh"
 #include "RepositoryListModel.hh"
 #include "PaludisUtils.hh"
-#include "Item.hh"
+#include "Package.hh"
 #include "TaskBox.hh"
 #include "Task.hh"
 #include <QList>
@@ -60,7 +60,6 @@ void pertubis::PackagesThread::start(QString str)
 
 void pertubis::PackagesThread::run()
 {
-    qDebug() << "pertubis::PackagesThread::run()";
     ThreadBase::lock();
     using namespace paludis;
     CategoryNamePart cat(m_query.toLatin1().data());
@@ -69,10 +68,10 @@ void pertubis::PackagesThread::run()
                 query::Category(cat) &
                 query::SupportsAction<InstallAction>(),
                 qo_order_by_version));
-
-    int maskedVersionCount=0;
+    int count(0);
+    int maskedVersionCount(0);
     QualifiedPackageName old_qpn("OLD/OLD");
-    Item* p_item=0;
+    Package* p_item(0);
     QSet<QString> pReasons;
     for (PackageIDSequence::ReverseConstIterator vstart(packageIds->rbegin()),vend(packageIds->rend());
          vstart != vend;
@@ -83,32 +82,32 @@ void pertubis::PackagesThread::run()
             if (p_item != 0)
             {
                 if (maskedVersionCount == p_item->childCount())
-                    p_item->setItemState(Item::is_masked);
+                    p_item->setPackageState(Package::ps_masked);
                 maskedVersionCount=0;
 
                 QStringList tmp(pReasons.toList());
                 pReasons.clear();
-                if (p_item->data(Item::io_installed).toInt() != Qt::Unchecked &&
+                if (p_item->data(Package::po_installed).toInt() != Qt::Unchecked &&
                     hasVersionChange(m_env,p_item->ID()))
                     {
-                        p_item->setData(Item::io_change,"version change");
+                        p_item->setData(Package::po_change,"version change");
                         emit changeInCat(QString::fromStdString(stringify((*vstart)->name().category)));
                     }
 
-                p_item->setData(Item::io_mask_reasons,tmp.join(", "));
+                p_item->setData(Package::po_mask_reasons,tmp.join(", "));
             }
 
-            p_item = makePackageItem(*vstart,
+            p_item = makePackagePackage(*vstart,
                                     m_taskbox->tasks(),
                                     QString::fromStdString(stringify((*vstart)->name().package)),
                                     QString::fromStdString(stringify((*vstart)->name().category)),
                                     Qt::Unchecked,
-                                    Item::is_stable,
+                                    Package::ps_stable,
                                     0,
                                     "");
 
             old_qpn = (*vstart)->name();
-
+            ++count;
             emit addPackage(p_item);
         }
 
@@ -120,18 +119,18 @@ void pertubis::PackagesThread::run()
         }
         pReasons.unite(vReasons.toSet());
 
-        Item* v_item = makeVersionItem(*vstart,
+        Package* v_item = makeVersionPackage(*vstart,
                                     m_taskbox->tasks(),
                                     stringify((*vstart)->version()).c_str(),
                                     QString::fromStdString(stringify((*vstart)->repository()->name())),
                                     ( installed(m_env,*vstart) ? Qt::Checked : Qt::Unchecked),
-                                    (vReasons.isEmpty() ? Item::is_stable : Item::is_masked),
+                                    (vReasons.isEmpty() ? Package::ps_stable : Package::ps_masked),
                                     p_item,
                                     vReasons.join(", "));
-        m_taskbox->setTasksInItem(v_item);
-        if (v_item->data(Item::io_installed).toInt() != Qt::Unchecked)
+        m_taskbox->setTasksInPackage(v_item);
+        if (v_item->data(Package::po_installed).toInt() != Qt::Unchecked)
         {
-            p_item->setData(Item::io_installed,Qt::Checked);
+            p_item->setData(Package::po_installed,Qt::Checked);
         }
 
         if (!v_item->available() )
@@ -147,4 +146,5 @@ void pertubis::PackagesThread::run()
         p_item->prependChild(v_item);
     }
     ThreadBase::unlock();
+    emit finished(count);
 }

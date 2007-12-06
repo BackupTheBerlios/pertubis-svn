@@ -92,7 +92,7 @@ namespace pertubis
 
         signals:
 
-            /// sends a list with all found repositories
+            /// sends a list with all repositories found
             void sendNames(QList<RepositoryListItem*> cl);
     };
 
@@ -151,6 +151,17 @@ namespace pertubis
             QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole) const;
             ///@}
 
+            /// saves user relevant data
+            void loadSettings();
+
+            /// loads user relevant data
+            void saveSettings();
+
+        public slots:
+
+            /// sends
+            void slotResult(QList<RepositoryListItem*> cl);
+
         private:
 
             /// Repository storage
@@ -159,13 +170,8 @@ namespace pertubis
             /// header column storage
             QStringList                 m_header;
 
-            /// a set of the sele
+            /// a set of selected repositories ( could be used as whitelist for filtering)
             QSet<QString>               m_activeRepos;
-
-        public slots:
-
-            /// sends
-            void slotResult(QList<RepositoryListItem*> cl);
     };
 }
 #endif

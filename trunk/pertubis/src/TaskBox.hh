@@ -31,7 +31,7 @@
 namespace pertubis
 {
     class Task;
-    class Item;
+    class Package;
     class MessageOutput;
 
     /*! \brief manages the tasks pertubis knows about
@@ -88,10 +88,10 @@ namespace pertubis
         /// adds a Task to this container class and returns the task id of Task
         int addTask(Task* task);
 
-        /*! \brief sets each Task selection status for the given Item
+        /*! \brief sets each Task selection status for the given Package
         *
         */
-        void setTasksInItem(Item* item);
+        void setTasksInPackage(Package* package);
 
          /*! \brief starts all known tasks
           *

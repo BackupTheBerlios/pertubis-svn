@@ -18,20 +18,18 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_THREAD_H
-#define _PERTUBIS_ENTRY_PROTECTOR_THREAD_SHOW_SELECTIONS_THREAD_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_INSTALL_SETTINGS_H
+#define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_SETTINGS_H 1
 
-#include "ThreadBase.hh"
+#include <QWidget>
+
+class QCheckBox;
+class QComboBox;
 
 namespace pertubis
 {
-    class Package;
 
-    /*! \brief gathering information from paludis showing the selected packages the user has selected for tasks
-     * \ingroup PaludisAdapter
-     * \ingroup Thread
-    */
-    class ShowSelectionsThread : public ThreadBase
+    class InstallSettings : public QWidget
     {
         Q_OBJECT
 
@@ -41,29 +39,35 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            ShowSelectionsThread(QObject* pobj,
-                                 const paludis::tr1::shared_ptr<paludis::Environment>&  env,
-                                 TaskBox* box) : ThreadBase(pobj,env,box)
-            {
-            }
+            InstallSettings(QWidget *parent);
             ///@}
 
-        signals:
+            ~InstallSettings();
 
-            /// sends an new Item to append
-            void appendPackage(Package* item);
+            ///@name Content modification
+            ///@{
 
-            ///
-            void finished(int count);
+            /// loads all settings for the gui
+            void loadSettings();
 
-        protected:
+            /// saves all settings for the gui
+            void saveSettings();
 
-            /// overloaded from QThread
-            void run();
+            ///@}
+
+        private:
+
+            /// \name install options
+            ///@{
+            QCheckBox* m_debug;
+            QCheckBox* m_fetch;
+            QCheckBox* m_noConfigProtection;
+            QCheckBox* m_noSafeResume;
+            QCheckBox* m_pretend;
+            QComboBox* m_continueOnFailure;
+            ///@}
 
     };
 }
 
-
 #endif
-

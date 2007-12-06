@@ -19,7 +19,7 @@
 */
 
 #include "Task.hh"
-#include "Item.hh"
+#include "Package.hh"
 #include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
@@ -68,7 +68,7 @@ bool pertubis::Task::hasEntry(const paludis::tr1::shared_ptr<const paludis::Pack
     return false;
 }
 
-void pertubis::Task::fillAction(Item* item)
+void pertubis::Task::fillAction(Package* item)
 {
 //     qDebug() << "pertubis::Task::fillAction()" << *item;
     if (item->ID().get() != 0)

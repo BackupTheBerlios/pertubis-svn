@@ -22,11 +22,14 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_SEARCH_THREAD_H 1
 
 #include "ThreadBase.hh"
-#include <QString>
+
+
+class QString;
 
 namespace pertubis
 {
-    class Item;
+    class Package;
+    class QuerySettings;
 
     /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
      *
@@ -45,6 +48,7 @@ namespace pertubis
         /// std constructor
         SearchThread(QObject* parent,
                      paludis::tr1::shared_ptr<paludis::Environment>  env,
+                     QuerySettings* querySettings,
                      TaskBox* box);
         ///@}
 
@@ -55,37 +59,30 @@ namespace pertubis
 
         /*! @brief fills the search with data and starts the execution
          * @param query the string to query for
-         * @param useName search in paludis::PackageNamePart
-         * @param useDesc paludis::PackageNamePart
          */
-        void start(const QString& query,bool useName,bool useDesc);
+        void start(const QString& query);
         ///@}
-
-    protected:
 
         /// overloaded from QThread
         void run();
+
+    signals:
+
+        /// sends an new complete Item tree to the model
+            void packageResult(Package* root);
+        /// requests to modify the changeState of an Category
+            void changeInCat(QString cat);
+
+        /// sends the number of hits for the actual search result when finished
+            void finished(int resultCount);
 
     private:
 
         /// the string to search for
         QString                                 m_query;
 
-        /// if m_query shall be compared with paludis::PackageNamePart
-        bool                                    m_optName;
+        QuerySettings*                          m_querySettings;
 
-        /// if m_query shall be compared with PackageIDs description metadata
-        bool                                    m_optDesc;
-
-    signals:
-
-        /// sends an new complete Item tree to the model
-        void itemResult(Item* root);
-        /// requests to modify the changeState of an Category
-        void changeInCat(QString cat);
-
-        /// sends the number of hits for the actual search result when finished
-        void finished(int resultCount);
     };
 }
 

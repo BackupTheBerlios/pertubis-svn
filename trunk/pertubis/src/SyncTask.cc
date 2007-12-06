@@ -32,17 +32,17 @@ void pertubis::PertubisSyncTask::on_sync_all_pre()
 
 void pertubis::PertubisSyncTask::on_sync_pre(const paludis::RepositoryName & r)
 {
-    sendMessage(QString::fromStdString(color(stringify(r),"magenta")));
+    sendMessage(QString("Sync %1 started").arg(QString::fromStdString(color(stringify(r),"magenta"))));
 }
 
 void pertubis::PertubisSyncTask::on_sync_post(const paludis::RepositoryName &r)
 {
-    sendMessage(QString("after syncing %1").arg(QString::fromStdString(color(stringify(r),"magenta"))));
+    sendMessage(QString("Sync %1 finished").arg(QString::fromStdString(color(stringify(r),"magenta"))));
 }
 
 void pertubis::PertubisSyncTask::on_sync_skip(const paludis::RepositoryName & r)
 {
-    sendMessage(QString("Sync %1 skipped").arg(stringify(r).c_str()));
+    sendMessage(QString("Sync %1 skipped").arg(QString::fromStdString(color(stringify(r),"magenta"))));
 }
 
 void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
@@ -52,12 +52,12 @@ void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName &
 
 void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
 {
-    qWarning("Sync error: * %s %s",e.backtrace("\n  * ").c_str(), e.message().c_str());
+    sendMessage(color(QString("Sync error: * %1 %1").arg(e.backtrace("\n  * ").c_str()).arg(e.message().c_str()),"red"));
 }
 
 void pertubis::PertubisSyncTask::on_sync_all_post()
 {
-    sendMessage("");
+    sendMessage("Sync complete");
 }
 
 void pertubis::PertubisSyncTask::start(const QSet<QString>& repos)

@@ -30,12 +30,12 @@ class QAction;
 
 namespace pertubis
 {
-    class Item;
+    class Package;
     class TaskBox;
 
     /*! \brief holds package data fetched from paludis in a tree structure
      *
-     * \ingroup ItemModelClass
+     * \ingroup PackageModelClass
      */
     class PackageModel : public QAbstractItemModel
     {
@@ -52,7 +52,7 @@ namespace pertubis
 
         Qt::ItemFlags flags(const QModelIndex &index) const;
 
-        Item* getRootItem() const { return m_root;}
+        Package* getRootPackage() const { return m_root;}
 
         QModelIndex index ( int row, int column,
                             const QModelIndex & parent = QModelIndex() ) const;
@@ -81,15 +81,15 @@ namespace pertubis
 
     public slots:
 
-        void slotAppendPackage(Item* item);
-        void slotPrependPackage(Item* item);
+        void slotAppendPackage(Package* item);
+        void slotPrependPackage(Package* item);
         void slotClear();
 
     private:
 
         QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
 
-        Item*            m_root;
+        Package*            m_root;
         TaskBox*         m_box;
         QStringList      m_header;
 

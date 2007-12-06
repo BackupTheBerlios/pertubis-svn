@@ -19,7 +19,7 @@
 */
 
 #include "InstallTask.hh"
-#include "Item.hh"
+#include "Package.hh"
 #include "ItemInstallTask.hh"
 #include "MessageOutput.hh"
 #include <paludis/package_id.hh>
@@ -34,22 +34,22 @@ pertubis::InstallTask::InstallTask(QObject* pobject,
 {
 }
 
-bool pertubis::InstallTask::available(Item* item) const
+bool pertubis::InstallTask::available(Package* item) const
 {
     return item->available();
 }
 
-bool pertubis::InstallTask::changeStates(Item* item, int newState)
+bool pertubis::InstallTask::changeStates(Package* item, int newState)
 {
-    Item::Iterator iStart;
-    Item::Iterator iEnd;
-    Item::Iterator piStart;
-    Item::Iterator piEnd;
+    Package::PackageIterator iStart;
+    Package::PackageIterator iEnd;
+    Package::PackageIterator piStart;
+    Package::PackageIterator piEnd;
 
     int i=0;
     switch (item->itemType())
     {
-        case Item::it_parent:
+        case Package::pt_parent:
             iStart = item->childBegin();
             iEnd = item->childEnd();
             switch (newState)
@@ -74,7 +74,7 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
                     ;
             }
             break;
-        case Item::it_child:
+        case Package::pt_child:
             piStart = item->parent()->childBegin();
             piEnd = item->parent()->childEnd();
             switch (newState)
@@ -84,7 +84,7 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
                     item->setTaskState(m_taskid,Qt::Unchecked);
                     while(piStart != piEnd)
                     {
-                        if ( (*piStart)->data(Item::io_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
+                        if ( (*piStart)->data(Package::po_selected).toList().value(m_taskid).toInt() != Qt::Unchecked )
                             ++i;
                         ++piStart;
                     }
@@ -99,7 +99,7 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
                     item->setTaskState(m_taskid,Qt::Checked);
                     while(piStart != piEnd)
                     {
-                        QVariantList list((*piStart)->data(Item::io_selected).toList());
+                        QVariantList list((*piStart)->data(Package::po_selected).toList());
         //                 qDebug() << "InstallTask::changeChildStates - list" << list;
                         int mystate(list.value(m_taskid).toInt());
         //                 qDebug() << "InstallTask::changeChildStates - state" << mystate;
@@ -116,7 +116,7 @@ bool pertubis::InstallTask::changeStates(Item* item, int newState)
                     ;
             }
             break;
-        case Item::it_node_only:
+        case Package::pt_node_only:
             switch (newState)
             {
                 case Qt::Unchecked:

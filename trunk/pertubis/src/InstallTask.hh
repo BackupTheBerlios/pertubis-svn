@@ -27,7 +27,7 @@ namespace pertubis
 {
     class Install;
 
-    /*! \brief stores the PackageIDs of an Item if it is about to be installed and changes the items' visual state
+    /*! \brief stores the PackageIDs of an Package if it is about to be installed and changes the items' visual state
     * \ingroup Selection
     */
     class InstallTask : public Task
@@ -50,13 +50,13 @@ namespace pertubis
         ///@{
 
             /// returns if its not masked
-        bool available(Item* item) const;
+        bool available(Package* item) const;
 
-        /*! @brief makes the actual changes in this object and in the Item object when a user visually changes the selection state
-         * @param item the Item to be changed
+        /*! @brief makes the actual changes in this object and in the Package object when a user visually changes the selection state
+         * @param item the Package to be changed
          * @param mystate the new selection state for this Task
         */
-        bool changeStates(Item* item, int mystate);
+        bool changeStates(Package* item, int mystate);
         ///@}
 
         /// @name Content modification

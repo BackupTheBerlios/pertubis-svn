@@ -40,7 +40,7 @@
  */
 
 /*! \brief qt4 model subclasses
- * \defgroup ItemModelClass Item and Model Classes
+ * \defgroup PackageModelClass Package and Model Classes
  * this classes are subclasses of Qt4 abstract item or model classes
  */
 
@@ -86,7 +86,7 @@ namespace pertubis
     class CategoryModel;
     class CategoryThread;
     class DetailsThread;
-    class Item;
+    class Package;
     class MessageOutput;
     class PackageFilterModel;
     class PackageModel;
@@ -209,8 +209,14 @@ namespace pertubis
         /// sync selected repositories
         void onSync();
 
-        /// show the End to the user
+        /// starts selections thread
+        void onShowSelections();
+
+        /// show the sync end to the user
         void displaySyncFinished();
+
+        /// show the succcessful search end to the user
+        void displaySearchFinished(int count);
         ///@}
 
         /// @name Displaying slots
@@ -219,13 +225,13 @@ namespace pertubis
         /// opens an context menu to select tasks
         void displayOptionsMenu(const QModelIndex& index);
 
-        /// displayes number of fetch results
-        void displayResultCount();
+        /// show the end of fetch action
+        void displayCategoryChanged();
 
         /// displayes item details
         void displayPackageDetails(QString details);
 
-        /// displayes selected items
+        /// shows the result to the user
         void displaySelectedPackages();
 
         /// change sync icon gimmick
@@ -290,7 +296,7 @@ namespace pertubis
         CategoryFilterModel*    m_setFilterModel;
         CategoryModel*          m_catModel;
         DetailsThread*          m_detailsThread;
-        Item*                   m_current;
+        Package*                m_current;
         MessageOutput*          m_output;
         PertubisSyncTask*       m_syncTask;
         PackageModel*           m_packageModel;

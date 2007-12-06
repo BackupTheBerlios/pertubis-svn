@@ -19,6 +19,10 @@
 */
 
 #include "Settings.hh"
+#include "InstallSettings.hh"
+#include "DepListSettings.hh"
+#include "QuerySettings.hh"
+#include "UninstallSettings.hh"
 #include <QApplication>
 #include <QComboBox>
 #include <QDebug>
@@ -31,6 +35,7 @@
 #include <QListWidget>
 #include <QLocale>
 #include <QMessageBox>
+#include <QScrollArea>
 #include <QPushButton>
 #include <QSettings>
 #include <QStackedWidget>
@@ -66,15 +71,13 @@ static QString languageName(const QString &qmFile)
     return ("English");
 }
 
-pertubis::I18NPage::I18NPage(QWidget *pobj)
+pertubis::LanguageSettings::LanguageSettings(QWidget *pobj)
      : QWidget(pobj)
 {
     QGroupBox *packagesGroup = new QGroupBox(tr("Language Settings"));
     QLabel *nameLabel = new QLabel(tr("Language:"));
 
     QComboBox *choice = new QComboBox;
-
-    loadSettings();
 
     QStringList list = findTranslationFiles();
     QString filename;
@@ -103,92 +106,121 @@ pertubis::I18NPage::I18NPage(QWidget *pobj)
     mainLayout->addSpacing(12);
     mainLayout->addStretch(1);
     setLayout(mainLayout);
+    loadSettings();
 }
 
-pertubis::I18NPage::~I18NPage()
+pertubis::LanguageSettings::~LanguageSettings()
 {
-    qDebug("I18NPage::~I18NPage() - start");
+    qDebug("LanguageSettings::~LanguageSettings() - start");
     saveSettings();
-    qDebug("I18NPage::~I18NPage() - done");
+    qDebug("LanguageSettings::~LanguageSettings() - done");
 }
 
-void pertubis::I18NPage::loadSettings()
+void pertubis::LanguageSettings::loadSettings()
 {
     QSettings settings;
-    settings.beginGroup( "i18npage" );
-        setVisible(settings.value( "visible",true).toBool());
-        resize(settings.value("size",QVariant(QSize(800,600))).toSize());
-        move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
+    settings.beginGroup( "LanguageSettings" );
         m_currentLanguage=settings.value("language",":i18n/pertubis-de").toString();
     settings.endGroup();
 }
 
-void pertubis::I18NPage::saveSettings()
+void pertubis::LanguageSettings::saveSettings()
 {
     QSettings settings;
-    settings.beginGroup( "i18npage" );
-        settings.setValue("visible", isVisible() );
-        settings.setValue("size", size() );
-        settings.setValue("pos", pos());
+    settings.beginGroup( "LanguageSettings" );
         settings.setValue("language",m_currentLanguage);
     settings.endGroup();
 }
 
-void pertubis::I18NPage::languageChanged(const QString& language)
+void pertubis::LanguageSettings::languageChanged(const QString& language)
 {
     m_currentLanguage=m_langToTranslation[language];
     QMessageBox msgBox;
     msgBox.information(this,tr("pertubis info"),tr("language setting changes will be applied after a restart"));
 }
 
-pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj)
+pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
+        m_languageView(new LanguageSettings(pobj)),
+        m_installView(new InstallSettings(pobj)),
+        m_deinstallView(new UninstallSettings(pobj)),
+        m_queryView(new QuerySettings(pobj)),
+        m_depListView(new DepListSettings(pobj)),
+        m_pagesView(new QListWidget(pobj)),
+        m_pagesStore(new QStackedWidget())
 {
-    m_contentsWidget = new QListWidget;
-    m_contentsWidget->setViewMode(QListView::IconMode);
-    m_contentsWidget->setIconSize(QSize(96, 84));
-    m_contentsWidget->setMovement(QListView::Static);
-    m_contentsWidget->setMaximumWidth(128);
-    m_contentsWidget->setSpacing(12);
+    m_pagesStore->addWidget(m_languageView);
+    m_pagesStore->addWidget(m_installView);
+    m_pagesStore->addWidget(m_deinstallView);
+    m_pagesStore->addWidget(m_queryView);
+    m_pagesStore->addWidget(m_depListView);
+    m_pagesView->setViewMode(QListView::IconMode);
+    m_pagesView->setFlow(QListView::LeftToRight);
+    m_pagesView->setMaximumWidth(150);
+    m_pagesView->setMinimumWidth(150);
+    m_pagesView->setIconSize(QSize(64, 64));
+    m_pagesView->setSpacing(36);
 
-    m_pagesWidget = new QStackedWidget;
-    m_i18n = new I18NPage;
-    m_pagesWidget->addWidget(m_i18n);
+    m_pagesView->setMovement(QListView::Static);
+    QListWidgetItem *tLang = new QListWidgetItem(m_pagesView);
+    tLang->setIcon(QIcon(":/images/settings.png"));
+    tLang->setText(tr("Language"));
+    tLang->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *tInstall = new QListWidgetItem(m_pagesView);
+    tInstall->setIcon(QIcon(":/images/finish.png"));
+    tInstall->setText(tr("Installation"));
+    tInstall->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *tDeinstall = new QListWidgetItem(m_pagesView);
+    tDeinstall->setIcon(QIcon(":/images/deinstall.png"));
+    tDeinstall->setText(tr("Deinstallation"));
+    tDeinstall->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *tQuery = new QListWidgetItem(m_pagesView);
+    tQuery->setIcon(QIcon(":/images/find.png"));
+    tQuery->setText(tr("Query List"));
+    tQuery->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *tDepList = new QListWidgetItem(m_pagesView);
+    tDepList->setIcon(QIcon(":/images/depList.png"));
+    tDepList->setText(tr("Dependency List"));
+    tDepList->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    QHBoxLayout *horizontalLayout = new QHBoxLayout;
+    QHBoxLayout *buttonsLayout = new QHBoxLayout;
+
+    horizontalLayout->addWidget(m_pagesView);
+    horizontalLayout->addWidget(m_pagesStore);
+    horizontalLayout->setSpacing(0);
+
+    mainLayout->addLayout(horizontalLayout);
+    mainLayout->addLayout(buttonsLayout);
+
+    setLayout(mainLayout);
 
     QPushButton *closeButton = new QPushButton(tr("Close"));
 
-    connect(m_contentsWidget,
+    buttonsLayout->addStretch(1);
+    buttonsLayout->addWidget(closeButton);
+
+    connect(m_pagesView,
             SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             this,
             SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
-
     connect(closeButton,
             SIGNAL(clicked()),
             this,
             SLOT(close()));
-
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    QHBoxLayout *horizontalLayout = new QHBoxLayout;
-    horizontalLayout->addWidget(m_contentsWidget);
-    horizontalLayout->addWidget(m_pagesWidget, 1);
-
-    QHBoxLayout *buttonsLayout = new QHBoxLayout;
-    buttonsLayout->addStretch(1);
-    buttonsLayout->addWidget(closeButton);
-
-
-    mainLayout->addLayout(horizontalLayout);
-    mainLayout->addStretch(1);
-    mainLayout->addSpacing(12);
-    mainLayout->addLayout(buttonsLayout);
-    setLayout(mainLayout);
-
-    QListWidgetItem *tItem = new QListWidgetItem(m_contentsWidget);
-    tItem->setIcon(QIcon(":/images/settings.png"));
-    tItem->setText(tr("Configuration"));
-    tItem->setTextAlignment(Qt::AlignHCenter);
-    tItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
+    loadSettings();
     setWindowTitle(tr("pertubis :: settings"));
+}
+
+pertubis::Settings::~Settings()
+{
+    qDebug("Settings::~Settings() - start");
+    saveSettings();
+    qDebug("Settings::~Settings() - done");
 }
 
 void pertubis::Settings::changePage(QListWidgetItem *current, QListWidgetItem *previous)
@@ -196,6 +228,29 @@ void pertubis::Settings::changePage(QListWidgetItem *current, QListWidgetItem *p
     if (!current)
         current = previous;
 
-    m_pagesWidget->setCurrentIndex(m_contentsWidget->row(current));
+    m_pagesStore->setCurrentIndex(m_pagesView->row(current));
 }
 
+void pertubis::Settings::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup( "Settings" );
+    setVisible(settings.value( "visible",false).toBool());
+    resize(settings.value("size",QVariant(QSize(320,600))).toSize());
+    move(settings.value("pos",QVariant(QPoint(481,143))).toPoint());
+    m_pagesStore->setCurrentIndex(settings.value("store",0).toInt());
+    m_pagesView->setCurrentRow(settings.value("view",0).toInt());
+    settings.endGroup();
+}
+
+void pertubis::Settings::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup( "Settings" );
+    settings.setValue("visible", isVisible() );
+    settings.setValue("size", size() );
+    settings.setValue("pos", pos());
+    settings.setValue("store", m_pagesStore->currentIndex());
+    settings.setValue("view", m_pagesView->currentRow());
+    settings.endGroup();
+}

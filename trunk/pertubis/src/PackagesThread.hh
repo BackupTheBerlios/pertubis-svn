@@ -29,7 +29,7 @@
 
 namespace pertubis
 {
-    class Item;
+    class Package;
 
     /*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
      * \ingroup PaludisAdapter
@@ -58,8 +58,9 @@ namespace pertubis
             QString                                    m_query;
 
         signals:
-            void addPackage(Item* package);
+            void addPackage(Package* package);
             void changeInCat(QString);
+            void finished(int count);
     };
 }
 #endif

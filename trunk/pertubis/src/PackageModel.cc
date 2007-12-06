@@ -21,7 +21,7 @@
 #include "PackageModel.hh"
 #include "TaskBox.hh"
 #include "Task.hh"
-#include "Item.hh"
+#include "Package.hh"
 
 #include <QColor>
 #include <QBrush>
@@ -29,7 +29,7 @@
 #include <QDebug>
 #include <QStringList>
 
-pertubis::PackageModel::PackageModel(QObject* pobj) : QAbstractItemModel(pobj),m_root(new Item()),m_box(0)
+pertubis::PackageModel::PackageModel(QObject* pobj) : QAbstractItemModel(pobj),m_root(new Package()),m_box(0)
 {
 }
 
@@ -45,10 +45,10 @@ Qt::ItemFlags pertubis::PackageModel::flags(const QModelIndex &mix) const
         return 0;
     switch (mix.column())
     {
-        case Item::io_selected:
+        case Package::po_selected:
             return Qt::ItemIsEditable;
             break;
-        case Item::io_installed:
+        case Package::po_installed:
             return Qt::ItemIsSelectable;
             break;
         default:
@@ -68,32 +68,32 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
     if (!ix.isValid())
         return QVariant();
 
-    Item* item = static_cast<Item*>(ix.internalPointer());
+    Package* item = static_cast<Package*>(ix.internalPointer());
 
     if (role == Qt::ForegroundRole)
     {
         switch (ix.column())
         {
-            case Item::io_installed:
+            case Package::po_installed:
                 return QBrush(QColor(0,0,255));
                 break;
-            case Item::io_mask_reasons:
+            case Package::po_mask_reasons:
                 return QBrush(QColor(255,0,0));
                 break;
-            case Item::io_change:
+            case Package::po_change:
                 return QBrush(QColor(0,255,0));
                 break;
             default:
                 return QBrush(QColor(0,0,0));
                 break;
 
-                // case Item::io_package:
+                // case Package::po_package:
                 //  {
-                //      if (item->state() == Item::is_stable)
+                //      if (item->state() == Package::is_stable)
                 //           return QBrush(QColor(0,255,0));
-                //      if (item->state() == Item::is_unstable)
+                //      if (item->state() == Package::is_unstable)
                 //          return QBrush(QColor(255,200,0));
-                //      if (item->state() == Item::is_masked)
+                //      if (item->state() == Package::is_masked)
                 //          return QBrush(QColor(255,0,0));
                 //  }
         }
@@ -103,7 +103,7 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
     {
         switch (ix.column())
         {
-            case Item::io_installed:
+            case Package::po_installed:
                 return item->data(ix.column());
             default:
                 return QVariant();
@@ -114,7 +114,7 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
     {
         switch (ix.column())
         {
-            case Item::io_installed:
+            case Package::po_installed:
                 return QVariant();
             default:
                 return item->data(ix.column());
@@ -129,14 +129,14 @@ QModelIndex pertubis::PackageModel::index(int row, int column, const QModelIndex
     if (!hasIndex(row, column, parentIndex))
         return QModelIndex();
 
-    Item *parentItem;
+    Package *parentItem;
 
     if (!parentIndex.isValid())
         parentItem = m_root;
     else
-        parentItem = static_cast<Item*>(parentIndex.internalPointer());
+        parentItem = static_cast<Package*>(parentIndex.internalPointer());
 
-    Item *childItem = parentItem->child(row);
+    Package *childItem = parentItem->child(row);
     if (childItem)
         return QAbstractItemModel::createIndex(row, column, childItem);
     else
@@ -148,8 +148,8 @@ QModelIndex pertubis::PackageModel::parent(const QModelIndex &mix) const
     if (!mix.isValid())
         return QModelIndex();
 
-    Item *childItem = static_cast<Item*>(mix.internalPointer());
-    Item *parentItem = childItem->parent();
+    Package *childItem = static_cast<Package*>(mix.internalPointer());
+    Package *parentItem = childItem->parent();
 
     if (parentItem == m_root)
         return QModelIndex();
@@ -159,14 +159,14 @@ QModelIndex pertubis::PackageModel::parent(const QModelIndex &mix) const
 
 int pertubis::PackageModel::rowCount(const QModelIndex &pmi) const
 {
-    Item *parentItem;
+    Package *parentItem;
     if (pmi.column() > 0)
         return 0;
 
     if (!pmi.isValid())
         parentItem = m_root;
     else
-        parentItem = static_cast<Item*>(pmi.internalPointer());
+        parentItem = static_cast<Package*>(pmi.internalPointer());
 
     return parentItem->childCount();
 }
@@ -174,7 +174,7 @@ int pertubis::PackageModel::rowCount(const QModelIndex &pmi) const
 int pertubis::PackageModel::columnCount(const QModelIndex &pmi) const
 {
     if (pmi.isValid())
-         return static_cast<Item*>(pmi.internalPointer())->columnCount();
+        return static_cast<Package*>(pmi.internalPointer())->columnCount();
     else if (m_root != 0)
         return m_root->columnCount();
     else
@@ -186,12 +186,12 @@ void pertubis::PackageModel::slotClear()
     if (m_root != 0)
     {
         delete m_root;
-        m_root = new Item();
+        m_root = new Package();
         reset();
     }
 }
 
-void pertubis::PackageModel::slotAppendPackage(Item* item)
+void pertubis::PackageModel::slotAppendPackage(Package* item)
 {
     if (m_root != 0)
     {
@@ -200,7 +200,7 @@ void pertubis::PackageModel::slotAppendPackage(Item* item)
     }
 }
 
-void pertubis::PackageModel::slotPrependPackage(Item* item)
+void pertubis::PackageModel::slotPrependPackage(Package* item)
 {
     if (m_root != 0)
     {
@@ -212,7 +212,7 @@ void pertubis::PackageModel::slotPrependPackage(Item* item)
 
 bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taskid, bool mystate)
 {
-    Item* item = static_cast<Item*>(ix.internalPointer());
+    Package* item = static_cast<Package*>(ix.internalPointer());
     if (item != 0 && m_box->task(taskid)->changeStates(item,mystate))
     {
         emit layoutChanged();
