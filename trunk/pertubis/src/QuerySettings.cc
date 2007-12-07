@@ -48,10 +48,21 @@ pertubis::QuerySettingsModel::QuerySettingsModel(QWidget *pobj) :
     qDebug() << "QuerySettingsModel::QuerySettingsModel()";
     m_matcherModel->setHorizontalHeaderLabels(QStringList() << "a");
     m_extractorModel->setHorizontalHeaderLabels(QStringList() << "a");
-    m_extractorModel->setItem(0,0,new QStandardItem(tr("name")));
-    m_extractorModel->setItem(1,0,new QStandardItem(tr("description")));
-    m_matcherModel->setItem(0,0,new QStandardItem(tr("text")));
-    m_matcherModel->setItem(1,0,new QStandardItem(tr("regular expression")));
+
+    QStandardItem* i1 (new QStandardItem(tr("name")));
+    i1->setCheckable(true);
+    m_extractorModel->setItem(0,0,i1);
+
+    QStandardItem* i2 (new QStandardItem(tr("description")));
+    i2->setCheckable(true);
+    m_extractorModel->setItem(1,0,i2);
+
+    QStandardItem* m1 (new QStandardItem(tr("text")));
+    m1->setCheckable(true);
+    m_matcherModel->setItem(0,0,m1);
+    QStandardItem* m2 (new QStandardItem(tr("regular expression")));
+    m2->setCheckable(true);
+    m_matcherModel->setItem(1,0,m2);
 
 //     m_matcher->setCurrentCell(0,0);
 
@@ -142,30 +153,20 @@ pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj) :
 
     m_matcherView->horizontalHeader()->hide();
     m_matcherView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    qDebug() << "QuerySettingsView::QuerySettingsView() - 1";
     m_matcherView->setModel(m_model->m_matcherModel);
-    qDebug() << "QuerySettingsView::QuerySettingsView() - 2";
     m_matcherView->setSelectionModel(m_model->m_matcherSelectionModel);
-    qDebug() << "QuerySettingsView::QuerySettingsView() - 3";
-
-
     m_matcherView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-//     m_matcherView->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
     m_matcherView->setToolTip( tr("Which match algorithm to use") );
     m_matcherView->verticalHeader()->hide();
     m_matcherView->setShowGrid(false);
-//     setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
+    m_matcherView->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
 
     m_extractorView->horizontalHeader()->hide();
     m_extractorView->horizontalHeader()->setResizeMode(QHeaderView::Interactive);
-
-    qDebug() << "QuerySettingsView::QuerySettingsView() - 3";
-
     m_extractorView->setModel(m_model->m_extractorModel);
     m_extractorView->setSelectionModel(m_model->m_extractorSelectionModel);
-
     m_extractorView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-//     m_extractorView->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
+    m_extractorView->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
     m_extractorView->setToolTip( tr("") );
     m_extractorView->verticalHeader()->hide();
     m_extractorView->setShowGrid(false);
@@ -264,4 +265,5 @@ void pertubis::QuerySettingsView::saveSettings()
     settings.endGroup();
     qDebug("QuerySettings::saveSettings() - done");
 }
+
 
