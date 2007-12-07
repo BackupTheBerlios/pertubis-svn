@@ -96,7 +96,7 @@ namespace pertubis
     class RepositoryListThread;
     class SearchThread;
     class SearchWindow;
-    class SetModel;
+//     class SetModel;
     class SetThread;
     class Settings;
     class ShowSelectionsThread;
@@ -339,7 +339,8 @@ namespace pertubis
         RepositoryListModel*    m_repoListModel;
         RepositoryListThread*   m_repoListThread;
         SearchThread*           m_searchThread;
-        SetModel*               m_setModel;
+        CategoryModel*          m_setModel;
+//         SetModel*               m_setModel;
         SetThread*              m_setThread;
         SearchWindow*           m_searchWindow;
         Settings*               m_settings;

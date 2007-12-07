@@ -43,6 +43,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <QDebug>
+
+#include <QItemSelectionModel>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QComboBox>
@@ -131,7 +133,7 @@ void set_id(
 
 pertubis::SearchThread::SearchThread(QObject* pobj,
                                      paludis::tr1::shared_ptr<paludis::Environment>  env,
-                                     QuerySettings* querySettings,
+                                     QuerySettingsModel* querySettings,
                                      TaskBox* box) : ThreadBase(pobj,env,box), m_querySettings(querySettings)
 {
 }
@@ -154,19 +156,26 @@ void pertubis::SearchThread::run()
     ThreadBase::lock();
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
-    if (m_querySettings->m_matcher->item(0,0)->isSelected())
+
+    QModelIndexList iList(m_querySettings->m_matcherSelectionModel->selectedRows());
+    QModelIndex index;
+    foreach(index,iList)
     {
-        matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
+        if (0 == index.row())
+            matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
+        else if (1 == index.row())
+            matchers.push_back( tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data()) ));
     }
-    if (m_querySettings->m_matcher->item(1,0)->isSelected())
+
+    iList = m_querySettings->m_extractorSelectionModel->selectedRows();
+    foreach(index,iList)
     {
-        matchers.push_back( tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data()) ));
+        if (0 == index.row())
+            extractors.push_back(tr1::shared_ptr<NameExtractor>( new NameExtractor(m_env.get()) )    );
+        else if (1 == index.row())
+            extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_env.get())));
     }
     int count(0);
-    if (m_querySettings->m_extractor->item(0,0)->isSelected() )
-        extractors.push_back(tr1::shared_ptr<NameExtractor>( new NameExtractor(m_env.get()) )    );
-    if (m_querySettings->m_extractor->item(1,0)->isSelected() )
-        extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_env.get())));
     std::list<tr1::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
          r_end(m_env->package_database()->end_repositories()) ;

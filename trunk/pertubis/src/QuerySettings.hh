@@ -25,12 +25,14 @@
 
 class QCheckBox;
 class QComboBox;
-class QTableWidget;
+class QStandardItemModel;
+class QItemSelectionModel;
+class QTableView;
 
 namespace pertubis
 {
 
-    class QuerySettings : public QWidget
+    class QuerySettingsModel : public QWidget
     {
         Q_OBJECT
 
@@ -40,10 +42,51 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            QuerySettings(QWidget *parent);
+            QuerySettingsModel(QWidget *parent);
             ///@}
 
-            ~QuerySettings();
+            ~QuerySettingsModel();
+
+            ///@name Content modification
+            ///@{
+
+            /// loads all settings for the gui
+            void loadSettings();
+
+            /// saves all settings for the gui
+            void saveSettings();
+
+            ///@}
+
+
+            /// \name data
+            ///@{
+
+
+            QStandardItemModel* m_extractorModel;
+            QStandardItemModel* m_kindModel;
+            QStandardItemModel* m_matcherModel;
+            QItemSelectionModel* m_extractorSelectionModel;
+            QItemSelectionModel* m_matcherSelectionModel;
+
+            int      m_enabledOnly;
+            ///@}
+    };
+
+    class QuerySettingsView : public QWidget
+    {
+        Q_OBJECT
+
+        public:
+
+            ///@name Constructors
+            ///@{
+
+            /// std constructor
+            QuerySettingsView(QWidget *parent);
+            ///@}
+
+            ~QuerySettingsView();
 
             ///@name Content modification
             ///@{
@@ -59,10 +102,11 @@ namespace pertubis
             /// \name install options
             ///@{
 
-            QCheckBox*      m_enabledOnly;
-            QTableWidget*    m_matcher;
-            QTableWidget*    m_extractor;
-            QComboBox*      m_kind;
+            QuerySettingsModel* m_model;
+            QCheckBox*          m_enabledOnly;
+            QTableView*         m_matcherView;
+            QTableView*         m_extractorView;
+            QComboBox*          m_kindView;
             ///@}
     };
 }

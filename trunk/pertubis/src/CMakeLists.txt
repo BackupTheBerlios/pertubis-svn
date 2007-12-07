@@ -28,7 +28,6 @@ SET(PERTUBIS_SRCS
     RepositoryListModel.cc
     SearchThread.cc
     SearchWindow.cc
-    SetModel.cc
     SetThread.cc
     Settings.cc
     ShowSelectionsThread.cc
@@ -64,7 +63,6 @@ SET(PERTUBIS_MOC_HDRS
     RepositoryListModel.hh
     SearchThread.hh
     SearchWindow.hh
-    SetModel.hh
     SetThread.hh
     Settings.hh
     ShowSelectionsThread.hh

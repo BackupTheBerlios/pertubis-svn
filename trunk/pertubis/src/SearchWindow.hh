@@ -35,7 +35,8 @@ class QDialogButtonBox;
 namespace pertubis
 {
 
-    class QuerySettings;
+    class QuerySettingsModel;
+    class QuerySettingsView;
     /*! \brief provides a text input and option checkboxes the user may select or deselect.
      *
      * \ingroup Widget
@@ -50,26 +51,18 @@ namespace pertubis
         ///\name Constructors
         ///\{
 
-        /// constructs a SearchWindow object
-        SearchWindow( QWidget *pwid,QuerySettings* querySettings);
-        ///@}
-
-        /// returns the query string
         QString query() const;
-        /// returns if name is checked
-//         bool inName() const { return m_chkName;}
-//         /// returns if description is checked
-//         bool inDesc() const { return m_chkDesc;}
-//         /// returns if homepage is checked
-//         bool inHomepage() const { return m_chkHomepage;}
-//         /// returns if "regular expression" is checked
-//         bool asRegex() const { return m_chkRegex;}
+
+        /// constructs a SearchWindow object
+        SearchWindow( QWidget *pwid,QuerySettingsModel* querySettings);
+        ///@}
 
         void displaySearch(bool start);
 
         void toggle();
 
     signals:
+
         /// sends the request to start the search
         void                search();
 
@@ -81,24 +74,14 @@ namespace pertubis
         /// line for query input
         QLineEdit*          m_line;
 
-        /// a checkbox for searching in package description
-//         QCheckBox*          m_chkDesc;
-        /// a checkbox for searching in package name
-//         QCheckBox*          m_chkName;
-        /// a checkbox for searching in package homepage
-//         QCheckBox*          m_chkHomepage;
-        /// a checkbox to treat the query string as a regular expression
-//         QCheckBox*          m_chkRegex;
-        /// a button box for the usual buttons
-        QDialogButtonBox*   m_dbox;
+        /// ask for query settings
+        QuerySettingsModel*      m_querySettings;
 
-        /// a push button for search start
-        QPushButton*        m_bStart;
+        /// ask for query settings
+        QuerySettingsView*      m_querySettingsView;
 
-        /// a push button for search stop
-        QPushButton*        m_bStop;
-
-        QuerySettings*      m_querySettings;
+        QPushButton*            m_bStart;
+        QPushButton*            m_bStop;
     };
 }
 #endif

@@ -35,7 +35,7 @@ namespace pertubis
 {
     class DepListSettings;
     class InstallSettings;
-    class QuerySettings;
+    class QuerySettingsView;
     class UninstallSettings;
 
     /*! \brief This settings group handles language and localization specific options.
@@ -122,7 +122,7 @@ namespace pertubis
             UninstallSettings*    m_deinstallView;
 
             /// the language settings page
-            QuerySettings*    m_queryView;
+            QuerySettingsView*    m_queryView;
 
             /// the deplist settings page
             DepListSettings*    m_depListView;

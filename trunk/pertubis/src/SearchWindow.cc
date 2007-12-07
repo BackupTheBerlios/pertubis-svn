@@ -33,39 +33,34 @@
 #include <QVBoxLayout>
 #include <QDebug>
 
-pertubis::SearchWindow::SearchWindow( QWidget* pwidQuery, QuerySettings* querySettings) : QDialog(pwidQuery),
-        m_line(new QLineEdit(this)),
-//         m_chkDesc(new QCheckBox(tr("&Description"))),
-//         m_chkName(new QCheckBox(tr("&Name"))),
-//         m_chkHomepage(new QCheckBox(tr("&Homepage"))),
-//         m_chkRegex(new QCheckBox(tr("treat search string as &regular expression"))),
-        m_dbox(new QDialogButtonBox(QDialogButtonBox::Close,Qt::Vertical)),
+pertubis::SearchWindow::SearchWindow( QWidget* pobj, QuerySettingsModel* querySettings) : QDialog(pobj),
+        m_line(new QLineEdit(pobj)),
+        m_querySettings(querySettings),
+        m_querySettingsView(new QuerySettingsView(pobj)),
         m_bStart(new QPushButton(tr("&Start"))),
-        m_bStop(new QPushButton(tr("&Stop"))),
-        m_querySettings(querySettings)
+        m_bStop(new QPushButton(tr("&Stop")))
 {
+    qDebug() << "SearchWindow::SearchWindow()";
     QHBoxLayout* optLayout = new QHBoxLayout;
     optLayout->setMargin(0);
-//     optLayout->addWidget(m_chkName);
-//     optLayout->addWidget(m_chkDesc);
-//     optLayout->addWidget(m_chkHomepage);
-//     optLayout->addWidget(m_chkRegex);
-    optLayout->addWidget(m_querySettings);
+
+    m_querySettingsView->m_model = m_querySettings;
+
+    optLayout->addWidget(m_querySettingsView);
 
     QVBoxLayout* leftLayout = new QVBoxLayout;
     leftLayout->addWidget(m_line);
     leftLayout->addLayout(optLayout);
     QGridLayout* main_layout = new QGridLayout;
-    setLayout(main_layout);
-    main_layout->addLayout(leftLayout,0,0);
-    main_layout->addWidget(m_dbox,0,1);
+
+    QDialogButtonBox* dbox(new QDialogButtonBox(QDialogButtonBox::Close,Qt::Vertical));
 
     m_bStart->setDefault(true);
-    m_dbox->addButton(m_bStart, QDialogButtonBox::ActionRole);
+    dbox->addButton(m_bStart, QDialogButtonBox::ActionRole);
     m_bStop->setDisabled(true);
-    m_dbox->addButton(m_bStop, QDialogButtonBox::ActionRole);
+    dbox->addButton(m_bStop, QDialogButtonBox::ActionRole);
 
-    QPushButton* bClose = m_dbox->button(QDialogButtonBox::Close);
+    QPushButton* bClose = dbox->button(QDialogButtonBox::Close);
 
     connect(bClose,
             SIGNAL(clicked()),
@@ -81,16 +76,14 @@ pertubis::SearchWindow::SearchWindow( QWidget* pwidQuery, QuerySettings* querySe
             SIGNAL(clicked()),
             this,
             SIGNAL(stopSearch()));
+    setLayout(main_layout);
+    main_layout->addLayout(leftLayout,0,0);
+    main_layout->addWidget(dbox,0,1);
 
     setWindowTitle(tr("Search Dialog"));
     setWindowModality(Qt::WindowModal);
     hide();
 //     qDebug() << "SearchWindow::SearchWindow() - done";
-}
-
-QString pertubis::SearchWindow::query() const
-{
-    return m_line->text().trimmed();
 }
 
 void pertubis::SearchWindow::displaySearch(bool start)
@@ -103,13 +96,15 @@ void pertubis::SearchWindow::toggle()
 {
     if (isHidden())
     {
-//         m_querySettings->show();
         exec();
     }
     else
     {
         hide();
-//         m_querySettings->hide();
     }
 }
 
+QString pertubis::SearchWindow::query() const
+{
+    return m_line->text().trimmed();
+}

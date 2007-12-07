@@ -36,7 +36,7 @@
 #include "RepositoryListModel.hh"
 #include "SearchThread.hh"
 #include "SearchWindow.hh"
-#include "SetModel.hh"
+// #include "SetModel.hh"
 #include "SetThread.hh"
 #include "Settings.hh"
 #include "ShowSelectionsThread.hh"
@@ -211,7 +211,7 @@ void pertubis::MainWindow::initGUI()
     addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
     addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
     addDockWidget(Qt::LeftDockWidgetArea, m_dockSet);
-    m_searchThread = new SearchThread(this,m_env,m_settings->m_queryView,m_box);
+    m_searchThread = new SearchThread(this,m_env,m_settings->m_queryView->m_model,m_box);
     m_categoryThread = new CategoryThread(this,m_env,m_box);
     m_packageViewThread = new PackagesThread(this,m_env,m_box);
     m_detailsThread = new DetailsThread(this,m_env,m_box);
@@ -282,7 +282,7 @@ void pertubis::MainWindow::createCatbar()
 
     m_acToggleCatBar = m_dockCat->toggleViewAction();
     m_acToggleCatBar->setText(tr("category list"));
-    m_acToggleCatBar->setIcon(QPixmap(":images/catbar_22.xpm"));
+    m_acToggleCatBar->setIcon(QPixmap(":images/catbar.png"));
     m_acToggleCatBar->setShortcut(tr("F11"));
     m_acToggleCatBar->setToolTip(html_tooltip(tr("enable/disable the category sidebar"),m_acToggleCatBar->text()) );
 }
@@ -369,7 +369,7 @@ void pertubis::MainWindow::createRepositoryBar()
 
     m_acToggleRepoBar = m_dockRepo->toggleViewAction();
     m_acToggleRepoBar->setText(tr("repository list"));
-    m_acToggleRepoBar->setIcon(QPixmap(":images/repobar_22.xpm"));
+    m_acToggleRepoBar->setIcon(QPixmap(":images/repobar.png"));
     m_acToggleRepoBar->setShortcut( tr("F10"));
     m_acToggleRepoBar->setToolTip( html_tooltip(tr("enable/disable the repository sidebar"),m_acToggleRepoBar->text()) );
 }
@@ -380,7 +380,7 @@ void pertubis::MainWindow::createSetListView()
     // - createRepositoryBar()
     //
 
-    m_setModel = new SetModel(this);
+    m_setModel = new CategoryModel(this);
     m_setModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
 
     m_setFilterModel = new CategoryFilterModel(this);
@@ -404,7 +404,7 @@ void pertubis::MainWindow::createSetListView()
 
     m_acToggleSetBar = m_dockSet->toggleViewAction();
     m_acToggleSetBar->setText(tr("set list"));
-    m_acToggleSetBar->setIcon(QPixmap(":images/setbar_22.xpm"));
+    m_acToggleSetBar->setIcon(QPixmap(":images/setbar.png"));
     m_acToggleSetBar->setShortcut(tr("F12"));
     m_acToggleSetBar->setToolTip(html_tooltip(tr("enable/disable the set sidebar"),m_acToggleSetBar->text()) );
 }
@@ -450,36 +450,36 @@ void pertubis::MainWindow::createTab()
 
 void pertubis::MainWindow::createActions()
 {
-    m_acToggleMainWindow = new QAction( QPixmap(":images/logo.xpm"),tr("main window"),this );
+    m_acToggleMainWindow = new QAction( QPixmap(":images/logo.png"),tr("main window"),this );
     m_acToggleMainWindow->setCheckable(true);
     m_acToggleMainWindow->setChecked(true);
     m_acToggleMainWindow->setToolTip( html_tooltip(tr("show/hide the pertubis main window"),m_acToggleMainWindow->text() ));
 
-    m_acTogglePackageView = new QAction( QPixmap(":images/packages_22.xpm"),tr("packages"),this );
+    m_acTogglePackageView = new QAction( QPixmap(":images/packages.png"),tr("packages"),this );
     m_acTogglePackageView->setCheckable(true);
     m_acTogglePackageView->setChecked(true);
     m_acTogglePackageView->setToolTip( html_tooltip(tr("enable/disable the package window in the middle"),m_acTogglePackageView->text()));
 
-    m_acToggleSearchWindow = new QAction( QPixmap(":images/find_22.xpm"),tr("find") ,this);
+    m_acToggleSearchWindow = new QAction( QPixmap(":images/find.png"),tr("find") ,this);
     m_acToggleSearchWindow->setShortcut( tr("CTRL+F"));
     m_acToggleSearchWindow->setToolTip(html_tooltip( tr("toggle search window"),m_acToggleSearchWindow->text() ) );
 
-    m_acPref = new QAction( QPixmap(":images/settings_22.xpm"),tr( "Settings"),this);
+    m_acPref = new QAction( QPixmap(":images/settings.png"),tr( "Settings"),this);
     m_acPref->setShortcut( tr("CTRL+P"));
     m_acPref->setToolTip(html_tooltip(tr("configure pertubis"),m_acPref->text()));
 
-    m_acSelection = new QAction( QPixmap(":images/selections_22.xpm"),tr("selections") ,this);
+    m_acSelection = new QAction( QPixmap(":images/selections.png"),tr("selections") ,this);
     m_acSelection->setShortcut( tr("CTRL+F11"));
     m_acSelection->setToolTip( html_tooltip(tr("here you check the selections you made"),m_acSelection->text()) );
 
-    m_acFinish = new QAction( QPixmap(":images/finish_22.xpm"),tr("start") ,this);
+    m_acFinish = new QAction( QPixmap(":images/run.png"),tr("start") ,this);
     m_acFinish->setShortcut( tr("CTRL+F12"));
     m_acFinish->setToolTip(html_tooltip( tr("starts all pending tasks you selected"),m_acFinish->text()) );
 
-    m_acSync = new QAction( QPixmap(":images/sync_0_22.xpm"), tr("sync"),this);
+    m_acSync = new QAction( QPixmap(":images/sync0.png"), tr("sync"),this);
     m_acSync->setToolTip(html_tooltip(tr("To get the latest releases and bugfixes it is neccessary to update the package database.<br><br>It is sufficient to sync your repositories once a day"),m_acSync->text()));
 
-    m_acQuit = new QAction( QPixmap(":images/quit_22.xpm"),tr("quit") ,this);
+    m_acQuit = new QAction( QPixmap(":images/quit.xpm"),tr("quit") ,this);
     m_acQuit->setToolTip(html_tooltip(tr("closing the pertubis suite. All unsaved changes will be lost!"),m_acQuit->text()));
 
     m_acInstall= new QAction(tr("install"),this);
@@ -627,7 +627,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_setThread,
             SIGNAL(sendSet(QMap<QString, QSet<QString> >)),
             m_setModel,
-            SLOT(slotAppendSet(QMap<QString, QSet<QString> >)));
+            SLOT(slotAppendCategory(QMap<QString, QSet<QString> >)));
 
     connect(m_repoListThread,
             SIGNAL(finished()),
@@ -702,7 +702,7 @@ void pertubis::MainWindow::createTrayMenu()
     m_trayMenu->addAction(m_acPref);
     m_trayMenu->addAction(m_acQuit);
 
-    m_sysTray = new QSystemTrayIcon(QPixmap(":images/logo.xpm"),this);
+    m_sysTray = new QSystemTrayIcon(QPixmap(":images/logo.png"),this);
     m_sysTray->setContextMenu(m_trayMenu);
     m_sysTray->show();
 }
@@ -931,7 +931,7 @@ void pertubis::MainWindow::onSync()
                         tr("Do you really want syncing the following repositories?\n\n%1").arg(text),
                         QMessageBox::Ok | QMessageBox::Cancel,
                         this);
-    q.setIconPixmap(QPixmap(":images/repobar_22.xpm"));
+    q.setIconPixmap(QPixmap(":images/repoba.png"));
     q.setDefaultButton(QMessageBox::Ok);
     if (QMessageBox::Cancel == q.exec())
         return;
