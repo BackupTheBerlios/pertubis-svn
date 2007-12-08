@@ -6,13 +6,15 @@
 inherit subversion cmake-utils flag-o-matic
 
 ESVN_REPO_URI="svn://svn.berlios.de/pertubis/trunk/pertubis/"
+KDE_COMMAND=""
+GNOME_COMMAND=""
 
 DESCRIPTION="a graphical frontend for paludis using qt4 ( development version )"
 HOMEPAGE="http://www.pertubis.berlios.de"
 
 SRC_URI=""
 
-KEYWORDS="~x86"
+KEYWORDS="~x86 ~amd64"
 LICENSE="GPL-2"
 
 SLOT="0"
@@ -41,13 +43,7 @@ src_compile() {
 	replace-flags -Os -O2
 	replace-flags -O3 -O2
 	if use debug; then
-		mycmakeargs="${mycmakeargs} -DCMAKE_BUILD_TYPE=debug"
-	fi
-
-	if use kde; then
-		mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=kdesu -t \-i pertubis.png"
-	elif use gnome; then
-		mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=gksu -t \-i pertubis.png"
+        mycmakeargs="${mycmakeargs} -DCMAKE_BUILD_TYPE=debug"
 	fi
 
 	if use tests; then
@@ -55,7 +51,13 @@ src_compile() {
 	fi
 
 	if use doc; then
-        mycmakeargs="${mycmakeargs} -DPERTUBIS_BUILD_DOCS=ON -DPERTUBIS_DOC_PATH=${PF}"
+        mycmakeargs="${mycmakeargs} -DPERTUBIS_BUILD_DOCS=ON -DPERTUBIS_DOC_PATH=/usr/share/doc/${PF}"
+    fi
+
+    if use kde; then
+        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL='kdesu \-t \-i pertubis.png'"
+    elif use gnome; then
+        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=gksu -t -i pertubis.png"
     fi
 
 	# mycmakeargs should be ="-DCMAKE_BUILD_TYPE=Debug -DPERTUBIS_SU_TOOL=kdesu -DPERTUBIS_BUILD_TESTS=1"
@@ -74,7 +76,4 @@ src_install() {
 
 	cmake-utils_src_install || die "install failed"
 	dodoc AUTHORS README TODO || die "doc install failed"
-	if use doc;then
-		dodoc doc/html || die "api docs install failed"
-	fi
 }
