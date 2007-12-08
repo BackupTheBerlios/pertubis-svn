@@ -33,7 +33,7 @@
 #include "TaskBoxTest.hh"
 #include "../src/TaskBox.hh"
 #include "../src/InstallTask.hh"
-#include "../src/Item.hh"
+#include "../src/Package.hh"
 
 void pertubis::TaskBoxTest::addTask()
 {
@@ -160,42 +160,42 @@ void pertubis::TaskBoxTest::setItemTasks()
         QFAIL("no packages found");
 
     install->addEntry(*packageIDs->last());
-    Item* pitem = makePackageItem(*packageIDs->last(),
+    Package* pitem = makePackagePackage(*packageIDs->last(),
                                 box->tasks(),
                                 QString::fromStdString(paludis::stringify( (*packageIDs->last())->name().package)),
                                 QString::fromStdString(paludis::stringify( (*packageIDs->last())->name().category)),
                                 Qt::Unchecked,
-                                Item::is_stable,
+                                Package::ps_stable,
                                 0,
                                 "");
     for (paludis::PackageIDSequence::ConstIterator vstart(packageIDs->begin()),vend(packageIDs->end());
          vstart != vend;
          ++vstart)
     {
-        Item* vitem = makeVersionItem(*vstart,
+        Package* vitem = makeVersionPackage(*vstart,
                                     box->tasks(),
                                     QString::fromStdString(paludis::stringify( (*vstart)->version())),
                                     QString::fromStdString(paludis::stringify( (*vstart)->repository()->name())),
                                     Qt::Unchecked,
-                                    Item::is_stable,
+                                    Package::ps_stable,
                                     0,
                                     "");
         pitem->appendChild(vitem);
         pitem->setBestChild(vitem);
-        box->setTasksInItem(vitem);
+        box->setTasksInPackage(vitem);
     }
 
     qDebug() << "pitem" << *pitem;
     qDebug() << "pitem->bestChild()" << *pitem->bestChild();
     QCOMPARE(install->hasEntry(pitem->ID()),true);
-    QCOMPARE(pitem->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::PartiallyChecked) );
-    QCOMPARE(pitem->bestChild()->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::Checked) );
+    QCOMPARE(pitem->data(Package::po_selected).toList(),QVariantList() << QVariant(Qt::PartiallyChecked) );
+    QCOMPARE(pitem->bestChild()->data(Package::po_selected).toList(),QVariantList() << QVariant(Qt::Checked) );
 
     install->deleteEntry(pitem->ID());
     QCOMPARE(install->hasEntry(pitem->ID()),false );
-    box->setTasksInItem(pitem);
-    QCOMPARE(pitem->bestChild()->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::Unchecked));
-    QCOMPARE(pitem->data(Item::io_selected).toList(),QVariantList() << QVariant(Qt::Unchecked) );
+    box->setTasksInPackage(pitem);
+    QCOMPARE(pitem->bestChild()->data(Package::po_selected).toList(),QVariantList() << QVariant(Qt::Unchecked));
+    QCOMPARE(pitem->data(Package::po_selected).toList(),QVariantList() << QVariant(Qt::Unchecked) );
     delete box;
     delete install;
     delete pitem;

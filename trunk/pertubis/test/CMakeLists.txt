@@ -7,7 +7,7 @@ IF ( PERTUBIS_BUILD_TESTS )
     SET(PERTUBIS_SRCS
         ../src/InstallTask.cc
         ../src/ItemInstallTask.cc
-        ../src/Item.cc
+        ../src/Package.cc
         ../src/TaskBox.cc
         ../src/Task.cc
         ../src/ThreadBase.cc
@@ -19,7 +19,7 @@ IF ( PERTUBIS_BUILD_TESTS )
     SET(PERTUBIS_MOC_HDRS
         ../src/InstallTask.hh
         ../src/ItemInstallTask.hh
-        ../src/Item.hh
+        ../src/Package.hh
         ../src/TaskBox.hh
         ../src/ThreadBase.hh
         ../src/Task.hh

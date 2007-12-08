@@ -19,7 +19,7 @@
 */
 
 #include "ItemTest.hh"
-#include "../src/Item.hh"
+#include "../src/Package.hh"
 
 void pertubis::ItemTest::setTaskState()
 {
@@ -27,65 +27,65 @@ void pertubis::ItemTest::setTaskState()
     selections << Qt::Unchecked << Qt::Unchecked;
     QVariantList data;
     data << QVariant(selections) << "" << "" << "" << Qt::Unchecked << "" << "";
-    Item* pitem = new Item(paludis::tr1::shared_ptr<const paludis::PackageID>(),
+    Package* pitem = new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                           data,
-                          Item::is_stable,
-                          Item::it_parent,
+                          Package::ps_stable,
+                          Package::pt_parent,
                           0);
-    Item* vitem = new Item(paludis::tr1::shared_ptr<const paludis::PackageID>(),
+    Package* vitem = new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                            data,
-                           Item::is_stable,
-                           Item::it_child,
+                           Package::ps_stable,
+                           Package::pt_child,
                            pitem);
     pitem->setTaskState(0,Qt::Checked);
     vitem->setTaskState(1,Qt::Checked);
-    int s( static_cast<int>(pitem->data(Item::io_selected).toList().value(0).toInt()));
+    int s( static_cast<int>(pitem->data(Package::po_selected).toList().value(0).toInt()));
     QCOMPARE(s,static_cast<int>(Qt::Checked));
-    s =  static_cast<int>(vitem->data(Item::io_selected).toList().value(1).toInt());
+    s =  static_cast<int>(vitem->data(Package::po_selected).toList().value(1).toInt());
     QCOMPARE(s,static_cast<int>(Qt::Checked));
     pitem->setTaskState(0,Qt::Unchecked);
-    s = pitem->data(Item::io_selected).toList().value(0).toInt();
+    s = pitem->data(Package::po_selected).toList().value(0).toInt();
     QCOMPARE(s,static_cast<int>(Qt::Unchecked));
     vitem->setTaskState(1,Qt::Unchecked);
-    s = static_cast<int>(pitem->data(Item::io_selected).toList().value(1).toInt());
+    s = static_cast<int>(pitem->data(Package::po_selected).toList().value(1).toInt());
     QCOMPARE(s,static_cast<int>(Qt::Unchecked));
     delete pitem;
 }
 
 void pertubis::ItemTest::setState()
 {
-    Item* pitem = new Item(paludis::tr1::shared_ptr<const paludis::PackageID>(),
+    Package* pitem = new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                            QVariantList(),
-                           Item::is_stable,
-                           Item::it_parent,
+                           Package::ps_stable,
+                           Package::pt_parent,
                            0);
-    pitem->setItemState(Item::is_unstable);
-    QCOMPARE(pitem->state(),Item::is_unstable);
-    pitem->setItemState(Item::is_masked);
-    QCOMPARE(pitem->state(),Item::is_masked);
+    pitem->setPackageState(Package::ps_unstable);
+    QCOMPARE(pitem->state(),Package::ps_unstable);
+    pitem->setPackageState(Package::ps_masked);
+    QCOMPARE(pitem->state(),Package::ps_masked);
     delete pitem;
 }
 
 void pertubis::ItemTest::available()
 {
-    Item* pitem = new Item(paludis::tr1::shared_ptr<const paludis::PackageID>(),
+    Package* pitem = new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                            QVariantList(),
-                            Item::is_unstable,
-                            Item::it_parent,
+                            Package::ps_unstable,
+                            Package::pt_parent,
                             0);
     QCOMPARE(pitem->available(),true);
-    pitem->setItemState(Item::is_stable);
+    pitem->setPackageState(Package::ps_stable);
     QCOMPARE(pitem->available(),true);
-    pitem->setItemState(Item::is_masked);
+    pitem->setPackageState(Package::ps_masked);
     QCOMPARE(pitem->available(),false);
     delete pitem;
 }
 
 void pertubis::ItemTest::appendChild()
 {
-    Item* pitem = new Item();
-    Item* vitem1 = new Item();
-    Item* vitem2 = new Item();
+    Package* pitem = new Package();
+    Package* vitem1 = new Package();
+    Package* vitem2 = new Package();
     QCOMPARE(pitem->childCount(),0);
     QCOMPARE(vitem1->childCount(),0);
     QCOMPARE(vitem2->childCount(),0);
@@ -101,9 +101,9 @@ void pertubis::ItemTest::appendChild()
 
 void pertubis::ItemTest::prependChild()
 {
-    Item* pitem = new Item();
-    Item* vitem1 = new Item();
-    Item* vitem2 = new Item();
+    Package* pitem = new Package();
+    Package* vitem1 = new Package();
+    Package* vitem2 = new Package();
     QCOMPARE(pitem->childCount(),0);
     QCOMPARE(vitem1->childCount(),0);
     QCOMPARE(vitem2->childCount(),0);
@@ -119,9 +119,9 @@ void pertubis::ItemTest::prependChild()
 
 void pertubis::ItemTest::setBestChild()
 {
-    Item* pitem = new Item();
-    Item* vitem1 = new Item();
-    Item* vitem2 = new Item();
+    Package* pitem = new Package();
+    Package* vitem1 = new Package();
+    Package* vitem2 = new Package();
     pitem->appendChild(vitem1);
     pitem->appendChild(vitem2);
     pitem->setBestChild(vitem2);
@@ -133,7 +133,7 @@ void pertubis::ItemTest::setBestChild()
 
 void pertubis::ItemTest::setID()
 {
-    Item* pitem = new Item();
+    Package* pitem = new Package();
     paludis::tr1::shared_ptr<const paludis::PackageID> id;
     pitem->setID(id);
     QCOMPARE(pitem->ID(),id);
