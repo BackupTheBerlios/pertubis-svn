@@ -55,9 +55,9 @@ src_compile() {
     fi
 
     if use kde; then
-        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL='kdesu \-t \-i pertubis.png'"
+        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL='kde"
     elif use gnome; then
-        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=gksu -t -i pertubis.png"
+        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL='gnome"
     fi
 
 	# mycmakeargs should be ="-DCMAKE_BUILD_TYPE=Debug -DPERTUBIS_SU_TOOL=kdesu -DPERTUBIS_BUILD_TESTS=1"

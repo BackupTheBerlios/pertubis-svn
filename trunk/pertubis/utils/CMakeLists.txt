@@ -1,3 +1,12 @@
+
+IF(PERTUBIS_SU_TOOL MATCHES "kde")
+    SET(PERTUBIS_SU_TOOL "kdesu -t -i pertubis.png")
+ENDIF(PERTUBIS_SU_TOOL MATCHES "kde")
+
+IF(PERTUBIS_SU_TOOL MATCHES "gnome")
+    SET(PERTUBIS_SU_TOOL "gksu")
+ENDIF(PERTUBIS_SU_TOOL MATCHES "gnome")
+
 CONFIGURE_FILE(desktop-integration/pertubis.desktop.in utils/pertubis.desktop)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/pertubis.desktop DESTINATION /usr/share/applnk/Settings/System COMPONENT pertubis)
 INSTALL(FILES icons/16x16/apps/pertubis.png DESTINATION /usr/share/icons/hicolor/16x16/apps COMPONENT pertubis)
