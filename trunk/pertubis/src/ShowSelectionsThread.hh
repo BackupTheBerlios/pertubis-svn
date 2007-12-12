@@ -54,7 +54,7 @@ namespace pertubis
             void appendPackage(Package* item);
 
             ///
-            void finished(int count);
+            void finished(int count,int total);
 
         protected:
 

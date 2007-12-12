@@ -33,6 +33,7 @@ namespace pertubis
     class Task;
     class Package;
     class MessageOutput;
+    class Settings;
 
     /*! \brief manages the tasks pertubis knows about
     *
@@ -60,6 +61,9 @@ namespace pertubis
 
         /// returns the task with task id, if the id is out of bounds it returns 0
         Task* task(int taskid) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        /// returns the task with task id, if the id is out of bounds it returns 0
+        Task* task(QString name) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
         /// returns true if TaskBox has Task with task id
         bool hasTask(int taskid) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -96,7 +100,7 @@ namespace pertubis
          /*! \brief starts all known tasks
           *
           */
-        void startAllTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
+        void startAllTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,Settings* settings, MessageOutput* output);
 
          ///\name Iteration
         ///\{
@@ -128,8 +132,8 @@ namespace pertubis
     private:
         /// all tasks are stored here
         QVector<Task*>    m_tasks;
-        /// map task name to task id
-        QMap<QString,int> m_index;
+        /// map task name to task
+        QMap<QString,Task*> m_index;
     };
 
     inline TaskBox::Iterator TaskBox::taskBegin() { return Iterator(m_tasks.begin());}

@@ -28,167 +28,96 @@
 #include <QSettings>
 #include <QComboBox>
 #include <QGroupBox>
+#include <QButtonGroup>
 #include <QLabel>
 #include <QCheckBox>
 #include <QHeaderView>
 #include <QDebug>
 #include <QStringList>
+#include <QRadioButton>
 #include <QGridLayout>
 #include <QSizePolicy>
 
-pertubis::QuerySettingsModel::QuerySettingsModel(QWidget *pobj) :
-        QWidget(pobj),
-                m_extractorModel(new QStandardItemModel(2,1,pobj)),
-                m_kindModel(new QStandardItemModel(3,1,pobj)),
-                m_matcherModel(new QStandardItemModel(2,1,pobj)),
-                m_extractorSelectionModel(new QItemSelectionModel(m_extractorModel,pobj)),
-                m_matcherSelectionModel(new QItemSelectionModel(m_matcherModel,pobj)),
-                m_enabledOnly(0)
+pertubis::QuerySettingsModel::QuerySettingsModel(QObject *pobj) :
+        QObject(pobj),
+        m_kindModel(-1),
+        m_matcherModel(-1)
 {
     qDebug() << "QuerySettingsModel::QuerySettingsModel()";
-    m_matcherModel->setHorizontalHeaderLabels(QStringList() << "a");
-    m_extractorModel->setHorizontalHeaderLabels(QStringList() << "a");
-
-    QStandardItem* i1 (new QStandardItem(tr("name")));
-    i1->setCheckable(true);
-    m_extractorModel->setItem(0,0,i1);
-
-    QStandardItem* i2 (new QStandardItem(tr("description")));
-    i2->setCheckable(true);
-    m_extractorModel->setItem(1,0,i2);
-
-    QStandardItem* m1 (new QStandardItem(tr("text")));
-    m1->setCheckable(true);
-    m_matcherModel->setItem(0,0,m1);
-    QStandardItem* m2 (new QStandardItem(tr("regular expression")));
-    m2->setCheckable(true);
-    m_matcherModel->setItem(1,0,m2);
-
-//     m_matcher->setCurrentCell(0,0);
-
-    m_kindModel->setItem(0,0,new QStandardItem(tr("installable")));
-    m_kindModel->setItem(1,0,new QStandardItem(tr("installed")));
-    m_kindModel->setItem(2,0,new QStandardItem(tr("all")));
-//     m_kindModel->setCurrentIndex(0);
-
     loadSettings();
 }
 
 pertubis::QuerySettingsModel::~QuerySettingsModel()
 {
-    qDebug("QuerySettings::~QuerySettings() - start");
+    qDebug("QuerySettingsModel::~QuerySettingsModel() - start");
     saveSettings();
-    qDebug("QuerySettings::~QuerySettings() - done");
+    qDebug("QuerySettingsModel::~QuerySettingsModel() - done");
 }
 
 void pertubis::QuerySettingsModel::loadSettings()
 {
-    qDebug("QuerySettings::loadSettings() - start");
+    qDebug("QuerySettingsModel::loadSettings() - start");
     QSettings settings;
-    settings.beginGroup( "query" );
-    settings.value("enabled", m_enabledOnly);
-
-//     QVariantList list;
-//     settings.value("matcher", list);
-//     for (QVariantList::const_iterator i(list.constBegin()),iEnd(list.constEnd());
-//         i != iEnd;++i)
-//     {
-//         QTableItem* item(m_matcher->item(i->toInt()));
-//         item->setSelected(true);
-//     }
-//     settings.value("extractor", list);
-//     for (QVariantList::const_iterator i(list.constBegin()),iEnd(list.constEnd());
-//          i != iEnd;++i)
-//     {
-//         QTableItem* item(m_extractor->item(i->toInt()));
-//         item->setSelected(true);
-//     }
-//     settings.value("kind",m_kind->currentIndex());
+    settings.beginGroup( "Query" );
+    m_matcherModel = settings.value("matcher",0).toInt();
+    m_kindModel  = settings.value("kind", 0).toInt();
     settings.endGroup();
-    qDebug("QuerySettings::loadSettings() - done");
+    qDebug("QuerySettingsModel::loadSettings() - done");
 }
 
 void pertubis::QuerySettingsModel::saveSettings()
 {
-    qDebug("QuerySettings::saveSettings() - start");
+    qDebug("QuerySettingsModel::saveSettings() - start");
     QSettings settings;
-    settings.beginGroup( "query" );
-    m_enabledOnly = static_cast<int>(settings.value("enabled").toInt());
-//     QVariantList list;
-//     int count=m_matcher->count();
-//     for (int i=0;i<count;i++)
-//     {
-//         if (m_matcher->item(i)->isSelected())
-//             list << i;
-//     }
-//     settings.value("matcher",list);
-//     list.clear();
-//     count=m_extractor->count();
-//     for (int i=0;i<count;i++)
-//     {
-//         if (m_extractor->item(i)->isSelected())
-//             list << i;
-//     }
-//     m_matcher->setCurrentRow(settings.value("matcher").toInt());
-//     m_extractor->setCurrentRow(settings.value("extractor").toInt());
-//     m_kind->setCurrentIndex(settings.value("kind").toInt());
+    settings.beginGroup( "Query" );
+    settings.setValue("matcher",m_matcherModel);
+    settings.setValue("kind",m_kindModel);
     settings.endGroup();
-    qDebug("QuerySettings::saveSettings() - done");
+    qDebug("QuerySettingsModel::saveSettings() - done");
 }
 
-
-
-
-pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj) :
+pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel* model) :
         QWidget(pobj),
-        m_model(new QuerySettingsModel(pobj)),
-        m_enabledOnly(new QCheckBox(tr("enabled only"),pobj)),
-        m_matcherView(new QTableView(pobj)),
-        m_extractorView(new QTableView(pobj)),
-        m_kindView(new QComboBox(pobj))
+        m_model(model)
 {
-    qDebug() << "QuerySettingsView::QuerySettingsView() - start";
-    m_enabledOnly->setToolTip(tr("When searching spec trees, only look in enabled subtrees"));
-    m_enabledOnly->setChecked(m_model->m_enabledOnly);
+    QGroupBox* matcherGroup(new QGroupBox(tr("matcher")));
+    matcherGroup->setToolTip( tr("Which match algorithm to use") );
+    QRadioButton* mRadio1 = new QRadioButton(tr("text"));
+    mRadio1->setToolTip(tr("simple text match"));
+    QRadioButton* mRadio2 = new QRadioButton(tr("regex"));
+    mRadio2->setToolTip(tr("regular expression"));
 
-    m_matcherView->horizontalHeader()->hide();
-    m_matcherView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    m_matcherView->setModel(m_model->m_matcherModel);
-    m_matcherView->setSelectionModel(m_model->m_matcherSelectionModel);
-    m_matcherView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    m_matcherView->setToolTip( tr("Which match algorithm to use") );
-    m_matcherView->verticalHeader()->hide();
-    m_matcherView->setShowGrid(false);
-    m_matcherView->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
+    QVBoxLayout* mLayout(new QVBoxLayout);
+    mLayout->addWidget(mRadio1);
+    mLayout->addWidget(mRadio2);
+    matcherGroup->setLayout(mLayout);
+    m_matcherGroup= new QButtonGroup(pobj);
+    m_matcherGroup->addButton(mRadio1,0);
+    m_matcherGroup->addButton(mRadio2,1);
+    setMatcher(m_model->m_matcherModel);
+    QGroupBox* kindGroup(new QGroupBox(tr("kind")));
+    kindGroup->setToolTip(tr("Packages of this kind only"));
+    QRadioButton* kRadio1 = new QRadioButton(tr("installable"));
+    kRadio1->setToolTip(tr("Installable packages"));
+    QRadioButton* kRadio2 = new QRadioButton(tr("installed"));
+    kRadio2->setToolTip(tr("Installed packages"));
+    QRadioButton* kRadio3 = new QRadioButton(tr("all"));
+    kRadio3->setToolTip(tr("all packages"));
+    QVBoxLayout* kLayout(new QVBoxLayout);
+    m_kindGroup= new QButtonGroup(pobj);
+    m_kindGroup->addButton(kRadio1,0);
+    m_kindGroup->addButton(kRadio2,1);
+    m_kindGroup->addButton(kRadio3,2);
+    kLayout->addWidget(kRadio1);
+    kLayout->addWidget(kRadio2);
+    kLayout->addWidget(kRadio3);
 
-    m_extractorView->horizontalHeader()->hide();
-    m_extractorView->horizontalHeader()->setResizeMode(QHeaderView::Interactive);
-    m_extractorView->setModel(m_model->m_extractorModel);
-    m_extractorView->setSelectionModel(m_model->m_extractorSelectionModel);
-    m_extractorView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    m_extractorView->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
-    m_extractorView->setToolTip( tr("") );
-    m_extractorView->verticalHeader()->hide();
-    m_extractorView->setShowGrid(false);
-
-//     m_matcher->setCurrentCell(0,0);
-
-    m_kindView->setToolTip(tr("Packages of this kind only"));
-    m_kindView->setModel(m_model->m_kindModel);
-
-//     m_kind->setCurrentIndex(0);
+    kindGroup->setLayout(kLayout);
+    setKind(m_model->m_kindModel);
 
     QGridLayout *groupLayout = new QGridLayout;
-
-    groupLayout->addWidget(m_enabledOnly, 0, 0,1,2,Qt::AlignHCenter);
-    groupLayout->addWidget(new QLabel(tr("kind"),m_kindView),1,0);
-    groupLayout->addWidget(m_kindView, 1, 1);
-    groupLayout->addWidget(new QLabel(tr("matchers"),m_matcherView),2,0);
-    groupLayout->addWidget(m_matcherView, 2, 1);
-    groupLayout->addWidget(new QLabel(tr("extractors"),m_extractorView),3,0);
-    groupLayout->addWidget(m_extractorView, 3, 1);
-//     groupLayout->setColumnStretch(2,10);
-//     groupLayout->setRowStretch(4,10);
+    groupLayout->addWidget(matcherGroup, 0, 0);
+    groupLayout->addWidget(kindGroup, 0, 1);
 
     QGroupBox* group(new QGroupBox(tr("Query Settings"),pobj));
     group->setToolTip(tr("Options which are relevant for searching."));
@@ -196,74 +125,57 @@ pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj) :
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(group);
-//     mainLayout->addSpacing(12);
     mainLayout->addStretch(10);
     setLayout(mainLayout);
     loadSettings();
+
+    connect(m_matcherGroup,
+            SIGNAL(buttonClicked(int)),
+            m_model,
+            SLOT(onMatcherChanged(int)));
+
+    connect(m_kindGroup,
+            SIGNAL(buttonClicked(int)),
+            m_model,
+            SLOT(onKindChanged(int)));
+
+    connect(m_model,
+            SIGNAL(kindChanged(int)),
+            this,
+            SLOT(setKind(int)));
+
+    connect(m_model,
+            SIGNAL(matcherChanged(int)),
+            this,
+            SLOT(setMatcher(int)));
+}
+
+void pertubis::QuerySettingsView::setKind(int value)
+{
+    QAbstractButton* button(m_kindGroup->button(value));
+    button->setChecked(!button->isChecked());
+}
+
+void pertubis::QuerySettingsView::setMatcher(int button)
+{
+    QAbstractButton* mybutton(m_matcherGroup->button(button));
+    mybutton->setChecked(!mybutton->isChecked());
 }
 
 pertubis::QuerySettingsView::~QuerySettingsView()
 {
-    qDebug("QuerySettings::~QuerySettings() - start");
-    saveSettings();
-    qDebug("QuerySettings::~QuerySettings() - done");
+    qDebug("QuerySettingsView::~QuerySettingsView() - start");
+    qDebug("QuerySettingsView::~QuerySettingsView() - done");
 }
 
 void pertubis::QuerySettingsView::loadSettings()
 {
-    qDebug("QuerySettings::loadSettings() - start");
-    QSettings settings;
-    settings.beginGroup( "query" );
-
-    int enabled(m_enabledOnly->checkState());
-    settings.value("enabled", enabled);
-
-//     QVariantList list;
-//     settings.value("matcher", list);
-//     for (QVariantList::const_iterator i(list.constBegin()),iEnd(list.constEnd());
-//         i != iEnd;++i)
-//     {
-//         QTableItem* item(m_matcher->item(i->toInt()));
-//         item->setSelected(true);
-//     }
-//     settings.value("extractor", list);
-//     for (QVariantList::const_iterator i(list.constBegin()),iEnd(list.constEnd());
-//          i != iEnd;++i)
-//     {
-//         QTableItem* item(m_extractor->item(i->toInt()));
-//         item->setSelected(true);
-//     }
-//     settings.value("kind",m_kind->currentIndex());
-    settings.endGroup();
+    qDebug("QuerySettingsView::loadSettings() - start");
     qDebug("QuerySettings::loadSettings() - done");
 }
 
 void pertubis::QuerySettingsView::saveSettings()
 {
-    qDebug("QuerySettings::saveSettings() - start");
-    QSettings settings;
-    settings.beginGroup( "query" );
-    m_enabledOnly->setChecked(settings.value("enabled").toInt());
-//     QVariantList list;
-//     int count=m_matcher->count();
-//     for (int i=0;i<count;i++)
-//     {
-//         if (m_matcher->item(i)->isSelected())
-//             list << i;
-//     }
-//     settings.value("matcher",list);
-//     list.clear();
-//     count=m_extractor->count();
-//     for (int i=0;i<count;i++)
-//     {
-//         if (m_extractor->item(i)->isSelected())
-//             list << i;
-//     }
-//     m_matcher->setCurrentRow(settings.value("matcher").toInt());
-//     m_extractor->setCurrentRow(settings.value("extractor").toInt());
-//     m_kind->setCurrentIndex(settings.value("kind").toInt());
-    settings.endGroup();
-    qDebug("QuerySettings::saveSettings() - done");
+    qDebug("QuerySettingsView::saveSettings() - start");
+    qDebug("QuerySettingsView::saveSettings() - done");
 }
-
-

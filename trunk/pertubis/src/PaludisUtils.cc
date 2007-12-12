@@ -20,14 +20,36 @@
 
 #include "PaludisUtils.hh"
 
+#include <QSet>
+#include <QDir>
+#include <paludis/action.hh>
+
 #include <paludis/environment.hh>
+#include <paludis/mask.hh>
+
+#include <paludis/metadata_key.hh>
+
 #include <paludis/package_database.hh>
+
 #include <paludis/package_id.hh>
+
 #include <paludis/query.hh>
+#include <paludis/repository.hh>
+
+#include <paludis/util/indirect_iterator.hh>
+
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
+
 #include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
+
 
 bool pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
                          const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
@@ -47,6 +69,24 @@ bool pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  
                 tr1::shared_ptr<SlotName>(new SlotName(id->slot())))),
             qo_order_by_version));
     return (ipacks->begin() != ipacks->end());
+}
+
+void pertubis::getGLSADir(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env)
+{
+//     using namespace paludis;
+//     QSet<QDir> dirs;
+//     for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
+//          r_end(m_env->package_database()->end_repositories()) ;
+//          r != r_end ; ++r)
+//     {
+//         tr1::shared_ptr< const Repository > repo(m_env->package_database()->fetch_repository(paludis::RepositoryName("gentoo")));
+//         Repository::MetadataConstIterator iter( repo->find_metadata("securitydir") );
+//         if (iter != repo->end_metadata() )
+//         {
+//             std::string text = stringify(visitor_cast<const MetadataFSEntryKey >(repo->find_metadata("securitydir"))->value());
+// //             dirs.insert(QDir(key->value().realpath().c_str() ));
+//         }
+//     }
 }
 
 bool pertubis::hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,

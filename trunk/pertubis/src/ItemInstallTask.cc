@@ -37,7 +37,17 @@
 #include <paludis/hook.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
-pertubis::Install::Install(QObject* pobj,
+void pertubis::PackageInstallTask::on_clean_fail(const paludis::DepListEntry &,
+                                      const paludis::PackageID& c,
+                                      const int /*x*/,
+                                      const int /*y*/,
+                                      const int /*s*/,
+                                      const int /*f*/)
+{
+    emit sendMessage(QString("(%1 Failed cleaning").arg(QString::fromStdString(stringify(c))));
+}
+
+pertubis::PackageInstallTask::PackageInstallTask(QObject* pobj,
                         paludis::Environment* env,
                         const paludis::DepListOptions & options,
                         paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations) :
@@ -46,133 +56,95 @@ pertubis::Install::Install(QObject* pobj,
 {
 }
 
-void pertubis::Install::run()
+void pertubis::PackageInstallTask::run()
 {
     execute();
     emit finished();
 }
 
-bool pertubis::Install::want_full_install_reasons() const
+void pertubis::PackageInstallTask::on_installed_paludis()
 {
-    return false;
-}
-
-bool pertubis::Install::want_tags_summary() const
-{
-    return false;
-}
-
-bool pertubis::Install::want_install_reasons() const
-{
-    return false;
-}
-
-bool pertubis::Install::want_unchanged_use_flags() const
-{
-    return true;
-}
-
-bool pertubis::Install::want_changed_use_flags() const
-{
-    return false;
-}
-
-bool pertubis::Install::want_new_use_flags() const
-{
-    return false;
-}
-
-bool pertubis::Install::want_use_summary() const
-{
-    return false;
-}
-
-void pertubis::Install::on_installed_paludis()
-{
-    using namespace paludis;
-    std::string r(stringify(environment()->root()));
-    std::string exec_mode(getenv_with_default("PALUDIS_EXEC_PALUDIS", ""));
-
-    if ("always" != exec_mode)
-    {
-        if ("never" == exec_mode)
-            return;
-        else if (! (r.empty() || r == "/"))
-            return;
-    }
-
+//     using namespace paludis;
+//     std::string r(stringify(environment()->root()));
+//     std::string exec_mode(getenv_with_default("PALUDIS_EXEC_PALUDIS", ""));
+//
+//     if ("always" != exec_mode)
+//     {
+//         if ("never" == exec_mode)
+//             return;
+//         else if (! (r.empty() || r == "/"))
+//             return;
+//     }
+//
 //     std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
-    emit sendMessage(color(QString("Paludis has just upgraded Paludis"),QString("green")));
+//     emit sendMessage(color(QString("Paludis has just upgraded Paludis"),QString("green")));
 //     execl("/bin/sh", "sh", "-c", resume_command.c_str(), static_cast<const char *>(0));
 }
 
-void pertubis::Install::on_display_merge_list_pre()
+void pertubis::PackageInstallTask::on_display_merge_list_pre()
 {
-    emit sendMessage(QString::fromStdString(header(color(std::string("These packages will be installed:"),"green"))));
+    qDebug() << "on_display_merge_list_pre()";
+//     emit sendMessage(QString::fromStdString(header(color(std::string("These packages will be installed:"),"green"))));
 }
 
-void pertubis::Install::on_build_deplist_pre()
+void pertubis::PackageInstallTask::on_build_deplist_pre()
 {
-    emit sendMessage("Building dependency list");
+    qDebug() << "on_build_deplist_pre()";
+//     emit sendMessage("Building dependency list");
 }
 
-void pertubis::Install::on_build_cleanlist_pre(const paludis::DepListEntry & d)
+void pertubis::PackageInstallTask::on_build_cleanlist_pre(const paludis::DepListEntry & d)
 {
+    qDebug() << "on_build_cleanlist_pre()";
     emit sendMessage(QString::fromStdString(header(color(std::string("Cleaning stale versions after installing ") + paludis::stringify(*d.package_id),"green"))));
 }
 
-void pertubis::Install::on_clean_all_pre(const paludis::DepListEntry& /*d*/,
+void pertubis::PackageInstallTask::on_clean_all_pre(const paludis::DepListEntry& /*d*/,
                                          const paludis::PackageIDSequence & c)
 {
+    qDebug() << "on_clean_all_pre()";
     using namespace paludis::tr1::placeholders;
     std::for_each(paludis::indirect_iterator(c.begin()), indirect_iterator(c.end()),
-                  paludis::tr1::bind(paludis::tr1::mem_fn(&Install::display_one_clean_all_pre_list_entry), this, _1));
+                  paludis::tr1::bind(paludis::tr1::mem_fn(&PackageInstallTask::display_one_clean_all_pre_list_entry), this, _1));
 
 //     display_clean_all_pre_list_end(d, c);
 }
 
-void pertubis::Install::on_no_clean_needed(const paludis::DepListEntry &)
+void pertubis::PackageInstallTask::on_no_clean_needed(const paludis::DepListEntry &)
 {
+    qDebug() << "on_no_clean_needed()";
     emit sendMessage(QString::fromStdString(header(color(std::string("No cleaning required"),std::string("green")))));
 }
 
-void pertubis::Install::on_clean_fail(const paludis::DepListEntry &,
-                                     const paludis::PackageID& c,
-                                     const int /*x*/,
-                                     const int /*y*/,
-                                     const int /*s*/,
-                                     const int /*f*/)
-{
-    emit sendMessage(QString("(%1 Failed cleaning").arg(QString::fromStdString(stringify(c))));
-}
+// paludis::HookResult pertubis::PackageInstallTask::perform_hook(const paludis::Hook & hook) const
+// {
+//     qDebug() << "perform_hook()";
+//     std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
+//     if (resume_command.empty())
+//         return InstallTask::perform_hook(hook);
+//     return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command));
+// }
 
-paludis::HookResult pertubis::Install::perform_hook(const paludis::Hook & hook) const
-{
-    std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
-    if (resume_command.empty())
-        return InstallTask::perform_hook(hook);
-    return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command));
-}
-
-void pertubis::Install::display_one_clean_all_pre_list_entry(const paludis::PackageID & c)
+void pertubis::PackageInstallTask::display_one_clean_all_pre_list_entry(const paludis::PackageID & c)
 {
     emit sendMessage(QString::fromStdString(color(paludis::stringify(c),"blue")));
 }
 
-std::string pertubis::Install::make_resume_command(const paludis::PackageIDSequence& s) const
+std::string pertubis::PackageInstallTask::make_resume_command(const paludis::PackageIDSequence& s) const
 {
-    using namespace paludis;
-    std::string resume_command = environment()->paludis_command()
-            + " --" + QObject::tr("Install following packages").toLocal8Bit().data();
-
-    for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
-         i != i_end ; ++i)
-        resume_command = resume_command + " '=" + stringify(**i) + "'";
-
-    return resume_command;
+//     using namespace paludis;
+//     std::string resume_command = environment()->paludis_command()
+//             + " --" + QObject::tr("Install following packages").toLocal8Bit().data();
+//
+//     for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
+//          i != i_end ; ++i)
+//         resume_command = resume_command + " '=" + stringify(**i) + "'";
+//
+//     return resume_command;
+    return "";
 }
 
-void pertubis::Install::show_resume_command() const
+void pertubis::PackageInstallTask::show_resume_command() const
 {
 }
 

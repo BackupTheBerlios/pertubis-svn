@@ -18,25 +18,30 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_PALUDIS_UTILS_H
-#define _PERTUBIS_ENTRY_PROTECTOR_PALUDIS_UTILS_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_SYSTEM_REPORT_FWD_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SYSTEM_REPORT_FWD_H 1
 
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/environment-fwd.hh>
+
+#include <paludis/report_task.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/package_id.hh>
+#include "ThreadBase.hh"
+
+using namespace paludis;
 
 namespace pertubis
 {
+    class Package;
 
-    /// queries the paludis database if the PackageID is installed
-    bool installed(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
-                    const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
+    class SystemReport;
 
-    /// queries the paludis database if the PackageID can be up- or downgraded
-    bool hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
-                        const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
-
-    void getGLSADir(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env);
+    enum ReportHeaderOrder
+    {
+        rho_selected,
+        rho_package,
+        rho_cat,
+        rho_reasons
+    };
 }
 
 #endif

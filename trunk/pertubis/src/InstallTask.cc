@@ -21,16 +21,21 @@
 #include "InstallTask.hh"
 #include "Package.hh"
 #include "ItemInstallTask.hh"
+#include "Settings.hh"
+#include "InstallSettings.hh"
 #include "MessageOutput.hh"
 #include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/args/args.hh>
+#include <paludis/args/install_args_group.hh>
 #include <QDebug>
 
 pertubis::InstallTask::InstallTask(QObject* pobject,
         QAction* myaction,
-        QString tname) : Task(pobject,myaction,tname),m_task(0)
+        QString tname) : Task(pobject,myaction,tname),
+        m_task(0)
 {
 }
 
@@ -139,33 +144,34 @@ bool pertubis::InstallTask::changeStates(Package* item, int newState)
     return true;
 }
 
-void pertubis::InstallTask::startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env, MessageOutput* output)
+void pertubis::InstallTask::startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env, Settings* settings, MessageOutput* output)
 {
     qDebug() << "pertubis::InstallTask::startTask()";
-    paludis::DepListOptions options;
-    if (m_task)
-        delete m_task;
-    m_task = new Install(this,env.get(),options,env->default_destinations());
-    connect(m_task,
-            SIGNAL(sendMessage(QString)),
-            output,
-            SLOT(append(QString)));
-
-    connect(m_task,
-            SIGNAL(finished()),
-            this,
-            SLOT(slotFinished()));
-
-    for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
-         i != i_end ; ++i)
+    if (m_data.size() > 0)
     {
-        m_task->add_exact_package(*i);
-    }
-    m_task->run();
-}
+        paludis::DepListOptions options;
+        if (m_task)
+            delete m_task;
+        m_task = new PackageInstallTask(this,env.get(),options,env->default_destinations());
+        settings->m_installView->m_model->install_args.populate_install_task(env.get(),*m_task);
 
-void pertubis::InstallTask::slotFinished()
-{
-    qDebug() << "pertubis::InstallTask::slotFinished()";
-    emit finished();
+        connect(m_task,
+                SIGNAL(sendMessage(QString)),
+                output,
+                SLOT(append(QString)));
+
+        connect(m_task,
+                SIGNAL(finished()),
+                this,
+                SIGNAL(finished()));
+
+
+        for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
+            i != i_end ; ++i)
+        {
+            m_task->add_exact_package(*i);
+        }
+        m_task->run();
+    }
+    qDebug() << "pertubis::InstallTask::startTask() - done";
 }

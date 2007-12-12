@@ -33,10 +33,10 @@ class QTranslator;
 
 namespace pertubis
 {
-    class DepListSettings;
-    class InstallSettings;
+    class DepListSettingsView;
+    class InstallSettingsView;
     class QuerySettingsView;
-    class UninstallSettings;
+    class UninstallSettingsView;
 
     /*! \brief This settings group handles language and localization specific options.
     *
@@ -111,21 +111,20 @@ namespace pertubis
             /// saves all settings for the gui
             void saveSettings();
 
-
             /// the language settings page
             LanguageSettings*   m_languageView;
 
             /// the install settings page
-            InstallSettings*    m_installView;
+            InstallSettingsView*    m_installView;
 
             /// the deinstall settings page
-            UninstallSettings*    m_deinstallView;
+            UninstallSettingsView*    m_deinstallView;
 
             /// the language settings page
             QuerySettingsView*    m_queryView;
 
             /// the deplist settings page
-            DepListSettings*    m_depListView;
+            DepListSettingsView*    m_depListView;
 
         public slots:
 

@@ -34,25 +34,19 @@ namespace pertubis
      * This threaded class controlls all aspects and steps of installing packages
      * \todo this thread blocks the main application thread and gui. Find the issue!
      */
-    class Install : public QThread,
+    class PackageInstallTask : public QThread,
         public paludis::InstallTask
     {
         Q_OBJECT
         public:
-            Install(QObject* pobj,
+            PackageInstallTask(QObject* pobj,
                     paludis::Environment* env,
                     const paludis::DepListOptions & options,
                     paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations);
-            ~Install() {}
+            ~PackageInstallTask() {}
 
             void run();
-            virtual bool want_changed_use_flags() const;
-            virtual bool want_full_install_reasons() const;
-            virtual bool want_install_reasons() const;
-            virtual bool want_new_use_flags() const;
-            virtual bool want_tags_summary() const;
-            virtual bool want_unchanged_use_flags() const;
-            virtual bool want_use_summary() const;
+
             virtual void on_all_masked_error(const paludis::AllMaskedError&) {}
             virtual void on_ambiguous_package_name_error(const paludis::AmbiguousPackageNameError&) {}
             virtual void on_build_cleanlist_post(const paludis::DepListEntry&) {}
@@ -104,7 +98,7 @@ namespace pertubis
             virtual void on_update_world_skip(const paludis::SetName&, const std::string&) {}
             virtual void on_use_requirements_not_met_error(const paludis::UseRequirementsNotMetError&) {}
 
-            virtual paludis::HookResult perform_hook(const paludis::Hook & hook) const;
+//             virtual paludis::HookResult perform_hook(const paludis::Hook & hook) const;
             virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID & c);
 
             void show_resume_command() const;

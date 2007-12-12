@@ -18,7 +18,6 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "description_extractor.hh"
 #include "name_extractor.hh"
 #include "Package.hh"
 #include "PaludisUtils.hh"
@@ -157,33 +156,35 @@ void pertubis::SearchThread::run()
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
 
-    QModelIndexList iList(m_querySettings->m_matcherSelectionModel->selectedRows());
-    QModelIndex index;
-    foreach(index,iList)
+    if (m_querySettings->m_matcherModel==0)
     {
-        if (0 == index.row())
-            matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
-        else if (1 == index.row())
-            matchers.push_back( tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data()) ));
+        qDebug() << "using TextMatcher";
+        matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
+    }
+    else
+    {
+        qDebug() << "using RegexMatcher";
+        matchers.push_back( tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data()) ));
     }
 
-    iList = m_querySettings->m_extractorSelectionModel->selectedRows();
-    foreach(index,iList)
-    {
-        if (0 == index.row())
-            extractors.push_back(tr1::shared_ptr<NameExtractor>( new NameExtractor(m_env.get()) )    );
-        else if (1 == index.row())
-            extractors.push_back(tr1::shared_ptr<DescriptionExtractor>( new DescriptionExtractor(m_env.get())));
-    }
+    extractors.push_back(tr1::shared_ptr<NameDescriptionExtractor>( new NameDescriptionExtractor(m_env.get())));
+
     int count(0);
     std::list<tr1::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
          r_end(m_env->package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
-        if (! (*r)->some_ids_might_support_action(paludis::SupportsActionTest<paludis::InstallAction>()))
-            continue;
-        qDebug() << "take repository" << stringify((*r)->name()).c_str() << "into account";
+        if (m_querySettings->m_kindModel==0)
+        {
+            if (! (*r)->some_ids_might_support_action(paludis::SupportsActionTest<paludis::InstallAction>()))
+                continue;
+        }
+        else if (m_querySettings->m_kindModel==1)
+        {
+            if (! (*r)->some_ids_might_support_action(paludis::SupportsActionTest<paludis::InstalledAction>()))
+                continue;
+        }
         repos.push_back(*r);
     }
 
@@ -226,7 +227,7 @@ void pertubis::SearchThread::run()
 
     std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*m_env), tr1::cref(repos), tr1::placeholders::_1, matches));
 
-
+    qDebug() << "1";
     if (m_stopExec)
         return;
 
@@ -310,8 +311,8 @@ void pertubis::SearchThread::run()
         p_item->setData(Package::po_installed,piState);
         ++count;
     }
-
-    emit finished(count);
+    qDebug() << "pertubis::SearchThread::run() - finished";
+    emit finished(count,0);
     ThreadBase::unlock();
 }
 

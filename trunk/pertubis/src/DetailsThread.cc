@@ -223,11 +223,6 @@ pertubis::DetailsThread::DetailsThread(QObject* pobj,
 {
 }
 
-void pertubis::DetailsThread::appendOutput(std::string text)
-{
-    m_output.append(QString::fromStdString(text));
-}
-
 void pertubis::DetailsThread::start( paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
     m_id = id;
@@ -236,16 +231,17 @@ void pertubis::DetailsThread::start( paludis::tr1::shared_ptr<const paludis::Pac
 
 void pertubis::DetailsThread::run()
 {
-    m_output = QString(
+    m_text = QString(
 "<html>\n"
-"<body bgcolor=\"#aaaaaa\" text=\"black\">\n"
-"    <table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"15\">\n"
+"<body>\n"
+"    <table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\">\n"
 "            <colgroup>\n"
 "                <col width=\"30%\">\n"
 "                <col width=\"70%\">\n"
 "            </colgroup>\n"
 "            <tr>\n"
-"               <th colspan=\"2\" align=\"left\">%1-%2</th>\n"
+"               <th bgcolor=\"#5a3aca\"></th>\n"
+"               <th bgcolor=\"#000000\" align=\"left\"><font color=\"#ffffff\">%1-%2</font></th>\n"
 "            </tr>\n"
 "            <tbody >\n").arg(stringify(m_id->name()).c_str()).arg(stringify(m_id->version()).c_str());
 
@@ -256,10 +252,11 @@ void pertubis::DetailsThread::run()
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dn));
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dp));
 
-    m_output.append(QString(
+    m_text.append(QString(
 "            </tbody>\n"
 "        </table>\n"
 " </body>\n"
 "</html>\n"));
-    emit detailsResult(m_output);
+    qDebug() << "\n\n\n" << m_text << "\n\n\n";
+    emit sendResult(m_text);
 }

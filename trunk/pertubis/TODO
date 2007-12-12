@@ -1,11 +1,3 @@
-* we must implement following paludis features:
+we must implement following paludis features:
 
-    * --pi "set" = system | world | everything | ...
-
-        create menu to present set dependend tasks
-
-    * --debug-build default,split,internal
-    * --regenerate-installed-cache
-    * --regenerate-installable-cache
-    * --continue-on-failure = if-fetch-only,never,if-satisfied,if-independent,always
-* integration of layman? automatically add a repository
+    * get allrepository securitydirs and open via an link to GLSA announcements

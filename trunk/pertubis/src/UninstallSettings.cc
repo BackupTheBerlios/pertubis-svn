@@ -30,7 +30,47 @@
 
 #include <paludis/dep_list.hh>
 
-pertubis::UninstallSettings::UninstallSettings(QWidget *pobj) :
+pertubis::UninstallSettingsModel::UninstallSettingsModel(QObject *pobj) :
+        QObject(pobj),
+        m_deps(false),
+        m_unusedDeps(false),
+        m_allVersions(false),
+        m_unsafeUninstall(false)
+{
+    loadSettings();
+}
+
+
+pertubis::UninstallSettingsModel::~UninstallSettingsModel()
+{
+    saveSettings();
+}
+
+void pertubis::UninstallSettingsModel::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup( "UninstallSettingsModel" );
+    m_deps = settings.value("deps",false).toBool();
+    m_unusedDeps = settings.value("unusedDeps",false).toBool();
+    m_allVersions = settings.value("allVersions",false).toBool();
+    m_unsafeUninstall = settings.value("unsafeUninstall",false).toBool();
+    settings.endGroup();
+}
+
+void pertubis::UninstallSettingsModel::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup( "UninstallSettingsModel" );
+    settings.setValue("deps",m_deps);
+    settings.setValue("unusedDeps",m_unusedDeps);
+    settings.setValue("allVersions",m_allVersions);
+    settings.setValue("unsafeUninstall",m_unsafeUninstall);
+    settings.endGroup();
+}
+
+pertubis::UninstallSettingsView::UninstallSettingsView(QWidget *pobj,UninstallSettingsModel* model) :
+        QWidget(pobj),
+        m_model(model),
         m_deps(new QCheckBox(tr("with deps"),pobj)),
         m_unusedDeps(new QCheckBox(tr("with unused deps"),pobj)),
         m_allVersions(new QCheckBox(tr("all versions"),pobj)),
@@ -39,58 +79,78 @@ pertubis::UninstallSettings::UninstallSettings(QWidget *pobj) :
     QGroupBox* group(new QGroupBox(tr("Deinstallation Settings"),pobj));
     setToolTip(tr("Options which are relevant for deinstallation."));
     m_deps->setToolTip( tr("Also uninstall packages that depend upon the target") );
+    m_deps->setChecked(m_model->m_deps);
     m_unusedDeps->setToolTip( tr("Also uninstall any dependencies of the target that are no longer used") );
+    m_unusedDeps->setChecked(m_model->m_unusedDeps);
     m_allVersions->setToolTip(tr("Uninstall all versions of a package"));
+    m_allVersions->setChecked(m_model->m_allVersions);
     m_unsafeUninstall->setToolTip( tr("Allow deinstallation of packagess, which are dependencies of other packages"));
+    m_unsafeUninstall->setChecked(m_model->m_unsafeUninstall);
 
-    QGridLayout *installSettings = new QGridLayout;
-    installSettings->addWidget(m_deps, 0, 0);
-    installSettings->addWidget(m_unusedDeps, 0, 1);
-    installSettings->addWidget(m_allVersions, 1, 0);
-    installSettings->addWidget(m_unsafeUninstall, 1, 1);
-    group->setLayout(installSettings);
+    QGridLayout *groupLayout = new QGridLayout;
+    groupLayout->addWidget(m_deps, 0, 0);
+    groupLayout->addWidget(m_unusedDeps, 0, 1);
+    groupLayout->addWidget(m_allVersions, 1, 0);
+    groupLayout->addWidget(m_unsafeUninstall, 1, 1);
+    group->setLayout(groupLayout);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(group);
     mainLayout->addSpacing(12);
     mainLayout->addStretch(1);
     setLayout(mainLayout);
-    loadSettings();
+
+    connect(m_deps,
+            SIGNAL(clicked(bool)),
+            m_model,
+            SLOT(onDepsChanged(bool)));
+
+    connect(m_unusedDeps,
+            SIGNAL(clicked(bool)),
+            m_model,
+            SLOT(onUnusedDepChanged(bool)));
+
+    connect(m_allVersions,
+            SIGNAL(clicked(bool)),
+            m_model,
+            SLOT(onAllVersionsChanged(bool)));
+
+    connect(m_unsafeUninstall,
+            SIGNAL(clicked(bool)),
+            m_model,
+            SLOT(onUnsafeUninstallChanged(bool)));
+
+    connect(m_model,
+            SIGNAL(depsChanged(bool)),
+            m_deps,
+            SLOT(setChecked(bool)));
+
+    connect(m_model,
+            SIGNAL(unusedDepsChanged(bool)),
+            m_unusedDeps,
+            SLOT(setChecked(bool)));
+
+    connect(m_model,
+            SIGNAL(allVersionsChanged(bool)),
+            m_allVersions,
+            SLOT(setChecked(bool)));
+
+    connect(m_model,
+            SIGNAL(unsafeUninstallChanged(bool)),
+            m_unsafeUninstall,
+            SLOT(setChecked(bool)));
 }
 
-pertubis::UninstallSettings::~UninstallSettings()
+pertubis::UninstallSettingsView::~UninstallSettingsView()
 {
-    qDebug("UninstallSettings::~UninstallSettings() - start");
-    saveSettings();
-    qDebug("UninstallSettings::~UninstallSettings() - done");
+    qDebug("UninstallSettingsView::~UninstallSettingsView() - start");
+    qDebug("UninstallSettingsView::~UninstallSettingsView() - done");
 }
 
-void pertubis::UninstallSettings::setDefaults()
-{
-    m_deps->setChecked(true);
-    m_unusedDeps->setChecked(true);
-    m_allVersions->setChecked(true);
-    m_unsafeUninstall->setChecked(true);
-}
-
-void pertubis::UninstallSettings::loadSettings()
-{
-    QSettings settings;
-    settings.beginGroup( "UninstallSettings" );
-        settings.setValue("deps",m_deps->checkState());
-        settings.setValue("unusedDeps",m_unusedDeps->checkState());
-        settings.setValue("allVersions",m_allVersions->checkState());
-        settings.setValue("unsafeUninstall",m_unsafeUninstall->checkState());
-    settings.endGroup();
-}
-
-void pertubis::UninstallSettings::saveSettings()
-{
-    QSettings settings;
-    settings.beginGroup( "UninstallSettings" );
-        m_deps->setChecked(settings.value("deps").toInt());
-        m_unusedDeps->setChecked(settings.value("unusedDeps").toInt());
-        m_allVersions->setChecked(settings.value("allVersions").toInt());
-        m_unsafeUninstall->setChecked(settings.value("unsafeUninstall").toInt());
-    settings.endGroup();
-}
+// void pertubis::UninstallSettingsView::setDefaultsView()
+// {
+//     m_deps->setChecked(true);
+//     m_unusedDeps->setChecked(true);
+//     m_allVersions->setChecked(true);
+//     m_unsafeUninstall->setChecked(true);
+// }

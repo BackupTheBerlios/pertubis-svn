@@ -19,10 +19,12 @@
 */
 
 #include "SearchWindow.hh"
+#include "SearchThread.hh"
 #include "QuerySettings.hh"
 
 #include <QCheckBox>
-
+#include <QSettings>
+#include <QMessageBox>
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -33,57 +35,103 @@
 #include <QVBoxLayout>
 #include <QDebug>
 
-pertubis::SearchWindow::SearchWindow( QWidget* pobj, QuerySettingsModel* querySettings) : QDialog(pobj),
-        m_line(new QLineEdit(pobj)),
-        m_querySettings(querySettings),
-        m_querySettingsView(new QuerySettingsView(pobj)),
-        m_bStart(new QPushButton(tr("&Start"))),
-        m_bStop(new QPushButton(tr("&Stop")))
+pertubis::SearchWindow::SearchWindow( QWidget* pobj,
+                                    QuerySettingsModel* querySettings,
+                                    SearchThread* sthread) : QDialog(pobj),
+                                    m_querySettings(querySettings),
+                                    m_thread(sthread)
 {
-    qDebug() << "SearchWindow::SearchWindow()";
-    QHBoxLayout* optLayout = new QHBoxLayout;
-    optLayout->setMargin(0);
+    QuerySettingsView* querySettingsView(new QuerySettingsView(pobj,querySettings));
 
-    m_querySettingsView->m_model = m_querySettings;
+    QLabel* label = new QLabel(tr("&Search:"));
+    m_line = new QLineEdit;
+    label->setBuddy(m_line);
 
-    optLayout->addWidget(m_querySettingsView);
-
-    QVBoxLayout* leftLayout = new QVBoxLayout;
-    leftLayout->addWidget(m_line);
-    leftLayout->addLayout(optLayout);
-    QGridLayout* main_layout = new QGridLayout;
-
-    QDialogButtonBox* dbox(new QDialogButtonBox(QDialogButtonBox::Close,Qt::Vertical));
-
+    m_bStart = new QPushButton(tr("&Find"));
     m_bStart->setDefault(true);
-    dbox->addButton(m_bStart, QDialogButtonBox::ActionRole);
+
+    m_bStop = new QPushButton(tr("&Find"));
     m_bStop->setDisabled(true);
-    dbox->addButton(m_bStop, QDialogButtonBox::ActionRole);
 
-    QPushButton* bClose = dbox->button(QDialogButtonBox::Close);
+    m_bOptions = new QPushButton(tr("&More"));
+    m_bOptions->setCheckable(true);
+    m_bOptions->setAutoDefault(false);
 
-    connect(bClose,
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(Qt::Vertical);
+    buttonBox->addButton(m_bStart, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(m_bOptions, QDialogButtonBox::ActionRole);
+    m_bClose = buttonBox->addButton(QDialogButtonBox::Close);
+
+    QWidget* myextension = new QWidget;
+
+    connect(m_bOptions, SIGNAL(toggled(bool)), myextension, SLOT(setVisible(bool)));
+
+    connect(m_bClose,
             SIGNAL(clicked()),
             this,
-            SLOT(hide()));
+            SLOT(close()));
 
     connect(m_bStart,
             SIGNAL(clicked()),
             this,
-            SIGNAL(search()));
+            SLOT(onStart()));
 
     connect(m_bStop,
             SIGNAL(clicked()),
             this,
-            SIGNAL(stopSearch()));
-    setLayout(main_layout);
-    main_layout->addLayout(leftLayout,0,0);
-    main_layout->addWidget(dbox,0,1);
+            SLOT(onStop()));
 
-    setWindowTitle(tr("Search Dialog"));
-    setWindowModality(Qt::WindowModal);
-    hide();
-//     qDebug() << "SearchWindow::SearchWindow() - done";
+    QVBoxLayout *extensionLayout = new QVBoxLayout;
+    extensionLayout->setMargin(0);
+    extensionLayout->addWidget(querySettingsView);
+    myextension->setLayout(extensionLayout);
+
+    QHBoxLayout *topLeftLayout = new QHBoxLayout;
+    topLeftLayout->addWidget(label);
+    topLeftLayout->addWidget(m_line);
+
+    QVBoxLayout *leftLayout = new QVBoxLayout;
+    leftLayout->addLayout(topLeftLayout);
+    leftLayout->addStretch(1);
+
+    QGridLayout *mainLayout = new QGridLayout;
+    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    mainLayout->addLayout(leftLayout, 0, 0);
+    mainLayout->addWidget(buttonBox, 0, 1);
+    mainLayout->addWidget(myextension, 1, 0, 1, 2);
+    setLayout(mainLayout);
+
+    setWindowTitle(tr("Searching"));
+    myextension->hide();
+    loadSettings();
+}
+
+void pertubis::SearchWindow::onStart()
+{
+    QString query(m_line->text().trimmed());
+    if (query.isEmpty())
+        return;
+    if (m_thread->isRunning())
+    {
+        int res = QMessageBox::question( this, tr("Warning"),
+                                         tr("Search is already running! Yes for starting the new one or no for waiting until the pending is finished?"),QMessageBox::Yes,QMessageBox::No);
+        if (res == QMessageBox::No )
+        {
+            return;
+        }
+        if (res == QMessageBox::Yes )
+            m_thread->stopExec();
+    }
+    displaySearch(true);
+    m_thread->start(query);
+    emit search(query);
+}
+
+void pertubis::SearchWindow::onStop()
+{
+    m_thread->stopExec();
+    displaySearch(false);
+    emit stopSearch();
 }
 
 void pertubis::SearchWindow::displaySearch(bool start)
@@ -92,19 +140,20 @@ void pertubis::SearchWindow::displaySearch(bool start)
     m_bStop->setEnabled(start);
 }
 
-void pertubis::SearchWindow::toggle()
+void pertubis::SearchWindow::loadSettings()
 {
-    if (isHidden())
-    {
-        exec();
-    }
-    else
-    {
-        hide();
-    }
+    QSettings settings;
+    settings.beginGroup( "SearchWindow" );
+    resize(settings.value("size",QVariant(QSize(320,600))).toSize());
+    move(settings.value("pos",QVariant(QPoint(481,143))).toPoint());
+    settings.endGroup();
 }
 
-QString pertubis::SearchWindow::query() const
+void pertubis::SearchWindow::saveSettings()
 {
-    return m_line->text().trimmed();
+    QSettings settings;
+    settings.beginGroup( "SearchWindow" );
+    settings.setValue("size", size() );
+    settings.setValue("pos", pos());
+    settings.endGroup();
 }

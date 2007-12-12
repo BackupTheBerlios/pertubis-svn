@@ -25,7 +25,7 @@
 
 namespace pertubis
 {
-    class Install;
+    class PackageInstallTask;
 
     /*! \brief stores the PackageIDs of an Package if it is about to be installed and changes the items' visual state
     * \ingroup Selection
@@ -63,7 +63,7 @@ namespace pertubis
         ///@{
 
         /// starts m_task
-        void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
+        void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env, Settings*, MessageOutput* output);
             ///@}
 
     signals:
@@ -71,15 +71,10 @@ namespace pertubis
         /// says "I and the paludis install tasks are finished"
         void finished();
 
-    private slots:
-
-        /// forwards a QThread::finished() signal
-        void slotFinished();
-
     private:
 
         /// the paludis install task
-        Install* m_task;
+        PackageInstallTask* m_task;
     };
 }
 

@@ -51,15 +51,16 @@ void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
 
     QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     painter->setPen(pen);
+    int ypos( option.rect.y()+ (option.rect.height()-12) /2 );
     if (item->state() != Package::ps_masked)
     {
-        painter->drawRect(option.rect.x(),option.rect.y()+1,12,12);
-        painter->drawRect(option.rect.x()+16,option.rect.y()+1,12,12);
+        painter->drawRect(option.rect.x(),ypos,12,12);
+        painter->drawRect(option.rect.x()+16,ypos,12,12);
         switch (selections.value(0).toInt() )
         {
             case Qt::PartiallyChecked:
             case Qt::Checked:
-                painter->fillRect(option.rect.x()+2,option.rect.y()+3,9,9,in);
+                painter->fillRect(option.rect.x()+2,ypos+2,9,9,in);
                 break;
             default:                ;
         }
@@ -67,7 +68,7 @@ void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
         {
             case Qt::PartiallyChecked:
             case Qt::Checked:
-                painter->fillRect(option.rect.x()+18,option.rect.y()+3,9,9,out);
+                painter->fillRect(option.rect.x()+18,ypos+2,9,9,out);
                 break;
             default:
                 ;

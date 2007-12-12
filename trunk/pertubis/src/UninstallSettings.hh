@@ -23,13 +23,87 @@
 
 #include <QWidget>
 
+
 class QCheckBox;
 class QComboBox;
 
 namespace pertubis
 {
 
-    class UninstallSettings : public QWidget
+    class UninstallSettingsModel : public QObject
+    {
+        Q_OBJECT
+
+        public:
+
+            ///@name Constructors
+            ///@{
+
+            /// std constructor
+            UninstallSettingsModel(QObject *pobj);
+            ///@}
+
+            ~UninstallSettingsModel();
+
+            ///@name Content modification
+            ///@{
+
+            /// loads all settings for the gui
+            void loadSettings();
+
+            /// loads all settings for the gui
+//             void setDefaults();
+
+            /// saves all settings for the gui
+            void saveSettings();
+
+            ///@}
+
+            bool    m_deps;
+            bool    m_unusedDeps;
+            bool    m_allVersions;
+            bool    m_unsafeUninstall;
+
+        signals:
+
+            void depsChanged(bool checked);
+            void unusedDepsChanged(bool checked);
+            void allVersionsChanged(bool checked);
+            void unsafeUninstallChanged(bool checked);
+
+        public slots:
+
+            void onDepsChanged(bool checked)
+            {
+                if (m_deps != checked)
+                    emit depsChanged(checked);
+                m_deps = checked;
+            }
+
+            void onUnusedDepChanged(bool checked)
+            {
+                if (m_unusedDeps != checked)
+                    emit unusedDepsChanged(checked);
+                m_unusedDeps = checked;
+            }
+
+            void onAllVersionsChanged(bool checked)
+            {
+                if (m_allVersions != checked)
+                    emit allVersionsChanged(checked);
+                m_allVersions = checked;
+            }
+
+            void onUnsafeUninstallChanged(bool checked)
+            {
+                if (m_unsafeUninstall != checked)
+                    emit unsafeUninstallChanged(checked);
+                m_unsafeUninstall = checked;
+            }
+
+    };
+
+    class UninstallSettingsView : public QWidget
     {
         Q_OBJECT
 
@@ -39,29 +113,18 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            UninstallSettings(QWidget *parent);
+            UninstallSettingsView(QWidget *parent,UninstallSettingsModel* model);
             ///@}
 
-            ~UninstallSettings();
+            ~UninstallSettingsView();
 
-            ///@name Content modification
-            ///@{
-
-            /// loads all settings for the gui
-            void loadSettings();
-
-            /// loads all settings for the gui
-            void setDefaults();
-
-            /// saves all settings for the gui
-            void saveSettings();
-
-            ///@}
+            UninstallSettingsModel*  m_model;
 
     private:
 
             /// \name install options
             ///@{
+
             QCheckBox* m_deps;
             QCheckBox* m_unusedDeps;
             QCheckBox* m_allVersions;

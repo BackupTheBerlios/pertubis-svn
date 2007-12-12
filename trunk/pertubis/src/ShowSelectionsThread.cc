@@ -46,7 +46,6 @@ void pertubis::ShowSelectionsThread::run()
              idStart != idEnd;
              ++idStart)
         {
-            QString repo(QString::fromStdString(paludis::stringify((*idStart)->repository()->name())));
             QVariantList list;
             list <<
                     QVariant(m_taskbox->tasks()) <<
@@ -56,16 +55,12 @@ void pertubis::ShowSelectionsThread::run()
                     ( installed(m_env,*idStart) ? Qt::PartiallyChecked : Qt::Unchecked) <<
                     "" <<
                     "";
-
-            qDebug() << "pertubis::ShowSelectionsThread::run() - 1";
             Package* node = new Package(*idStart,list,Package::ps_stable,Package::pt_node_only,0);
-            qDebug() << "pertubis::ShowSelectionsThread::run() - 2";
             m_taskbox->setTasksInPackage(node);
-            qDebug() << "pertubis::ShowSelectionsThread::run() - 3";
             emit appendPackage(node);
             ++count;
         }
     }
-    emit finished(count);
+    emit finished(count,0);
     qDebug() << "pertubis::ShowSelectionsThread::run() - done";
 }

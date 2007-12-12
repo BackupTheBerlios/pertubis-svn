@@ -74,7 +74,7 @@ namespace pertubis
             void changeInCat(QString cat);
 
         /// sends the number of hits for the actual search result when finished
-            void finished(int resultCount);
+            void finished(int resultCount,int total);
 
     private:
 

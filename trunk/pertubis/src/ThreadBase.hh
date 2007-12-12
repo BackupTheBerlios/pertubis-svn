@@ -47,7 +47,7 @@ namespace pertubis
         ///\{
 
         /// std constructor
-        ThreadBase(QObject* parent,
+        ThreadBase(QObject* pobj,
                     const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                     TaskBox* box);
         ///\}

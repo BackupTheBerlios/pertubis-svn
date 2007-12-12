@@ -37,6 +37,7 @@ namespace pertubis
 
     class QuerySettingsModel;
     class QuerySettingsView;
+    class SearchThread;
     /*! \brief provides a text input and option checkboxes the user may select or deselect.
      *
      * \ingroup Widget
@@ -46,42 +47,46 @@ namespace pertubis
     {
         Q_OBJECT
 
-    public:
+        public:
 
-        ///\name Constructors
-        ///\{
+            ///\name Constructors
+            ///\{
 
-        QString query() const;
+            /// constructs a SearchWindow object
+            SearchWindow( QWidget *pobj, QuerySettingsModel* querySettings, SearchThread* thread);
 
-        /// constructs a SearchWindow object
-        SearchWindow( QWidget *pwid,QuerySettingsModel* querySettings);
-        ///@}
+            ~SearchWindow() { saveSettings();}
+            ///@}
 
-        void displaySearch(bool start);
+        private:
 
-        void toggle();
+            void displaySearch(bool start);
+            void loadSettings();
+            void saveSettings();
 
-    signals:
+        signals:
 
-        /// sends the request to start the search
-        void                search();
+            /// sends the request to start the search
+            void                search(QString query);
 
-        /// sends the request to stop the search
-        void                stopSearch();
+            /// sends the request to stop the search
+            void                stopSearch();
 
-    private:
+        private slots:
 
-        /// line for query input
-        QLineEdit*          m_line;
+            void onStart();
 
-        /// ask for query settings
-        QuerySettingsModel*      m_querySettings;
+            void onStop();
 
-        /// ask for query settings
-        QuerySettingsView*      m_querySettingsView;
-
-        QPushButton*            m_bStart;
-        QPushButton*            m_bStop;
+        private:
+            /// ask for query settings
+            QuerySettingsModel*     m_querySettings;
+            SearchThread*           m_thread;
+            QLineEdit*              m_line;
+            QPushButton*            m_bStart;
+            QPushButton*            m_bStop;
+            QPushButton*            m_bClose;
+            QPushButton*            m_bOptions;
     };
 }
 #endif

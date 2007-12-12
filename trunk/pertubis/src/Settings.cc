@@ -141,10 +141,10 @@ void pertubis::LanguageSettings::languageChanged(const QString& language)
 
 pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
         m_languageView(new LanguageSettings(pobj)),
-        m_installView(new InstallSettings(pobj)),
-        m_deinstallView(new UninstallSettings(pobj)),
-        m_queryView(new QuerySettingsView(pobj)),
-        m_depListView(new DepListSettings(pobj)),
+        m_installView(new InstallSettingsView(pobj,new InstallSettingsModel(pobj))),
+        m_deinstallView(new UninstallSettingsView(pobj,new UninstallSettingsModel(pobj))),
+        m_queryView(new QuerySettingsView(pobj,new QuerySettingsModel(pobj))),
+        m_depListView(new DepListSettingsView(pobj, new DepListSettingsModel(pobj))),
         m_pagesView(new QListWidget(pobj)),
         m_pagesStore(new QStackedWidget())
 {
@@ -159,8 +159,6 @@ pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
     m_pagesView->setMinimumWidth(150);
     m_pagesView->setIconSize(QSize(64, 64));
     m_pagesView->setSpacing(36);
-
-    m_queryView->m_model = new QuerySettingsModel(pobj);
 
     m_pagesView->setMovement(QListView::Static);
     QListWidgetItem *tLang = new QListWidgetItem(m_pagesView);

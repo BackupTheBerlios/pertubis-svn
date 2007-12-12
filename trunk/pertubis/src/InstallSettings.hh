@@ -22,14 +22,17 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_SETTINGS_H 1
 
 #include <QWidget>
+#include <QString>
+#include <paludis/args/args.hh>
+#include <paludis/args/args_handler.hh>
+#include <paludis/args/install_args_group.hh>
 
 class QCheckBox;
 class QComboBox;
 
 namespace pertubis
 {
-
-    class InstallSettings : public QWidget
+    class InstallSettingsModel : public QObject, public paludis::args::ArgsHandler
     {
         Q_OBJECT
 
@@ -39,10 +42,10 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            InstallSettings(QWidget *parent);
+            InstallSettingsModel(QObject *parent);
             ///@}
 
-            ~InstallSettings();
+            ~InstallSettingsModel();
 
             ///@name Content modification
             ///@{
@@ -55,16 +58,119 @@ namespace pertubis
 
             ///@}
 
+            std::string app_name() const;
+            std::string app_synopsis() const;
+            std::string app_description() const;
+
+            QString m_tooltip;
+
+            /// \name install options
+            ///@{
+            int     m_debug;
+            int     m_continueOnFailure;
+            ///@}
+
+            paludis::args::InstallArgsGroup install_args;
+
+        signals:
+
+            void debugChanged(int state);
+            void fetchChanged(bool checked);
+            void noConfigChanged(bool checked);
+            void noSafeChanged(bool checked);
+            void pretendChanged(bool checked);
+            void continueChanged(int state);
+            void checksChanged(const QString& argument);
+
+        public slots:
+
+            void changeDebug(int state)
+            {
+                if (m_debug != state)
+                    emit debugChanged(state);
+                m_debug = state;
+            }
+
+            void changeFetch(bool checked)
+            {
+                if (checked != install_args.a_fetch.specified())
+                    emit fetchChanged(checked);
+                install_args.a_fetch.set_specified(checked);
+            }
+
+            void changeNoConfig(bool checked)
+            {
+                if (checked != install_args.a_no_config_protection.specified())
+                    emit noConfigChanged(checked);
+                install_args.a_no_config_protection.set_specified(checked);
+            }
+
+            void changeNoSafe(bool checked)
+            {
+                if (checked != install_args.a_no_safe_resume.specified())
+                    emit noSafeChanged(checked);
+                install_args.a_no_safe_resume.set_specified(checked);
+            }
+
+            void changePretend(bool checked)
+            {
+                if (checked != install_args.a_pretend.specified())
+                    emit pretendChanged(checked);
+                install_args.a_pretend.set_specified(checked);
+            }
+
+            void changeContinue(int state)
+            {
+                if (m_continueOnFailure != state)
+                    emit continueChanged(state);
+                m_continueOnFailure = state;
+            }
+
+            void changeChecks(const QString& argument)
+            {
+                if (argument != QString::fromStdString(install_args.a_checks.argument()) )
+                    emit checksChanged(argument);
+                install_args.a_checks.set_argument(argument.toStdString());
+            }
+    };
+
+    class InstallSettingsView : public QWidget
+    {
+        Q_OBJECT
+
+        public:
+
+            ///@name Constructors
+            ///@{
+
+            /// std constructor
+            InstallSettingsView(QWidget *parent,InstallSettingsModel* model);
+            ///@}
+
+            ~InstallSettingsView();
+
+            ///@name Content modification
+            ///@{
+
+            ///@}
+
+            InstallSettingsModel* m_model;
+
         private:
 
             /// \name install options
             ///@{
-            QCheckBox* m_debug;
+
+            void createView();
+            void createNormal(QWidget* pobj);
+
+            QComboBox* m_debug;
             QCheckBox* m_fetch;
             QCheckBox* m_noConfigProtection;
             QCheckBox* m_noSafeResume;
             QCheckBox* m_pretend;
             QComboBox* m_continueOnFailure;
+            QComboBox* m_checks;
             ///@}
 
     };

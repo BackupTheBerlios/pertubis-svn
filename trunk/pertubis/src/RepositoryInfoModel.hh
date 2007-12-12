@@ -21,15 +21,51 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_INFO_MODEL_H 1
 
 #include <QList>
+#include <QObject>
 #include <QVariant>
 #include <QStringList>
 #include "ThreadBase.hh"
 #include <QAbstractTableModel>
 #include <paludis/util/tr1_memory.hh>
-#include <spaludis/environment-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/util/visitor.hh>
+#include <paludis/metadata_key.hh>
 
 namespace pertubis
 {
+    class RepositoryInfoThread;
+
+    class InfoDisplayer :
+            public paludis::ConstVisitor<paludis::MetadataKeyVisitorTypes>
+            {
+                RepositoryInfoThread* m_thread;
+                public:
+
+                    InfoDisplayer(RepositoryInfoThread* thread) : m_thread(thread)
+                    {
+                    }
+
+                    void visit(const paludis::MetadataSectionKey & k);
+                    void visit(const paludis::MetadataStringKey & k);
+                    void visit(const paludis::MetadataFSEntryKey & k);
+                    void visit(const paludis::MetadataPackageIDKey & k);
+                    void visit(const paludis::MetadataRepositoryMaskInfoKey & k);
+                    void visit(const paludis::MetadataContentsKey & k);
+                    void visit(const paludis::MetadataTimeKey & k);
+                    void visit(const paludis::MetadataSpecTreeKey<paludis::RestrictSpecTree> & k);
+                    void visit(const paludis::MetadataSpecTreeKey<paludis::LicenseSpecTree> & k);
+                    void visit(const paludis::MetadataSpecTreeKey<paludis::FetchableURISpecTree> & k);
+                    void visit(const paludis::MetadataSpecTreeKey<paludis::SimpleURISpecTree> & k);
+                    void visit(const paludis::MetadataSpecTreeKey<paludis::DependencySpecTree> & k);
+                    void visit(const paludis::MetadataSpecTreeKey<paludis::ProvideSpecTree> & k);
+                    void visit(const paludis::MetadataCollectionKey<paludis::FSEntrySequence> & k);
+                    void visit(const paludis::MetadataCollectionKey<paludis::PackageIDSequence> & k);
+                    void visit(const paludis::MetadataCollectionKey<paludis::KeywordNameSet> & k);
+                    void visit(const paludis::MetadataCollectionKey<paludis::IUseFlagSet> & k);
+                    void visit(const paludis::MetadataCollectionKey<paludis::UseFlagNameSet> & k);
+                    void visit(const paludis::MetadataCollectionKey<paludis::Set<std::string> > & k);
+
+            };
 
     /*! \brief not finished
      *
@@ -39,9 +75,10 @@ namespace pertubis
         Q_OBJECT
         public:
             RepositoryInfoThread(QObject* pobj,
-                             DatabaseView* main) : ThreadBase(pobj,main) {}
+                                 const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                                 TaskBox* box) : ThreadBase(pobj,env,box) {}
 
-            void getInfo(const QString& name);
+            void start(const QString& name);
 
         protected:
 
@@ -49,9 +86,14 @@ namespace pertubis
 
         signals:
 
-            void sendResult(QList<QVariantList> list);
+            void sendResult(const QList<QVariantList>& list);
+
+        public slots:
+            void append(QString,QString);
+
         private:
             QString     m_repName;
+            QList<QVariantList> m_list;
     };
 
     /*! \brief not finished
@@ -77,8 +119,7 @@ namespace pertubis
 
     public slots:
 
-        void slotResult(QList<QVariantList> list);
-
+        void slotResult(const QList<QVariantList>& list);
 
     private:
         QList<QVariantList>       m_data;

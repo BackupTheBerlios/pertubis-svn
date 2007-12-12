@@ -38,6 +38,7 @@ namespace pertubis
 {
     class Package;
     class TaskBox;
+    class Settings;
     class MessageOutput;
 
 //     class IDCompare
@@ -116,7 +117,7 @@ namespace pertubis
         /*! \brief starts the corresponding paludis task
          *
          */
-        virtual void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)=0;
+        virtual void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env, Settings*,MessageOutput* output)=0;
 
         ///\}
 

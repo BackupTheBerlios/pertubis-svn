@@ -23,13 +23,24 @@
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/metadata_key.hh>
 
-
-pertubis::NameExtractor::NameExtractor(const paludis::Environment * const env) : Extractor(env)
+pertubis::NameDescriptionExtractor::NameDescriptionExtractor(const paludis::Environment * const env) : Extractor(env)
 {
 }
 
-bool pertubis::NameExtractor::operator() (const Matcher& m, const paludis::PackageID& id) const
+bool pertubis::NameDescriptionExtractor::operator() (const Matcher& m, const paludis::PackageID& id) const
 {
-    return m(paludis::stringify(id.name()));
+    if (m(paludis::stringify(id.name())))
+        return true;
+
+    if (id.short_description_key())
+        if (m(id.short_description_key()->value()))
+            return true;
+
+    if (id.long_description_key())
+        if (m(id.long_description_key()->value()))
+            return true;
+
+    return false;
 }

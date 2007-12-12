@@ -22,6 +22,7 @@
 #include "TaskBox.hh"
 #include "Task.hh"
 #include "Package.hh"
+#include "SystemReport-fwd.hh"
 
 #include <QColor>
 #include <QBrush>
@@ -29,7 +30,7 @@
 #include <QDebug>
 #include <QStringList>
 
-pertubis::PackageModel::PackageModel(QObject* pobj) : QAbstractItemModel(pobj),m_root(new Package()),m_box(0)
+pertubis::PackageModel::PackageModel(QObject* pobj) : QAbstractItemModel(pobj),m_root(new Package()),m_box(0),m_reportMode(false)
 {
 }
 
@@ -70,54 +71,68 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
 
     Package* item = static_cast<Package*>(ix.internalPointer());
 
-    if (role == Qt::ForegroundRole)
+    if (role == Qt::BackgroundRole)
     {
-        switch (ix.column())
-        {
-            case Package::po_installed:
-                return QBrush(QColor(0,0,255));
-                break;
-            case Package::po_mask_reasons:
-                return QBrush(QColor(255,0,0));
-                break;
-            case Package::po_change:
-                return QBrush(QColor(0,255,0));
-                break;
-            default:
-                return QBrush(QColor(0,0,0));
-                break;
+        if (0  == ix.row() % 2 )
+            return QBrush(QColor(225,225,225));
+        else
+            return QBrush(QColor(255,255,255));
+    }
+    if (!m_reportMode)
+    {
 
-                // case Package::po_package:
-                //  {
-                //      if (item->state() == Package::is_stable)
-                //           return QBrush(QColor(0,255,0));
-                //      if (item->state() == Package::is_unstable)
-                //          return QBrush(QColor(255,200,0));
-                //      if (item->state() == Package::is_masked)
-                //          return QBrush(QColor(255,0,0));
-                //  }
+        if (role == Qt::ForegroundRole)
+        {
+            switch (ix.column())
+            {
+                case Package::po_installed:
+                    return QBrush(QColor(0,0,255));
+                    break;
+                case Package::po_mask_reasons:
+                    return QBrush(QColor(255,0,0));
+                    break;
+                case Package::po_change:
+                    return QBrush(QColor(0,255,0));
+                    break;
+                default:
+                    return QBrush(QColor(0,0,0));
+                    break;
+            }
+        }
+
+        if (role == Qt::CheckStateRole )
+        {
+            switch (ix.column())
+            {
+                case Package::po_installed:
+                    return item->data(ix.column());
+                default:
+                    return QVariant();
+            }
+        }
+
+        if (role == Qt::DisplayRole )
+        {
+            switch (ix.column())
+            {
+                case Package::po_installed:
+                    return QVariant();
+                default:
+                    return item->data(ix.column());
+            }
         }
     }
-
-    if (role == Qt::CheckStateRole )
+    else
     {
-        switch (ix.column())
+        if (role == Qt::ForegroundRole)
         {
-            case Package::po_installed:
-                return item->data(ix.column());
-            default:
-                return QVariant();
+            if (ix.column() == rho_reasons)
+                    return QBrush(QColor(255,0,0));
+            return QBrush(QColor(0,0,0));
         }
-    }
-
-    if (role == Qt::DisplayRole )
-    {
-        switch (ix.column())
+        if (role == Qt::DisplayRole )
         {
-            case Package::po_installed:
-                return QVariant();
-            default:
-                return item->data(ix.column());
+            return item->data(ix.column());
         }
     }
 

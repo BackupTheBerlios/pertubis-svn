@@ -26,6 +26,7 @@
 namespace pertubis
 {
     class Package;
+    class PackageDeinstallTask;
 
     /*! \brief installs packages
      * \ingroup Selection
@@ -44,7 +45,7 @@ namespace pertubis
             /// std constructor
             DeinstallTask(QObject* pobject,
                         QAction* myaction,
-                        QString tname) : Task(pobject,myaction,tname) {}
+                        QString tname) : Task(pobject,myaction,tname),m_task(0) {}
 
             ///@}
 
@@ -65,12 +66,17 @@ namespace pertubis
             ///@{
 
             /// starts m_task
-            void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output);
+            void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env, Settings* settings, MessageOutput* output);
             ///@}
+
+        signals:
+
+            /// says "I and the paludis install tasks are finished"
+            void finished();
 
         private:
 
-//             Install* m_task;
+            PackageDeinstallTask* m_task;
     };
 }
 

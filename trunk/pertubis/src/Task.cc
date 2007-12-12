@@ -90,4 +90,5 @@ void pertubis::Task::clear()
     {
         m_data.erase(*i);
     }
+    Q_ASSERT(m_data.empty());
 }

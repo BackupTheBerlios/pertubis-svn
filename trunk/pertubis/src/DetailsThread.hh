@@ -24,6 +24,7 @@
 #include "ThreadBase.hh"
 
 #include <QString>
+#include <QVariantList>
 #include <string>
 #include <paludis/package_id-fwd.hh>
 
@@ -44,17 +45,19 @@ namespace pertubis
                       const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                      TaskBox* box);
         void start(paludis::tr1::shared_ptr<const paludis::PackageID> id);
-        void appendOutput(std::string text);
+
+//         void appendOutput(const QString& row) { m_text.append(row); }
+        void appendOutput(const std::string& row) { m_text.append(QString::fromStdString(row)); }
 
         void run();
 
     private:
 
         paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
-        mutable QString    m_output;
+        mutable QString    m_text;
 
     signals:
-        void detailsResult(QString output);
+        void sendResult(QString);
     };
 }
 

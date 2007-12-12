@@ -21,7 +21,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_LIST_MODEL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_REPOSITORY_LIST_MODEL_H 1
 
-#include <QAbstractListModel>
+#include <QAbstractTableModel>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/name-fwd.hh>
 #include "ThreadBase.hh"
@@ -50,7 +50,7 @@ namespace pertubis
             /// standart constructor creates empty object
             RepositoryListItem();
             /// creates an object with data
-            RepositoryListItem(const paludis::RepositoryName & name);
+            RepositoryListItem(const QString& name, Qt::CheckState checked=Qt::Checked);
             ///@}
 
             ///@name Content information
@@ -65,7 +65,7 @@ namespace pertubis
             ///@}
         private:
             /// the data to are to be rendered (shown)
-            QList<QVariant>     m_data;
+            QVariantList     m_data;
     };
 
     /*! \brief not finished
@@ -93,14 +93,14 @@ namespace pertubis
         signals:
 
             /// sends a list with all repositories found
-            void sendNames(QList<RepositoryListItem*> cl);
+            void sendNames(QStringList);
     };
 
     /*! \brief This qt model class holds repositories.
      *
      * \ingroup ItemModelClass
      */
-    class RepositoryListModel : public QAbstractListModel
+    class RepositoryListModel : public QAbstractTableModel
     {
         Q_OBJECT
 
@@ -145,7 +145,11 @@ namespace pertubis
             Qt::ItemFlags flags(const QModelIndex &mix) const;
 
             /// returns the number of childs for the given QModelIndex
+            int columnCount( const QModelIndex & index ) const;
+
+            /// returns the number of childs for the given QModelIndex
             int rowCount( const QModelIndex & index ) const;
+
 
             /// returns the data at QModelIndex index associated with the Qt::DisplayRole role
             QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole) const;
@@ -157,10 +161,15 @@ namespace pertubis
             /// loads user relevant data
             void saveSettings();
 
+        signals:
+
+            /// sends a list with all repositories found
+            void sendNames(QStringList);
+
         public slots:
 
             /// sends
-            void slotResult(QList<RepositoryListItem*> cl);
+            void slotResult(QStringList);
 
         private:
 

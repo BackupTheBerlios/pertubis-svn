@@ -33,7 +33,7 @@ namespace pertubis
     /// colorizes a text string with html colors
     inline std::string color(const std::string& text, const std::string& color)
     {
-        return std::string("<font color=\""+ color +"\">" + text + "</font>");
+        return std::string("<font color=\""+color+"\">"+text+"</font>");
     }
 
     /// colorizes a text string with html colors
@@ -42,17 +42,16 @@ namespace pertubis
         return QString("<font color=\"%1\">%2</font>").arg(color).arg(text);
     }
 
-
     /// creates a html row with two columns
     inline std::string make_row(const std::string& col_1, const std::string& col_2)
     {
-        return std::string("<tr><td>"+col_1 + "</td><td>" + col_2 +" </td></tr>");
+        return std::string("<tr><td bgcolor=\"#ddddff\">"+col_1+"</td><td>"+col_2+"</td></tr>\n");
     }
 
     /// creates a html row with two columns
     inline QString make_row(const QString& col_1, const QString& col_2)
     {
-        return QString("<tr><td>%1</td><td>%2</td></tr>").arg(col_1).arg(col_2);
+        return QString("<tr><td bgcolor=\"#ddddff\">%1</td><td>%2</td></tr>\n").arg(col_1).arg(col_2);
     }
 
     /// creates a html link
@@ -80,9 +79,9 @@ namespace pertubis
     }
 
     /// creates a html text formatted for tooltips
-    inline QString html_tooltip(const QString& text,const QString& shortcut="")
+    inline QString html_tooltip(const QString& desc, const QString& name="")
     {
-        return QString("<html><h1><u>%1</u></h1><p>%2</p></html>").arg(shortcut).arg(text);
+        return QString("<html><h1><u>%1</u></h1><p>%2</p></html>").arg(name).arg(desc);
     }
 }
 

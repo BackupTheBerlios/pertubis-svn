@@ -86,20 +86,22 @@ namespace pertubis
     class CategoryModel;
     class CategoryThread;
     class DetailsThread;
-    class Package;
     class MessageOutput;
+    class Package;
     class PackageFilterModel;
     class PackageModel;
     class PackagesThread;
     class PertubisSyncTask;
+    class RepositoryInfoModel;
+    class RepositoryInfoThread;
     class RepositoryListModel;
     class RepositoryListThread;
     class SearchThread;
     class SearchWindow;
-//     class SetModel;
     class SetThread;
     class Settings;
     class ShowSelectionsThread;
+    class SystemReport;
     class TaskBox;
 
     /*! \brief this widget is the package overview
@@ -191,11 +193,13 @@ namespace pertubis
         /// changes filter attribute and restart filtering
         void onRepositoryChanged( const QModelIndex& index );
 
+
+
         /// restart filtering
         void onReposChanged();
 
         /// start search
-        void onSearch();
+        void onSearch(QString query);
 
         /// stopping a search
         void onSearchStopped();
@@ -209,6 +213,9 @@ namespace pertubis
         /// sync selected repositories
         void onSync();
 
+        /// --report
+        void onSystemReport();
+
         /// starts selections thread
         void onShowSelections();
 
@@ -216,7 +223,8 @@ namespace pertubis
         void displaySyncFinished();
 
         /// show the succcessful search end to the user
-        void displaySearchFinished(int count);
+        void displaySearchFinished(int count,int total=0);
+
         ///@}
 
         /// @name Displaying slots
@@ -229,7 +237,7 @@ namespace pertubis
         void displayCategoryChanged();
 
         /// displayes item details
-        void displayPackageDetails(QString details);
+        void displayPackageDetails(QString text);
 
         /// shows the result to the user
         void displaySelectedPackages();
@@ -267,7 +275,7 @@ namespace pertubis
         void createPackageView();
         void createRepositoryBar();
         void createRepositoryView();
-        void createSettings();
+
         void createSetListView();
         void createTab();
         void createTaskBox();
@@ -290,6 +298,9 @@ namespace pertubis
         ///@}
 
         QString                 m_currentCat;
+        QStringList             m_packageHeader;
+        QStringList             m_reportHeader;
+
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
         CategoryThread*         m_categoryThread;
         CategoryFilterModel*    m_categoryFilterModel;
@@ -303,9 +314,11 @@ namespace pertubis
         PackageFilterModel*     m_packageFilterModel;
         PackagesThread*         m_packageViewThread;
         PackageView*            m_packageView;
+        SystemReport*           m_sysRep;
         QAction*                m_acDeinstall;
         QAction*                m_acEditUse;
         QAction*                m_acFinish;
+        QAction*                m_acSysRep;
         QAction*                m_acInstall;
         QAction*                m_acMasking;
         QAction*                m_acPref;
@@ -330,6 +343,7 @@ namespace pertubis
         QSplitter*              m_vSplit;
         QSystemTrayIcon*        m_sysTray;
         QTableView*             m_categoryView;
+        QTableView*             m_repoInfoView;
         QTableView*             m_repoListView;
         QTableView*             m_setListView;
         QTabWidget*             m_tabs;
@@ -338,6 +352,8 @@ namespace pertubis
         QTimer*                 m_timer;
         RepositoryListModel*    m_repoListModel;
         RepositoryListThread*   m_repoListThread;
+        RepositoryInfoModel*    m_repoInfoModel;
+        RepositoryInfoThread*   m_repoInfoThread;
         SearchThread*           m_searchThread;
         CategoryModel*          m_setModel;
 //         SetModel*               m_setModel;
@@ -351,7 +367,9 @@ namespace pertubis
         int                     m_repoViewTabID;
         int                     m_outputTabID;
         int                     m_detailsTabID;
+        bool                    m_packageOrReportHeader;
     };
 }
 
 #endif
+

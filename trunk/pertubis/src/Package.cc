@@ -47,18 +47,6 @@ pertubis::Package::Package(paludis::tr1::shared_ptr<const paludis::PackageID> id
 {
 }
 
-// pertubis::Package::Package(const QList<QVariant> &dats,
-//                     PackageState mystate,
-//                     UpdateRange ur,
-//                     Package* pitem)  :
-//                     m_data(dats),
-//                     m_parent(pitem),
-//                     m_bestChild(0),
-//                     m_state(mystate),
-//                     m_ur(ur)
-// {
-// }
-
 pertubis::Package::~Package()
 {
     m_parent=0;
@@ -151,8 +139,6 @@ paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Package::ID() const
         return m_bestChild->ID();
     return m_id;
 }
-
-
 
 // QString pertubis::stateDescription(Package::PackageState status)
 // {

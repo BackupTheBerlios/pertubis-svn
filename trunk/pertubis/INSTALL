@@ -1,47 +1,77 @@
 pertubis installation description
+##################################
 
-You can build pertubis manual via cmake or using the ebuild we provide here
+You can build pertubis manual via cmake or using the ebuild we provide.
+For now I only provide an "scm" ebuild, that's a development ebuild which
+builds the actual svn pertubis /trunk snapshot. Later versioned ebuilds will
+arrive.
+
+pertubis dependencies
+##################################
+
 Below you see the packages you need to build and run pertubis.
 
     * gentoo linux
-    * >=sys-apps/paludis-0.24.2
-    * >=dev-libs/pcre++
+    * subversion
+    * >=sys-apps/paludis-0.26.0_alpha4
     * >=x11-libs/qt-4.3
     * >=dev-util/cmake-2.4.6-r1
 
-install via ebuild:
+ebuild installation method:
+##################################
 
-    svn co svn://svn.berlios.de/pertubis/trunk/overlay/sys-apps/pertubis-svn
+First you checkout the ebuild, copy it to your local repository overlay, and
+proceed as usual. Don't forget to change to "</path/to/your/overlay>"
+to your needs!:
 
-    <cp or mv the pertubis directory to your portage overlay>
-
+    cd
+    svn co svn://svn.berlios.de/pertubis/trunk/overlay/sys-apps/pertubis \
+        pertubis-ebuilds
+    mkdir -p </path/to/your/overlay>/sys-apps/pertubis
+    cp pertubis-ebuilds/pertubis-scm.ebuild \
+        </path/to/your/overlay>/sys-apps/pertubis/
     paludis -i pertubis
 
 manual installation method:
+##################################
 
-getting a tarball:
+Don't forget to change <YOUR_CPU> to your processor type
+and <NUM_CORES> to the number of your cores +1.
 
-    svn co svn://svn.berlios.de/pertubis/trunk/pertubis
-
-configuration:
-
-	cd pertubis
-    mkdir build
-    cd build
-    export CXXFLAGS="-march=<YOUR CPU> -O2 -pipe"
-    cmake ..
-
-compilation
-
-    make
+export CXXFLAGS="-march=<YOUR_CPU> -O2 -pipe"
+svn co svn://svn.berlios.de/pertubis/trunk/pertubis pertubis
+mkdir -p pertubis/build/debug
+cd pertubis/build/debug
+cmake ../.. -DCMAKE_BUILD_TYPE=debug -DPERTUBIS_BUILD_DOCS=ON
+make -j <NUM_CORES>
 
 installation ( as root user )
 
-    make install
+make install
 
-Build options
+cmake options that affect pertubis with default values
+##################################
 
-    * Consider using ccmake in place of cmake. Then you get a curses based
-      configuration menu for fine tuning
-    * You could both build pertubis using a out-of-source or a in-source build process.
-      Choose the one you prefer.
+CMAKE_BUILD_TYPE:STRING=release
+
+    debug: build suitable for debuging purposes
+    release: optimized build for release
+
+PERTUBIS_BUILD_DOCS:BOOL=OFF
+
+    OFF: don't build doxygen api documentation
+    ON: build doxygen api documentation
+
+PERTUBIS_DOC_PATH:STRING=/usr/share/doc/pertubis
+
+    if you set PERTUBIS_BUILD_DOCS=ON this is the path for installing the docs
+
+PERTUBIS_BUILD_TESTS:BOOL=OFF
+
+    OFF: don't build tests
+    ON: build tests
+
+running tests ( if enabled )
+##################################
+cd docs
+ctest -V

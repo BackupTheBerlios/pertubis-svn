@@ -6,7 +6,6 @@ SET(PERTUBIS_SRCS
     CategoryThread.cc
     DeinstallTask.cc
     DepListSettings.cc
-    description_extractor.cc
     DetailsThread.cc
     extractor.cc
     HtmlFormatter.cc
@@ -19,18 +18,21 @@ SET(PERTUBIS_SRCS
     name_extractor.cc
     OptionsDelegate.cc
     Package.cc
+    PackageDeinstallTask.cc
     PackageFilterModel.cc
     PackageModel.cc
     PackagesThread.cc
     PaludisUtils.cc
     QuerySettings.cc
     RegexMatcher.cc
+    RepositoryInfoModel.cc
     RepositoryListModel.cc
     SearchThread.cc
     SearchWindow.cc
     SetThread.cc
     Settings.cc
     ShowSelectionsThread.cc
+    SystemReport.cc
     SyncTask.cc
     TaskBox.cc
     Task.cc
@@ -59,11 +61,14 @@ SET(PERTUBIS_MOC_HDRS
     Package.hh
     PackageModel.hh
     PackagesThread.hh
+    PackageDeinstallTask.hh
     QuerySettings.hh
+    RepositoryInfoModel.hh
     RepositoryListModel.hh
     SearchThread.hh
     SearchWindow.hh
     SetThread.hh
+    SystemReport.hh
     Settings.hh
     ShowSelectionsThread.hh
     SyncTask.hh

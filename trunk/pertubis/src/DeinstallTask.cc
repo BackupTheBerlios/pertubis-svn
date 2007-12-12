@@ -20,6 +20,10 @@
 
 #include <QDebug>
 #include "DeinstallTask.hh"
+#include "Settings.hh"
+#include "InstallSettings.hh"
+#include "UninstallSettings.hh"
+#include "PackageDeinstallTask.hh"
 #include "Package.hh"
 #include "MessageOutput.hh"
 #include <paludis/package_id.hh>
@@ -131,23 +135,39 @@ bool pertubis::DeinstallTask::changeStates(Package* item, int newState)
     return true;
 }
 
-void pertubis::DeinstallTask::startTask(const paludis::tr1::shared_ptr<paludis::Environment>& /*env*/,MessageOutput* /*output*/)
+void pertubis::DeinstallTask::startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env,Settings* settings,MessageOutput* output)
 {
-//     paludis::DepListOptions options;
-//     if (m_task)
-//         delete m_task;
-//     m_task = new Install(this,main->getEnv().get(),options,main->getEnv()->default_destinations());
-//     connect(m_task,
-//             SIGNAL(sendMessage(QString)),
-//             main->messages(),
-//             SLOT(receiveMessage(QString)),
-//             Qt::AutoConnection);
-//
-//     for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
-//          i != i_end ; ++i)
-//     {
-//         m_task->add_exact_package(*i);
-//     }
-//     m_task->run();
-//     m_data.empty();
+    qDebug() << "pertubis::DeinstallTask::startTask() - start";
+    if (m_data.size() > 0)
+    {
+        if (m_task)
+            delete m_task;
+        m_task = new PackageDeinstallTask(this,env);
+        m_task->set_pretend(settings->m_installView->m_model->install_args.a_pretend.specified());
+        m_task->set_no_config_protect(settings->m_installView->m_model->install_args.a_no_config_protection.specified());
+        m_task->set_preserve_world(settings->m_installView->m_model->install_args.a_preserve_world.specified());
+        m_task->set_with_unused_dependencies(settings->m_deinstallView->m_model->m_unusedDeps);
+        m_task->set_with_dependencies(settings->m_deinstallView->m_model->m_deps);
+        m_task->set_check_safety(! settings->m_deinstallView->m_model->m_unsafeUninstall);
+        m_task->set_all_versions( settings->m_deinstallView->m_model->m_allVersions);
+
+        connect(m_task,
+                SIGNAL(message(QString)),
+                output,
+                SLOT(append(QString)));
+
+        connect(m_task,
+                SIGNAL(finished()),
+                this,
+                SIGNAL(finished()));
+
+        for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
+            i != i_end ; ++i)
+        {
+            std::string target("=" + stringify((*i)->name()) + "-" + (*i)->canonical_form(paludis::idcf_version));
+            m_task->add_target(target);
+        }
+    }
+    qDebug() << "pertubis::DeinstallTask::startTask() - done";
+    m_task->run();
 }

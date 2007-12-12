@@ -19,8 +19,8 @@
 */
 
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_NAME_EXTRACTOR_H
-#define _PERTUBIS_ENTRY_PROTECTOR_NAME_EXTRACTOR_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_NAME_DESCRIPTION_EXTRACTOR_H
+#define _PERTUBIS_ENTRY_PROTECTOR_NAME_DESCRIPTION_EXTRACTOR_H 1
 
 #include "extractor.hh"
 #include <paludis/package_id-fwd.hh>
@@ -30,10 +30,10 @@ namespace pertubis
     /*! \brief tests if the PackageID's name matches the condition of a Matcher m
      * \ingroup PaludisAdapter
      */
-    class NameExtractor : public Extractor
+    class NameDescriptionExtractor : public Extractor
     {
         public:
-            NameExtractor(const paludis::Environment * const env);
+            NameDescriptionExtractor(const paludis::Environment * const env);
 
             bool operator() (const Matcher& m, const paludis::PackageID& id) const;
     };

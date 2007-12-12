@@ -40,8 +40,17 @@ int pertubis::TaskBox::addTask(Task* t)
 {
     m_tasks.push_back(t);
     int id(m_tasks.indexOf(t));
+    m_index.insert(t->name(),t);
     t->setTaskid(id);
     return id;
+}
+
+pertubis::Task* pertubis::TaskBox::task(QString name) const
+{
+//     qDebug() << "pertubis::TaskBox::task()" << taskid;
+    if (!m_index.contains(name))
+        return 0;
+    return m_index.value(name);
 }
 
 pertubis::Task* pertubis::TaskBox::task(int taskid) const
@@ -49,6 +58,7 @@ pertubis::Task* pertubis::TaskBox::task(int taskid) const
 //     qDebug() << "pertubis::TaskBox::task()" << taskid;
     return m_tasks.value(taskid);
 }
+
 
 QVariantList pertubis::TaskBox::tasks() const
 {
@@ -95,11 +105,11 @@ void pertubis::TaskBox::setTasksInPackage(Package* item)
 //     qDebug() << "pertubis::TaskBoxTest::setTasksInItem() - done";
 }
 
-void pertubis::TaskBox::startAllTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,MessageOutput* output)
+void pertubis::TaskBox::startAllTasks(const paludis::tr1::shared_ptr<paludis::Environment>& env,Settings* settings, MessageOutput* output)
 {
     for (Iterator i(m_tasks.begin()),i_end(m_tasks.end());i!= i_end;++i)
     {
-        (*i)->startTask(env,output);
+        (*i)->startTask(env,settings, output);
     }
 }
 

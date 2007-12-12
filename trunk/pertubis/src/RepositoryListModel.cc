@@ -39,8 +39,8 @@ pertubis::RepositoryListItem::RepositoryListItem() : m_data(QList<QVariant>() <<
 {
 }
 
-pertubis::RepositoryListItem::RepositoryListItem(const paludis::RepositoryName & name) :
-        m_data(QList<QVariant>() << Qt::Checked << QString::fromStdString(paludis::stringify(name)) )
+pertubis::RepositoryListItem::RepositoryListItem(const QString& name, Qt::CheckState state) :
+        m_data(QVariantList() << state << name)
 {
 }
 
@@ -58,19 +58,18 @@ void pertubis::RepositoryListThread::run()
 {
     using namespace paludis;
     ThreadBase::lock();
-    QList<QVariantList> list;
-    QList<RepositoryListItem*> names;
+    QStringList list;
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
          r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
-        names << new RepositoryListItem(r->name());
+        list << QString::fromStdString(paludis::stringify(r->name()));
     }
-    emit sendNames(names);
+    emit sendNames(list);
     ThreadBase::unlock();
 }
 
-pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj) : QAbstractListModel(pobj)
+pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj) : QAbstractTableModel(pobj)
 {
     loadSettings();
 }
@@ -126,19 +125,19 @@ QVariant pertubis::RepositoryListModel::headerData(int section, Qt::Orientation 
     return *(m_header.begin() + section);
 }
 
-void pertubis::RepositoryListModel::slotResult(QList<RepositoryListItem*> cl)
+void pertubis::RepositoryListModel::slotResult(QStringList list)
 {
-    m_data = cl;
     QSet<QString> tmp;
-    RepositoryListItem* item;
-    foreach (item, m_data)
+    for (QStringList::const_iterator iter(list.constBegin()),iEnd(list.constEnd());iter != iEnd;++iter)
     {
-        tmp.insert(item->data(1).toString());
-        item->setData(0,(m_activeRepos.contains(item->data(1).toString()) ? Qt::Checked : Qt::Unchecked) );
+        tmp.insert(*iter);
+        RepositoryListItem* item(new RepositoryListItem(*iter,(m_activeRepos.contains(*iter) ? Qt::Checked : Qt::Unchecked) ));
+        m_data.push_back(item);
     }
 
     // delete possibly unavailable repositories
     m_activeRepos.intersect(tmp);
+    emit sendNames(list);
     reset();
 }
 
@@ -147,10 +146,10 @@ int pertubis::RepositoryListModel::rowCount( const QModelIndex & pobj ) const
     return pobj.isValid() ? 0 : m_data.count();
 }
 
-// int pertubis::RepositoryListModel::columnCount( const QModelIndex & pobj ) const
-// {
-//     return pobj.isValid() ? 0 : m_header.count();
-// }
+int pertubis::RepositoryListModel::columnCount( const QModelIndex & pobj ) const
+{
+    return pobj.isValid() ? 0 : m_header.count();
+}
 
 QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int role) const
 {
@@ -169,7 +168,7 @@ QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int 
         return m_data.value(m_index.row())->data(0);
     }
 
-    if (role == Qt::DisplayRole && m_index.column() == 0)
+    if (role == Qt::DisplayRole && m_index.column() == 1)
     {
 //         qDebug() << "RepositoryListModel::data() - 1" << m_data.value(m_index.row())->data(1);
         return m_data.value(m_index.row())->data(1);

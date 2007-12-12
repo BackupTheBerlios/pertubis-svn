@@ -79,6 +79,8 @@ namespace pertubis
 
         void setBox(TaskBox* t);
 
+        void setReportMode(bool value) { m_reportMode = value;}
+
     public slots:
 
         void slotAppendPackage(Package* item);
@@ -96,6 +98,8 @@ namespace pertubis
         QAction*        m_toggleInstall;
         QAction*        m_toggleDeinstall;
         QAction*        m_toggleSlot;
+
+        bool            m_reportMode;
 
     };
 }
