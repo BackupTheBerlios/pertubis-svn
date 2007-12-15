@@ -24,7 +24,7 @@ IUSE="debug doc gnome kde tests"
 # the su tool
 RDEPEND=">=sys-apps/paludis-0.26.0_alpha4
 	>=x11-libs/qt-4.3.0
-	kde? ( ( >=kde-base/kdesu-3.5.5 ) || ( >=kde-base/kdebase-3.5.5 ) )
+	kde? ( || ( >=kde-base/kdesu-3.5.5 >=kde-base/kdebase-3.5.5 ) )
 	gnome? ( >=x11-libs/gksu-1.9.1 )"
 
 DEPEND=">=sys-apps/paludis-0.26.0_alpha4
@@ -42,12 +42,9 @@ src_compile() {
 
 	replace-flags -Os -O2
 	replace-flags -O3 -O2
-	if use debug; then
-        mycmakeargs="${mycmakeargs} -DCMAKE_BUILD_TYPE=debug"
-	fi
 
 	if use tests; then
-		mycmakeargs="${mycmakeargs} -DPERTUBIS_BUILD_TESTS=ON"
+		mycmakeargs="${mycmakeargs} -DPERTUBIS_TESTS=ON"
 	fi
 
 	if use doc; then
@@ -55,14 +52,12 @@ src_compile() {
     fi
 
     if use kde; then
-        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL='kde"
+        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=kde"
     elif use gnome; then
-        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL='gnome"
+        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=gnome"
     fi
 
-	# mycmakeargs should be ="-DCMAKE_BUILD_TYPE=Debug -DPERTUBIS_SU_TOOL=kdesu -DPERTUBIS_BUILD_TESTS=1"
-	# but the ebuild configures cmake with e.g. -DCMAKE_BUILD_TYPE=debug (see cmake . ${WORKDIR}
-	einfo "mycmakeargs ${mycmakeargs}"
+    einfo "mycmakeargs = ${mycmakeargs}"
 
  	cmake-utils_src_compile || die "cmake-utils_src_compile failed"
 }
