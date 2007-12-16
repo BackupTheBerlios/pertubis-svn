@@ -438,7 +438,7 @@ void pertubis::MainWindow::createSetListView()
     myfont.setBold(true);
     m_setListView->setFont(myfont);
 
-    m_dockSet = new QDockWidget(tr("GLSA list"),this);
+    m_dockSet = new QDockWidget(tr("set list"),this);
     m_dockSet->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     m_dockSet->setWidget(m_setListView);
     m_dockSet->layout()->setMargin(0);
