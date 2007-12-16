@@ -1,6 +1,8 @@
 
 /* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
+*  @version $Id$
+*
 * This file is part of pertubis
 *
 * This program is free software; you can redistribute it and/or modify
