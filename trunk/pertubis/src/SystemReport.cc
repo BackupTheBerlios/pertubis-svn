@@ -59,7 +59,6 @@ void pertubis::SystemReport::run()
 
 void pertubis::SystemReport::on_report_package_failure_pre(const tr1::shared_ptr<const PackageID> & id)
 {
-    qDebug() << "on_report_package_failure_pre" << id.get();
     QVariantList list;
     list <<
             QVariant(m_taskbox->tasks()) <<
@@ -75,7 +74,6 @@ void pertubis::SystemReport::on_report_package_failure_pre(const tr1::shared_ptr
 void pertubis::SystemReport::on_report_package_is_masked(const tr1::shared_ptr<const PackageID> & id,
         const tr1::shared_ptr<const PackageID> & origin)
 {
-    qDebug() << "on_report_package_is_masked" << id.get();
     QString tmp("masked by repository: ");
     for (PackageID::MasksConstIterator m(origin->begin_masks()), m_end(origin->end_masks()) ;
          m != m_end ; ++m)
@@ -93,9 +91,6 @@ void pertubis::SystemReport::on_report_package_is_masked(const tr1::shared_ptr<c
 
 void pertubis::SystemReport::on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> &id)
 {
-    qDebug() << "on_report_package_is_vulnerable_pre" << id.get();
-
-
     QString old = m_node->data(rho_reasons).toString();
     if (!old.isEmpty())
         old.append(QString("\n"));
@@ -106,8 +101,6 @@ void pertubis::SystemReport::on_report_package_is_vulnerable_pre(const tr1::shar
 
 void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &id, const std::string & tag)
 {
-    qDebug() << "on_report_package_is_vulnerable" << id.get();
-
     QString old(m_node->data(rho_reasons).toString());
     old.append(QString(" ")+QString::fromStdString(tag));
     m_node->setData(rho_reasons,old);
@@ -116,7 +109,6 @@ void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_p
 
 void pertubis::SystemReport::on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> &)
 {
-    qDebug() << "on_report_package_is_vulnerable_post";
     QString old = m_node->data(rho_reasons).toString();
     old.append(QString("\n"));
     m_node->setData(rho_reasons,old);
@@ -125,8 +117,6 @@ void pertubis::SystemReport::on_report_package_is_vulnerable_post(const tr1::sha
 void pertubis::SystemReport::on_report_package_is_missing(const tr1::shared_ptr<const PackageID> &id,
         const RepositoryName & repo_name)
 {
-    qDebug() << "on_report_package_is_missingt" << id.get();
-
     QString old(m_node->data(rho_reasons).toString());
     if (!old.isEmpty())
         old.append(QString("\n"));
@@ -137,8 +127,6 @@ void pertubis::SystemReport::on_report_package_is_missing(const tr1::shared_ptr<
 
 void pertubis::SystemReport::on_report_package_is_unused(const tr1::shared_ptr<const PackageID>& id)
 {
-    qDebug() << "on_report_package_is_unused" << id.get();
-
     QString old(m_node->data(rho_reasons).toString());
     old.append("\nunused");
     m_node->setData(rho_reasons,old);
@@ -147,12 +135,10 @@ void pertubis::SystemReport::on_report_package_is_unused(const tr1::shared_ptr<c
 
 void pertubis::SystemReport::on_report_package_failure_post(const tr1::shared_ptr<const PackageID> &id)
 {
-    qDebug() << "on_report_package_is_vulnerable_post" << id.get();
 }
 
 void pertubis::SystemReport::on_report_check_package_post(const QualifiedPackageName &)
 {
-//     qDebug() << "on_report_check_package_post";
     ++_n_packages;
 }
 

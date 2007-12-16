@@ -1,18 +1,23 @@
 general information about pertubis
 ##################################
 
-This programm is an early prototype of a graphical gentoo package management
-application using the paludis api and is released under the GPL version 2 license.
+This programm is an early prototype of a graphical and interactive gentoo
+package management application using the paludis api and is released under the
+GPL version 2 license.
+
 I have written this programm because I wanted to learn qt programming and getting
-a nice tool for the next time I'll kick my keyboard out of the window;)
+a nice tool for the next time I'll kick my keyboard out of the window ;-)
 
 Neither me nor pertubis are far away from being perfect or finished.
 So feel free to improve pertubis or my coding skills, e.g by filing bugs,
-providing patches, feature requests, translating files or comments.
+providing patches, feature requests, translation files or comments.
 
 This software uses a few parts of modified paludis client code. If a former
 copyright notice was accidently removed, please inform me about the issue and I
 will immediately restore the correct state.
+
+I want to thank my family and my friends,Ciaran McCreesh and the guys and girls
+on #paludis for their help and support!
 
 * mail contact:
 

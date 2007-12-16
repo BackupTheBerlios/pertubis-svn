@@ -62,13 +62,13 @@ namespace pertubis
             std::string app_synopsis() const;
             std::string app_description() const;
 
-            QString m_tooltip;
-
             /// \name install options
             ///@{
             int     m_debug;
             int     m_continueOnFailure;
             ///@}
+
+            QString getDesc();
 
             paludis::args::InstallArgsGroup install_args;
 
@@ -83,6 +83,8 @@ namespace pertubis
             void checksChanged(const QString& argument);
 
         public slots:
+
+            void populate_install_task(const paludis::Environment *env, paludis::InstallTask &task) const;
 
             void changeDebug(int state)
             {

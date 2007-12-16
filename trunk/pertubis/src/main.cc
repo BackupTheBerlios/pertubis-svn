@@ -22,7 +22,7 @@
 #include "version.hh"
 #include <QApplication>
 #include <QTranslator>
-#include <QSettings>
+#include <QString>
 #include <QSettings>
 #include <QDebug>
 #include <stdio.h>
@@ -55,7 +55,7 @@ int main( int argc, char **argv )
 
     if (argc == 2 && strcmp(argv[1],"-v") == 0)
     {
-        printf("%s\n",VERSION);
+        printf("%d.%d.%d %s\n",MAJOR_VERSION_NUMBER, MINOR_VERSION_NUMBER, PATCH_VERSION_NUMBER, PERTUBIS_REVISION_NUMBER);
     }
     else
     {

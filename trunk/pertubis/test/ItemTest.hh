@@ -37,7 +37,7 @@ namespace pertubis
 		Q_OBJECT
 	public:
 
-		ItemTest() {}
+        ItemTest() {}
 		~ItemTest() {}
 
 	private slots:

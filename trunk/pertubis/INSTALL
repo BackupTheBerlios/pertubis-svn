@@ -24,13 +24,13 @@ First you checkout the ebuild, copy it to your local repository overlay, and
 proceed as usual. Don't forget to change to "</path/to/your/overlay>"
 to your needs!:
 
-    cd
-    svn co svn://svn.berlios.de/pertubis/trunk/overlay/sys-apps/pertubis \
-        pertubis-ebuilds
-    mkdir -p </path/to/your/overlay>/sys-apps/pertubis
-    cp pertubis-ebuilds/pertubis-scm.ebuild \
-        </path/to/your/overlay>/sys-apps/pertubis/
-    paludis -i pertubis
+cd
+svn co svn://svn.berlios.de/pertubis/trunk/overlay/sys-apps/pertubis \
+    pertubis-ebuilds
+mkdir -p </path/to/your/overlay>/sys-apps/pertubis
+cp pertubis-ebuilds/pertubis-scm.ebuild \
+    </path/to/your/overlay>/sys-apps/pertubis/
+paludis -i pertubis
 
 manual installation method:
 ##################################

@@ -176,6 +176,20 @@ pertubis::Package* pertubis::makePackagePackage(paludis::tr1::shared_ptr<const p
     return new Package(id,list,mystate, Package::pt_parent, pitem);
 }
 
+pertubis::Package* pertubis::makeRootPackage(int columns)
+{
+    QVariantList tmp;
+    for (int i=0;i<columns;i++)
+        tmp << QVariant("hallo");
+    tmp[0] = QVariantList() << Qt::Unchecked << Qt::Unchecked;
+    tmp[1] = "all";
+    return new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
+               tmp,
+               Package::ps_stable,
+               Package::pt_parent,
+               0);
+}
+
 pertubis::Package* pertubis::makeVersionPackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                                  QVariantList selections,
                                  QString version,

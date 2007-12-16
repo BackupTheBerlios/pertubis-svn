@@ -40,7 +40,8 @@ namespace pertubis
         rho_selected,
         rho_package,
         rho_cat,
-        rho_reasons
+        rho_reasons,
+        rho_last
     };
 }
 

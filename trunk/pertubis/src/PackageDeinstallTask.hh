@@ -32,10 +32,7 @@ namespace pertubis
             public paludis::UninstallTask
     {
         Q_OBJECT
-        private:
-            int m_count;
-            int m_current_count;
-            int m_error_count;
+
 
         public:
             PackageDeinstallTask(QObject* pobject,paludis::tr1::shared_ptr<paludis::Environment> e) :
@@ -82,6 +79,11 @@ namespace pertubis
 
             void message(QString);
             void finished(int,int);
+
+        private:
+            int m_count;
+            int m_current_count;
+            int m_error_count;
     };
 }
 

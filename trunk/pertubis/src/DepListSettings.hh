@@ -22,13 +22,22 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_DEP_LIST_SETTINGS_H 1
 
 #include <QWidget>
+#include <QListWidgetItem>
+#include <QListWidget>
+#include <QSet>
+#include <QComboBox>
+#include <QDebug>
+#include <QString>
+#include <paludis/args/dep_list_args_group.hh>
+#include <paludis/args/args_handler.hh>
 
 
-class QComboBox;
+
+class QListWidget;
 
 namespace pertubis
 {
-    class DepListSettingsModel : public QObject
+    class DepListSettingsModel : public QObject, public paludis::args::ArgsHandler
     {
         Q_OBJECT
 
@@ -41,7 +50,7 @@ namespace pertubis
             DepListSettingsModel(QObject *parent);
             ///@}
 
-            ~DepListSettingsModel();
+            virtual ~DepListSettingsModel();
 
             ///@name Content modification
             ///@{
@@ -53,28 +62,36 @@ namespace pertubis
             void saveSettings();
             ///@}
 
+            QString getDesc();
+
             /// \name deplist options
             ///@{
 
-           int m_dlDepsDefault;
-           int m_dlInstalledDepsPre;
-           int m_dlInstalledDepsRuntime;
-           int m_dlInstalledDepsPost;
-           int m_dlUninstalledDepsPre;
-           int m_dlUninstalledDepsRuntime;
-           int m_dlUninstalledDepsPost;
-           int m_dlUninstalledDepsSuggested;
-           int m_dlSuggested;
-           int m_dlBlocks;
-           int m_dlCircular;
-           int m_dlOverrideMasks;
-           int m_dlFallBack;
-           int m_dlDowngrade;
-           int m_dlNewSlots;
-           int m_dlReinstall;
-           int m_dlReinstallScm;
-           int m_dlReinstallTargets;
-           int m_dlUpgrade;
+            std::string app_name() const;
+            std::string app_synopsis() const;
+            std::string app_description() const;
+
+            paludis::args::DepListArgsGroup m_depListArgs;
+
+            int m_dlDepsDefault;
+            int m_dlInstalledDepsPre;
+            int m_dlInstalledDepsRuntime;
+            int m_dlInstalledDepsPost;
+            int m_dlUninstalledDepsPre;
+            int m_dlUninstalledDepsRuntime;
+            int m_dlUninstalledDepsPost;
+            int m_dlUninstalledDepsSuggested;
+            int m_dlSuggested;
+            int m_dlBlocks;
+            int m_dlCircular;
+            QSet<QString> m_dlOverrideMasks;
+            int m_dlFallBack;
+            int m_dlDowngrade;
+            int m_dlNewSlots;
+            int m_dlReinstall;
+            int m_dlReinstallScm;
+            int m_dlReinstallTargets;
+            int m_dlUpgrade;
 
         signals:
 
@@ -91,7 +108,7 @@ namespace pertubis
             void suggestedChanged(int);
             void blocksChanged(int);
             void circularChanged(int);
-            void overrideChanged(int);
+            void overrideChanged(QString name,Qt::CheckState state);
             void fallbackChanged(int);
             void downgradeChanged(int);
             void newSlotsChanged(int);
@@ -102,136 +119,25 @@ namespace pertubis
 
         public slots:
 
-            void changeDepsDefault(int state)
-            {
-                if (m_dlDepsDefault != state)
-                    emit depsDefaultChanged(state);
-                m_dlDepsDefault = state;
-            }
-
-            void changeInstallDepsPre(int state)
-            {
-                if (m_dlInstalledDepsPre != state)
-                    emit installDepsPreChanged(state);
-                m_dlInstalledDepsPre = state;
-            }
-
-            void changeInstallDepsRuntime(int state)
-            {
-                if (m_dlInstalledDepsRuntime != state)
-                    emit installDepsRuntimeChanged(state);
-                m_dlInstalledDepsRuntime = state;
-            }
-
-            void changeInstallDepsPost(int state)
-            {
-                if (m_dlInstalledDepsPost != state)
-                    emit installDepsPostChanged(state);
-                m_dlInstalledDepsPost = state;
-            }
-
-            void changeUninstallDepsPre(int state)
-            {
-                if (m_dlUninstalledDepsPre != state)
-                    emit uninstallDepsPreChanged(state);
-                m_dlUninstalledDepsPre = state;
-            }
-
-            void changeUninstallDepsRuntime(int state)
-            {
-                if (m_dlUninstalledDepsRuntime != state)
-                    emit uninstallDepsRuntimeChanged(state);
-                m_dlUninstalledDepsRuntime = state;
-            }
-
-            void changeUninstallDepsPost(int state)
-            {
-                if (m_dlUninstalledDepsPost != state)
-                    emit uninstallDepsPostChanged(state);
-                m_dlUninstalledDepsPost = state;
-            }
-
-            void changeUninstallDepsSuggested(int state)
-            {
-                if (m_dlUninstalledDepsSuggested != state)
-                    emit uninstallDepsSuggestedChanged(state);
-                m_dlUninstalledDepsSuggested = state;
-            }
-
-            void changeSuggested(int state)
-            {
-                if (m_dlSuggested != state)
-                    emit suggestedChanged(state);
-                m_dlSuggested = state;
-            }
-
-            void changeBlocks(int state)
-            {
-                if (m_dlBlocks != state)
-                    emit blocksChanged(state);
-                m_dlBlocks = state;
-            }
-            void changeCircular(int state)
-            {
-                if (m_dlCircular != state)
-                    emit circularChanged(state);
-                m_dlCircular = state;
-            }
-            void changeOverride(int state)
-            {
-                if (m_dlOverrideMasks != state)
-                    emit overrideChanged(state);
-                m_dlOverrideMasks = state;
-            }
-
-            void changeFallback(int state)
-            {
-                if (m_dlFallBack != state)
-                    emit fallbackChanged(state);
-                m_dlFallBack = state;
-            }
-
-            void changeDowngrade(int state)
-            {
-                if (m_dlDowngrade != state)
-                    emit downgradeChanged(state);
-                m_dlDowngrade = state;
-            }
-
-            void changeNewSlots(int state)
-            {
-                if (m_dlNewSlots != state)
-                    emit newSlotsChanged(state);
-                m_dlNewSlots = state;
-            }
-
-            void changeReinstall(int state)
-            {
-                if (m_dlSuggested != state)
-                    emit reinstallChanged(state);
-                m_dlReinstall = state;
-            }
-
-            void changeReinstallScm(int state)
-            {
-                if (m_dlReinstallScm != state)
-                    emit reinstallScmChanged(state);
-                m_dlReinstallScm = state;
-            }
-
-            void changeReinstallTarget(int state)
-            {
-                if (m_dlReinstallTargets != state)
-                    emit reinstallTargetChanged(state);
-                m_dlReinstallTargets = state;
-            }
-
-            void changeUpgrade(int state)
-            {
-                if (m_dlUpgrade != state)
-                    emit upgradeChanged(state);
-                m_dlUpgrade = state;
-            }
+            void changeDepsDefault(int state);
+            void changeInstallDepsPre(int state);
+            void changeInstallDepsRuntime(int state);
+            void changeInstallDepsPost(int state);
+            void changeUninstallDepsPre(int state);
+            void changeUninstallDepsRuntime(int state);
+            void changeUninstallDepsPost(int state);
+            void changeUninstallDepsSuggested(int state);
+            void changeSuggested(int state);
+            void changeBlocks(int state);
+            void changeCircular(int state);
+            void changeOverride(QListWidgetItem * item );
+            void changeFallback(int state);
+            void changeDowngrade(int state);
+            void changeNewSlots(int state);
+            void changeReinstall(int state);
+            void changeReinstallScm(int state);
+            void changeReinstallTarget(int state);
+            void changeUpgrade(int state);
     };
 
     class DepListSettingsView : public QWidget
@@ -243,18 +149,12 @@ namespace pertubis
             ///@name Constructors
             ///@{
 
-            /// std constructor
             DepListSettingsView(QWidget *parent, DepListSettingsModel* model);
-            ///@}
-
-            ~DepListSettingsView();
-
-            ///@name Content modification
-            ///@{
 
 
-            /// \name deplist options
-            ///@{
+            virtual ~DepListSettingsView() {}
+
+            void populate_install_task(const paludis::Environment *env, paludis::InstallTask &task);
 
             DepListSettingsModel* m_model;
             QComboBox* m_dlDepsDefault;
@@ -268,7 +168,7 @@ namespace pertubis
             QComboBox* m_dlSuggested;
             QComboBox* m_dlBlocks;
             QComboBox* m_dlCircular;
-            QComboBox* m_dlOverrideMasks;
+            QListWidget* m_dlOverrideMasks;
             QComboBox* m_dlFallBack;
             QComboBox* m_dlDowngrade;
             QComboBox* m_dlNewSlots;
@@ -276,6 +176,10 @@ namespace pertubis
             QComboBox* m_dlReinstallScm;
             QComboBox* m_dlReinstallTargets;
             QComboBox* m_dlUpgrade;
+
+        private slots:
+
+            void setCurrentIndex(QString name,Qt::CheckState state);
     };
 }
 

@@ -47,6 +47,9 @@ namespace pertubis
 
         ~PackageModel();
 
+        ///@name Content information
+        ///@{
+
         QVariant data ( const QModelIndex & index,
                         int role = Qt::DisplayRole ) const;
 
@@ -67,13 +70,15 @@ namespace pertubis
                             Qt::Orientation orientation,
                             int role) const;
 
-        void setHorizontalHeaderLabels ( const QStringList & labels );
-
+         ///@name Content modification
+        ///@{
 
         bool setHeaderData ( int section,
                              Qt::Orientation orientation,
                              const QVariant & value,
                              int role = Qt::EditRole );
+
+        void setHorizontalHeaderLabels ( const QStringList & labels );
 
         bool setSelectionData( const QModelIndex & ix, int taskid, bool mystate);
 
@@ -81,19 +86,21 @@ namespace pertubis
 
         void setReportMode(bool value) { m_reportMode = value;}
 
+        ///@}
+
     public slots:
 
-        void slotAppendPackage(Package* item);
-        void slotPrependPackage(Package* item);
-        void slotClear();
+        void appendPackage(Package* item);
+        void prependPackage(Package* item);
+        void clear(int columns);
 
     private:
 
         QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
 
-        Package*            m_root;
-        TaskBox*         m_box;
-        QStringList      m_header;
+        Package*        m_root;
+        TaskBox*        m_box;
+        QStringList     m_header;
 
         QAction*        m_toggleInstall;
         QAction*        m_toggleDeinstall;

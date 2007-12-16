@@ -107,13 +107,14 @@ pertubis::LanguageSettings::LanguageSettings(QWidget *pobj)
     mainLayout->addStretch(1);
     setLayout(mainLayout);
     loadSettings();
+    qDebug() << "LanguageSettings::LanguageSettings() - done";
 }
 
 pertubis::LanguageSettings::~LanguageSettings()
 {
-    qDebug("LanguageSettings::~LanguageSettings() - start");
+    qDebug() << "LanguageSettings::~LanguageSettings() - start";
     saveSettings();
-    qDebug("LanguageSettings::~LanguageSettings() - done");
+    qDebug() << "LanguageSettings::~LanguageSettings() - done";
 }
 
 void pertubis::LanguageSettings::loadSettings()

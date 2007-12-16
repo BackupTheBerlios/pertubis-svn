@@ -34,7 +34,7 @@ namespace pertubis
 		Q_OBJECT
 	public:
 
-		InstallTaskTest() {}
+        InstallTaskTest() {}
 		~InstallTaskTest() {}
 
 	private slots:

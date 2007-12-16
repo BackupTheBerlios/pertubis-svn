@@ -43,9 +43,6 @@ pertubis::InstallSettingsModel::InstallSettingsModel(QObject *pobj) : QObject(po
                         "Options which are relevant for --install, --uninstall or --uninstall-unused.")
 {
     loadSettings();
-    std::ostringstream stream;
-    paludis::args::ArgsHandler::dump_to_stream(stream);
-    m_tooltip = QString::fromStdString(stream.str());
 }
 
 std::string pertubis::InstallSettingsModel::app_name() const
@@ -66,6 +63,18 @@ std::string pertubis::InstallSettingsModel::app_description() const
 pertubis::InstallSettingsModel::~InstallSettingsModel()
 {
     saveSettings();
+}
+
+void pertubis::InstallSettingsModel::populate_install_task(const paludis::Environment *env, paludis::InstallTask &task) const
+{
+    install_args.populate_install_task(env,task);
+}
+
+QString pertubis::InstallSettingsModel::getDesc()
+{
+    std::ostringstream stream;
+    paludis::args::ArgsHandler::dump_to_stream(stream);
+    return QString::fromStdString(stream.str());
 }
 
 void pertubis::InstallSettingsModel::loadSettings()
@@ -113,7 +122,8 @@ pertubis::InstallSettingsView::InstallSettingsView(QWidget *pobj,InstallSettings
 void pertubis::InstallSettingsView::createNormal(QWidget* pobj)
 {
     QGroupBox* group(new QGroupBox(tr("Installation Settings"),pobj));
-    setToolTip(m_model->m_tooltip);
+
+    group->setToolTip(m_model->getDesc());
     m_debug->setToolTip( tr("debug build") );
     m_debug->addItem( tr("none") );
     m_debug->addItem( tr("split") );

@@ -22,7 +22,7 @@
 #include "FormatterUtils.hh"
 #include <QGroupBox>
 #include <QLabel>
-#include <QLabel>
+#include <QListWidget>
 #include <QSettings>
 #include <QComboBox>
 #include <QGridLayout>
@@ -31,6 +31,7 @@
 
 pertubis::DepListSettingsModel::DepListSettingsModel(QObject *pobj) :
         QObject(pobj),
+        m_depListArgs(this),
         m_dlDepsDefault(0),
         m_dlInstalledDepsPre(0),
         m_dlInstalledDepsRuntime(0),
@@ -42,7 +43,6 @@ pertubis::DepListSettingsModel::DepListSettingsModel(QObject *pobj) :
         m_dlSuggested(0),
         m_dlBlocks(0),
         m_dlCircular(0),
-        m_dlOverrideMasks(0),
         m_dlFallBack(0),
         m_dlDowngrade(0),
         m_dlNewSlots(0),
@@ -53,9 +53,193 @@ pertubis::DepListSettingsModel::DepListSettingsModel(QObject *pobj) :
 {
     loadSettings();
 }
+
 pertubis::DepListSettingsModel::~DepListSettingsModel()
 {
     saveSettings();
+}
+
+std::string pertubis::DepListSettingsModel::app_name() const
+{
+    return "";
+}
+
+std::string pertubis::DepListSettingsModel::app_synopsis() const
+{
+    return "";
+}
+
+std::string pertubis::DepListSettingsModel::app_description() const
+{
+    return "";
+}
+
+void pertubis::DepListSettingsModel::changeDepsDefault(int state)
+{
+    if (m_dlDepsDefault != state)
+        emit depsDefaultChanged(state);
+    m_dlDepsDefault = state;
+}
+
+void pertubis::DepListSettingsModel::changeInstallDepsPre(int state)
+{
+    if (m_dlInstalledDepsPre != state)
+        emit installDepsPreChanged(state);
+    m_dlInstalledDepsPre = state;
+}
+
+void pertubis::DepListSettingsModel::changeInstallDepsRuntime(int state)
+{
+    if (m_dlInstalledDepsRuntime != state)
+        emit installDepsRuntimeChanged(state);
+    m_dlInstalledDepsRuntime = state;
+}
+
+void pertubis::DepListSettingsModel::changeInstallDepsPost(int state)
+{
+    if (m_dlInstalledDepsPost != state)
+        emit installDepsPostChanged(state);
+    m_dlInstalledDepsPost = state;
+}
+
+void pertubis::DepListSettingsModel::changeUninstallDepsPre(int state)
+{
+    if (m_dlUninstalledDepsPre != state)
+        emit uninstallDepsPreChanged(state);
+    m_dlUninstalledDepsPre = state;
+}
+
+void pertubis::DepListSettingsModel::changeUninstallDepsRuntime(int state)
+{
+    if (m_dlUninstalledDepsRuntime != state)
+        emit uninstallDepsRuntimeChanged(state);
+    m_dlUninstalledDepsRuntime = state;
+}
+
+void pertubis::DepListSettingsModel::changeUninstallDepsPost(int state)
+{
+    if (m_dlUninstalledDepsPost != state)
+        emit uninstallDepsPostChanged(state);
+    m_dlUninstalledDepsPost = state;
+}
+
+void pertubis::DepListSettingsModel::changeUninstallDepsSuggested(int state)
+{
+    if (m_dlUninstalledDepsSuggested != state)
+        emit uninstallDepsSuggestedChanged(state);
+    m_dlUninstalledDepsSuggested = state;
+}
+
+void pertubis::DepListSettingsModel::changeSuggested(int state)
+{
+    if (m_dlSuggested != state)
+        emit suggestedChanged(state);
+    m_dlSuggested = state;
+}
+
+void pertubis::DepListSettingsModel::changeBlocks(int state)
+{
+    if (m_dlBlocks != state)
+        emit blocksChanged(state);
+    m_dlBlocks = state;
+}
+void pertubis::DepListSettingsModel::changeCircular(int state)
+{
+    if (m_dlCircular != state)
+        emit circularChanged(state);
+    m_dlCircular = state;
+}
+
+void pertubis::DepListSettingsModel::changeOverride(QListWidgetItem * item )
+{
+    bool onHere(m_dlOverrideMasks.contains(item->text()));
+    bool onThere(Qt::Checked == item->checkState());
+    if (onHere && !onThere)
+    {
+        emit overrideChanged(item->text(),Qt::Unchecked);
+        m_dlOverrideMasks.remove(item->text());
+    }
+    if (!onHere && onThere)
+    {
+        emit overrideChanged(item->text(),Qt::Checked);
+        m_dlOverrideMasks.insert(item->text());
+    }
+}
+
+void pertubis::DepListSettingsModel::changeFallback(int state)
+{
+    if (m_dlFallBack != state)
+        emit fallbackChanged(state);
+    m_dlFallBack = state;
+}
+
+void pertubis::DepListSettingsModel::changeDowngrade(int state)
+{
+    if (m_dlDowngrade != state)
+        emit downgradeChanged(state);
+    m_dlDowngrade = state;
+}
+
+void pertubis::DepListSettingsModel::changeNewSlots(int state)
+{
+    if (m_dlNewSlots != state)
+        emit newSlotsChanged(state);
+    m_dlNewSlots = state;
+}
+
+void pertubis::DepListSettingsModel::changeReinstall(int state)
+{
+    if (m_dlSuggested != state)
+        emit reinstallChanged(state);
+    m_dlReinstall = state;
+}
+
+void pertubis::DepListSettingsModel::changeReinstallScm(int state)
+{
+    if (m_dlReinstallScm != state)
+        emit reinstallScmChanged(state);
+    m_dlReinstallScm = state;
+}
+
+void pertubis::DepListSettingsModel::changeReinstallTarget(int state)
+{
+    if (m_dlReinstallTargets != state)
+        emit reinstallTargetChanged(state);
+    m_dlReinstallTargets = state;
+}
+
+void pertubis::DepListSettingsModel::changeUpgrade(int state)
+{
+    if (m_dlUpgrade != state)
+        emit upgradeChanged(state);
+    m_dlUpgrade = state;
+}
+
+void pertubis::DepListSettingsView::populate_install_task(const paludis::Environment *env, paludis::InstallTask &task)
+{
+    for (QSet<QString>::const_iterator iStart(m_model->m_dlOverrideMasks.constBegin()),iEnd(m_model->m_dlOverrideMasks.constEnd());iStart!= iEnd;++iStart)
+    {
+        m_model->m_depListArgs.dl_override_masks.add_argument(iStart->toStdString());
+    }
+
+    m_model->m_depListArgs.dl_reinstall_scm.set_argument(m_dlReinstallScm->itemText(m_model->m_dlReinstallScm).toStdString());
+    m_model->m_depListArgs.dl_reinstall_targets.set_argument(m_dlReinstallTargets->itemText(m_model->m_dlReinstallTargets).toStdString());
+    m_model->m_depListArgs.dl_upgrade.set_argument(m_dlUpgrade->itemText(m_model->m_dlUpgrade).toStdString());
+    m_model->m_depListArgs.dl_new_slots.set_argument(m_dlNewSlots->itemText(m_model->m_dlNewSlots).toStdString());
+    m_model->m_depListArgs.dl_downgrade.set_argument(m_dlDowngrade->itemText(m_model->m_dlDowngrade).toStdString());
+    m_model->m_depListArgs.dl_deps_default.set_argument(m_dlDepsDefault->itemText(m_model->m_dlDepsDefault).toStdString());
+    m_model->m_depListArgs.dl_installed_deps_pre.set_argument(m_dlInstalledDepsPre->itemText(m_model->m_dlInstalledDepsPre).toStdString());
+    m_model->m_depListArgs.dl_installed_deps_runtime.set_argument(m_dlInstalledDepsRuntime->itemText(m_model->m_dlInstalledDepsRuntime).toStdString());
+    m_model->m_depListArgs.dl_installed_deps_post.set_argument(m_dlInstalledDepsPost->itemText(m_model->m_dlInstalledDepsPost).toStdString());
+    m_model->m_depListArgs.dl_uninstalled_deps_pre.set_argument(m_dlUninstalledDepsPre->itemText(m_model->m_dlUninstalledDepsPre).toStdString());
+    m_model->m_depListArgs.dl_uninstalled_deps_runtime.set_argument(m_dlUninstalledDepsRuntime->itemText(m_model->m_dlUninstalledDepsRuntime).toStdString());
+    m_model->m_depListArgs.dl_uninstalled_deps_post.set_argument(m_dlUninstalledDepsPost->itemText(m_model->m_dlUninstalledDepsPost).toStdString());
+    m_model->m_depListArgs.dl_uninstalled_deps_suggested.set_argument(m_dlUninstalledDepsSuggested->itemText(m_model->m_dlUninstalledDepsSuggested).toStdString());
+    m_model->m_depListArgs.dl_suggested.set_argument(m_dlSuggested->itemText(m_model->m_dlSuggested).toStdString());
+    m_model->m_depListArgs.dl_circular.set_argument(m_dlCircular->itemText(m_model->m_dlCircular).toStdString());
+    m_model->m_depListArgs.dl_blocks.set_argument(m_dlBlocks->itemText(m_model->m_dlBlocks).toStdString());
+    m_model->m_depListArgs.dl_fall_back.set_argument(m_dlFallBack->itemText(m_model->m_dlFallBack).toStdString());
+    m_model->m_depListArgs.populate_install_task(env,task);
 }
 
 void pertubis::DepListSettingsModel::loadSettings()
@@ -73,7 +257,12 @@ void pertubis::DepListSettingsModel::loadSettings()
         m_dlSuggested = settings.value("Suggested",0).toInt();
         m_dlBlocks = settings.value("Block",0).toInt();
         m_dlCircular = settings.value("Circular",0).toInt();
-        m_dlOverrideMasks = settings.value("Override",0).toInt();
+        QVariantList overrides(settings.value("Override",QVariantList() << "tilde-keyword" << "license").toList());
+        for (QVariantList::const_iterator it(overrides.constBegin()),iEnd(overrides.constEnd());
+             it != iEnd;++it)
+        {
+            m_dlOverrideMasks.insert( (*it).toString());
+        }
         m_dlFallBack = settings.value("Fallback",0).toInt();
         m_dlDowngrade = settings.value("Downgrade",0).toInt();
         m_dlNewSlots = settings.value("NewSlots",0).toInt();
@@ -99,7 +288,13 @@ void pertubis::DepListSettingsModel::saveSettings()
     settings.setValue("Suggested",m_dlSuggested);
     settings.setValue("Block",m_dlBlocks);
     settings.setValue("Circular",m_dlCircular);
-    settings.setValue("Override",m_dlOverrideMasks);
+    QVariantList overrides;
+    for (QSet<QString>::const_iterator it(m_dlOverrideMasks.constBegin()),iEnd(m_dlOverrideMasks.constEnd());
+         it != iEnd;++it)
+    {
+        overrides.push_back(*it);
+    }
+    settings.setValue("Override",overrides);
     settings.setValue("Fallback",m_dlFallBack);
     settings.setValue("Downgrade",m_dlDowngrade);
     settings.setValue("NewSlots",m_dlNewSlots);
@@ -110,6 +305,12 @@ void pertubis::DepListSettingsModel::saveSettings()
     settings.endGroup();
 }
 
+QString pertubis::DepListSettingsModel::getDesc()
+{
+    std::ostringstream stream;
+    paludis::args::ArgsHandler::dump_to_stream(stream);
+    return QString::fromStdString(stream.str());
+}
 
 pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSettingsModel* model) :
         QWidget(pobj),
@@ -125,7 +326,7 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
         m_dlSuggested(new QComboBox(this)),
         m_dlBlocks(new QComboBox(this)),
         m_dlCircular(new QComboBox(this)),
-        m_dlOverrideMasks(new QComboBox(this)),
+        m_dlOverrideMasks(new QListWidget(this)),
         m_dlFallBack(new QComboBox(this)),
         m_dlDowngrade(new QComboBox(this)),
         m_dlNewSlots(new QComboBox(this)),
@@ -135,7 +336,7 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
         m_dlUpgrade(new QComboBox(this))
 {
     QGroupBox* group(new QGroupBox(tr("Dependency List Settings"),pobj));
-    group->setToolTip(tr("Modify dependency list generation behaviour. Use with caution."));
+    group->setWhatsThis("");
     QStringList commonItems;
     commonItems << tr("pre") << tr("pre-or-post") << tr("post") << tr("try-post") << tr("discard");
 
@@ -146,6 +347,7 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
                     make_row(tr("post"),tr("As pre dependencies, or post dependencies where needed"))).arg(
                     make_row(tr("try-post"),tr("As post dependencies"))));
 
+//     m_dlDepsDefault->setToolTip(QString::fromStdString(m_model->m_depListArgs.dl_deps_default.description()));
     m_dlDepsDefault->addItems(commonItems);
     m_dlDepsDefault->setToolTip(QString("<html><body><p>%1</p><p>%2</p></body></html>").arg(tr("Override default behaviour for all dependency classes")).arg(commonHelp));
     m_dlDepsDefault->setCurrentIndex(m_model->m_dlDepsDefault);
@@ -196,12 +398,25 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
     m_dlBlocks->setCurrentIndex(m_model->m_dlBlocks);
 
     m_dlOverrideMasks->setToolTip(tr("Zero or more mask kinds that can be overridden as necessary (default: tilde-keyword and license)"));
-    m_dlOverrideMasks->addItem(tr("none"));
-    m_dlOverrideMasks->addItem(tr("tilde-keyword"));
-    m_dlOverrideMasks->addItem(tr("unkeyworded"));
-    m_dlOverrideMasks->addItem(tr("repository"));
-    m_dlOverrideMasks->addItem(tr("profile"));
-    m_dlOverrideMasks->setCurrentIndex(m_model->m_dlOverrideMasks);
+
+    QListWidgetItem* a0(new QListWidgetItem("none"));
+    QListWidgetItem* a1(new QListWidgetItem("tilde-keyword"));
+    QListWidgetItem* a2(new QListWidgetItem("unkeyworded"));
+    QListWidgetItem* a3(new QListWidgetItem("repository"));
+    QListWidgetItem* a4(new QListWidgetItem("profile"));
+    QListWidgetItem* a5(new QListWidgetItem("license"));
+    a0->setCheckState(m_model->m_dlOverrideMasks.contains("none") ? Qt::Checked : Qt::Unchecked);
+    a1->setCheckState(m_model->m_dlOverrideMasks.contains("tilde-keyword") ? Qt::Checked : Qt::Unchecked);
+    a2->setCheckState(m_model->m_dlOverrideMasks.contains("unkeyworded") ? Qt::Checked : Qt::Unchecked);
+    a3->setCheckState(m_model->m_dlOverrideMasks.contains("repository") ? Qt::Checked : Qt::Unchecked);
+    a4->setCheckState(m_model->m_dlOverrideMasks.contains("profile") ? Qt::Checked : Qt::Unchecked);
+    a5->setCheckState(m_model->m_dlOverrideMasks.contains("license") ? Qt::Checked : Qt::Unchecked);
+    m_dlOverrideMasks->addItem(a0);
+    m_dlOverrideMasks->addItem(a1);
+    m_dlOverrideMasks->addItem(a2);
+    m_dlOverrideMasks->addItem(a3);
+    m_dlOverrideMasks->addItem(a4);
+    m_dlOverrideMasks->addItem(a5);
 
     m_dlFallBack->setToolTip(tr("When to fall back to installed packages"));
     m_dlFallBack->addItem(tr("as-needed-except-targets"));
@@ -340,9 +555,9 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
             SLOT(setCurrentIndex(int)));
 
     connect(m_model,
-            SIGNAL(overrideChanged(int)),
-            m_dlOverrideMasks,
-            SLOT(setCurrentIndex(int)));
+            SIGNAL(overrideChanged(QString,Qt::CheckState)),
+            this,
+            SLOT(setCurrentIndex(QString,Qt::CheckState)));
 
     connect(m_model,
             SIGNAL(fallbackChanged(int)),
@@ -437,9 +652,9 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
             SLOT(changeCircular(int)));
 
     connect(m_dlOverrideMasks,
-            SIGNAL(currentIndexChanged(int)),
+            SIGNAL(itemClicked(QListWidgetItem*)),
             m_model,
-            SLOT(changeOverride(int)));
+            SLOT(changeOverride(QListWidgetItem*)));
 
     connect(m_dlFallBack,
             SIGNAL(currentIndexChanged(int)),
@@ -483,9 +698,12 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
     mainLayout->addSpacing(12);
     mainLayout->addStretch(1);
     setLayout(mainLayout);
+
 }
 
-pertubis::DepListSettingsView::~DepListSettingsView()
+void pertubis::DepListSettingsView::setCurrentIndex(QString name,Qt::CheckState state)
 {
+    QList<QListWidgetItem*> list(m_dlOverrideMasks->findItems(name,Qt::MatchExactly | Qt::MatchCaseSensitive));
+    if (list.count() == 1)
+        (*list.begin())->setCheckState(state);
 }
-

@@ -21,9 +21,11 @@
 #include "CategoryFilterModel.hh"
 #include "CategoryModel.hh"
 #include "CategoryThread.hh"
+#include "CategoryItem.hh"
 #include "DeinstallTask.hh"
 #include "DetailsThread.hh"
 #include "FormatterUtils.hh"
+#include "GLSAParser.hh"
 #include "InstallTask.hh"
 #include "MainWindow.hh"
 #include "MessageOutput.hh"
@@ -43,6 +45,7 @@
 #include "SyncTask.hh"
 #include "SystemReport.hh"
 #include "TaskBox.hh"
+#include "version.hh"
 
 #include <paludis/args/install_args_group.hh>
 #include <paludis/environment_maker.hh>
@@ -56,11 +59,15 @@
 
 #include <iostream>
 #include <QApplication>
+#include <QDialogButtonBox>
+#include <QPushButton>
 #include <QCheckBox>
 #include <QCursor>
 #include <QDataStream>
 #include <QDebug>
+#include <QLabel>
 #include <QDockWidget>
+#include <QDir>
 #include <QFile>
 #include <QFont>
 #include <QHeaderView>
@@ -81,6 +88,7 @@
 #include <QTextBrowser>
 #include <QTimer>
 #include <QToolBar>
+#include <QVBoxLayout>
 #include <QUrl>
 
 static bool rootTest(const QString& message)
@@ -132,6 +140,23 @@ namespace
             }
         }
     };
+}
+
+void pertubis::GLSAFetcher::start(const QString& dir)
+{
+    m_dir = dir;
+    m_dir.setSorting(QDir::Reversed);
+    QThread::start();
+}
+
+void pertubis::GLSAFetcher::run()
+{
+    QStringList list(m_dir.entryList(QStringList() << "glsa-*.xml"));
+    QString item;
+    foreach (item,list)
+    {
+        emit sendCategory(new CategoryItem(item,QSet<QString>()));
+    }
 }
 
 pertubis::PackageView::PackageView(QWidget* pWidget) : QTreeView(pWidget)
@@ -200,6 +225,7 @@ void pertubis::MainWindow::initGUI()
     createTasks(); // createTaskBox()
     createRepositoryBar(); // no deps
     createCatbar(); // createRepositoryBar()
+    createGLSAList(); // no deps
     createSetListView(); // no deps
     createPackageView(); // createRepositoryBar()
     createToolBar(); // createActions()
@@ -213,6 +239,7 @@ void pertubis::MainWindow::initGUI()
     addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
     addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
     addDockWidget(Qt::LeftDockWidgetArea, m_dockSet);
+    addDockWidget(Qt::LeftDockWidgetArea, m_dockGLSA);
     m_sysRep = new SystemReport(this,m_env,m_box);
     m_repoInfoThread = new RepositoryInfoThread(this,m_env,m_box);
     m_categoryThread = new CategoryThread(this,m_env,m_box);
@@ -316,6 +343,8 @@ void pertubis::MainWindow::createPackageView()
     m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
 
     m_packageView = new PackageView(this);
+    m_packageView->setRootIsDecorated(true);
+    m_packageView->setItemsExpandable(true);
     m_packageFilterModel = new PackageFilterModel(this);
     m_packageFilterModel->setSourceModel(m_packageModel);
     m_packageView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -334,16 +363,21 @@ void pertubis::MainWindow::createToolBar()
     // deps
     // - createActions()
     m_toolBar = addToolBar( tr("database toolbar") );
-    m_toolBar->addAction(m_acSync);
+
     m_toolBar->addAction(m_acToggleCatBar);
     m_toolBar->addAction(m_acToggleRepoBar);
     m_toolBar->addAction(m_acToggleSetBar);
+    m_toolBar->addAction(m_acGLSA);
     m_toolBar->addAction(m_acTogglePackageView);
     m_toolBar->addAction(m_acToggleSearchWindow);
+    m_toolBar->addSeparator();
+    m_toolBar->addAction(m_acSync);
     m_toolBar->addAction(m_acSysRep);
     m_toolBar->addAction(m_acSelection);
     m_toolBar->addAction(m_acFinish);
     m_toolBar->addAction(m_acPref);
+    m_toolBar->addSeparator();
+    m_toolBar->addAction(m_acAbout);
 }
 
 void pertubis::MainWindow::createOutput()
@@ -404,7 +438,7 @@ void pertubis::MainWindow::createSetListView()
     myfont.setBold(true);
     m_setListView->setFont(myfont);
 
-    m_dockSet = new QDockWidget(tr("set list"),this);
+    m_dockSet = new QDockWidget(tr("GLSA list"),this);
     m_dockSet->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     m_dockSet->setWidget(m_setListView);
     m_dockSet->layout()->setMargin(0);
@@ -441,9 +475,6 @@ void pertubis::MainWindow::createRepositoryView()
 void pertubis::MainWindow::createDetails()
 {
     m_details = new QTextBrowser(this);
-    QPalette p(m_details->palette());
-//     p.setColor(QPalette::Base,QColor(170,170,170)); // background color  = black
-    m_details->setPalette(p);
     m_details->setOpenLinks(false);
 }
 
@@ -456,6 +487,41 @@ void pertubis::MainWindow::createTab()
     m_detailsTabID = m_tabs->addTab(m_details,tr("Package Details") );
     m_repoViewTabID = m_tabs->addTab(m_repoInfoView,tr("repository details") );
     m_outputTabID = m_tabs->addTab(m_output,tr("Messages"));
+}
+
+void pertubis::MainWindow::createGLSAList()
+{
+    m_glsaModel = new CategoryModel(this);
+    m_glsaModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
+
+    m_glsaListView = new QTableView(this);
+    m_glsaListView->setModel(m_glsaModel);
+    m_glsaListView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    m_glsaListView->horizontalHeader()->setVisible(false);
+    m_glsaListView->verticalHeader()->setVisible(false);
+    m_glsaListView->setShowGrid(false);
+    QFont myfont(m_glsaListView->font());
+    myfont.setBold(true);
+    m_glsaListView->setFont(myfont);
+
+    m_dockGLSA = new QDockWidget(tr("security announcements"),this);
+    m_dockGLSA->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    m_dockGLSA->setWidget(m_glsaListView);
+    m_dockGLSA->layout()->setMargin(0);
+    m_dockGLSA->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
+    m_acGLSA = m_dockGLSA->toggleViewAction();
+    m_acGLSA->setIcon( QPixmap(":images/glsa.png"));
+    m_acGLSA->setText(tr("security"));
+    m_acGLSA->setShortcut( tr("CTRL+I"));
+    m_acGLSA->setToolTip(html_tooltip( tr("see Gentoo Linux Security Announcements"),m_acGLSA->text())) ;
+    m_glsaThread = new GLSAFetcher(this);
+
+    connect(m_glsaThread,
+            SIGNAL(sendCategory(CategoryItem*)),
+            m_glsaModel,
+            SLOT(appendCategory(CategoryItem*)));
+    m_glsaThread->start("/var/repositories/gentoo/metadata/glsa/");
 }
 
 void pertubis::MainWindow::createActions()
@@ -490,6 +556,7 @@ void pertubis::MainWindow::createActions()
     m_acFinish->setShortcut( tr("CTRL+F12"));
     m_acFinish->setToolTip(html_tooltip( tr("starts all pending tasks you selected"),m_acFinish->text())) ;
 
+
     m_acSync = new QAction( QPixmap(":images/sync0.png"), tr("sync"),this);
     m_acSync->setToolTip(html_tooltip(tr("To get the latest releases and bugfixes it is neccessary to update the package database.<br><br>It is sufficient to sync your repositories once a day"),m_acSync->text()));
 
@@ -499,6 +566,8 @@ void pertubis::MainWindow::createActions()
     m_acInstall= new QAction(tr("install"),this);
     m_acInstall->setToolTip( html_tooltip(tr("install this package")));
     m_acInstall->setCheckable(true);
+
+    m_acAbout = new QAction(QPixmap(":images/logo.png"), tr("about pertubis"),this);
 
     m_acDeinstall= new QAction(tr("deinstall"),this);
     m_acDeinstall->setToolTip(html_tooltip( tr("deinstall this package") ));
@@ -568,10 +637,15 @@ void pertubis::MainWindow::createConnections()
             this,
             SLOT(onCategoryChanged( const QModelIndex& )) );
 
+    connect(m_glsaListView,
+            SIGNAL(clicked( const QModelIndex&)),
+            this,
+            SLOT(displayGLSA( const QModelIndex& )) );
+
     connect(m_categoryThread,
             SIGNAL(sendCategory(QMap<QString, QSet<QString> >)),
             m_catModel,
-            SLOT(slotAppendCategory(QMap<QString, QSet<QString> >)));
+            SLOT(appendCategory(QMap<QString, QSet<QString> >)));
 
     connect(m_details,
             SIGNAL(anchorClicked(const QUrl&)),
@@ -586,7 +660,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_packageViewThread,
             SIGNAL(addPackage(Package*)),
             m_packageModel,
-            SLOT(slotPrependPackage(Package*)));
+            SLOT(prependPackage(Package*)));
 
     connect(m_packageViewThread,
             SIGNAL(finished()),
@@ -616,12 +690,12 @@ void pertubis::MainWindow::createConnections()
     connect(m_searchThread,
             SIGNAL(packageResult(Package*)),
             m_packageModel,
-            SLOT(slotAppendPackage(Package*)));
+            SLOT(appendPackage(Package*)));
 
     connect(m_searchThread,
-            SIGNAL(finished(int,int)),
+            SIGNAL(finished(int)),
             this,
-            SLOT(displaySearchFinished(int,int)));
+            SLOT(displaySearchFinished(int)));
 
     connect(m_searchWindow,
             SIGNAL(stopSearch()),
@@ -636,7 +710,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_selectionsThread,
             SIGNAL(appendPackage(Package*)),
             m_packageModel,
-            SLOT(slotAppendPackage(Package*)));
+            SLOT(appendPackage(Package*)));
 
     connect(m_selectionsThread,
             SIGNAL(finished()),
@@ -651,7 +725,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_sysRep,
             SIGNAL(appendPackage(Package*)),
             m_packageModel,
-            SLOT(slotAppendPackage(Package*)));
+            SLOT(appendPackage(Package*)));
 
     connect(m_sysRep,
             SIGNAL(finished(int,int)),
@@ -661,7 +735,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_setThread,
             SIGNAL(sendSet(QMap<QString, QSet<QString> >)),
             m_setModel,
-            SLOT(slotAppendCategory(QMap<QString, QSet<QString> >)));
+            SLOT(appendCategory(QMap<QString, QSet<QString> >)));
 
     connect(m_repoListThread,
             SIGNAL(sendNames(QStringList)),
@@ -702,6 +776,11 @@ void pertubis::MainWindow::createConnections()
             SIGNAL(sendResult(const QList<QVariantList>&)),
             m_repoInfoModel,
             SLOT(slotResult(const QList<QVariantList>&)));
+
+    connect(m_acAbout,
+            SIGNAL(triggered()),
+            this,
+            SLOT(aboutPertubis()));
 }
 
 void pertubis::MainWindow::createTasks()
@@ -808,7 +887,7 @@ void pertubis::MainWindow::displayNextIcon()
     ++i;
     if (i>3)
         i=0;
-    QString file(QString(":images/sync_%1_22.xpm").arg(i));
+    QString file(QString(":images/sync%1.png").arg(i));
     qDebug() << file;
     m_acSync->setIcon(QPixmap(file));
     m_sysTray->setIcon(QPixmap(file));
@@ -818,25 +897,38 @@ void pertubis::MainWindow::displaySyncFinished()
 {
     onEndOfPaludisAction();
     m_timer->stop();
-    m_acSync->setIcon( QPixmap(":images/sync_0_22.xpm"));
-    m_sysTray->setIcon( QPixmap(":images/logo.xpm"));
+    m_acSync->setIcon( QPixmap(":images/sync0.png"));
+    m_sysTray->setIcon( QPixmap(":images/logo.png"));
     QMessageBox q(QMessageBox::NoIcon,
                     tr("information"),
                     tr("syncing repositories finished"),
                     QMessageBox::Ok,
                     this);
-    q.setIconPixmap(QPixmap(":images/repobar_22.xpm"));
+    q.setIconPixmap(QPixmap(":images/repobar.png"));
     q.setDefaultButton(QMessageBox::Ok);
     q.exec();
+}
+
+void pertubis::MainWindow::displayGLSA(const QModelIndex& ix)
+{
+    QFile file(m_glsaThread->m_dir.filePath(m_glsaModel->data(ix).toString()));
+    QXmlInputSource inputSource(&file);
+    QXmlSimpleReader reader;
+    GLSAParser handler(m_details);
+    reader.setContentHandler(&handler);
+    reader.setErrorHandler(&handler);
+    reader.parse(inputSource);
+    m_tabs->setCurrentIndex(m_detailsTabID);
 }
 
 void pertubis::MainWindow::displaySearchFinished(int total,int count)
 {
     onEndOfPaludisAction();
-    if (total!= 0)
+    m_searchWindow->displaySearch(false);
+    if (count!= 0)
         statusBar()->showMessage(tr("packages %1 processed, %2 packages found").arg(total).arg(count));
     else
-        statusBar()->showMessage(tr("%1 packages found").arg(count));
+        statusBar()->showMessage(tr("%1 packages found").arg(total));
 }
 
 void pertubis::MainWindow::displayOptionsMenu(const QModelIndex& mix)
@@ -870,13 +962,14 @@ void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ 
     if ( !origIndex.isValid() || 0 != origIndex.column() || m_packageViewThread->isRunning())
         return;
 
+//     m_packageView->setRootIsDecorated(true);
     m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
     m_packageOrReportHeader=true;
     m_packageFilterModel->setOnOff(true);
     m_packageModel->setReportMode(false);
 
     onStartOfPaludisAction();
-    m_packageModel->slotClear();
+    m_packageModel->clear(Package::po_last);
     m_currentCat = m_catModel->data(origIndex).toString();
     m_packageViewThread->start(m_currentCat);
 }
@@ -933,8 +1026,9 @@ void pertubis::MainWindow::onSystemReport()
     m_packageOrReportHeader=false;
     m_packageFilterModel->setOnOff(false);
     m_packageModel->setReportMode(true);
+//     m_packageView->setRootIsDecorated(true);
     onStartOfPaludisAction();
-    m_packageModel->slotClear();
+    m_packageModel->clear(rho_last);
     m_sysRep->start();
 }
 
@@ -1024,10 +1118,11 @@ void pertubis::MainWindow::onShowSelections()
     m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
     m_packageOrReportHeader=true;
     m_packageFilterModel->setOnOff(true);
+//     m_packageView->setRootIsDecorated(true);
     m_packageModel->setReportMode(false);
 
     onStartOfPaludisAction();
-    m_packageModel->slotClear();
+    m_packageModel->clear(Package::po_last);
     m_selectionsThread->start();
 }
 
@@ -1039,7 +1134,7 @@ void pertubis::MainWindow::onSearch(QString query)
     m_packageModel->setReportMode(false);
 
     onStartOfPaludisAction();
-    m_packageModel->slotClear();
+    m_packageModel->clear(Package::po_last);
     statusBar()->showMessage(QString(tr("searching for %1...")).arg(query) );
 }
 
@@ -1098,4 +1193,39 @@ void pertubis::MainWindow::toggleMainWindow()
 void pertubis::MainWindow::toggleSettings()
 {
     m_settings->exec();
+}
+
+void pertubis::MainWindow::aboutPertubis()
+{
+    QVBoxLayout* mylayout(new QVBoxLayout());
+    QTextBrowser* label(new QTextBrowser(this));
+    label->setText(tr(
+"<html><body><table>"
+"<colgroup><col width=\"40%\"><col width=\"60%\">\n</colgroup>\n"
+"<tbody>"
+"<tr><td>version</td><td>%1.%2.%3</td><td></tr>"
+"<tr><td>Revision</td><td>%4</td><td></tr>"
+"<tr><td>author</td><td>©2007 by Stefan Kögl</td></tr>"
+"<tr><td>homepage</td><td><a ref=\"http://pertubis.berlios.de\">http://pertubis.berlios.de/</a></td></tr>"
+"</tbody>"
+"</table></body></html>").arg(MAJOR_VERSION_NUMBER)
+            .arg(MINOR_VERSION_NUMBER)
+            .arg(PATCH_VERSION_NUMBER)
+            .arg(PERTUBIS_REVISION_NUMBER));
+    label->setOpenLinks(true);
+    mylayout->addWidget(label);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(Qt::Vertical);
+    QPushButton* bClose = buttonBox->addButton(QDialogButtonBox::Close);
+    bClose->setAutoDefault(false);
+    mylayout->addWidget(bClose);
+
+
+    QDialog about(this);
+    about.setWindowTitle(tr("pertubis - an interactive frontend for paludis"));
+    about.setLayout(mylayout);
+    connect(bClose,
+            SIGNAL(clicked()),
+            &about,
+            SLOT(close()));
+    about.exec();
 }

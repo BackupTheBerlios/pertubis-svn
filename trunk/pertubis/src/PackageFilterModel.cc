@@ -21,7 +21,7 @@
 #include "PackageFilterModel.hh"
 #include "Package.hh"
 
-pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj),m_filterOn(false)
+pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj),m_filterOn(true)
 {
 }
 

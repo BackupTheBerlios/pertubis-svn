@@ -27,6 +27,7 @@ class QLineEdit;
 class QCheckBox;
 class QPushButton;
 class QDialogButtonBox;
+class QProgressBar;
 
 
 /*! \brief all classes and functions are in this namespace
@@ -60,7 +61,7 @@ namespace pertubis
 
         private:
 
-            void displaySearch(bool start);
+
             void loadSettings();
             void saveSettings();
 
@@ -78,6 +79,12 @@ namespace pertubis
 
             void onStop();
 
+            void progress(int);
+
+        public slots:
+
+            void displaySearch(bool start);
+
         private:
             /// ask for query settings
             QuerySettingsModel*     m_querySettings;
@@ -87,6 +94,7 @@ namespace pertubis
             QPushButton*            m_bStop;
             QPushButton*            m_bClose;
             QPushButton*            m_bOptions;
+            QProgressBar*           m_bar;
     };
 }
 #endif

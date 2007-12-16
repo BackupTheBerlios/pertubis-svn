@@ -27,6 +27,7 @@
 #include "TaskBox.hh"
 #include "text_matcher.hh"
 
+
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
@@ -48,6 +49,7 @@
 #include <QTableWidgetItem>
 #include <QComboBox>
 #include <QVariant>
+#include <QMutexLocker>
 #include <QStringList>
 #include <set>
 
@@ -146,15 +148,18 @@ pertubis::SearchThread::~SearchThread()
 void pertubis::SearchThread::start(const QString& str)
 {
     m_query = str;
+    m_stopExec=false;
     QThread::start();
 }
 
 void pertubis::SearchThread::run()
 {
     using namespace paludis;
-    ThreadBase::lock();
+    QMutexLocker locker(&m_paludisAccess);
+
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
+    emit progress(0);
 
     if (m_querySettings->m_matcherModel==0)
     {
@@ -166,10 +171,8 @@ void pertubis::SearchThread::run()
         qDebug() << "using RegexMatcher";
         matchers.push_back( tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data()) ));
     }
-
     extractors.push_back(tr1::shared_ptr<NameDescriptionExtractor>( new NameDescriptionExtractor(m_env.get())));
 
-    int count(0);
     std::list<tr1::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
          r_end(m_env->package_database()->end_repositories()) ;
@@ -187,6 +190,7 @@ void pertubis::SearchThread::run()
         }
         repos.push_back(*r);
     }
+    emit progress(10);
 
     if (m_stopExec)
         return;
@@ -198,7 +202,7 @@ void pertubis::SearchThread::run()
         std::copy(c->begin(), c->end(), std::inserter(cats, cats.begin()));
     }
 
-
+    emit progress(30);
     if (m_stopExec)
         return;
     std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > ids;
@@ -218,19 +222,22 @@ void pertubis::SearchThread::run()
             }
         }
     }
+    qDebug() << "...3";
 
-
+    emit progress(50);
     if (m_stopExec)
         return;
 
     Matches matches(matchers,extractors);
 
     std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*m_env), tr1::cref(repos), tr1::placeholders::_1, matches));
+    emit progress(90);
 
-    qDebug() << "1";
+    qDebug() << "...4";
     if (m_stopExec)
         return;
-
+    int max(ids.size());
+    int count(0);
     for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
          i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
     {
@@ -311,8 +318,9 @@ void pertubis::SearchThread::run()
         p_item->setData(Package::po_installed,piState);
         ++count;
     }
-    qDebug() << "pertubis::SearchThread::run() - finished";
-    emit finished(count,0);
-    ThreadBase::unlock();
+    qDebug() << "...5";
+    emit progress(100);
+    emit finished(count);
+    qDebug() << "...6";
 }
 

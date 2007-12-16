@@ -66,6 +66,8 @@
 #include <QSystemTrayIcon>
 
 #include <QTreeView>
+#include <QDir>
+#include <QThread>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -84,6 +86,7 @@ namespace pertubis
 {
     class CategoryFilterModel;
     class CategoryModel;
+    class CategoryItem;
     class CategoryThread;
     class DetailsThread;
     class MessageOutput;
@@ -103,6 +106,24 @@ namespace pertubis
     class ShowSelectionsThread;
     class SystemReport;
     class TaskBox;
+
+    class GLSAFetcher : public QThread
+    {
+        Q_OBJECT
+
+        public:
+
+            GLSAFetcher(QObject* obj) : QThread(obj) {}
+
+            void start(const QString& dir);
+            void run();
+
+            QDir            m_dir;
+
+        signals:
+
+            void sendCategory(CategoryItem*);
+    };
 
     /*! \brief this widget is the package overview
      * \ingroup Widget
@@ -225,6 +246,8 @@ namespace pertubis
         /// show the succcessful search end to the user
         void displaySearchFinished(int count,int total=0);
 
+        void displayGLSA(const QModelIndex&);
+
         ///@}
 
         /// @name Displaying slots
@@ -244,6 +267,8 @@ namespace pertubis
 
         /// change sync icon gimmick
         void displayNextIcon();
+
+        void aboutPertubis();
         ///@}
 
         /// @name Layout modification
@@ -270,6 +295,7 @@ namespace pertubis
         void createCatbar();
         void createConnections();
         void createDetails();
+        void createGLSAList();
         void createOptionsMenu();
         void createOutput();
         void createPackageView();
@@ -300,25 +326,28 @@ namespace pertubis
         QString                 m_currentCat;
         QStringList             m_packageHeader;
         QStringList             m_reportHeader;
-
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
-        CategoryThread*         m_categoryThread;
+
         CategoryFilterModel*    m_categoryFilterModel;
         CategoryFilterModel*    m_setFilterModel;
         CategoryModel*          m_catModel;
+        CategoryModel*          m_glsaModel;
+        CategoryModel*          m_setModel;
+        CategoryThread*         m_categoryThread;
         DetailsThread*          m_detailsThread;
-        Package*                m_current;
+        GLSAFetcher*            m_glsaThread;
         MessageOutput*          m_output;
-        PertubisSyncTask*       m_syncTask;
-        PackageModel*           m_packageModel;
         PackageFilterModel*     m_packageFilterModel;
+        Package*                m_current;
+        PackageModel*           m_packageModel;
         PackagesThread*         m_packageViewThread;
         PackageView*            m_packageView;
-        SystemReport*           m_sysRep;
+        PertubisSyncTask*       m_syncTask;
+        QAction*                m_acAbout;
         QAction*                m_acDeinstall;
         QAction*                m_acEditUse;
         QAction*                m_acFinish;
-        QAction*                m_acSysRep;
+        QAction*                m_acGLSA;
         QAction*                m_acInstall;
         QAction*                m_acMasking;
         QAction*                m_acPref;
@@ -326,6 +355,7 @@ namespace pertubis
         QAction*                m_acSelected;
         QAction*                m_acSelection;
         QAction*                m_acSync;
+        QAction*                m_acSysRep;
         QAction*                m_acToggleCatBar;
         QAction*                m_acToggleMainWindow;
         QAction*                m_acTogglePackageView;
@@ -335,6 +365,7 @@ namespace pertubis
         QAction*                m_acToggleUseBar;
         QDockWidget*            m_dockCat;
         QDockWidget*            m_dockDetails;
+        QDockWidget*            m_dockGLSA;
         QDockWidget*            m_dockRepo;
         QDockWidget*            m_dockSet;
         QDockWidget*            m_dockUse;
@@ -343,25 +374,27 @@ namespace pertubis
         QSplitter*              m_vSplit;
         QSystemTrayIcon*        m_sysTray;
         QTableView*             m_categoryView;
+        QTableView*             m_glsaListView;
         QTableView*             m_repoInfoView;
         QTableView*             m_repoListView;
         QTableView*             m_setListView;
         QTabWidget*             m_tabs;
         QTextBrowser*           m_details;
-        QToolBar*               m_toolBar;
         QTimer*                 m_timer;
-        RepositoryListModel*    m_repoListModel;
-        RepositoryListThread*   m_repoListThread;
+        QToolBar*               m_toolBar;
         RepositoryInfoModel*    m_repoInfoModel;
         RepositoryInfoThread*   m_repoInfoThread;
+        RepositoryListModel*    m_repoListModel;
+        RepositoryListThread*   m_repoListThread;
         SearchThread*           m_searchThread;
-        CategoryModel*          m_setModel;
-//         SetModel*               m_setModel;
-        SetThread*              m_setThread;
         SearchWindow*           m_searchWindow;
+        SetThread*              m_setThread;
         Settings*               m_settings;
         ShowSelectionsThread*   m_selectionsThread;
+        SystemReport*           m_sysRep;
         TaskBox*                m_box;
+
+
         int                     m_tidInstall;
         int                     m_tidDeinstall;
         int                     m_repoViewTabID;
@@ -372,4 +405,3 @@ namespace pertubis
 }
 
 #endif
-

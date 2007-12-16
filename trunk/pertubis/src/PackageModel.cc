@@ -196,17 +196,17 @@ int pertubis::PackageModel::columnCount(const QModelIndex &pmi) const
         return 0;
 }
 
-void pertubis::PackageModel::slotClear()
+void pertubis::PackageModel::clear(int columns)
 {
     if (m_root != 0)
     {
         delete m_root;
-        m_root = new Package();
+        m_root = makeRootPackage(columns);
         reset();
     }
 }
 
-void pertubis::PackageModel::slotAppendPackage(Package* item)
+void pertubis::PackageModel::appendPackage(Package* item)
 {
     if (m_root != 0)
     {
@@ -215,7 +215,7 @@ void pertubis::PackageModel::slotAppendPackage(Package* item)
     }
 }
 
-void pertubis::PackageModel::slotPrependPackage(Package* item)
+void pertubis::PackageModel::prependPackage(Package* item)
 {
     if (m_root != 0)
     {

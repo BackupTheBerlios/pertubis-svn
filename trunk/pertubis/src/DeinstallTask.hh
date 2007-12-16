@@ -49,7 +49,7 @@ namespace pertubis
 
             ///@}
 
-            /// @name Content modification
+            /// @name Content information
             ///@{
 
             /// returns if its not masked

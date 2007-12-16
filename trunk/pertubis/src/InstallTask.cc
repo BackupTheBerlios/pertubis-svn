@@ -23,6 +23,7 @@
 #include "ItemInstallTask.hh"
 #include "Settings.hh"
 #include "InstallSettings.hh"
+#include "DepListSettings.hh"
 #include "MessageOutput.hh"
 #include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
@@ -153,7 +154,8 @@ void pertubis::InstallTask::startTask(const paludis::tr1::shared_ptr<paludis::En
         if (m_task)
             delete m_task;
         m_task = new PackageInstallTask(this,env.get(),options,env->default_destinations());
-        settings->m_installView->m_model->install_args.populate_install_task(env.get(),*m_task);
+        settings->m_installView->m_model->populate_install_task(env.get(),*m_task);
+        settings->m_depListView->populate_install_task(env.get(),*m_task);
 
         connect(m_task,
                 SIGNAL(sendMessage(QString)),

@@ -40,7 +40,7 @@ namespace pertubis
 
     public:
 
-        OptionsDelegate(QWidget *parent,PackageFilterModel* proxy);
+        OptionsDelegate(QWidget *parent, PackageFilterModel* proxy);
 
         void paint( QPainter* painter,
                     const QStyleOptionViewItem& option,

@@ -93,7 +93,10 @@ namespace pertubis
         public slots:
 
             /// receives the data for a new CategoryItem to append and creates it
-            void slotAppendCategory(QMap<QString, QSet<QString> > map);
+            void appendCategory(QMap<QString, QSet<QString> > map);
+
+            /// receives the data for a new CategoryItem to append and creates it
+            void appendCategory(CategoryItem* item);
 
             /// sets for category cat the change attribute to true
             void slotChangeInCat(QString cat);

@@ -24,6 +24,7 @@
 
 #include <QCheckBox>
 #include <QSettings>
+#include <QProgressBar>
 #include <QMessageBox>
 #include <QDialogButtonBox>
 #include <QGroupBox>
@@ -39,7 +40,10 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
                                     QuerySettingsModel* querySettings,
                                     SearchThread* sthread) : QDialog(pobj),
                                     m_querySettings(querySettings),
-                                    m_thread(sthread)
+                                    m_thread(sthread),
+                                    m_bStart(new QPushButton(tr("&Find"))),
+                                    m_bStop(new QPushButton(tr("&Stop"))),
+                                    m_bOptions(new QPushButton(tr("&More")))
 {
     QuerySettingsView* querySettingsView(new QuerySettingsView(pobj,querySettings));
 
@@ -47,39 +51,50 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
     m_line = new QLineEdit;
     label->setBuddy(m_line);
 
-    m_bStart = new QPushButton(tr("&Find"));
     m_bStart->setDefault(true);
-
-    m_bStop = new QPushButton(tr("&Find"));
+    m_bOptions->setAutoDefault(false);
     m_bStop->setDisabled(true);
-
-    m_bOptions = new QPushButton(tr("&More"));
     m_bOptions->setCheckable(true);
     m_bOptions->setAutoDefault(false);
 
+    m_bar=new QProgressBar(this);
+    m_bar->setRange(0,100);
+    m_bar->hide();
+//     m_bar->setValue(0);
+
     QDialogButtonBox* buttonBox = new QDialogButtonBox(Qt::Vertical);
     buttonBox->addButton(m_bStart, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(m_bStop, QDialogButtonBox::ActionRole);
     buttonBox->addButton(m_bOptions, QDialogButtonBox::ActionRole);
     m_bClose = buttonBox->addButton(QDialogButtonBox::Close);
+    m_bClose->setAutoDefault(false);
 
     QWidget* myextension = new QWidget;
-
-    connect(m_bOptions, SIGNAL(toggled(bool)), myextension, SLOT(setVisible(bool)));
-
-    connect(m_bClose,
-            SIGNAL(clicked()),
-            this,
-            SLOT(close()));
 
     connect(m_bStart,
             SIGNAL(clicked()),
             this,
             SLOT(onStart()));
 
+    connect(m_bOptions,
+            SIGNAL(toggled(bool)),
+            myextension,
+            SLOT(setVisible(bool)));
+
+    connect(m_bClose,
+            SIGNAL(clicked()),
+            this,
+            SLOT(close()));
+
     connect(m_bStop,
             SIGNAL(clicked()),
             this,
             SLOT(onStop()));
+
+    connect(m_thread,
+            SIGNAL(progress(int)),
+            m_bar,
+            SLOT(setValue(int)));
 
     QVBoxLayout *extensionLayout = new QVBoxLayout;
     extensionLayout->setMargin(0);
@@ -92,6 +107,7 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
 
     QVBoxLayout *leftLayout = new QVBoxLayout;
     leftLayout->addLayout(topLeftLayout);
+    leftLayout->addWidget(m_bar);
     leftLayout->addStretch(1);
 
     QGridLayout *mainLayout = new QGridLayout;
@@ -106,8 +122,14 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
     loadSettings();
 }
 
+void pertubis::SearchWindow::progress(int res)
+{
+    m_bar->setValue(res);
+}
+
 void pertubis::SearchWindow::onStart()
 {
+    m_bar->show();
     QString query(m_line->text().trimmed());
     if (query.isEmpty())
         return;
@@ -121,7 +143,9 @@ void pertubis::SearchWindow::onStart()
         }
         if (res == QMessageBox::Yes )
             m_thread->stopExec();
+            m_thread->wait();
     }
+    m_bStop->setDefault(true);
     displaySearch(true);
     m_thread->start(query);
     emit search(query);
@@ -137,6 +161,8 @@ void pertubis::SearchWindow::onStop()
 void pertubis::SearchWindow::displaySearch(bool start)
 {
     m_bStart->setDisabled(start);
+    m_bStart->setDefault(start);
+    m_bar->setVisible(start);
     m_bStop->setEnabled(start);
 }
 

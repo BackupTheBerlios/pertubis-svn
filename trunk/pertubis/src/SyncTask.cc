@@ -24,6 +24,7 @@
 #include <paludis/syncer.hh>
 #include <iomanip>
 #include <iostream>
+#include <QMutexLocker>
 #include <string>
 
 void pertubis::PertubisSyncTask::on_sync_all_pre()
@@ -70,7 +71,14 @@ void pertubis::PertubisSyncTask::start(const QSet<QString>& repos)
 
 void pertubis::PertubisSyncTask::run()
 {
-    ThreadBase::lock();
-    execute();
-    ThreadBase::unlock();
+    QMutexLocker locker(&m_paludisAccess);
+    try
+    {
+        execute();
+    }
+    catch(...)
+    {
+        qDebug() << "error occured while syncing";
+    }
+    emit finished();
 }

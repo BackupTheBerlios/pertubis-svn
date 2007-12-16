@@ -127,7 +127,8 @@ namespace pertubis
                 po_repository,
                 po_installed,
                 po_mask_reasons,
-                po_change
+                po_change,
+                po_last
             };
 
             enum PackageType
@@ -148,13 +149,13 @@ namespace pertubis
             ///@{
 
             /// default constructor
-            explicit Package();
+            Package();
 
             /// copy constructor
-            explicit Package(const Package& other);
+            Package(const Package& other);
 
             /// that's the usual way to create an Package object
-            explicit Package(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+            Package(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                  const QList<QVariant> &dats,
                  PackageState mystate,
                  PackageType itype,
@@ -304,6 +305,8 @@ namespace pertubis
         Package::PackageState mystate,
         Package* pitem,
         QString mask_reasons);
+
+    Package* makeRootPackage(int columns);
 
     inline Package::PackageType pertubis::Package::itemType() const
     {

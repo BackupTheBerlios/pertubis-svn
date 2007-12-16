@@ -60,7 +60,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::join(k.value()->begin(), k.value()->end(), "<br>")));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -68,7 +68,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>")));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -77,7 +77,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.pretty_print_flat(formatter))));
+                    thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.pretty_print_flat(formatter)),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -85,7 +85,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>")));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -94,7 +94,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(k.human_name() + ":",k.pretty_print_flat(formatter)));
+                    thread->appendOutput(pertubis::make_row(k.human_name() + ":",k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -103,7 +103,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print(formatter)));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -114,7 +114,7 @@ namespace
                     pertubis::HtmlFormatter formatter;
                     thread->appendOutput(
                             pertubis::make_row( paludis::stringify(k.human_name()),
-                                                k.pretty_print(formatter) ));                }
+                            k.pretty_print(formatter) ,std::string("bgcolor=\"#ddddff\"")));                }
             }
 
             void visit(const paludis::MetadataSpecTreeKey<paludis::SimpleURISpecTree> & k)
@@ -124,7 +124,7 @@ namespace
                     pertubis::HtmlFormatter formatter;
                     thread->appendOutput(
                         pertubis::make_row( paludis::stringify(k.human_name()),
-                                            pertubis::link(k.pretty_print_flat(formatter),k.pretty_print_flat(formatter)) ));
+                                            pertubis::link(k.pretty_print_flat(formatter),k.pretty_print_flat(formatter)),std::string("bgcolor=\"#ddddff\"") ));
                 }
             }
 
@@ -133,7 +133,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter)));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -142,7 +142,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()).c_str(),k.pretty_print_flat(formatter)));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()).c_str(),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -151,27 +151,27 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter)));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
             void visit(const paludis::MetadataCollectionKey<paludis::PackageIDSequence> & k)
             {
                 pertubis::HtmlFormatter formatter;
-                thread->appendOutput(pertubis::make_row(k.human_name(),k.pretty_print_flat(formatter)));
+                thread->appendOutput(pertubis::make_row(k.human_name(),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
             }
 
             void visit(const paludis::MetadataPackageIDKey & k)
             {
                 if (k.type() == type)
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(*k.value())));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(*k.value()),std::string("bgcolor=\"#ddddff\"")));
             }
 
             void visit(const paludis::MetadataStringKey & k)
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(k.value())));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(k.value()),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -179,7 +179,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(k.human_name() + ":",""));
+                    thread->appendOutput(pertubis::make_row(k.human_name() + ":","",std::string("bgcolor=\"#ddddff\"")));
 
                     Displayer v(thread, env, id, type);
                     std::for_each(paludis::indirect_iterator(k.begin_metadata()), paludis::indirect_iterator(k.end_metadata()),
@@ -197,14 +197,14 @@ namespace
                 char buf[255];
                 if (strftime(buf, 254, "%c", gmtime(&t)))
                 {
-                    thread->appendOutput(pertubis::make_row(std::string("time"),std::string(buf)));
+                    thread->appendOutput(pertubis::make_row(std::string("time"),std::string(buf),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
             void visit(const paludis::MetadataRepositoryMaskInfoKey & k)
             {
                 if (k.type() == type)
-                    thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()->mask_file)));
+                    thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()->mask_file),std::string("bgcolor=\"#ddddff\"")));
             }
 
             void visit(const paludis::MetadataContentsKey &)
@@ -257,6 +257,5 @@ void pertubis::DetailsThread::run()
 "        </table>\n"
 " </body>\n"
 "</html>\n"));
-    qDebug() << "\n\n\n" << m_text << "\n\n\n";
     emit sendResult(m_text);
 }

@@ -53,7 +53,7 @@ QVariant pertubis::CategoryModel::headerData(int section, Qt::Orientation orient
     return *(m_header.begin() + section);
 }
 
-void pertubis::CategoryModel::slotAppendCategory(QMap<QString, QSet<QString> > cats)
+void pertubis::CategoryModel::appendCategory(QMap<QString, QSet<QString> > cats)
 {
     for(QMap<QString,QSet<QString> >::const_iterator cStart(cats.constBegin()),
             end(cats.constEnd());
@@ -64,6 +64,12 @@ void pertubis::CategoryModel::slotAppendCategory(QMap<QString, QSet<QString> > c
     }
 //     QModelIndex i(index(m_data.indexOf(cl),0,QModelIndex()));
 //     qSort(m_data.begin(),m_data.end(),CategoryItemSorter);
+    emit layoutChanged();
+}
+
+void pertubis::CategoryModel::appendCategory(CategoryItem* item)
+{
+    m_data.push_back(item);
     emit layoutChanged();
 }
 
