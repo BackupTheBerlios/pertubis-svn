@@ -9,6 +9,7 @@ ENDIF(PERTUBIS_SU_TOOL MATCHES "gnome")
 
 CONFIGURE_FILE(desktop-integration/pertubis.desktop.in utils/pertubis.desktop)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/pertubis.desktop DESTINATION /usr/share/applnk/Settings/System COMPONENT pertubis)
+INSTALL(FILES glsa/glsa.css DESTINATION /usr/lib/pertubis COMPONENT pertubis)
 INSTALL(FILES icons/16x16/apps/pertubis.png DESTINATION /usr/share/icons/hicolor/16x16/apps COMPONENT pertubis)
 INSTALL(FILES icons/22x22/apps/pertubis.png DESTINATION /usr/share/icons/hicolor/22x22/apps COMPONENT pertubis)
 INSTALL(FILES icons/32x32/apps/pertubis.png DESTINATION /usr/share/icons/hicolor/32x32/apps COMPONENT pertubis)
