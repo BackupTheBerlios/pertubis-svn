@@ -236,7 +236,6 @@ void pertubis::SearchThread::run()
     qDebug() << "...4";
     if (m_stopExec)
         return;
-    int max(ids.size());
     int count(0);
     for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
          i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
@@ -248,7 +247,8 @@ void pertubis::SearchThread::run()
 
         const tr1::shared_ptr< const PackageIDSequence > versionIds(
                 m_env->package_database()->query(
-                query::Matches(PackageDepSpec(make_shared_ptr(new QualifiedPackageName(i->first)))) &
+                query::Matches(make_package_dep_spec()
+                .package(i->first)) &
                 query::SupportsAction<InstallAction>(),
                 qo_order_by_version));
         if (versionIds->empty())

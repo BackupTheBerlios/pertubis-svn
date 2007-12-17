@@ -107,24 +107,6 @@ namespace pertubis
     class SystemReport;
     class TaskBox;
 
-    class GLSAFetcher : public QThread
-    {
-        Q_OBJECT
-
-        public:
-
-            GLSAFetcher(QObject* obj) : QThread(obj) {}
-
-            void start(const QString& dir);
-            void run();
-
-            QDir            m_dir;
-
-        signals:
-
-            void sendCategory(CategoryItem*);
-    };
-
     /*! \brief this widget is the package overview
      * \ingroup Widget
      *
@@ -224,6 +206,9 @@ namespace pertubis
 
         /// stopping a search
         void onSearchStopped();
+
+        /// adding a glsa entry into the glsa list
+        void addGLSA(QString name, QString path);
 
         /// must be called before every access to paludis api
         void onEndOfPaludisAction();
@@ -335,7 +320,6 @@ namespace pertubis
         CategoryModel*          m_setModel;
         CategoryThread*         m_categoryThread;
         DetailsThread*          m_detailsThread;
-        GLSAFetcher*            m_glsaThread;
         MessageOutput*          m_output;
         PackageFilterModel*     m_packageFilterModel;
         Package*                m_current;
@@ -393,7 +377,6 @@ namespace pertubis
         ShowSelectionsThread*   m_selectionsThread;
         SystemReport*           m_sysRep;
         TaskBox*                m_box;
-
 
         int                     m_tidInstall;
         int                     m_tidDeinstall;

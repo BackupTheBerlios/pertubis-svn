@@ -60,33 +60,11 @@ bool pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  
     tr1::shared_ptr<const PackageIDSequence> ipacks(
         m_env->package_database()->query(
             query::InstalledAtRoot(m_env->root()) &
-            query::Matches(PackageDepSpec(
-                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
-                tr1::shared_ptr<CategoryNamePart>(),
-                tr1::shared_ptr<PackageNamePart>(),
-                req,
-                vr_and,
-                tr1::shared_ptr<SlotName>(new SlotName(id->slot())))),
+            query::Matches(make_package_dep_spec()
+                .package(id->name())
+                .slot(id->slot())),
             qo_order_by_version));
     return (ipacks->begin() != ipacks->end());
-}
-
-void pertubis::getGLSADir(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env)
-{
-//     using namespace paludis;
-//     QSet<QDir> dirs;
-//     for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
-//          r_end(m_env->package_database()->end_repositories()) ;
-//          r != r_end ; ++r)
-//     {
-//         tr1::shared_ptr< const Repository > repo(m_env->package_database()->fetch_repository(paludis::RepositoryName("gentoo")));
-//         Repository::MetadataConstIterator iter( repo->find_metadata("securitydir") );
-//         if (iter != repo->end_metadata() )
-//         {
-//             std::string text = stringify(visitor_cast<const MetadataFSEntryKey >(repo->find_metadata("securitydir"))->value());
-// //             dirs.insert(QDir(key->value().realpath().c_str() ));
-//         }
-//     }
 }
 
 bool pertubis::hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
@@ -96,25 +74,17 @@ bool pertubis::hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environm
     tr1::shared_ptr<const PackageIDSequence> ci(
         m_env->package_database()->query(
             query::InstalledAtRoot(m_env->root()) &
-            query::Matches(PackageDepSpec(
-                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
-                tr1::shared_ptr<CategoryNamePart>(),
-                tr1::shared_ptr<PackageNamePart>(),
-                tr1::shared_ptr<VersionRequirements>(),
-                vr_and,
-                tr1::shared_ptr<SlotName>(new SlotName(id->slot())))),
+            query::Matches(make_package_dep_spec()
+            .package(id->name())
+            .slot(id->slot())),
             qo_order_by_version));
 
     tr1::shared_ptr<const PackageIDSequence> av(
         m_env->package_database()->query(
             query::SupportsAction<InstallAction>() &
-            query::Matches(PackageDepSpec(
-                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
-                tr1::shared_ptr<CategoryNamePart>(),
-                tr1::shared_ptr<PackageNamePart>(),
-                tr1::shared_ptr<VersionRequirements>(),
-                vr_and,
-                tr1::shared_ptr<SlotName>(new SlotName(id->slot())))) &
+            query::Matches(make_package_dep_spec()
+                .package(id->name())
+                .slot(id->slot())) &
             query::NotMasked(),
             qo_order_by_version));
 

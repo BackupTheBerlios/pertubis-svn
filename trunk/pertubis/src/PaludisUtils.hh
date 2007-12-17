@@ -35,8 +35,6 @@ namespace pertubis
     /// queries the paludis database if the PackageID can be up- or downgraded
     bool hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
                         const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
-
-    void getGLSADir(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env);
 }
 
 #endif

@@ -142,23 +142,6 @@ namespace
     };
 }
 
-void pertubis::GLSAFetcher::start(const QString& dir)
-{
-    m_dir = dir;
-    m_dir.setSorting(QDir::Reversed);
-    QThread::start();
-}
-
-void pertubis::GLSAFetcher::run()
-{
-    QStringList list(m_dir.entryList(QStringList() << "glsa-*.xml"));
-    QString item;
-    foreach (item,list)
-    {
-        emit sendCategory(new CategoryItem(item,QSet<QString>()));
-    }
-}
-
 pertubis::PackageView::PackageView(QWidget* pWidget) : QTreeView(pWidget)
 {
 }
@@ -169,27 +152,7 @@ void pertubis::PackageView::mousePressEvent(QMouseEvent* ev)
     QTreeView::mousePressEvent(ev);
 }
 
-pertubis::MainWindow::MainWindow() :
-    m_categoryThread(0),
-    m_categoryFilterModel(0),
-    m_catModel(0),
-    m_detailsThread(0),
-    m_current(0),
-    m_output(0),
-    m_syncTask(0),
-    m_packageModel(0),
-    m_packageFilterModel(0),
-    m_packageViewThread(0),
-    m_packageView(0),
-    m_sysRep(0),
-    m_repoListView(0),
-    m_repoListModel(0),
-    m_repoListThread(0),
-    m_searchThread(0),
-    m_searchWindow(0),
-    m_settings(0),
-    m_selectionsThread(0),
-    m_box(0)
+pertubis::MainWindow::MainWindow()
 {
     initGUI();
     initLayout();
@@ -515,13 +478,7 @@ void pertubis::MainWindow::createGLSAList()
     m_acGLSA->setText(tr("security"));
     m_acGLSA->setShortcut( tr("CTRL+I"));
     m_acGLSA->setToolTip(html_tooltip( tr("see Gentoo Linux Security Announcements"),m_acGLSA->text())) ;
-    m_glsaThread = new GLSAFetcher(this);
 
-    connect(m_glsaThread,
-            SIGNAL(sendCategory(CategoryItem*)),
-            m_glsaModel,
-            SLOT(appendCategory(CategoryItem*)));
-    m_glsaThread->start("/var/repositories/gentoo/metadata/glsa/");
 }
 
 void pertubis::MainWindow::createActions()
@@ -781,6 +738,11 @@ void pertubis::MainWindow::createConnections()
             SIGNAL(triggered()),
             this,
             SLOT(aboutPertubis()));
+
+    connect(m_sysRep,
+            SIGNAL(notifyAboutGLSA(QString,QString)),
+            this,
+            SLOT(addGLSA(QString,QString)));
 }
 
 void pertubis::MainWindow::createTasks()
@@ -911,7 +873,10 @@ void pertubis::MainWindow::displaySyncFinished()
 
 void pertubis::MainWindow::displayGLSA(const QModelIndex& ix)
 {
-    QFile file(m_glsaThread->m_dir.filePath(m_glsaModel->data(ix).toString()));
+    CategoryItem* item(static_cast<CategoryItem*>(ix.internalPointer()));
+    if (item == 0)
+        return;
+    QFile file(*item->repos().begin());
     QXmlInputSource inputSource(&file);
     QXmlSimpleReader reader;
     GLSAParser handler(m_details);
@@ -919,6 +884,12 @@ void pertubis::MainWindow::displayGLSA(const QModelIndex& ix)
     reader.setErrorHandler(&handler);
     reader.parse(inputSource);
     m_tabs->setCurrentIndex(m_detailsTabID);
+}
+
+void pertubis::MainWindow::addGLSA(QString name, QString path)
+{
+    qDebug() << "pertubis::MainWindow::addGLSA()" << name << path;
+    m_glsaModel->appendCategory(new CategoryItem(name,QSet<QString>() << path));
 }
 
 void pertubis::MainWindow::displaySearchFinished(int total,int count)

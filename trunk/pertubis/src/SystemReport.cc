@@ -25,9 +25,11 @@
 #include "PaludisUtils.hh"
 #include "FormatterUtils.hh"
 #include <paludis/mask.hh>
+#include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/config_file.hh>
 
 void pertubis::SystemReport::on_report_all_pre()
@@ -99,11 +101,12 @@ void pertubis::SystemReport::on_report_package_is_vulnerable_pre(const tr1::shar
     ++_n_errors;
 }
 
-void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &id, const std::string & tag)
+void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &id, const GLSADepTag & tag)
 {
     QString old(m_node->data(rho_reasons).toString());
-    old.append(QString(" ")+QString::fromStdString(tag));
+    old.append(QString(" ")+QString::fromStdString(tag.short_text()));
     m_node->setData(rho_reasons,old);
+    emit notifyAboutGLSA(QString::fromStdString(tag.short_text()),QString::fromStdString(paludis::stringify(tag.glsa_file())));
     ++_n_errors;
 }
 

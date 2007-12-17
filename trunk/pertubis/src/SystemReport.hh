@@ -61,7 +61,7 @@ namespace pertubis
             virtual void on_report_package_failure_pre(const tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_package_is_masked(const tr1::shared_ptr<const PackageID> & id, const tr1::shared_ptr<const PackageID> & origin);
             virtual void on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> & id);
-            virtual void on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> & id, const std::string & tag);
+            virtual void on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> & id, const GLSADepTag & tag);
             virtual void on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> & id);
             virtual void on_report_package_is_missing(const tr1::shared_ptr<const PackageID> & id, const RepositoryName & repo_name);
             virtual void on_report_package_is_unused(const tr1::shared_ptr<const PackageID> & id);
@@ -84,6 +84,9 @@ namespace pertubis
 
             /// requests  to append and show this package in main thread
             void appendPackage(Package* node);
+
+            /// sends a glsa entry
+            void notifyAboutGLSA(QString name, QString path);
     };
 }
 
