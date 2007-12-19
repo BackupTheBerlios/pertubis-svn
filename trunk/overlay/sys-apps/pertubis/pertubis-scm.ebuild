@@ -5,6 +5,8 @@
 # inherit subversion cmake-utils flag-o-matic
 inherit subversion cmake-utils flag-o-matic
 
+EAPI="paludis-1"
+
 ESVN_REPO_URI="svn://svn.berlios.de/pertubis/trunk/pertubis/"
 KDE_COMMAND=""
 GNOME_COMMAND=""
@@ -22,7 +24,7 @@ IUSE="debug doc gnome kde tests"
 
 # TODO: kde and gnome should be exclusive or, or if both are set, prefer kde?/gnome?
 # the su tool
-RDEPEND=">=sys-apps/paludis-0.26.0_alpha4
+RDEPEND=">=sys-apps/paludis-scm
 	>=x11-libs/qt-4.3.0
 	kde? ( || ( >=kde-base/kdesu-3.5.5 >=kde-base/kdebase-3.5.5 ) )
 	gnome? ( >=x11-libs/gksu-1.9.1 )"
