@@ -21,14 +21,14 @@
 #include "PackageFilterModel.hh"
 #include "Package.hh"
 
-pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj),m_filterOn(true)
+pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj),m_filterOff(false)
 {
 }
 
 bool pertubis::PackageFilterModel::filterAcceptsRow(int sourceRow,
     const QModelIndex &sourceParent) const
 {
-    if (!m_filterOn)
+    if (m_filterOff)
         return true;
     QModelIndex pmi = sourceModel()->index(sourceRow,0,sourceParent);
     if (sourceParent == QModelIndex() && sourceModel()->rowCount(pmi) > 0)

@@ -33,31 +33,15 @@
 #include <sstream>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/install_task.hh>
 #include <paludis/dep_list.hh>
+#include <paludis/action-fwd.hh>
 
 
-pertubis::InstallSettingsModel::InstallSettingsModel(QObject *pobj) : QObject(pobj),paludis::args::ArgsHandler(),
-        m_debug(0),
-        m_continueOnFailure(0),
-        install_args(this, "Install, Uninstall options",
-                        "Options which are relevant for --install, --uninstall or --uninstall-unused.")
+pertubis::InstallSettingsModel::InstallSettingsModel(QObject *pobj) :
+        QObject(pobj)
 {
     loadSettings();
-}
-
-std::string pertubis::InstallSettingsModel::app_name() const
-{
-    return "";
-}
-
-std::string pertubis::InstallSettingsModel::app_synopsis() const
-{
-    return "";
-}
-
-std::string pertubis::InstallSettingsModel::app_description() const
-{
-    return "";
 }
 
 pertubis::InstallSettingsModel::~InstallSettingsModel()
@@ -65,29 +49,63 @@ pertubis::InstallSettingsModel::~InstallSettingsModel()
     saveSettings();
 }
 
-void pertubis::InstallSettingsModel::populate_install_task(const paludis::Environment *env, paludis::InstallTask &task) const
+void pertubis::InstallSettingsModel::populate_install_task(const paludis::Environment * /*env*/, paludis::InstallTask &task) const
 {
-    install_args.populate_install_task(env,task);
-}
+    task.set_no_config_protect(m_config);
+    task.set_fetch_only(m_fetch);
+    task.set_pretend(m_pretend);
+    task.set_preserve_world(m_preserve);
+    task.set_safe_resume(m_noSafeResume);
 
-QString pertubis::InstallSettingsModel::getDesc()
-{
-    std::ostringstream stream;
-    paludis::args::ArgsHandler::dump_to_stream(stream);
-    return QString::fromStdString(stream.str());
+    if ( ! m_worldSpec.isEmpty() )
+        task.set_add_to_world_spec(m_worldSpec.toStdString());
+
+    if (m_debug == 0)
+        task.set_debug_mode(paludis::iado_none);
+    if (m_debug == 1)
+        task.set_debug_mode(paludis::iado_split);
+    if (m_debug == 2)
+        task.set_debug_mode(paludis::iado_internal);
+    if (m_checks == 0)
+        task.set_checks_mode(paludis::iaco_none);
+    if (m_checks == 0)
+        task.set_checks_mode(paludis::iaco_default);
+    if (m_checks == 0)
+        task.set_checks_mode(paludis::iaco_always);
+
+    switch (m_continueOnFailure)
+    {
+        case 0:
+            task.set_continue_on_failure(paludis::itcof_if_fetch_only);
+            break;
+        case 1:
+            task.set_continue_on_failure(paludis::itcof_never);
+            break;
+        case 2:
+            task.set_continue_on_failure(paludis::itcof_if_satisfied);
+            break;
+        case 3:
+            task.set_continue_on_failure(paludis::itcof_if_independent);
+            break;
+        case 4:
+            task.set_continue_on_failure(paludis::itcof_always);
+            break;
+        default:
+            throw;
+    }
 }
 
 void pertubis::InstallSettingsModel::loadSettings()
 {
     QSettings settings;
     settings.beginGroup( "InstallSettingsModel" );
-    install_args.a_debug_build.set_argument(settings.value("debug_build","split").toString().toStdString());
-    install_args.a_fetch.set_specified(settings.value("fetch",false).toBool());
-    install_args.a_no_config_protection.set_specified(settings.value("no_config_protect",false).toBool());
-    install_args.a_no_safe_resume.set_specified(settings.value("no_safe_resume",false).toBool());
-    install_args.a_pretend.set_specified(settings.value("pretend",false).toBool());
-    install_args.a_continue_on_failure.set_argument(settings.value("continue_on_failure","if-fetch-only").toString().toStdString());
-    install_args.a_checks.set_argument(settings.value("checks","default").toString().toStdString());
+    m_debug = settings.value("debug_build",1).toInt();
+    m_fetch = settings.value("fetch",false).toBool();
+    m_config = settings.value("no_config_protect",false).toBool();
+    m_noSafeResume = settings.value("no_safe_resume",false).toBool();
+    m_pretend = settings.value("pretend",false).toBool();
+    m_continueOnFailure  = settings.value("continue_on_failure",0).toInt();
+    m_checks = settings.value("checks",1).toInt();
     settings.endGroup();
 }
 
@@ -95,13 +113,13 @@ void pertubis::InstallSettingsModel::saveSettings()
 {
     QSettings settings;
     settings.beginGroup( "InstallSettingsModel" );
-    settings.setValue("debug",install_args.a_debug_build.specified());
-    settings.setValue("fetch",install_args.a_fetch.specified());
-    settings.setValue("no_config_protect",install_args.a_no_config_protection.specified());
-    settings.setValue("no_safe_resume",install_args.a_no_safe_resume.specified());
-    settings.setValue("pretend",install_args.a_pretend.specified());
-    settings.setValue("continue_on_failure",QString::fromStdString(install_args.a_continue_on_failure.argument()));
-    settings.setValue("checks",QString::fromStdString(install_args.a_checks.argument()));
+    settings.setValue("debug",m_debug);
+    settings.setValue("fetch",m_fetch);
+    settings.setValue("no_config_protect",m_config);
+    settings.setValue("no_safe_resume",m_noSafeResume);
+    settings.setValue("pretend",m_pretend);
+    settings.setValue("continue_on_failure",m_continueOnFailure);
+    settings.setValue("checks",m_checks);
     settings.endGroup();
 }
 
@@ -114,29 +132,24 @@ pertubis::InstallSettingsView::InstallSettingsView(QWidget *pobj,InstallSettings
         m_noSafeResume(new QCheckBox(tr("no-safe-resume"),pobj)),
         m_pretend(new QCheckBox(tr("pretend"),pobj)),
         m_continueOnFailure(new QComboBox(pobj)),
-        m_checks(new QComboBox(pobj))
-{
-    createNormal(pobj);
-}
-
-void pertubis::InstallSettingsView::createNormal(QWidget* pobj)
+        m_checks(new QComboBox(pobj)),
+        m_worldSpec(new QLineEdit(pobj))
 {
     QGroupBox* group(new QGroupBox(tr("Installation Settings"),pobj));
 
-    group->setToolTip(m_model->getDesc());
     m_debug->setToolTip( tr("debug build") );
     m_debug->addItem( tr("none") );
     m_debug->addItem( tr("split") );
     m_debug->addItem( tr("internal") );
-    m_debug->setCurrentIndex(m_model->install_args.a_debug_build.specified());
+    m_debug->setCurrentIndex(m_model->m_debug);
     m_fetch->setToolTip( tr("Only fetch sources; don't install anything") );
-    m_fetch->setChecked(m_model->install_args.a_fetch.specified());
+    m_fetch->setChecked(m_model->m_fetch);
     m_noConfigProtection->setToolTip(tr("Disable config file protection (dangerous)"));
-    m_noConfigProtection->setChecked(m_model->install_args.a_no_config_protection.specified());
+    m_noConfigProtection->setChecked(m_model->m_config);
     m_noSafeResume->setToolTip( tr("Do not allow interrupted downloads to be resumed"));
-    m_noSafeResume->setChecked(m_model->install_args.a_no_safe_resume.specified());
+    m_noSafeResume->setChecked(m_model->m_noSafeResume);
     m_pretend->setToolTip( tr("Pretend only") );
-    m_pretend->setChecked(m_model->install_args.a_pretend.specified());
+    m_pretend->setChecked(m_model->m_pretend);
     m_continueOnFailure->setToolTip(tr("Whether to continue after a fetch or install error"));
 
     m_checks->addItem("none");
@@ -161,6 +174,8 @@ void pertubis::InstallSettingsView::createNormal(QWidget* pobj)
     groupLayout->addWidget(m_continueOnFailure, 5, 1);
     groupLayout->addWidget(new QLabel(tr("checks"),m_checks), 6, 0);
     groupLayout->addWidget(m_checks, 6, 1);
+    groupLayout->addWidget(new QLabel(tr("world spec"),m_checks), 7, 0);
+    groupLayout->addWidget(m_worldSpec, 7, 1);
 
     group->setLayout(groupLayout);
 
@@ -172,53 +187,58 @@ void pertubis::InstallSettingsView::createNormal(QWidget* pobj)
 
     connect(m_debug,
             SIGNAL(currentIndexChanged(int)),
-                   m_model,
-                   SLOT(changeDebug(int)));
+            m_model,
+            SLOT(changeDebug(int)));
 
     connect(m_fetch,
             SIGNAL(clicked(bool)),
-                   m_model,
-                   SLOT(changeFetch(bool)));
+            m_model,
+            SLOT(changeFetch(bool)));
 
     connect(m_noConfigProtection,
             SIGNAL(clicked(bool)),
-                   m_model,
-                   SLOT(changeNoConfig(bool)));
+            m_model,
+            SLOT(changeNoConfig(bool)));
 
     connect(m_noSafeResume,
             SIGNAL(clicked(bool)),
-                   m_model,
-                   SLOT(changeNoSafe(bool)));
+            m_model,
+            SLOT(changeNoSafe(bool)));
 
     connect(m_pretend,
             SIGNAL(clicked(bool)),
-                   m_model,
-                   SLOT(changePretend(bool)));
+            m_model,
+            SLOT(changePretend(bool)));
 
     connect(m_continueOnFailure,
             SIGNAL(currentIndexChanged(int)),
-                   m_model,
-                   SLOT(changeContinue(int)));
+            m_model,
+            SLOT(changeContinue(int)));
+
+    connect(m_worldSpec,
+            SIGNAL(textChanged(QString)),
+            m_model,
+            SLOT(changeWorldSpec(QString)));
 
     connect(m_model,
             SIGNAL(debugChanged(int)),
-                   m_debug,
-                   SLOT(setCurrentIndex(int)));
+            m_debug,
+            SLOT(setCurrentIndex(int)));
 
     connect(m_model,
             SIGNAL(fetchChanged(bool)),
-                   m_fetch,
-                   SLOT(setChecked(bool)));
+            m_fetch,
+            SLOT(setChecked(bool)));
 
     connect(m_model,
             SIGNAL(noConfigChanged(bool)),
-                   m_noConfigProtection,
-                   SLOT(setChecked(bool)));
+            m_noConfigProtection,
+            SLOT(setChecked(bool)));
 
     connect(m_model,
             SIGNAL(noSafeChanged(bool)),
-                   m_noSafeResume,
-                   SLOT(setChecked(bool)));
+            m_noSafeResume,
+            SLOT(setChecked(bool)));
 
     connect(m_model,
             SIGNAL(pretendChanged(bool)),
@@ -229,16 +249,11 @@ void pertubis::InstallSettingsView::createNormal(QWidget* pobj)
             SIGNAL(continueChanged(int)),
             m_continueOnFailure,
             SLOT(setCurrentIndex(int)));
-}
 
-void pertubis::InstallSettingsView::createView()
-{
-//     QGroupBox* group = new QGroupBox(this);
-//     group->setTitle(QString::fromStdString(m_model->install_args.name()));
-//     group->setToolTip(m_model->m_tooltip);
-//     ArgumentViewCreator creator(this,group);
-//     qDebug() << creator.m_text;
-//     std::for_each(indirect_iterator(m_model->install_args.begin()), indirect_iterator(m_model->install_args.end()), accept_visitor(creator));
+    connect(m_model,
+            SIGNAL(worldSpecChanged(const QString &)),
+            m_worldSpec,
+            SLOT(setText(const QString &)));
 }
 
 pertubis::InstallSettingsView::~InstallSettingsView()

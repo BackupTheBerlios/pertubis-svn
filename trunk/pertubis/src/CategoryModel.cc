@@ -132,3 +132,9 @@ QModelIndex pertubis::CategoryModel::index(int row, int column, const QModelInde
     else
         return QModelIndex();
 }
+
+void pertubis::CategoryModel::clear()
+{
+    qDeleteAll(m_data);
+    m_data.clear();
+}

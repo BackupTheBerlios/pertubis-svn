@@ -20,18 +20,41 @@
 
 #include "DepListSettings.hh"
 #include "FormatterUtils.hh"
+
+#include <paludis/args/args_option.hh>
+#include <paludis/dep_list.hh>
+#include <paludis/install_task.hh>
+#include <paludis/override_functions.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/tr1_functional.hh>
+
+#include <QComboBox>
+#include <QGridLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QListWidget>
+#include <QListWidgetItem>
 #include <QSettings>
-#include <QComboBox>
-#include <QGridLayout>
 
-#include <paludis/dep_list.hh>
+static paludis::DepListDepsOption getOptionArg(int arg)
+{
+    if (arg ==  0)
+        return paludis::dl_deps_pre;
+    else if (arg ==  1)
+        return paludis::dl_deps_pre_or_post;
+    else if (arg ==  2)
+        return paludis::dl_deps_post;
+    else if (arg ==  3)
+        return paludis::dl_deps_try_post;
+    else if (arg ==  4)
+        return paludis::dl_deps_discard;
+    else
+        throw;
+}
 
 pertubis::DepListSettingsModel::DepListSettingsModel(QObject *pobj) :
         QObject(pobj),
-        m_depListArgs(this),
         m_dlDepsDefault(0),
         m_dlInstalledDepsPre(0),
         m_dlInstalledDepsRuntime(0),
@@ -57,21 +80,6 @@ pertubis::DepListSettingsModel::DepListSettingsModel(QObject *pobj) :
 pertubis::DepListSettingsModel::~DepListSettingsModel()
 {
     saveSettings();
-}
-
-std::string pertubis::DepListSettingsModel::app_name() const
-{
-    return "";
-}
-
-std::string pertubis::DepListSettingsModel::app_synopsis() const
-{
-    return "";
-}
-
-std::string pertubis::DepListSettingsModel::app_description() const
-{
-    return "";
 }
 
 void pertubis::DepListSettingsModel::changeDepsDefault(int state)
@@ -215,31 +223,145 @@ void pertubis::DepListSettingsModel::changeUpgrade(int state)
     m_dlUpgrade = state;
 }
 
-void pertubis::DepListSettingsView::populate_install_task(const paludis::Environment *env, paludis::InstallTask &task)
+void pertubis::DepListSettingsView::populate_dep_list_options(const paludis::Environment *env, paludis::DepListOptions & options)
 {
-    for (QSet<QString>::const_iterator iStart(m_model->m_dlOverrideMasks.constBegin()),iEnd(m_model->m_dlOverrideMasks.constEnd());iStart!= iEnd;++iStart)
+    if (m_model->m_dlReinstall == 0)
+        options.reinstall = paludis::dl_reinstall_never;
+    else if (m_model->m_dlReinstall == 1)
+        options.reinstall = paludis::dl_reinstall_always;
+    else if (m_model->m_dlReinstall == 2)
+        options.reinstall = paludis::dl_reinstall_if_use_changed;
+
+    if (m_model->m_dlReinstallScm == 0)
+        options.reinstall_scm = paludis::dl_reinstall_scm_never;
+    else if (m_model->m_dlReinstallScm == 1)
+        options.reinstall_scm = paludis::dl_reinstall_scm_always;
+    else if (m_model->m_dlReinstallScm == 2)
+        options.reinstall_scm = paludis::dl_reinstall_scm_daily;
+    else if (m_model->m_dlReinstallScm == 3)
+        options.reinstall_scm = paludis::dl_reinstall_scm_weekly;
+
+    if (m_model->m_dlUpgrade == 0)
+        options.upgrade = paludis::dl_upgrade_as_needed;
+    else if (m_model->m_dlUpgrade == 1)
+        options.upgrade = paludis::dl_upgrade_always;
+
+    if (m_model->m_dlNewSlots == 0)
+        options.new_slots = paludis::dl_new_slots_as_needed;
+    else if (m_model->m_dlNewSlots == 1)
+        options.new_slots = paludis::dl_new_slots_always;
+
+    if (m_model->m_dlDowngrade == 0)
+        options.downgrade = paludis::dl_downgrade_as_needed;
+    else if (m_model->m_dlDowngrade == 1)
+        options.downgrade = paludis::dl_downgrade_warning;
+    else if (m_model->m_dlDowngrade == 2)
+        options.downgrade = paludis::dl_downgrade_error;
+
+    if (m_model->m_dlCircular == 0)
+        options.circular = paludis::dl_circular_discard;
+    else if (m_model->m_dlCircular == 1)
+        options.circular = paludis::dl_circular_error;
+
+
+    if (m_model->m_dlSuggested == 0)
+        options.suggested = paludis::dl_suggested_show;
+    else if (m_model->m_dlSuggested == 1)
+        options.suggested = paludis::dl_suggested_discard;
+    else if (m_model->m_dlSuggested == 2)
+        options.suggested = paludis::dl_suggested_install;
+
+    if (m_model->m_dlBlocks == 0)
+        options.blocks = paludis::dl_blocks_discard;
+    else if (m_model->m_dlBlocks == 1)
+        options.blocks = paludis::dl_blocks_error;
+    else if (m_model->m_dlBlocks == 2)
+        options.blocks = paludis::dl_blocks_accumulate;
+
+    if (! options.override_masks)
+        options.override_masks.reset(new paludis::DepListOverrideMasksFunctions);
+    options.override_masks->push_back(paludis::tr1::bind(&paludis::override_tilde_keywords, env, paludis::tr1::placeholders::_1, paludis::tr1::placeholders::_2));
+    options.override_masks->push_back(paludis::tr1::bind(&paludis::override_license, paludis::tr1::placeholders::_2));
+
+    if ( ! m_model->m_dlOverrideMasks.isEmpty())
     {
-        m_model->m_depListArgs.dl_override_masks.add_argument(iStart->toStdString());
+        for (QSet<QString>::const_iterator a(m_model->m_dlOverrideMasks.constBegin()),
+             a_end(m_model->m_dlOverrideMasks.constEnd()) ; a != a_end ; ++a)
+            if (*a == "none")
+                options.override_masks.reset(new paludis::DepListOverrideMasksFunctions);
+
+        for (QSet<QString>::const_iterator a(m_model->m_dlOverrideMasks.constBegin()),
+             a_end(m_model->m_dlOverrideMasks.constEnd()) ; a != a_end ; ++a)
+        {
+            if (*a == "tilde-keyword")
+                options.override_masks->push_back(paludis::tr1::bind(&paludis::override_tilde_keywords, env, paludis::tr1::placeholders::_1, paludis::tr1::placeholders::_2));
+            else if (*a == "unkeyworded")
+                options.override_masks->push_back(paludis::tr1::bind(&paludis::override_unkeyworded, env, paludis::tr1::placeholders::_1,paludis::tr1::placeholders::_2));
+            else if (*a == "repository")
+                options.override_masks->push_back(paludis::tr1::bind(&paludis::override_repository_masks, paludis::tr1::placeholders::_2));
+            else if (*a == "license")
+                options.override_masks->push_back(paludis::tr1::bind(&paludis::override_license, paludis::tr1::placeholders::_2));
+            else if (*a == "profile")
+            {
+                paludis::Log::get_instance()->message(paludis::ll_warning, paludis::lc_no_context) <<
+                        "--dl-override-masks profile is deprecated, use --dl-override-masks repository";
+                options.override_masks->push_back(paludis::tr1::bind(&paludis::override_repository_masks, paludis::tr1::placeholders::_2));
+            }
+            else if (*a == "none")
+            {
+            }
+        }
     }
 
-    m_model->m_depListArgs.dl_reinstall_scm.set_argument(m_dlReinstallScm->itemText(m_model->m_dlReinstallScm).toStdString());
-    m_model->m_depListArgs.dl_reinstall_targets.set_argument(m_dlReinstallTargets->itemText(m_model->m_dlReinstallTargets).toStdString());
-    m_model->m_depListArgs.dl_upgrade.set_argument(m_dlUpgrade->itemText(m_model->m_dlUpgrade).toStdString());
-    m_model->m_depListArgs.dl_new_slots.set_argument(m_dlNewSlots->itemText(m_model->m_dlNewSlots).toStdString());
-    m_model->m_depListArgs.dl_downgrade.set_argument(m_dlDowngrade->itemText(m_model->m_dlDowngrade).toStdString());
-    m_model->m_depListArgs.dl_deps_default.set_argument(m_dlDepsDefault->itemText(m_model->m_dlDepsDefault).toStdString());
-    m_model->m_depListArgs.dl_installed_deps_pre.set_argument(m_dlInstalledDepsPre->itemText(m_model->m_dlInstalledDepsPre).toStdString());
-    m_model->m_depListArgs.dl_installed_deps_runtime.set_argument(m_dlInstalledDepsRuntime->itemText(m_model->m_dlInstalledDepsRuntime).toStdString());
-    m_model->m_depListArgs.dl_installed_deps_post.set_argument(m_dlInstalledDepsPost->itemText(m_model->m_dlInstalledDepsPost).toStdString());
-    m_model->m_depListArgs.dl_uninstalled_deps_pre.set_argument(m_dlUninstalledDepsPre->itemText(m_model->m_dlUninstalledDepsPre).toStdString());
-    m_model->m_depListArgs.dl_uninstalled_deps_runtime.set_argument(m_dlUninstalledDepsRuntime->itemText(m_model->m_dlUninstalledDepsRuntime).toStdString());
-    m_model->m_depListArgs.dl_uninstalled_deps_post.set_argument(m_dlUninstalledDepsPost->itemText(m_model->m_dlUninstalledDepsPost).toStdString());
-    m_model->m_depListArgs.dl_uninstalled_deps_suggested.set_argument(m_dlUninstalledDepsSuggested->itemText(m_model->m_dlUninstalledDepsSuggested).toStdString());
-    m_model->m_depListArgs.dl_suggested.set_argument(m_dlSuggested->itemText(m_model->m_dlSuggested).toStdString());
-    m_model->m_depListArgs.dl_circular.set_argument(m_dlCircular->itemText(m_model->m_dlCircular).toStdString());
-    m_model->m_depListArgs.dl_blocks.set_argument(m_dlBlocks->itemText(m_model->m_dlBlocks).toStdString());
-    m_model->m_depListArgs.dl_fall_back.set_argument(m_dlFallBack->itemText(m_model->m_dlFallBack).toStdString());
-    m_model->m_depListArgs.populate_install_task(env,task);
+    if (m_model->m_dlFallBack == 0)
+        options.fall_back = paludis::dl_fall_back_as_needed_except_targets;
+    else if (m_model->m_dlFallBack == 1)
+        options.fall_back = paludis::dl_fall_back_as_needed;
+    else if (m_model->m_dlFallBack == 2)
+        options.fall_back = paludis::dl_fall_back_never;
+
+
+    if (m_model->m_dlDepsDefault != -1)
+    {
+        paludis::DepListDepsOption op( getOptionArg(m_model->m_dlDepsDefault) );
+        options.installed_deps_pre = op;
+        options.installed_deps_post = op;
+        options.installed_deps_runtime = op;
+        options.uninstalled_deps_pre = op;
+        options.uninstalled_deps_post = op;
+        options.uninstalled_deps_runtime = op;
+        options.uninstalled_deps_suggested = op;
+    }
+
+    if (m_model->m_dlInstalledDepsPre || ! m_model->m_dlDepsDefault)
+        options.installed_deps_pre = getOptionArg(m_model->m_dlInstalledDepsPre);
+    if (m_model->m_dlInstalledDepsRuntime || ! m_model->m_dlDepsDefault )
+        options.installed_deps_runtime = getOptionArg(m_model->m_dlInstalledDepsRuntime);
+    if (m_model->m_dlInstalledDepsPost || ! m_model->m_dlDepsDefault )
+        options.installed_deps_post = getOptionArg(m_model->m_dlInstalledDepsPost);
+
+    if (m_model->m_dlUninstalledDepsPre || ! m_model->m_dlDepsDefault)
+        options.uninstalled_deps_pre = getOptionArg(m_model->m_dlUninstalledDepsPre);
+    if (m_model->m_dlUninstalledDepsRuntime || ! m_model->m_dlDepsDefault)
+        options.uninstalled_deps_runtime = getOptionArg(m_model->m_dlUninstalledDepsRuntime);
+    if (m_model->m_dlUninstalledDepsPost || ! m_model->m_dlDepsDefault)
+        options.uninstalled_deps_post = getOptionArg(m_model->m_dlUninstalledDepsPost);
+    if (m_model->m_dlUninstalledDepsSuggested || ! m_model->m_dlDepsDefault)
+        options.uninstalled_deps_suggested = getOptionArg(m_model->m_dlUninstalledDepsSuggested);
+}
+
+void pertubis::DepListSettingsView::populate_install_task(const paludis::Environment *, paludis::InstallTask & task) const
+{
+    if (m_model->m_dlReinstallTargets != -1)
+    {
+        if (m_model->m_dlReinstallTargets == 0)
+        {
+        }
+        else if (m_model->m_dlReinstallTargets == 2)
+            task.override_target_type(paludis::dl_target_package);
+        else if (m_model->m_dlReinstallTargets == 1)
+            task.override_target_type(paludis::dl_target_set);
+    }
 }
 
 void pertubis::DepListSettingsModel::loadSettings()
@@ -305,12 +427,7 @@ void pertubis::DepListSettingsModel::saveSettings()
     settings.endGroup();
 }
 
-QString pertubis::DepListSettingsModel::getDesc()
-{
-    std::ostringstream stream;
-    paludis::args::ArgsHandler::dump_to_stream(stream);
-    return QString::fromStdString(stream.str());
-}
+
 
 pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSettingsModel* model) :
         QWidget(pobj),
@@ -336,7 +453,7 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
         m_dlUpgrade(new QComboBox(this))
 {
     QGroupBox* group(new QGroupBox(tr("Dependency List Settings"),pobj));
-    group->setWhatsThis("");
+//     group->setWhatsThis("");
     QStringList commonItems;
     commonItems << tr("pre") << tr("pre-or-post") << tr("post") << tr("try-post") << tr("discard");
 

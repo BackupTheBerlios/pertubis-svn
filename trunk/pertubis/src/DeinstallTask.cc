@@ -27,6 +27,7 @@
 #include "Package.hh"
 #include "MessageOutput.hh"
 #include <paludis/package_id.hh>
+#include <paludis/name.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set-impl.hh>
@@ -143,9 +144,9 @@ void pertubis::DeinstallTask::startTask(const paludis::tr1::shared_ptr<paludis::
         if (m_task)
             delete m_task;
         m_task = new PackageDeinstallTask(this,env);
-        m_task->set_pretend(settings->m_installView->m_model->install_args.a_pretend.specified());
-        m_task->set_no_config_protect(settings->m_installView->m_model->install_args.a_no_config_protection.specified());
-        m_task->set_preserve_world(settings->m_installView->m_model->install_args.a_preserve_world.specified());
+        m_task->set_pretend(settings->m_installView->m_model->m_pretend);
+        m_task->set_no_config_protect(settings->m_installView->m_model->m_config);
+        m_task->set_preserve_world(settings->m_installView->m_model->m_preserve);
         m_task->set_with_unused_dependencies(settings->m_deinstallView->m_model->m_unusedDeps);
         m_task->set_with_dependencies(settings->m_deinstallView->m_model->m_deps);
         m_task->set_check_safety(! settings->m_deinstallView->m_model->m_unsafeUninstall);

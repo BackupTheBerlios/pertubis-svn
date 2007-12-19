@@ -300,8 +300,7 @@ void pertubis::MainWindow::createPackageView()
             tr("marked") <<
             tr("package") <<
             tr("category") <<
-            tr("reasons") <<
-            tr("hossa");
+            tr("reasons");
     m_packageOrReportHeader=true;
     m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
 
@@ -889,6 +888,7 @@ void pertubis::MainWindow::displayGLSA(const QModelIndex& ix)
 void pertubis::MainWindow::addGLSA(QString name, QString path)
 {
     qDebug() << "pertubis::MainWindow::addGLSA()" << name << path;
+    m_dockGLSA->show();
     m_glsaModel->appendCategory(new CategoryItem(name,QSet<QString>() << path));
 }
 
@@ -933,16 +933,48 @@ void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ 
     if ( !origIndex.isValid() || 0 != origIndex.column() || m_packageViewThread->isRunning())
         return;
 
-//     m_packageView->setRootIsDecorated(true);
-    m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
-    m_packageOrReportHeader=true;
-    m_packageFilterModel->setOnOff(true);
-    m_packageModel->setReportMode(false);
-
-    onStartOfPaludisAction();
-    m_packageModel->clear(Package::po_last);
+    qDebug() << "pertubis::MainWindow::onCategoryChanged() 1";
+    switchPackageHeader(true);
+    qDebug() << "pertubis::MainWindow::onCategoryChanged() 2";
     m_currentCat = m_catModel->data(origIndex).toString();
+    qDebug() << "pertubis::MainWindow::onCategoryChanged() 3";
     m_packageViewThread->start(m_currentCat);
+    qDebug() << "pertubis::MainWindow::onCategoryChanged() 4";
+}
+
+void pertubis::MainWindow::switchPackageHeader(bool state)
+{
+    onStartOfPaludisAction();
+
+    if (state)
+    {
+        m_packageModel->clear(Package::po_last);
+        m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
+        // start bugfix
+        // without these lines qt throws an ASSERT
+        m_packageView->header()->showSection(4);
+        m_packageView->header()->showSection(5);
+        m_packageView->header()->showSection(6);
+        // end bug fix
+        m_packageOrReportHeader=true;
+        m_packageFilterModel->setFilterOff(false);
+        m_packageModel->setReportMode(false);
+    }
+    else
+    {
+        m_glsaModel->clear();
+        m_packageModel->clear(Package::po_last);
+        m_packageModel->setHorizontalHeaderLabels(m_reportHeader);
+        // start bugfix
+        // without these lines qt throws an ASSERT
+        m_packageView->header()->hideSection(4);
+        m_packageView->header()->hideSection(5);
+        m_packageView->header()->hideSection(6);
+        // end bug fix
+        m_packageOrReportHeader=false;
+        m_packageFilterModel->setFilterOff(true);
+        m_packageModel->setReportMode(true);
+    }
 }
 
 void pertubis::MainWindow::onRepositoryChanged( const QModelIndex& index )
@@ -993,13 +1025,7 @@ void pertubis::MainWindow::onSystemReport()
 {
     if (!rootTest(tr("This feature is only available for system administrators")))
         return;
-    m_packageModel->setHorizontalHeaderLabels(m_reportHeader);
-    m_packageOrReportHeader=false;
-    m_packageFilterModel->setOnOff(false);
-    m_packageModel->setReportMode(true);
-//     m_packageView->setRootIsDecorated(true);
-    onStartOfPaludisAction();
-    m_packageModel->clear(rho_last);
+    switchPackageHeader(false);
     m_sysRep->start();
 }
 
@@ -1085,26 +1111,14 @@ void pertubis::MainWindow::onEndOfPaludisAction()
 
 void pertubis::MainWindow::onShowSelections()
 {
-
-    m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
-    m_packageOrReportHeader=true;
-    m_packageFilterModel->setOnOff(true);
-//     m_packageView->setRootIsDecorated(true);
-    m_packageModel->setReportMode(false);
-
-    onStartOfPaludisAction();
+    switchPackageHeader(true);
     m_packageModel->clear(Package::po_last);
     m_selectionsThread->start();
 }
 
 void pertubis::MainWindow::onSearch(QString query)
 {
-    m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
-    m_packageOrReportHeader=true;
-    m_packageFilterModel->setOnOff(true);
-    m_packageModel->setReportMode(false);
-
-    onStartOfPaludisAction();
+    switchPackageHeader(true);
     m_packageModel->clear(Package::po_last);
     statusBar()->showMessage(QString(tr("searching for %1...")).arg(query) );
 }

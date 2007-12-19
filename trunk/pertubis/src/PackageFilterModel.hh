@@ -45,13 +45,12 @@ namespace pertubis
             bool filterAcceptsRow(int sourceRow,
                              const QModelIndex &sourceParent) const;
 
-            void setOnOff(bool value) { m_filterOn=value;}
+            void setFilterOff(bool setOff) { m_filterOff=setOff;}
 
         private:
 
             QSet<QString> m_repositories;
-
-            bool    m_filterOn;
+            bool    m_filterOff;
     };
 
 }

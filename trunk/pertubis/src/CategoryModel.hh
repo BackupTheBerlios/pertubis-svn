@@ -56,6 +56,8 @@ namespace pertubis
             /// sets the header data
             void setHorizontalHeaderLabels ( const QStringList & labels );
 
+            void clear();
+
             ///@}
 
             /// @name Content information

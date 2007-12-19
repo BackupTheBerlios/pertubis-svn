@@ -23,16 +23,20 @@
 
 #include <QWidget>
 #include <QString>
-#include <paludis/args/args.hh>
-#include <paludis/args/args_handler.hh>
-#include <paludis/args/install_args_group.hh>
+#include <paludis/environment-fwd.hh>
+
+namespace paludis
+{
+    class InstallTask;
+}
 
 class QCheckBox;
+class QLineEdit;
 class QComboBox;
 
 namespace pertubis
 {
-    class InstallSettingsModel : public QObject, public paludis::args::ArgsHandler
+    class InstallSettingsModel : public QObject
     {
         Q_OBJECT
 
@@ -58,29 +62,31 @@ namespace pertubis
 
             ///@}
 
-            std::string app_name() const;
-            std::string app_synopsis() const;
-            std::string app_description() const;
-
             /// \name install options
             ///@{
-            int     m_debug;
-            int     m_continueOnFailure;
+            int         m_debug;
+            int         m_config;
+            int         m_continueOnFailure;
+            bool        m_fetch;
+            bool        m_pretend;
+            bool        m_preserve;
+            bool        m_noSafeResume;
+            bool        m_checks;
+            QString     m_worldSpec;
+
             ///@}
-
-            QString getDesc();
-
-            paludis::args::InstallArgsGroup install_args;
 
         signals:
 
+            void checksChanged(int state);
+            void continueChanged(int state);
             void debugChanged(int state);
             void fetchChanged(bool checked);
+            void preserveWorldChanged(bool checked);
             void noConfigChanged(bool checked);
             void noSafeChanged(bool checked);
             void pretendChanged(bool checked);
-            void continueChanged(int state);
-            void checksChanged(const QString& argument);
+            void worldSpecChanged(const QString & spec);
 
         public slots:
 
@@ -95,30 +101,37 @@ namespace pertubis
 
             void changeFetch(bool checked)
             {
-                if (checked != install_args.a_fetch.specified())
+                if (checked != m_fetch)
                     emit fetchChanged(checked);
-                install_args.a_fetch.set_specified(checked);
+                m_fetch = checked;
             }
 
             void changeNoConfig(bool checked)
             {
-                if (checked != install_args.a_no_config_protection.specified())
+                if (checked != m_config)
                     emit noConfigChanged(checked);
-                install_args.a_no_config_protection.set_specified(checked);
+                m_config = checked;
             }
 
             void changeNoSafe(bool checked)
             {
-                if (checked != install_args.a_no_safe_resume.specified())
+                if (checked != m_noSafeResume)
                     emit noSafeChanged(checked);
-                install_args.a_no_safe_resume.set_specified(checked);
+                m_noSafeResume = checked;
+            }
+
+            void changePreserveWorld(bool checked)
+            {
+                if (checked != m_preserve)
+                    emit preserveWorldChanged(checked);
+                m_preserve = checked;
             }
 
             void changePretend(bool checked)
             {
-                if (checked != install_args.a_pretend.specified())
+                if (checked != m_pretend)
                     emit pretendChanged(checked);
-                install_args.a_pretend.set_specified(checked);
+                m_pretend = checked;
             }
 
             void changeContinue(int state)
@@ -128,11 +141,18 @@ namespace pertubis
                 m_continueOnFailure = state;
             }
 
-            void changeChecks(const QString& argument)
+            void changeChecks(int state)
             {
-                if (argument != QString::fromStdString(install_args.a_checks.argument()) )
-                    emit checksChanged(argument);
-                install_args.a_checks.set_argument(argument.toStdString());
+                if (state != m_checks )
+                    emit checksChanged(state);
+                m_checks = state;
+            }
+
+            void changeWorldSpec(const QString spec)
+            {
+                if (spec != m_worldSpec )
+                    emit worldSpecChanged(spec);
+                m_worldSpec = spec;
             }
     };
 
@@ -163,9 +183,6 @@ namespace pertubis
             /// \name install options
             ///@{
 
-            void createView();
-            void createNormal(QWidget* pobj);
-
             QComboBox* m_debug;
             QCheckBox* m_fetch;
             QCheckBox* m_noConfigProtection;
@@ -173,6 +190,7 @@ namespace pertubis
             QCheckBox* m_pretend;
             QComboBox* m_continueOnFailure;
             QComboBox* m_checks;
+            QLineEdit* m_worldSpec;
             ///@}
 
     };

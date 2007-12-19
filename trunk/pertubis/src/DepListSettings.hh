@@ -22,22 +22,24 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_DEP_LIST_SETTINGS_H 1
 
 #include <QWidget>
-#include <QListWidgetItem>
-#include <QListWidget>
+#include <paludis/environment-fwd.hh>
+#include <paludis/dep_list-fwd.hh>
 #include <QSet>
-#include <QComboBox>
-#include <QDebug>
 #include <QString>
-#include <paludis/args/dep_list_args_group.hh>
-#include <paludis/args/args_handler.hh>
-
-
 
 class QListWidget;
+class QComboBox;
+class QListWidgetItem;
+
+namespace paludis
+{
+    class InstallTask;
+}
 
 namespace pertubis
 {
-    class DepListSettingsModel : public QObject, public paludis::args::ArgsHandler
+
+    class DepListSettingsModel : public QObject
     {
         Q_OBJECT
 
@@ -62,17 +64,10 @@ namespace pertubis
             void saveSettings();
             ///@}
 
-            QString getDesc();
-
             /// \name deplist options
             ///@{
 
-            std::string app_name() const;
-            std::string app_synopsis() const;
-            std::string app_description() const;
-
-            paludis::args::DepListArgsGroup m_depListArgs;
-
+            QSet<QString> m_dlOverrideMasks;
             int m_dlDepsDefault;
             int m_dlInstalledDepsPre;
             int m_dlInstalledDepsRuntime;
@@ -84,7 +79,6 @@ namespace pertubis
             int m_dlSuggested;
             int m_dlBlocks;
             int m_dlCircular;
-            QSet<QString> m_dlOverrideMasks;
             int m_dlFallBack;
             int m_dlDowngrade;
             int m_dlNewSlots;
@@ -149,12 +143,13 @@ namespace pertubis
             ///@name Constructors
             ///@{
 
-            DepListSettingsView(QWidget *parent, DepListSettingsModel* model);
+            DepListSettingsView(QWidget *parent, DepListSettingsModel * model);
 
 
             virtual ~DepListSettingsView() {}
 
-            void populate_install_task(const paludis::Environment *env, paludis::InstallTask &task);
+            void populate_dep_list_options(const paludis::Environment * env, paludis::DepListOptions & );
+            void populate_install_task(const paludis::Environment *, paludis::InstallTask & task) const;
 
             DepListSettingsModel* m_model;
             QComboBox* m_dlDepsDefault;

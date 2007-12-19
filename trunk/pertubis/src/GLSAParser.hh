@@ -25,6 +25,9 @@
 
 class QTextBrowser;
 
+/** \brief parses glsa.xml documents and transforms it to html
+ *
+**/
 class GLSAParser : public QXmlDefaultHandler
 {
 public:
@@ -43,17 +46,17 @@ public:
 
 private:
 
-    QString m_unaffected;
-    QString m_vulnerable;
-    QString     m_id;
-    QTextBrowser *m_browser;
-    QString m_table;
-    QString m_currentElement;
-    QString m_html;
-    bool    m_putInTable;
-    bool    m_dontUse;
-    bool    m_isUnaffected;
-    bool    m_isVulnerable;
+    QString         m_unaffected;
+    QString         m_vulnerable;
+    QString         m_id;
+    QString         m_table;
+    QString         m_currentElement;
+    QString         m_html;
+    QTextBrowser*   m_browser;
+    bool            m_putInTable;
+    bool            m_dontUse;
+    bool            m_isUnaffected;
+    bool            m_isVulnerable;
 };
 
 #endif

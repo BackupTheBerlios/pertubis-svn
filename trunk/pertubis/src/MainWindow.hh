@@ -296,7 +296,11 @@ namespace pertubis
         void createWindowSearch();
         void initGUI();
         void initLayout();
+
         ///@}
+
+        /// sets package header columns if true, else report header columns
+        void switchPackageHeader(bool state);
 
         /// @name Session persistence
         ///@{

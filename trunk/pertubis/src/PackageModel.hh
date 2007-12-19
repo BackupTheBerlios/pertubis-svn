@@ -84,6 +84,7 @@ namespace pertubis
 
         void setBox(TaskBox* t);
 
+        /// set this to true if we want to display the SystemReport output
         void setReportMode(bool value) { m_reportMode = value;}
 
         ///@}

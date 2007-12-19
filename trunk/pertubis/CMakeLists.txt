@@ -5,7 +5,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.4.0)
 
 SET(PERTUBIS_REVISION_NUMBER CACHE STRING "")
 EXECUTE_PROCESS(COMMAND svn info
-            COMMAND python utils/scripts/svn_check.py
+            COMMAND grep "Revision: "
+            COMMAND sed -e "s/Revision: //"
             WORKING_DIRECTORY ${PERTUBIS_SOURCE_DIR}
             OUTPUT_VARIABLE  PERTUBIS_REVISION_NUMBER
             OUTPUT_STRIP_TRAILING_WHITESPACE)

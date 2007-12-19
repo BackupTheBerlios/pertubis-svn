@@ -243,8 +243,11 @@ void pertubis::PackageModel::setBox(TaskBox* t)
 
 void pertubis::PackageModel::setHorizontalHeaderLabels ( const QStringList & labels )
 {
+    qDebug() << "pertubis::PackageModel::setHorizontalHeaderLabels()" << labels;
     m_header = labels;
-    emit headerDataChanged(Qt::Horizontal,0,labels.count()-1);
+    qDebug() << "pertubis::PackageModel::setHorizontalHeaderLabels() 1";
+    emit headerDataChanged(Qt::Horizontal,0,labels.count() -1);
+    qDebug() << "pertubis::PackageModel::setHorizontalHeaderLabels() 2";
 }
 
 bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role)

@@ -47,14 +47,10 @@ QString sign(QString op)
         return "";
 }
 
-GLSAParser::GLSAParser(QTextBrowser *browser) : m_browser(browser),m_putInTable(false), m_dontUse(false)
+GLSAParser::GLSAParser(QTextBrowser *browser) : m_browser(browser),m_putInTable(false), m_dontUse(false), m_isUnaffected(false),m_isVulnerable(false)
 {
-    m_html ="<html><head><link title=\"new\" rel=\"stylesheet\" type=\"text/css\" href=\"/usr/lib/pertubis/glsa.css\"><title></title></head><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\"><colgroup><col width=\"100%\"></colgroup><tbody><tr><td>\n";
-//     m_html ="<html><head></head><body>";
+    m_html ="<html><head><link title=\"new\" rel=\"stylesheet\" type=\"text/css\" href=\"/usr/lib/pertubis/glsa.css\"></head><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\"><colgroup><col width=\"100%\"></colgroup><tbody><tr><td>\n";
     m_table = "<table class=\"ntable\" border=\"0\"><tbody >\n";
-
-
-
 }
 
 bool GLSAParser::startElement(const QString & /* namespaceURI */,
@@ -62,7 +58,6 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
                               const QString &qName,
                               const QXmlAttributes &attributes)
 {
-//     qDebug() << "<" << qName << ">";
     if (qName == "glsa")
     {
         m_id = attributes.value("id");
@@ -71,7 +66,6 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
     {
         m_currentElement.append( "<h1>");
     }
-
     else if (qName == "resolution")
     {
         m_currentElement.append( "<h1>resolution</h1>");
@@ -81,7 +75,6 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
         m_putInTable=true;
         m_currentElement.append( "<tr><td class=\"infohead\">Advisory Reference</td><td class=\"tableinfo\">GLSA " + m_id + " / " );
     }
-
     else if (qName == "background")
     {
         m_currentElement.append( "<h2>background</h2>");
@@ -101,7 +94,6 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
         m_putInTable=true;
         m_currentElement.append( "<tr><td class=\"infohead\">Release Date</td><td class=\"tableinfo\">");
     }
-
     else if (qName == "metadata")
     {
         m_dontUse=true;
@@ -115,12 +107,10 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
         m_putInTable=true;
         m_currentElement.append( "<tr><td class=\"infohead\">Latest Revision</td><td class=\"tableinfo\">");
     }
-
     else if (qName == "references")
     {
         m_currentElement.append( "<h2>references:</h2>");
     }
-
     else if (qName == "impact")
     {
         m_table.append("<tr><td class=\"infohead\">Impact</td><td class=\"tableinfo\">"+attributes.value("type") + "</td></tr>" );
@@ -132,25 +122,21 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
     }
     else if (qName == "affected")
     {
-        m_currentElement.append( "<table class=\"ntable\" border=\"0\"><tbody><tr><td class=\"infohead\">package</td><td class=\"infohead\">architectures</td><td class=\"infohead\">unaffected</td><td class=\"infohead\">vulnerable</td></tr>\n");
+        m_currentElement.append( "<table class=\"ntable\"><tbody><tr><td class=\"infohead\">package</td><td class=\"infohead\">architectures</td><td class=\"infohead\">unaffected</td><td class=\"infohead\">vulnerable</td></tr>\n");
     }
     else if (qName == "package")
     {
-        m_currentElement.append("<tr><td class=\"tableinfo\" align=\"center\">"+attributes.value("name")+"</td><td class=\"tableinfo\" align=\"center\">"+attributes.value("arch")+"</td>");
+        m_currentElement.append("<tr><td class=\"tableinfo\">"+attributes.value("name")+"</td><td class=\"tableinfo\" align=\"center\">"+attributes.value("arch")+"</td>");
     }
-
     else if (qName == "unaffected")
     {
         m_isUnaffected=true;
         m_unaffected.append(sign(attributes.value("range")));
-//         m_currentElement.append( "<td class=\"tableinfo\" align=\"center\">"+));
     }
-
     else if (qName == "vulnerable")
     {
         m_isVulnerable=true;
         m_vulnerable.append(sign(attributes.value("range")));
-//         m_currentElement.append( "<td class=\"tableinfo\" align=\"center\">"+sign(attributes.value("range")));
     }
     else if (qName == "description")
     {
@@ -160,7 +146,6 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
     {
         m_currentElement.append( "<pre>");
     }
-
     else if (qName == "synopsis")
     {
         m_currentElement.append( "<h2>synopsis: </h2><p>");
@@ -169,7 +154,6 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
     {
         m_currentElement.append( "<p>");
     }
-
     return true;
 }
 
@@ -203,92 +187,66 @@ bool GLSAParser::endElement(const QString & /* namespaceURI */,
         m_currentElement.clear();
         return true;
     }
-//     qDebug() << "</" << qName << ">";
+
     if (qName == "glsa")
     {
         m_currentElement.append("</td></tr></tbody></table></body></html>\n");
     }
-    if (qName == "p")
+    else if (qName == "p")
     {
         m_currentElement.append( "</p>\n");
     }
-    if (qName == "product")
+    else if (qName == "product")
     {
         m_currentElement.append( "</td></tr>\n");
     }
-    if (qName == "revised")
+    else if (qName == "revised")
     {
         m_currentElement.append( "</td></tr>\n");
     }
-//     if (qName == "background")
-//     {
-//         m_currentElement.append( "</div class=\"test\">");
-//     }
-
-    if (qName == "affected")
+    else if (qName == "affected")
     {
         m_currentElement.append( "</tbody></table>\n");
     }
-    if (qName == "package")
+    else if (qName == "package")
     {
         m_currentElement.append( QString("<td class=\"tableinfo\" >%1</td><td class=\"tableinfo\" >%2</td></tr>\n").arg(m_unaffected).arg(m_vulnerable));
     }
-    if (qName == "access")
+    else if (qName == "access")
     {
         m_currentElement.append( "</td></tr>\n");
     }
-//     if (qName == "references")
-//     {
-//         m_currentElement.append( "</div>\n");
-//     }
-    if (qName == "bug")
+    else if (qName == "bug")
     {
         m_currentElement.append( "</td></tr>\n");
     }
-    if (qName == "uri")
+    else if (qName == "uri")
     {
         m_currentElement.append( "</a></p>\n");
     }
-
-    if (qName == "vulnerable")
+    else if (qName == "vulnerable")
     {
         m_vulnerable.append( " ");
     }
-    if (qName == "unaffected")
+    else if (qName == "unaffected")
     {
         m_unaffected.append( " ");
     }
-//     if (qName == "impact")
-//     {
-//         m_currentElement.append( "</div>");
-//     }
-    if (qName == "description")
-    {
-//         m_currentElement.append( "</div>");
-    }
-//     if (qName == "resolution")
-//     {
-//         m_currentElement.append( "</div>");
-//     }
-//     if (qName == "workaround")
-//     {
-//         m_currentElement.append( "</div>");
-//     }
-    if (qName == "announced")
+    else if (qName == "announced")
     {
         m_currentElement.append( "</td></tr>");
     }
-    if (qName == "synopsis")
+    else if (qName == "synopsis")
     {
         m_currentElement.append( "</p>\n");
     }
-    if (qName == "title")
+    else if (qName == "title")
     {
-        m_currentElement.append( "</h1>%1\n"); // later fill here in the table
+        m_currentElement.append( "</h1>%1\n");
     }
-    if (qName == "code")
+    else if (qName == "code")
     {
-        m_currentElement.append( "</pre>\n"); // later fill here in the table
+        m_currentElement.append( "</pre>\n");
     }
 
     if (m_putInTable)
@@ -324,6 +282,8 @@ bool GLSAParser::startDocument()
 bool GLSAParser::endDocument()
 {
     m_table.append("</tbody></table>");
-    m_browser->setHtml(m_html.arg(m_table));
+    QString text(m_html.arg(m_table));
+    qDebug() << text;
+    m_browser->setHtml(text);
     return true;
 }
