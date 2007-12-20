@@ -24,7 +24,7 @@ IUSE="debug doc gnome kde tests"
 
 # TODO: kde and gnome should be exclusive or, or if both are set, prefer kde?/gnome?
 # the su tool
-RDEPEND=">=sys-apps/paludis-scm
+RDEPEND="=sys-apps/paludis-scm
 	>=x11-libs/qt-4.3.0
 	kde? ( || ( >=kde-base/kdesu-3.5.5 >=kde-base/kdebase-3.5.5 ) )
 	gnome? ( >=x11-libs/gksu-1.9.1 )"
