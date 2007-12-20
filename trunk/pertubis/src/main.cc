@@ -55,7 +55,10 @@ int main( int argc, char **argv )
 
     if (argc == 2 && strcmp(argv[1],"-v") == 0)
     {
-        printf("version:\t%d.%d.%d\nrevision:\t%d\n",MAJOR_VERSION_NUMBER, MINOR_VERSION_NUMBER, PATCH_VERSION_NUMBER, PERTUBIS_REVISION_NUMBER);
+        if ( !QString(PERTUBIS_REVISION_NUMBER).isEmpty())
+            printf("revision:\t%s\n",PERTUBIS_REVISION_NUMBER);
+        else
+            printf("version:\t%d.%d.%d\n",MAJOR_VERSION_NUMBER, MINOR_VERSION_NUMBER, PATCH_VERSION_NUMBER);
     }
     else
     {
