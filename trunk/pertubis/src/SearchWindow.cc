@@ -168,7 +168,7 @@ void pertubis::SearchWindow::displaySearch(bool start)
 
 void pertubis::SearchWindow::loadSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "SearchWindow" );
     resize(settings.value("size",QVariant(QSize(320,600))).toSize());
     move(settings.value("pos",QVariant(QPoint(481,143))).toPoint());
@@ -177,7 +177,7 @@ void pertubis::SearchWindow::loadSettings()
 
 void pertubis::SearchWindow::saveSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "SearchWindow" );
     settings.setValue("size", size() );
     settings.setValue("pos", pos());

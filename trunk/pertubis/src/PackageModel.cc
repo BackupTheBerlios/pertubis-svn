@@ -236,6 +236,21 @@ bool pertubis::PackageModel::setSelectionData( const QModelIndex & ix, int taski
     return false;
 }
 
+void pertubis::PackageModel::unselectAll()
+{
+    for (Package::PackageIterator iStart(m_root->childBegin()),
+         iEnd(m_root->childEnd());
+         iStart != iEnd;++iStart)
+    {
+        if (*iStart != 0)
+        {
+            m_box->task(0)->changeStates(*iStart,Qt::Unchecked);
+            m_box->task(1)->changeStates(*iStart,Qt::Unchecked);
+        }
+    }
+    emit layoutChanged();
+}
+
 void pertubis::PackageModel::setBox(TaskBox* t)
 {
     m_box = t;
@@ -245,9 +260,7 @@ void pertubis::PackageModel::setHorizontalHeaderLabels ( const QStringList & lab
 {
     qDebug() << "pertubis::PackageModel::setHorizontalHeaderLabels()" << labels;
     m_header = labels;
-    qDebug() << "pertubis::PackageModel::setHorizontalHeaderLabels() 1";
     emit headerDataChanged(Qt::Horizontal,0,labels.count() -1);
-    qDebug() << "pertubis::PackageModel::setHorizontalHeaderLabels() 2";
 }
 
 bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role)
@@ -260,3 +273,4 @@ bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orient
     }
     return false;
 }
+

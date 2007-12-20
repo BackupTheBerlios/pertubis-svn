@@ -18,23 +18,22 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_DESCRIPTION_EXTRACTOR_HH
-#define _PERTUBIS_ENTRY_PROTECTOR_DESCRIPTION_EXTRACTOR_HH 1
+
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_NAME_DESCRIPTION_EXTRACTOR_H
+#define _PERTUBIS_ENTRY_PROTECTOR_NAME_DESCRIPTION_EXTRACTOR_H 1
 
 #include "extractor.hh"
+#include <paludis/package_id-fwd.hh>
 
 namespace pertubis
 {
-    /*! \brief tests if the PackageID's description matches the condition of a Matcher m
+    /*! \brief tests if the PackageID's name or description matches the condition of a Matcher m
      * \ingroup PaludisAdapter
      */
-    class DescriptionExtractor : public Extractor
+    class NameDescriptionExtractor : public Extractor
     {
         public:
-            DescriptionExtractor(const paludis::Environment * const env);
-            virtual ~DescriptionExtractor();
-
-        protected:
+            NameDescriptionExtractor(const paludis::Environment * const env);
 
             bool operator() (const Matcher& m, const paludis::PackageID& id) const;
     };

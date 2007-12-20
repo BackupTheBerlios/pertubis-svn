@@ -366,7 +366,7 @@ void pertubis::DepListSettingsView::populate_install_task(const paludis::Environ
 
 void pertubis::DepListSettingsModel::loadSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "DepListSettings" );
         m_dlDepsDefault = settings.value("depsDefault",0).toInt();
         m_dlInstalledDepsPre = settings.value("idepsPre",0).toInt();
@@ -397,7 +397,7 @@ void pertubis::DepListSettingsModel::loadSettings()
 
 void pertubis::DepListSettingsModel::saveSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "DepListSettings" );
     settings.setValue("depsDefault",m_dlDepsDefault );
     settings.setValue("idepsPre",m_dlInstalledDepsPre);
@@ -432,25 +432,25 @@ void pertubis::DepListSettingsModel::saveSettings()
 pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSettingsModel* model) :
         QWidget(pobj),
         m_model(model),
-        m_dlDepsDefault(new QComboBox(this)),
-        m_dlInstalledDepsPre(new QComboBox(this)),
-        m_dlInstalledDepsRuntime(new QComboBox(this)),
-        m_dlInstalledDepsPost(new QComboBox(this)),
-        m_dlUninstalledDepsPre(new QComboBox(this)),
-        m_dlUninstalledDepsRuntime(new QComboBox(this)),
-        m_dlUninstalledDepsPost(new QComboBox(this)),
-        m_dlUninstalledDepsSuggested(new QComboBox(this)),
-        m_dlSuggested(new QComboBox(this)),
         m_dlBlocks(new QComboBox(this)),
         m_dlCircular(new QComboBox(this)),
-        m_dlOverrideMasks(new QListWidget(this)),
-        m_dlFallBack(new QComboBox(this)),
+        m_dlDepsDefault(new QComboBox(this)),
         m_dlDowngrade(new QComboBox(this)),
+        m_dlFallBack(new QComboBox(this)),
+        m_dlInstalledDepsPost(new QComboBox(this)),
+        m_dlInstalledDepsPre(new QComboBox(this)),
+        m_dlInstalledDepsRuntime(new QComboBox(this)),
         m_dlNewSlots(new QComboBox(this)),
         m_dlReinstall(new QComboBox(this)),
         m_dlReinstallScm(new QComboBox(this)),
         m_dlReinstallTargets(new QComboBox(this)),
-        m_dlUpgrade(new QComboBox(this))
+        m_dlSuggested(new QComboBox(this)),
+        m_dlUninstalledDepsPost(new QComboBox(this)),
+        m_dlUninstalledDepsPre(new QComboBox(this)),
+        m_dlUninstalledDepsRuntime(new QComboBox(this)),
+        m_dlUninstalledDepsSuggested(new QComboBox(this)),
+        m_dlUpgrade(new QComboBox(this)),
+        m_dlOverrideMasks(new QListWidget(this))
 {
     QGroupBox* group(new QGroupBox(tr("Dependency List Settings"),pobj));
 //     group->setWhatsThis("");
@@ -577,44 +577,46 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
     m_dlNewSlots->setCurrentIndex(m_model->m_dlNewSlots);
 
     QGridLayout *groupLayout = new QGridLayout;
-    groupLayout->addWidget(new QLabel(tr("Default Dependencies"),m_dlDepsDefault), 0, 0);
-    groupLayout->addWidget(new QLabel(tr("Installed Dependencies Pre"),m_dlInstalledDepsPre), 1, 0);
-    groupLayout->addWidget(new QLabel(tr("Installed Dependencies Runtime"),m_dlInstalledDepsRuntime), 2, 0);
-    groupLayout->addWidget(new QLabel(tr("Installed Dependencies Post"),m_dlInstalledDepsPost), 3, 0);
-    groupLayout->addWidget(new QLabel(tr("Unistalled Dependencies Pre"),m_dlUninstalledDepsPre), 4, 0);
-    groupLayout->addWidget(new QLabel(tr("Uninstalled Dependencies Runtime"),m_dlUninstalledDepsRuntime), 5, 0);
-    groupLayout->addWidget(new QLabel(tr("Uninstalled Dependencies Post"),m_dlUninstalledDepsPost), 6, 0);
-    groupLayout->addWidget(new QLabel(tr("Uninstalled Dependencies Suggested"),m_dlUninstalledDepsSuggested), 7, 0);
-    groupLayout->addWidget(new QLabel(tr("Suggested Dependencies"),m_dlSuggested), 8, 0);
-    groupLayout->addWidget(new QLabel(tr("Blocks Dependencies"),m_dlBlocks), 9, 0);
-    groupLayout->addWidget(new QLabel(tr("Circular Dependencies"),m_dlCircular), 10, 0);
-    groupLayout->addWidget(new QLabel(tr("Override Masks"),m_dlOverrideMasks), 11, 0);
-    groupLayout->addWidget(new QLabel(tr("Fallback"),m_dlFallBack), 12, 0);
-    groupLayout->addWidget(new QLabel(tr("Downgrade"),m_dlDowngrade), 13, 0);
-    groupLayout->addWidget(new QLabel(tr("New Slots"),m_dlNewSlots), 14, 0);
-    groupLayout->addWidget(new QLabel(tr("Reinstall"),m_dlReinstall), 15, 0);
-    groupLayout->addWidget(new QLabel(tr("Reinstall scm"),m_dlReinstallScm), 16, 0);
-    groupLayout->addWidget(new QLabel(tr("Reinstall Target"),m_dlReinstallTargets), 17, 0);
-    groupLayout->addWidget(new QLabel(tr("Upgrade"),m_dlUpgrade), 18, 0);
-    groupLayout->addWidget(m_dlDepsDefault,0,1);
-    groupLayout->addWidget(m_dlInstalledDepsPre,1,1);
-    groupLayout->addWidget(m_dlInstalledDepsRuntime,2,1);
-    groupLayout->addWidget(m_dlInstalledDepsPost,3,1);
-    groupLayout->addWidget(m_dlUninstalledDepsPre,4,1);
-    groupLayout->addWidget(m_dlUninstalledDepsRuntime,5,1);
-    groupLayout->addWidget(m_dlUninstalledDepsPost,6,1);
-    groupLayout->addWidget(m_dlUninstalledDepsSuggested,7,1);
-    groupLayout->addWidget(m_dlSuggested,8,1);
-    groupLayout->addWidget(m_dlBlocks,9,1);
-    groupLayout->addWidget(m_dlCircular,10,1);
-    groupLayout->addWidget(m_dlOverrideMasks,11,1);
-    groupLayout->addWidget(m_dlFallBack,12,1);
-    groupLayout->addWidget(m_dlDowngrade,13,1);
-    groupLayout->addWidget(m_dlNewSlots,14,1);
-    groupLayout->addWidget(m_dlReinstall,15,1);
-    groupLayout->addWidget(m_dlReinstallScm,16,1);
-    groupLayout->addWidget(m_dlReinstallTargets,17,1);
-    groupLayout->addWidget(m_dlUpgrade,18,1);
+    groupLayout->addWidget(new QLabel(tr("Blocks Dependencies"),m_dlBlocks), 0, 0);
+    groupLayout->addWidget(m_dlBlocks,0,1);
+
+    groupLayout->addWidget(new QLabel(tr("Circular Dependencies"),m_dlCircular), 1, 0);
+    groupLayout->addWidget(m_dlCircular,1,1);
+
+    groupLayout->addWidget(new QLabel(tr("Default Dependencies"),m_dlDepsDefault), 2, 0);
+    groupLayout->addWidget(m_dlDepsDefault,2,1);
+    groupLayout->addWidget(new QLabel(tr("Downgrade"),m_dlDowngrade), 3, 0);
+    groupLayout->addWidget(m_dlDowngrade,3,1);
+    groupLayout->addWidget(new QLabel(tr("Fallback"),m_dlFallBack), 4, 0);
+    groupLayout->addWidget(m_dlFallBack,4,1);
+    groupLayout->addWidget(new QLabel(tr("Installed Dependencies Post"),m_dlInstalledDepsPost), 5, 0);
+    groupLayout->addWidget(m_dlInstalledDepsPost,5,1);
+    groupLayout->addWidget(new QLabel(tr("Installed Dependencies Pre"),m_dlInstalledDepsPre), 6, 0);
+    groupLayout->addWidget(m_dlInstalledDepsPre,6,1);
+    groupLayout->addWidget(new QLabel(tr("Installed Dependencies Runtime"),m_dlInstalledDepsRuntime), 7, 0);
+    groupLayout->addWidget(m_dlInstalledDepsRuntime,7,1);
+    groupLayout->addWidget(new QLabel(tr("New Slots"),m_dlNewSlots), 8, 0);
+    groupLayout->addWidget(m_dlNewSlots,8,1);
+    groupLayout->addWidget(new QLabel(tr("Reinstall"),m_dlReinstall), 9, 0);
+    groupLayout->addWidget(m_dlReinstall,9,1);
+    groupLayout->addWidget(new QLabel(tr("Reinstall scm"),m_dlReinstallScm), 10, 0);
+    groupLayout->addWidget(m_dlReinstallScm,10,1);
+    groupLayout->addWidget(new QLabel(tr("Reinstall Target"),m_dlReinstallTargets), 11, 0);
+    groupLayout->addWidget(m_dlReinstallTargets,11,1);
+    groupLayout->addWidget(new QLabel(tr("Suggested Dependencies"),m_dlSuggested), 12, 0);
+    groupLayout->addWidget(m_dlSuggested,12,1);
+    groupLayout->addWidget(new QLabel(tr("Uninstalled Dependencies Post"),m_dlUninstalledDepsPost), 13, 0);
+    groupLayout->addWidget(m_dlUninstalledDepsPost,13,1);
+    groupLayout->addWidget(new QLabel(tr("Unistalled Dependencies Pre"),m_dlUninstalledDepsPre), 14, 0);
+    groupLayout->addWidget(m_dlUninstalledDepsPre,14,1);
+    groupLayout->addWidget(new QLabel(tr("Uninstalled Dependencies Runtime"),m_dlUninstalledDepsRuntime), 15, 0);
+    groupLayout->addWidget(m_dlUninstalledDepsRuntime,15,1);
+    groupLayout->addWidget(new QLabel(tr("Uninstalled Dependencies Suggested"),m_dlUninstalledDepsSuggested), 16, 0);
+    groupLayout->addWidget(m_dlUninstalledDepsSuggested,16,1);
+    groupLayout->addWidget(new QLabel(tr("Upgrade"),m_dlUpgrade), 17, 0);
+    groupLayout->addWidget(m_dlUpgrade,17,1);
+    groupLayout->addWidget(new QLabel(tr("Override Masks"),m_dlOverrideMasks), 18, 0);
+    groupLayout->addWidget(m_dlOverrideMasks,18,1);
 
     connect(m_model,
             SIGNAL(depsDefaultChanged(int)),
@@ -815,7 +817,6 @@ pertubis::DepListSettingsView::DepListSettingsView(QWidget *pobj, DepListSetting
     mainLayout->addSpacing(12);
     mainLayout->addStretch(1);
     setLayout(mainLayout);
-
 }
 
 void pertubis::DepListSettingsView::setCurrentIndex(QString name,Qt::CheckState state)

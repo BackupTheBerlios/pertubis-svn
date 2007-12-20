@@ -21,22 +21,20 @@
 // #include "ArgumentViewCreator.hh"
 #include "InstallSettings.hh"
 #include "FormatterUtils.hh"
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDebug>
+#include <QGridLayout>
 #include <QGroupBox>
 #include <QLabel>
-#include <QDebug>
-
-#include <QSettings>
-#include <QComboBox>
-#include <QCheckBox>
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QSettings>
 #include <sstream>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/install_task.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/action-fwd.hh>
-
 
 pertubis::InstallSettingsModel::InstallSettingsModel(QObject *pobj) :
         QObject(pobj)
@@ -97,7 +95,7 @@ void pertubis::InstallSettingsModel::populate_install_task(const paludis::Enviro
 
 void pertubis::InstallSettingsModel::loadSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "InstallSettingsModel" );
     m_debug = settings.value("debug_build",1).toInt();
     m_fetch = settings.value("fetch",false).toBool();
@@ -111,7 +109,7 @@ void pertubis::InstallSettingsModel::loadSettings()
 
 void pertubis::InstallSettingsModel::saveSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "InstallSettingsModel" );
     settings.setValue("debug",m_debug);
     settings.setValue("fetch",m_fetch);

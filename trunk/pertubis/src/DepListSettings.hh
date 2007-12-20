@@ -152,29 +152,32 @@ namespace pertubis
             void populate_install_task(const paludis::Environment *, paludis::InstallTask & task) const;
 
             DepListSettingsModel* m_model;
-            QComboBox* m_dlDepsDefault;
-            QComboBox* m_dlInstalledDepsPre;
-            QComboBox* m_dlInstalledDepsRuntime;
-            QComboBox* m_dlInstalledDepsPost;
-            QComboBox* m_dlUninstalledDepsPre;
-            QComboBox* m_dlUninstalledDepsRuntime;
-            QComboBox* m_dlUninstalledDepsPost;
-            QComboBox* m_dlUninstalledDepsSuggested;
-            QComboBox* m_dlSuggested;
-            QComboBox* m_dlBlocks;
-            QComboBox* m_dlCircular;
-            QListWidget* m_dlOverrideMasks;
-            QComboBox* m_dlFallBack;
-            QComboBox* m_dlDowngrade;
-            QComboBox* m_dlNewSlots;
-            QComboBox* m_dlReinstall;
-            QComboBox* m_dlReinstallScm;
-            QComboBox* m_dlReinstallTargets;
-            QComboBox* m_dlUpgrade;
 
         private slots:
 
             void setCurrentIndex(QString name,Qt::CheckState state);
+
+        private:
+
+            QComboBox* m_dlBlocks;
+            QComboBox* m_dlCircular;
+            QComboBox* m_dlDepsDefault;
+            QComboBox* m_dlDowngrade;
+            QComboBox* m_dlFallBack;
+            QComboBox* m_dlInstalledDepsPost;
+            QComboBox* m_dlInstalledDepsPre;
+            QComboBox* m_dlInstalledDepsRuntime;
+            QComboBox* m_dlNewSlots;
+            QComboBox* m_dlReinstall;
+            QComboBox* m_dlReinstallScm;
+            QComboBox* m_dlReinstallTargets;
+            QComboBox* m_dlSuggested;
+            QComboBox* m_dlUninstalledDepsPost;
+            QComboBox* m_dlUninstalledDepsPre;
+            QComboBox* m_dlUninstalledDepsRuntime;
+            QComboBox* m_dlUninstalledDepsSuggested;
+            QComboBox* m_dlUpgrade;
+            QListWidget* m_dlOverrideMasks;
     };
 }
 

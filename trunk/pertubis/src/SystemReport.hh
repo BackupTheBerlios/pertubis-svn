@@ -72,11 +72,6 @@ namespace pertubis
             /// overloaded from QThread
             void run();
 
-            int return_code() const
-            {
-                return _n_errors ? 1 : 0;
-            }
-
         signals:
 
             /// sends a status message from paludis api to main thread

@@ -25,38 +25,41 @@
 
 class QTextBrowser;
 
-/** \brief parses glsa.xml documents and transforms it to html
- *
-**/
-class GLSAParser : public QXmlDefaultHandler
+namespace pertubis
 {
-public:
-    GLSAParser(QTextBrowser *browser);
+    /** \brief parses glsa.xml documents and transforms it to html
+    *
+    **/
+    class GlsaParser : public QXmlDefaultHandler
+    {
+    public:
+        GlsaParser(QTextBrowser *browser);
 
-    bool startElement(const QString &namespaceURI,
-                      const QString &localName,
-                      const QString &qName,
-                      const QXmlAttributes &attributes);
-    bool endElement(const QString &namespaceURI,
-                    const QString &localName,
-                    const QString &qName);
-    bool characters(const QString &str);
-    bool fatalError(const QXmlParseException &exception);
-    bool endDocument ();
+        bool startElement(const QString &namespaceURI,
+                        const QString &localName,
+                        const QString &qName,
+                        const QXmlAttributes &attributes);
+        bool endElement(const QString &namespaceURI,
+                        const QString &localName,
+                        const QString &qName);
+        bool characters(const QString &str);
+        bool fatalError(const QXmlParseException &exception);
+        bool endDocument ();
 
-private:
+    private:
 
-    QString         m_unaffected;
-    QString         m_vulnerable;
-    QString         m_id;
-    QString         m_table;
-    QString         m_currentElement;
-    QString         m_html;
-    QTextBrowser*   m_browser;
-    bool            m_putInTable;
-    bool            m_dontUse;
-    bool            m_isUnaffected;
-    bool            m_isVulnerable;
-};
+        QString         m_unaffected;
+        QString         m_vulnerable;
+        QString         m_id;
+        QString         m_table;
+        QString         m_currentElement;
+        QString         m_html;
+        QTextBrowser*   m_browser;
+        bool            m_putInTable;
+        bool            m_dontUse;
+        bool            m_isUnaffected;
+        bool            m_isVulnerable;
+    };
+}
 
 #endif

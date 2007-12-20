@@ -30,7 +30,6 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/args/args.hh>
-#include <paludis/args/install_args_group.hh>
 #include <QDebug>
 
 pertubis::InstallTask::InstallTask(QObject* pobject,

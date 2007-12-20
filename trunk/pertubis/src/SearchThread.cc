@@ -18,7 +18,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "name_extractor.hh"
+#include "NameDescriptionExtractor.hh"
 #include "Package.hh"
 #include "PaludisUtils.hh"
 #include "QuerySettings.hh"
@@ -26,7 +26,6 @@
 #include "SearchThread.hh"
 #include "TaskBox.hh"
 #include "text_matcher.hh"
-
 
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -318,9 +317,7 @@ void pertubis::SearchThread::run()
         p_item->setData(Package::po_installed,piState);
         ++count;
     }
-    qDebug() << "...5";
     emit progress(100);
     emit finished(count);
-    qDebug() << "...6";
 }
 

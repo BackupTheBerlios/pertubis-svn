@@ -101,8 +101,8 @@ namespace pertubis
 //             virtual paludis::HookResult perform_hook(const paludis::Hook & hook) const;
             virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID & c);
 
-            void show_resume_command() const;
-            std::string make_resume_command(const paludis::PackageIDSequence& seq) const;
+//             void show_resume_command() const;
+//             std::string make_resume_command(const paludis::PackageIDSequence& seq) const;
 
         signals:
 

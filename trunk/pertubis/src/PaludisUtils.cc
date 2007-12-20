@@ -20,49 +20,29 @@
 
 #include "PaludisUtils.hh"
 
-#include <QSet>
-#include <QDir>
-#include <paludis/action.hh>
-
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
-
 #include <paludis/metadata_key.hh>
-
 #include <paludis/package_database.hh>
-
 #include <paludis/package_id.hh>
-
 #include <paludis/query.hh>
-#include <paludis/repository.hh>
-
-#include <paludis/util/indirect_iterator.hh>
-
-#include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
-
 #include <paludis/util/sequence.hh>
-#include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/visitor_cast.hh>
-#include <paludis/util/visitor.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
-
 
 bool pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
                          const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
     using namespace paludis;
-    tr1::shared_ptr<VersionRequirements> req(new VersionRequirements());
-    req->push_back(VersionRequirement(VersionOperator(vo_equal),id->version()));
     tr1::shared_ptr<const PackageIDSequence> ipacks(
         m_env->package_database()->query(
             query::InstalledAtRoot(m_env->root()) &
             query::Matches(make_package_dep_spec()
                 .package(id->name())
-                .slot(id->slot())),
+                .slot(id->slot())
+                .version_requirement(VersionRequirement( VersionOperator(vo_equal), id->version()))),
             qo_order_by_version));
     return (ipacks->begin() != ipacks->end());
 }

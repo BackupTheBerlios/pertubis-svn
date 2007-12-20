@@ -19,12 +19,13 @@
 */
 
 #include "CategoryFilterModel.hh"
+#include "CategoryItem.hh"
 #include "CategoryModel.hh"
 #include "CategoryThread.hh"
-#include "CategoryItem.hh"
 #include "DeinstallTask.hh"
 #include "DetailsThread.hh"
 #include "FormatterUtils.hh"
+#include "GeneralSettings.hh"
 #include "GLSAParser.hh"
 #include "InstallTask.hh"
 #include "MainWindow.hh"
@@ -47,30 +48,22 @@
 #include "TaskBox.hh"
 #include "version.hh"
 
-#include <paludis/args/install_args_group.hh>
 #include <paludis/environment_maker.hh>
-#include <paludis/name.hh>
-#include <paludis/package_id-fwd.hh>
-#include <paludis/package_id.hh>
-#include <paludis/util/set-fwd.hh>
-#include <paludis/util/set.hh>
-#include <paludis/util/set-impl.hh>
-#include <paludis/util/stringify.hh>
 
 #include <iostream>
+#include <QActionGroup>
 #include <QApplication>
-#include <QDialogButtonBox>
-#include <QPushButton>
 #include <QCheckBox>
 #include <QCursor>
 #include <QDataStream>
 #include <QDebug>
-#include <QLabel>
-#include <QDockWidget>
+#include <QDialogButtonBox>
 #include <QDir>
+#include <QDockWidget>
 #include <QFile>
 #include <QFont>
 #include <QHeaderView>
+#include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
 #include <QMenuBar>
@@ -79,17 +72,19 @@
 #include <QMouseEvent>
 #include <QPixmap>
 #include <QProcess>
+#include <QPushButton>
 #include <QSettings>
+
 #include <QSplitter>
 #include <QStatusBar>
-#include <QSystemTrayIcon>
+
 #include <QTableView>
 #include <QTabWidget>
 #include <QTextBrowser>
 #include <QTimer>
 #include <QToolBar>
-#include <QVBoxLayout>
 #include <QUrl>
+#include <QVBoxLayout>
 
 static bool rootTest(const QString& message)
 {
@@ -156,7 +151,6 @@ pertubis::MainWindow::MainWindow()
 {
     initGUI();
     initLayout();
-    createConnections();
     loadSettings();
     QTimer::singleShot(0,this,SLOT(initObject()));
 }
@@ -164,6 +158,21 @@ pertubis::MainWindow::MainWindow()
 pertubis::MainWindow::~MainWindow()
 {
     saveSettings();
+    if (!m_searchThread->isFinished())
+    {
+        m_searchThread->stopExec();
+        m_searchThread->wait();
+    }
+    if (!m_packageViewThread->isFinished())
+    {
+        m_packageViewThread->stopExec();
+        m_packageViewThread->wait();
+    }
+    if (!m_sysRep->isFinished())
+    {
+        m_sysRep->stopExec();
+        m_sysRep->wait();
+    }
 }
 
 void pertubis::MainWindow::initObject()
@@ -176,54 +185,15 @@ void pertubis::MainWindow::initObject()
     rootTest("");
 }
 
-void pertubis::MainWindow::initGUI()
-{
-    m_env = paludis::EnvironmentMaker::get_instance()->make_from_spec("");
-    qRegisterMetaType<QList<RepositoryListItem*> >("QList<RepositoryListItem*>");
-    qRegisterMetaType<QList<QVariantList> >("QList<QVariantList>");
-    qRegisterMetaType<QMap<QString, QSet<QString> > >("QMap<QString, QSet<QString> >");
-    createActions(); // no deps
-    createTab(); // no deps
-    createTaskBox(); // no deps
-    createTasks(); // createTaskBox()
-    createRepositoryBar(); // no deps
-    createCatbar(); // createRepositoryBar()
-    createGLSAList(); // no deps
-    createSetListView(); // no deps
-    createPackageView(); // createRepositoryBar()
-    createToolBar(); // createActions()
-    m_settings = new Settings(this);
-    createOptionsMenu(); // no deps
-    createWindowSearch();
-    createTrayMenu();
-    statusBar()->show();
-    ReleaseEater* filter = new ReleaseEater(this);
-    installEventFilter(filter);
-    addDockWidget(Qt::LeftDockWidgetArea, m_dockCat);
-    addDockWidget(Qt::LeftDockWidgetArea, m_dockRepo);
-    addDockWidget(Qt::LeftDockWidgetArea, m_dockSet);
-    addDockWidget(Qt::LeftDockWidgetArea, m_dockGLSA);
-    m_sysRep = new SystemReport(this,m_env,m_box);
-    m_repoInfoThread = new RepositoryInfoThread(this,m_env,m_box);
-    m_categoryThread = new CategoryThread(this,m_env,m_box);
-    m_packageViewThread = new PackagesThread(this,m_env,m_box);
-    m_detailsThread = new DetailsThread(this,m_env,m_box);
-    m_selectionsThread = new ShowSelectionsThread(this,m_env,m_box);
-    m_setThread = new SetThread(this,m_env,m_box);
-    m_repoListThread = new RepositoryListThread(this,m_env,m_box);
-    m_syncTask = new PertubisSyncTask(m_env,this);
-    m_timer = new QTimer(this);
-}
-
 void pertubis::MainWindow::initLayout()
 {
     m_vSplit = new QSplitter(Qt::Vertical, this);
     m_vSplit->addWidget(m_packageView);
     m_vSplit->addWidget(m_tabs);
-    m_vSplit->setStretchFactor(0,10);
-    m_vSplit->setStretchFactor(1,10);
+    m_vSplit->setStretchFactor(0,1);
+    m_vSplit->setStretchFactor(1,1);
     setWindowTitle( tr("pertubis :: Main Window") );
-    QPixmap logoIcon( ":images/logo.xpm" );
+    QPixmap logoIcon( ":images/logo.png" );
     setWindowIcon(logoIcon);
     setCentralWidget(m_vSplit);
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
@@ -233,23 +203,111 @@ void pertubis::MainWindow::initLayout()
     show();
 }
 
-void pertubis::MainWindow::closeEvent(QCloseEvent* ev)
+void pertubis::MainWindow::initGUI()
 {
-    hide();
-    ev->ignore();
-}
+    m_output = new MessageOutput(this);
+    m_env = paludis::EnvironmentMaker::get_instance()->make_from_spec("");
+    qRegisterMetaType<QList<RepositoryListItem*> >("QList<RepositoryListItem*>");
+    qRegisterMetaType<QList<QVariantList> >("QList<QVariantList>");
+    qRegisterMetaType<Qt::ToolButtonStyle>("Qt::ToolButtonStyle");
+    qRegisterMetaType<QMap<QString, QSet<QString> > >("QMap<QString, QSet<QString> >");
+    m_settings = new Settings(this);
 
-void pertubis::MainWindow::createTaskBox()
-{
-    // no deps
-    m_box = new TaskBox(this);
-}
+    QAction* acToggleMainWindow = new QAction( QPixmap(":images/logo.png"),tr("main window"),this );
+    acToggleMainWindow->setCheckable(true);
+    acToggleMainWindow->setChecked(true);
+    acToggleMainWindow->setToolTip( html_tooltip(tr("show/hide the pertubis main window"),acToggleMainWindow->text() ));
 
-void pertubis::MainWindow::createCatbar()
-{
-    // deps:
-    // - createRepositoryBar()
+    m_acTogglePackageView = new QAction( QPixmap(":images/packages.png"),tr("packages"),this );
+    m_acTogglePackageView->setCheckable(true);
+    m_acTogglePackageView->setChecked(true);
+    m_acTogglePackageView->setToolTip( html_tooltip(tr("enable/disable the package window in the middle"),m_acTogglePackageView->text()));
+
+    QAction* acToggleSearchWindow = new QAction( QPixmap(":images/find.png"),tr("find") ,this);
+    acToggleSearchWindow->setShortcut( tr("CTRL+F"));
+    acToggleSearchWindow->setToolTip(html_tooltip( tr("toggle search window"),acToggleSearchWindow->text() ) );
+
+    QAction* acPref = new QAction( QPixmap(":images/settings.png"),tr( "Settings"),this);
+    acPref->setShortcut( tr("CTRL+P"));
+    acPref->setToolTip( html_tooltip(tr("configure pertubis"),acPref->text()));
+
+    QAction* acSysRep = new QAction( QPixmap(":images/system_report.png"),tr( "System Report"),this);
+    acSysRep->setToolTip(html_tooltip(tr("show all stale packages in system"),acSysRep->text()));
+
+    QAction* acSelection = new QAction( QPixmap(":images/selections.png"),tr("selections") ,this);
+    acSelection->setShortcut( tr("CTRL+F11"));
+    acSelection->setToolTip( html_tooltip(tr("here you check the selections you made"),acSelection->text()) );
+
+    QAction* acUnselectAll = new QAction( QPixmap(":images/selections.png"),tr("unselect all") ,this);
+    acUnselectAll->setShortcut( tr("CTRL+DEL"));
+    acUnselectAll->setToolTip( html_tooltip(tr("here you can unselect all selections you made"),acSelection->text()) );
+
+    QMenu* acSelectionMenu = new QMenu(this);
+    acSelection->setMenu(acSelectionMenu);
+    acSelectionMenu->addAction(acUnselectAll);
+
+    QAction* acFinish = new QAction( QPixmap(":images/run.png"),tr("start") ,this);
+    acFinish->setShortcut( tr("CTRL+F12"));
+    acFinish->setToolTip(html_tooltip( tr("starts all pending tasks you selected"),acFinish->text())) ;
+
+    m_acSync = new QAction( QPixmap(":images/sync0.png"), tr("sync"),this);
+    m_acSync->setToolTip(html_tooltip(tr("To get the latest releases and bugfixes it is neccessary to update the package database.<br><br>It is sufficient to sync your repositories once a day"),m_acSync->text()));
+
+    QAction* acQuit = new QAction( QPixmap(":images/quit.png"),tr("quit") ,this);
+    acQuit->setToolTip(html_tooltip(tr("closing the pertubis suite. All unsaved changes will be lost!"),acQuit->text()));
+
+    QAction* acInstall= new QAction(tr("install"),this);
+    acInstall->setToolTip( html_tooltip(tr("install this package")));
+    acInstall->setCheckable(true);
+
+    QAction* acAbout = new QAction(QPixmap(":images/logo.png"), tr("about pertubis"),this);
+
+    QAction* acDeinstall= new QAction(tr("deinstall"),this);
+    acDeinstall->setToolTip(html_tooltip( tr("deinstall this package") ));
+    acDeinstall->setCheckable(true);
+
+    QAction* acEditUse = new QAction(tr("edit useflags"),this);
+    acEditUse->setToolTip(html_tooltip( tr("opens a useflag editor for this item") ));
+
+    QAction* acMasking = new QAction(tr("(un)mask"),this);
+    acMasking->setToolTip(html_tooltip(tr("toggle the masking for this package") ));
+
+    m_details = new QTextBrowser(this);
+    m_details->setOpenLinks(false);
+
+    qDebug() << "pertubis::MainWindow::createRepositoryView()";
+    m_repoInfoModel = new RepositoryInfoModel(this);
+    m_repoInfoModel->setHorizontalHeaderLabels(QStringList() <<
+            tr("name") <<
+            tr("state"));
+
+    m_repoInfoView = new QTableView(this);
+    m_repoInfoView->setModel(m_repoInfoModel);
+    m_repoInfoView->horizontalHeader()->setResizeMode(0,QHeaderView::ResizeToContents);
+    m_repoInfoView->horizontalHeader()->setResizeMode(1,QHeaderView::Stretch);
+    m_repoInfoView->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    m_repoInfoView->horizontalHeader()->setVisible(true);
+    m_repoInfoView->verticalHeader()->setVisible(false);
+
+    QPalette p(m_repoInfoView->palette());
+    p.setColor(QPalette::Base,QColor(170,170,170)); // background color  = black
+    m_repoInfoView->setPalette(p);
+
+    m_tabs = new QTabWidget(this);
+
+    m_detailsTabID = m_tabs->addTab(m_details,tr("Package Details") );
+    m_repoViewTabID = m_tabs->addTab(m_repoInfoView,tr("repository details") );
+    m_outputTabID = m_tabs->addTab(m_output,tr("Messages"));
+
     //
+    m_box = new TaskBox(this);
+
+    //
+
+    InstallTask* tmp(new InstallTask( this,acInstall,tr("install")));
+    m_tidInstall = m_box->addTask(tmp);
+    DeinstallTask* dtask(new DeinstallTask( this,acDeinstall,tr("deinstall")));
+    m_tidDeinstall = m_box->addTask(dtask);
 
     m_catModel = new CategoryModel(this);
     m_catModel->setHorizontalHeaderLabels(QStringList() << tr("category"));
@@ -268,22 +326,102 @@ void pertubis::MainWindow::createCatbar()
     m_categoryView->setFont(myfont);
 
     m_dockCat = new QDockWidget(tr("category list"),this);
+    m_dockCat->setObjectName("category list");
     m_dockCat->layout()->setMargin(0);
     m_dockCat->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     m_dockCat->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     m_dockCat->setWidget(m_categoryView);
 
-    m_acToggleCatBar = m_dockCat->toggleViewAction();
-    m_acToggleCatBar->setText(tr("category list"));
-    m_acToggleCatBar->setIcon(QPixmap(":images/catbar.png"));
-    m_acToggleCatBar->setShortcut(tr("F11"));
-    m_acToggleCatBar->setToolTip(html_tooltip(tr("enable/disable the category sidebar"),m_acToggleCatBar->text()) );
-}
+    QAction* acToggleCatBar = m_dockCat->toggleViewAction();
+    acToggleCatBar->setText(tr("category list"));
+    acToggleCatBar->setIcon(QPixmap(":images/catbar.png"));
+    acToggleCatBar->setShortcut(tr("F11"));
+    acToggleCatBar->setToolTip(html_tooltip(tr("enable/disable the category sidebar"),acToggleCatBar->text()) );
 
-void pertubis::MainWindow::createPackageView()
-{
-    // deps
-    // - createRepositoryBar()
+    m_repoListModel = new RepositoryListModel(this);
+    m_repoListModel->setHorizontalHeaderLabels(QStringList() <<
+            tr("filter on") << tr("repository"));
+
+    m_repoListView = new QTableView(this);
+    m_repoListView->setModel(m_repoListModel);
+    m_repoListView->horizontalHeader()->setVisible(false);
+    m_repoListView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+
+    m_repoListView->setFont(myfont);
+
+    m_repoListView->verticalHeader()->setVisible(false);
+    m_repoListView->setShowGrid(false);
+
+    m_dockRepo = new QDockWidget(tr("repository list"),this);
+    m_dockRepo->setObjectName("repository list");
+    m_dockRepo->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    m_dockRepo->layout()->setMargin(0);
+    m_dockRepo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    m_dockRepo->setWidget(m_repoListView);
+    m_dockRepo->setToolTip(html_tooltip(tr("Here you can select the repositories pertubis will use.</p><p>Click on a repository to enable/disable filtering by this repository")));
+
+    QAction* acToggleRepoBar = m_dockRepo->toggleViewAction();
+    acToggleRepoBar->setText(tr("repository list"));
+    acToggleRepoBar->setIcon(QPixmap(":images/repobar.png"));
+    acToggleRepoBar->setShortcut( tr("F10"));
+    acToggleRepoBar->setToolTip( html_tooltip(tr("enable/disable the repository sidebar"),acToggleRepoBar->text()) );
+
+    m_glsaModel = new CategoryModel(this);
+    m_glsaModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
+
+    m_glsaView = new QTableView(this);
+    m_glsaView->setModel(m_glsaModel);
+    m_glsaView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    m_glsaView->horizontalHeader()->setVisible(false);
+    m_glsaView->verticalHeader()->setVisible(false);
+    m_glsaView->setShowGrid(false);
+
+    m_glsaView->setFont(myfont);
+
+    m_dockGlsa = new QDockWidget(tr("security announcements"),this);
+    m_dockGlsa->setObjectName("security announcements");
+    m_dockGlsa->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    m_dockGlsa->setWidget(m_glsaView);
+    m_dockGlsa->layout()->setMargin(0);
+    m_dockGlsa->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
+    QAction* acToggleGlsaBar = m_dockGlsa->toggleViewAction();
+    acToggleGlsaBar->setIcon( QPixmap(":images/glsa.png"));
+    acToggleGlsaBar->setText(tr("security"));
+    acToggleGlsaBar->setShortcut( tr("CTRL+I"));
+    acToggleGlsaBar->setToolTip(html_tooltip( tr("see Gentoo Linux Security Announcements"),acToggleGlsaBar->text())) ;
+
+    //
+
+    m_setModel = new CategoryModel(this);
+    m_setModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
+
+    m_setFilterModel = new CategoryFilterModel(this);
+    m_setFilterModel->setSourceModel(m_setModel);
+
+    m_setListView = new QTableView(this);
+    m_setListView->setModel(m_setFilterModel);
+    m_setListView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    m_setListView->horizontalHeader()->setVisible(false);
+    m_setListView->verticalHeader()->setVisible(false);
+    m_setListView->setShowGrid(false);
+
+    m_setListView->setFont(myfont);
+
+    m_dockSet = new QDockWidget(tr("set list"),this);
+    m_dockSet->setObjectName("set list");
+    m_dockSet->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    m_dockSet->setWidget(m_setListView);
+    m_dockSet->layout()->setMargin(0);
+    m_dockSet->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
+    QAction* acToggleSetBar = m_dockSet->toggleViewAction();
+    acToggleSetBar->setText(tr("set list"));
+    acToggleSetBar->setIcon(QPixmap(":images/setbar.png"));
+    acToggleSetBar->setShortcut(tr("F12"));
+    acToggleSetBar->setToolTip(html_tooltip(tr("enable/disable the set sidebar"),acToggleSetBar->text()) );
+
+    //
     m_packageModel = new PackageModel(this);
     m_packageModel->setBox(m_box);
 
@@ -301,9 +439,9 @@ void pertubis::MainWindow::createPackageView()
             tr("package") <<
             tr("category") <<
             tr("reasons");
-    m_packageOrReportHeader=true;
-    m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
 
+    m_headerMode = true;
+    m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
     m_packageView = new PackageView(this);
     m_packageView->setRootIsDecorated(true);
     m_packageView->setItemsExpandable(true);
@@ -315,240 +453,73 @@ void pertubis::MainWindow::createPackageView()
     m_packageView->header()->setVisible(true);
     m_packageView->header()->setResizeMode(QHeaderView::ResizeToContents);
     m_packageView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    QFont myfont(m_packageView->font());
-    myfont.setBold(true);
+
     m_packageView->setFont(myfont);
-}
 
-void pertubis::MainWindow::createToolBar()
-{
-    // deps
-    // - createActions()
-    m_toolBar = addToolBar( tr("database toolbar") );
-
-    m_toolBar->addAction(m_acToggleCatBar);
-    m_toolBar->addAction(m_acToggleRepoBar);
-    m_toolBar->addAction(m_acToggleSetBar);
-    m_toolBar->addAction(m_acGLSA);
+    //
+    m_toolBar = new QToolBar(tr("pertubis toolbar"),this);
+    m_toolBar->setObjectName("pertubis toolbar");
+    addToolBar(Qt::LeftToolBarArea,m_toolBar );
+    setToolButtonStyle( m_settings->m_generalView->m_model->m_toolbarDisplayMode == 0 ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextUnderIcon );
+    m_toolBar->addAction(acToggleCatBar);
+    m_toolBar->addAction(acToggleRepoBar);
+    m_toolBar->addAction(acToggleSetBar);
+    m_toolBar->addAction(acToggleGlsaBar);
     m_toolBar->addAction(m_acTogglePackageView);
-    m_toolBar->addAction(m_acToggleSearchWindow);
+    m_toolBar->addAction(acToggleSearchWindow);
     m_toolBar->addSeparator();
     m_toolBar->addAction(m_acSync);
-    m_toolBar->addAction(m_acSysRep);
-    m_toolBar->addAction(m_acSelection);
-    m_toolBar->addAction(m_acFinish);
-    m_toolBar->addAction(m_acPref);
+    m_toolBar->addAction(acSysRep);
+    m_toolBar->addAction(acSelection);
+    m_toolBar->addAction(acFinish);
+    m_toolBar->addAction(acPref);
     m_toolBar->addSeparator();
-    m_toolBar->addAction(m_acAbout);
-}
-
-void pertubis::MainWindow::createOutput()
-{
-    m_output = new MessageOutput(this);
-}
-
-void pertubis::MainWindow::createRepositoryBar()
-{
-    m_repoListModel = new RepositoryListModel(this);
-    m_repoListModel->setHorizontalHeaderLabels(QStringList() <<
-            tr("filter on") << tr("repository"));
-
-    m_repoListView = new QTableView(this);
-    m_repoListView->setModel(m_repoListModel);
-    m_repoListView->horizontalHeader()->setVisible(false);
-    m_repoListView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    QFont myfont(m_repoListView->font());
-    myfont.setBold(true);
-    m_repoListView->setFont(myfont);
-
-    m_repoListView->verticalHeader()->setVisible(false);
-    m_repoListView->setShowGrid(false);
-
-    m_dockRepo = new QDockWidget(tr("repository list"),this);
-    m_dockRepo->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
-    m_dockRepo->layout()->setMargin(0);
-    m_dockRepo->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    m_dockRepo->setWidget(m_repoListView);
-    m_dockRepo->setToolTip(html_tooltip(tr("Here you can select the repositories pertubis will use.</p><p>Click on a repository to enable/disable filtering by this repository")));
-
-    m_acToggleRepoBar = m_dockRepo->toggleViewAction();
-    m_acToggleRepoBar->setText(tr("repository list"));
-    m_acToggleRepoBar->setIcon(QPixmap(":images/repobar.png"));
-    m_acToggleRepoBar->setShortcut( tr("F10"));
-    m_acToggleRepoBar->setToolTip( html_tooltip(tr("enable/disable the repository sidebar"),m_acToggleRepoBar->text()) );
-}
-
-void pertubis::MainWindow::createSetListView()
-{
-    // deps:
-    // - createRepositoryBar()
-    //
-
-    m_setModel = new CategoryModel(this);
-    m_setModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
-
-    m_setFilterModel = new CategoryFilterModel(this);
-    m_setFilterModel->setSourceModel(m_setModel);
-
-    m_setListView = new QTableView(this);
-    m_setListView->setModel(m_setFilterModel);
-    m_setListView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    m_setListView->horizontalHeader()->setVisible(false);
-    m_setListView->verticalHeader()->setVisible(false);
-    m_setListView->setShowGrid(false);
-    QFont myfont(m_setListView->font());
-    myfont.setBold(true);
-    m_setListView->setFont(myfont);
-
-    m_dockSet = new QDockWidget(tr("set list"),this);
-    m_dockSet->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
-    m_dockSet->setWidget(m_setListView);
-    m_dockSet->layout()->setMargin(0);
-    m_dockSet->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
-    m_acToggleSetBar = m_dockSet->toggleViewAction();
-    m_acToggleSetBar->setText(tr("set list"));
-    m_acToggleSetBar->setIcon(QPixmap(":images/setbar.png"));
-    m_acToggleSetBar->setShortcut(tr("F12"));
-    m_acToggleSetBar->setToolTip(html_tooltip(tr("enable/disable the set sidebar"),m_acToggleSetBar->text()) );
-}
-
-void pertubis::MainWindow::createRepositoryView()
-{
-    qDebug() << "pertubis::MainWindow::createRepositoryView()";
-    m_repoInfoModel = new RepositoryInfoModel(this);
-    m_repoInfoModel->setHorizontalHeaderLabels(QStringList() <<
-            tr("name") <<
-            tr("state"));
-
-    m_repoInfoView = new QTableView(this);
-    m_repoInfoView->setModel(m_repoInfoModel);
-    m_repoInfoView->horizontalHeader()->setResizeMode(0,QHeaderView::ResizeToContents);
-    m_repoInfoView->horizontalHeader()->setResizeMode(1,QHeaderView::Stretch);
-    m_repoInfoView->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    m_repoInfoView->horizontalHeader()->setVisible(true);
-    m_repoInfoView->verticalHeader()->setVisible(false);
-
-    QPalette p(m_repoInfoView->palette());
-    p.setColor(QPalette::Base,QColor(170,170,170)); // background color  = black
-    m_repoInfoView->setPalette(p);
-}
-
-void pertubis::MainWindow::createDetails()
-{
-    m_details = new QTextBrowser(this);
-    m_details->setOpenLinks(false);
-}
-
-void pertubis::MainWindow::createTab()
-{
-    m_tabs = new QTabWidget(this);
-    createDetails();
-    createRepositoryView();
-    createOutput();
-    m_detailsTabID = m_tabs->addTab(m_details,tr("Package Details") );
-    m_repoViewTabID = m_tabs->addTab(m_repoInfoView,tr("repository details") );
-    m_outputTabID = m_tabs->addTab(m_output,tr("Messages"));
-}
-
-void pertubis::MainWindow::createGLSAList()
-{
-    m_glsaModel = new CategoryModel(this);
-    m_glsaModel->setHorizontalHeaderLabels(QStringList() << tr("set"));
-
-    m_glsaListView = new QTableView(this);
-    m_glsaListView->setModel(m_glsaModel);
-    m_glsaListView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    m_glsaListView->horizontalHeader()->setVisible(false);
-    m_glsaListView->verticalHeader()->setVisible(false);
-    m_glsaListView->setShowGrid(false);
-    QFont myfont(m_glsaListView->font());
-    myfont.setBold(true);
-    m_glsaListView->setFont(myfont);
-
-    m_dockGLSA = new QDockWidget(tr("security announcements"),this);
-    m_dockGLSA->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
-    m_dockGLSA->setWidget(m_glsaListView);
-    m_dockGLSA->layout()->setMargin(0);
-    m_dockGLSA->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
-    m_acGLSA = m_dockGLSA->toggleViewAction();
-    m_acGLSA->setIcon( QPixmap(":images/glsa.png"));
-    m_acGLSA->setText(tr("security"));
-    m_acGLSA->setShortcut( tr("CTRL+I"));
-    m_acGLSA->setToolTip(html_tooltip( tr("see Gentoo Linux Security Announcements"),m_acGLSA->text())) ;
-
-}
-
-void pertubis::MainWindow::createActions()
-{
-    m_acToggleMainWindow = new QAction( QPixmap(":images/logo.png"),tr("main window"),this );
-    m_acToggleMainWindow->setCheckable(true);
-    m_acToggleMainWindow->setChecked(true);
-    m_acToggleMainWindow->setToolTip( html_tooltip(tr("show/hide the pertubis main window"),m_acToggleMainWindow->text() ));
-
-    m_acTogglePackageView = new QAction( QPixmap(":images/packages.png"),tr("packages"),this );
-    m_acTogglePackageView->setCheckable(true);
-    m_acTogglePackageView->setChecked(true);
-    m_acTogglePackageView->setToolTip( html_tooltip(tr("enable/disable the package window in the middle"),m_acTogglePackageView->text()));
-
-    m_acToggleSearchWindow = new QAction( QPixmap(":images/find.png"),tr("find") ,this);
-    m_acToggleSearchWindow->setShortcut( tr("CTRL+F"));
-    m_acToggleSearchWindow->setToolTip(html_tooltip( tr("toggle search window"),m_acToggleSearchWindow->text() ) );
-
-    m_acPref = new QAction( QPixmap(":images/settings.png"),tr( "Settings"),this);
-    m_acPref->setShortcut( tr("CTRL+P"));
-    m_acPref->setToolTip( html_tooltip(tr("configure pertubis"),m_acPref->text()));
-
-    m_acSysRep = new QAction( QPixmap(":images/system_report.png"),tr( "System Report"),this);
-//     m_acSysRep->setShortcut( tr("CTRL+P"));
-    m_acSysRep->setToolTip(html_tooltip(tr("show all stale packages in system"),m_acSysRep->text()));
-
-    m_acSelection = new QAction( QPixmap(":images/selections.png"),tr("selections") ,this);
-    m_acSelection->setShortcut( tr("CTRL+F11"));
-    m_acSelection->setToolTip( html_tooltip(tr("here you check the selections you made"),m_acSelection->text()) );
-
-    m_acFinish = new QAction( QPixmap(":images/run.png"),tr("start") ,this);
-    m_acFinish->setShortcut( tr("CTRL+F12"));
-    m_acFinish->setToolTip(html_tooltip( tr("starts all pending tasks you selected"),m_acFinish->text())) ;
+    m_toolBar->addAction(acAbout);
+    m_options  = new QMenu(tr("Package Options"),this);
 
 
-    m_acSync = new QAction( QPixmap(":images/sync0.png"), tr("sync"),this);
-    m_acSync->setToolTip(html_tooltip(tr("To get the latest releases and bugfixes it is neccessary to update the package database.<br><br>It is sufficient to sync your repositories once a day"),m_acSync->text()));
+    m_searchThread = new SearchThread(this,m_env,m_settings->m_queryView->m_model,m_box);
+    m_searchWindow = new SearchWindow(this,m_settings->m_queryView->m_model,m_searchThread);
 
-    m_acQuit = new QAction( QPixmap(":images/quit.png"),tr("quit") ,this);
-    m_acQuit->setToolTip(html_tooltip(tr("closing the pertubis suite. All unsaved changes will be lost!"),m_acQuit->text()));
+    qDebug() << "pertubis::MainWindow::createTrayMenu()";
+    m_trayMenu = new QMenu(this);
+    m_trayMenu->addAction(acToggleMainWindow);
+    m_trayMenu->addAction(acPref);
+    m_trayMenu->addAction(acQuit);
 
-    m_acInstall= new QAction(tr("install"),this);
-    m_acInstall->setToolTip( html_tooltip(tr("install this package")));
-    m_acInstall->setCheckable(true);
+    m_sysTray = new QSystemTrayIcon(QPixmap(":images/logo.png"),this);
+    m_sysTray->setContextMenu(m_trayMenu);
+    m_sysTray->show();
 
-    m_acAbout = new QAction(QPixmap(":images/logo.png"), tr("about pertubis"),this);
+    statusBar()->show();
+    ReleaseEater* filter = new ReleaseEater(this);
+    installEventFilter(filter);
+    addDockWidget(m_settings->m_generalView->m_model->m_categoryDockPosition == 0  ? Qt::LeftDockWidgetArea : Qt::RightDockWidgetArea  , m_dockCat);
+    addDockWidget(m_settings->m_generalView->m_model->m_repositoryDockPosition == 0  ? Qt::LeftDockWidgetArea : Qt::RightDockWidgetArea, m_dockRepo);
+    addDockWidget(m_settings->m_generalView->m_model->m_setDockPosition == 0  ? Qt::LeftDockWidgetArea : Qt::RightDockWidgetArea, m_dockSet);
+    addDockWidget(m_settings->m_generalView->m_model->m_glsaDockPosition == 0  ? Qt::LeftDockWidgetArea : Qt::RightDockWidgetArea, m_dockGlsa);
+    m_sysRep = new SystemReport(this,m_env,m_box);
+    m_repoInfoThread = new RepositoryInfoThread(this,m_env,m_box);
+    m_categoryThread = new CategoryThread(this,m_env,m_box);
+    m_packageViewThread = new PackagesThread(this,m_env,m_box);
+    m_detailsThread = new DetailsThread(this,m_env,m_box);
+    m_selectionsThread = new ShowSelectionsThread(this,m_env,m_box);
+    m_setThread = new SetThread(this,m_env,m_box);
+    m_repoListThread = new RepositoryListThread(this,m_env,m_box);
+    m_syncTask = new PertubisSyncTask(m_env,this);
+    m_timer = new QTimer(this);
 
-    m_acDeinstall= new QAction(tr("deinstall"),this);
-    m_acDeinstall->setToolTip(html_tooltip( tr("deinstall this package") ));
-    m_acDeinstall->setCheckable(true);
-
-    m_acEditUse = new QAction(tr("edit useflags"),this);
-    m_acEditUse->setToolTip(html_tooltip( tr("opens a useflag editor for this item") ));
-
-    m_acMasking = new QAction(tr("(un)mask"),this);
-    m_acMasking->setToolTip(html_tooltip(tr("toggle the masking for this package") ));
-}
-
-void pertubis::MainWindow::createConnections()
-{
-    connect(m_acDeinstall,
+    connect(acDeinstall,
             SIGNAL(toggled(bool)),
             this,
             SLOT(onDeinstallTask(bool)));
 
-    connect(m_acFinish,
+    connect(acFinish,
             SIGNAL(triggered()),
             this,
             SLOT(onStartTasks()));
 
-    connect(m_acInstall,
+    connect(acInstall,
             SIGNAL(toggled(bool)),
             this,
             SLOT(onInstallTask(bool)));
@@ -558,22 +529,27 @@ void pertubis::MainWindow::createConnections()
             this,
             SLOT(onSync()));
 
-    connect(m_acSelection,
+    connect(acSelection,
             SIGNAL(triggered()),
             this,
             SLOT(onShowSelections()));
 
-    connect(m_acPref,
+    connect(acUnselectAll,
+            SIGNAL(triggered()),
+            this,
+            SLOT(onUnselectAll()));
+
+    connect(acPref,
             SIGNAL(triggered()),
             this,
             SLOT(toggleSettings()));
 
-    connect(m_acQuit,
+    connect(acQuit,
             SIGNAL(triggered()),
             qApp,
             SLOT(quit()));
 
-    connect(m_acToggleMainWindow,
+    connect(acToggleMainWindow,
             SIGNAL(triggered()),
             this,
             SLOT(toggleMainWindow()));
@@ -583,20 +559,25 @@ void pertubis::MainWindow::createConnections()
             this,
             SLOT(togglePackageView()));
 
-    connect(m_acToggleSearchWindow,
+    connect(acToggleSearchWindow,
             SIGNAL(triggered()),
             this,
             SLOT(toggleSearchWindow()));
+
+    connect(dtask,
+            SIGNAL(finished()),
+            this,
+            SLOT(onTasksFinished()));
 
     connect(m_categoryView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
             SLOT(onCategoryChanged( const QModelIndex& )) );
 
-    connect(m_glsaListView,
+    connect(m_glsaView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
-            SLOT(displayGLSA( const QModelIndex& )) );
+            SLOT(displayGlsa( const QModelIndex& )) );
 
     connect(m_categoryThread,
             SIGNAL(sendCategory(QMap<QString, QSet<QString> >)),
@@ -673,7 +654,7 @@ void pertubis::MainWindow::createConnections()
             this,
             SLOT(displaySelectedPackages()));
 
-    connect(m_acSysRep,
+    connect(acSysRep,
             SIGNAL(triggered()),
             this,
             SLOT(onSystemReport()));
@@ -686,7 +667,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_sysRep,
             SIGNAL(finished(int,int)),
             this,
-            SLOT(displaySearchFinished(int,int)));
+            SLOT(displaySystemReportFinished(int,int)));
 
     connect(m_setThread,
             SIGNAL(sendSet(QMap<QString, QSet<QString> >)),
@@ -701,7 +682,7 @@ void pertubis::MainWindow::createConnections()
     connect(m_repoListThread,
             SIGNAL(finished()),
             this,
-            SLOT(onReposChanged()));
+            SLOT(restartFilters()));
 
     connect(m_repoListView,
             SIGNAL(clicked( const QModelIndex&)),
@@ -733,7 +714,7 @@ void pertubis::MainWindow::createConnections()
             m_repoInfoModel,
             SLOT(slotResult(const QList<QVariantList>&)));
 
-    connect(m_acAbout,
+    connect(acAbout,
             SIGNAL(triggered()),
             this,
             SLOT(aboutPertubis()));
@@ -741,80 +722,62 @@ void pertubis::MainWindow::createConnections()
     connect(m_sysRep,
             SIGNAL(notifyAboutGLSA(QString,QString)),
             this,
-            SLOT(addGLSA(QString,QString)));
-}
+            SLOT(addGlsa(QString,QString)));
 
-void pertubis::MainWindow::createTasks()
-{
-    // deps
-    // - createTaskBox()
-    InstallTask* tmp(new InstallTask( this,m_acInstall,tr("install")));
-    m_tidInstall = m_box->addTask(tmp);
-    DeinstallTask* dtask(new DeinstallTask( this,m_acDeinstall,tr("deinstall")));
-    m_tidDeinstall = m_box->addTask(dtask);
-    connect(dtask,
-            SIGNAL(finished()),
+    connect(m_settings->m_generalView->m_model,
+            SIGNAL(toolbarDisplayModeChanged(int)),
             this,
-            SLOT(onTasksFinished()));
+            SLOT(setToolbarDisplayMode(int)));
+
+    connect(m_settings->m_generalView->m_model,
+            SIGNAL(categoryDockChanged(int)),
+            this,
+            SLOT(setCatDock(int)));
+
+    connect(m_settings->m_generalView->m_model,
+            SIGNAL(setDockChanged(int)),
+            this,
+            SLOT(setSetDock(int)));
+
+    connect(m_settings->m_generalView->m_model,
+            SIGNAL(repositoryDockChanged(int)),
+            this,
+            SLOT(setRepositoryDock(int)));
+
+    connect(m_settings->m_generalView->m_model,
+            SIGNAL(glsaDockChanged(int)),
+            this,
+            SLOT(setGlsaDock(int)));
 }
 
-void pertubis::MainWindow::createWindowSearch()
+void pertubis::MainWindow::closeEvent(QCloseEvent* ev)
 {
-//     m_searchWindow = new SearchWindow(this,m_settings->m_queryView);
-    m_searchThread = new SearchThread(this,m_env,m_settings->m_queryView->m_model,m_box);
-    m_searchWindow = new SearchWindow(this,m_settings->m_queryView->m_model,m_searchThread);
-}
-
-void pertubis::MainWindow::createOptionsMenu()
-{
-    m_options  = new QMenu(tr("Package Options"),this);
-}
-
-void pertubis::MainWindow::createTrayMenu()
-{
-    qDebug() << "pertubis::MainWindow::createTrayMenu()";
-    m_trayMenu = new QMenu(this);
-    m_trayMenu->addAction(m_acToggleMainWindow);
-    m_trayMenu->addAction(m_acPref);
-    m_trayMenu->addAction(m_acQuit);
-
-    m_sysTray = new QSystemTrayIcon(QPixmap(":images/logo.png"),this);
-    m_sysTray->setContextMenu(m_trayMenu);
-    m_sysTray->show();
+    hide();
+    ev->ignore();
 }
 
 void pertubis::MainWindow::loadSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "MainWindow" );
-        setVisible(settings.value("visible",true).toBool());
         resize(settings.value("size",QVariant(QSize(800,600))).toSize());
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
-
-        m_acToggleCatBar->setChecked(settings.value("catbar_visible",true ).toBool()  );
         m_currentCat = settings.value("currentCategory","").toString();
-        m_acToggleRepoBar->setChecked(settings.value("repobar_visible",true ).toBool()  );
-
-        m_acTogglePackageView->setChecked(settings.value("packageview_visible",true).toBool() );
         m_vSplit->restoreState(settings.value("vsplt").toByteArray());
-
-        m_dockCat->setVisible(m_acToggleCatBar->isChecked());
-        m_dockRepo->setVisible(m_acToggleRepoBar->isChecked());
         m_vSplit->setVisible(m_acTogglePackageView->isChecked());
+        QByteArray tmp(settings.value("mystate",true).toByteArray());
     settings.endGroup();
+    restoreState(tmp);
 }
 
 void pertubis::MainWindow::saveSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "MainWindow" );
-        settings.setValue("visible", isVisible() );
+    settings.setValue("mystate", saveState() );
         settings.setValue("size", size() );
         settings.setValue("pos", pos());
-        settings.setValue("catbar_visible", m_acToggleCatBar->isChecked());
         settings.setValue("currentCategory", m_currentCat);
-        settings.setValue("repobar_visible", m_acToggleRepoBar->isChecked());
-        settings.setValue("packageview_visible", m_acTogglePackageView->isChecked());
         settings.setValue("vsplt", m_vSplit->saveState());
     settings.endGroup();
     qDebug() << "pertubis::MainWindow::saveSettings() - done";
@@ -824,6 +787,7 @@ void pertubis::MainWindow::displayCategoryChanged()
 {
     statusBar()->showMessage(tr("%1 packages found").arg(m_packageFilterModel->rowCount()));
     onEndOfPaludisAction();
+    m_currentDisplay = dm_category;
 }
 
 void pertubis::MainWindow::displayPackageDetails(QString details)
@@ -840,6 +804,7 @@ void pertubis::MainWindow::displaySelectedPackages()
 {
     statusBar()->showMessage(tr("%1 packages found").arg(m_packageFilterModel->rowCount()));
     onEndOfPaludisAction();
+    m_currentDisplay = dm_selections;
 }
 
 void pertubis::MainWindow::displayNextIcon()
@@ -870,7 +835,7 @@ void pertubis::MainWindow::displaySyncFinished()
     q.exec();
 }
 
-void pertubis::MainWindow::displayGLSA(const QModelIndex& ix)
+void pertubis::MainWindow::displayGlsa(const QModelIndex& ix)
 {
     CategoryItem* item(static_cast<CategoryItem*>(ix.internalPointer()));
     if (item == 0)
@@ -878,28 +843,11 @@ void pertubis::MainWindow::displayGLSA(const QModelIndex& ix)
     QFile file(*item->repos().begin());
     QXmlInputSource inputSource(&file);
     QXmlSimpleReader reader;
-    GLSAParser handler(m_details);
+    GlsaParser handler(m_details);
     reader.setContentHandler(&handler);
     reader.setErrorHandler(&handler);
     reader.parse(inputSource);
     m_tabs->setCurrentIndex(m_detailsTabID);
-}
-
-void pertubis::MainWindow::addGLSA(QString name, QString path)
-{
-    qDebug() << "pertubis::MainWindow::addGLSA()" << name << path;
-    m_dockGLSA->show();
-    m_glsaModel->appendCategory(new CategoryItem(name,QSet<QString>() << path));
-}
-
-void pertubis::MainWindow::displaySearchFinished(int total,int count)
-{
-    onEndOfPaludisAction();
-    m_searchWindow->displaySearch(false);
-    if (count!= 0)
-        statusBar()->showMessage(tr("packages %1 processed, %2 packages found").arg(total).arg(count));
-    else
-        statusBar()->showMessage(tr("%1 packages found").arg(total));
 }
 
 void pertubis::MainWindow::displayOptionsMenu(const QModelIndex& mix)
@@ -922,9 +870,115 @@ void pertubis::MainWindow::displayOptionsMenu(const QModelIndex& mix)
         }
     }
 
-    m_options->addAction(m_acEditUse);
-    m_options->addAction(m_acMasking);
+//     m_options->addAction(m_acEditUse);
+//     m_options->addAction(m_acMasking);
     m_options->popup(m_packageView->mapToGlobal(m_packageView->m_mousePos));
+}
+
+void pertubis::MainWindow::displaySearchFinished(int count)
+{
+    onEndOfPaludisAction();
+    m_searchWindow->displaySearch(false);
+    statusBar()->showMessage(tr("%1 packages found").arg(count));
+    m_currentDisplay = dm_search;
+}
+
+void pertubis::MainWindow::displaySystemReportFinished(int total,int count)
+{
+    onEndOfPaludisAction();
+    m_currentDisplay = dm_system_report;
+    statusBar()->showMessage(tr("%1 installed packages processed, %2 issues found").arg(total).arg(count));
+}
+
+void pertubis::MainWindow::addGlsa(QString name, QString path)
+{
+    qDebug() << "pertubis::MainWindow::addGlsa()" << name << path;
+    m_dockGlsa->show();
+    m_glsaModel->appendCategory(new CategoryItem(name,QSet<QString>() << path));
+}
+
+
+void pertubis::MainWindow::setToolbarDisplayMode(int state)
+{
+    if (state == 0)
+        setToolButtonStyle(Qt::ToolButtonIconOnly);
+    else if (state == 1)
+        setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+}
+
+void pertubis::MainWindow::setCatDock(int state)
+{
+    removeDockWidget(m_dockCat);
+    if (state == 0)
+        addDockWidget(Qt::LeftDockWidgetArea,m_dockCat);
+    else if (state == 1)
+        addDockWidget(Qt::RightDockWidgetArea,m_dockCat);
+    m_dockCat->show();
+}
+
+void pertubis::MainWindow::setSetDock(int state)
+{
+    removeDockWidget(m_dockSet);
+    if (state == 0)
+        addDockWidget(Qt::LeftDockWidgetArea,m_dockSet);
+    else if (state == 1)
+        addDockWidget(Qt::RightDockWidgetArea,m_dockSet);
+    m_dockSet->show();
+}
+
+void pertubis::MainWindow::setGlsaDock(int state)
+{
+    removeDockWidget(m_dockGlsa);
+    if (state == 0)
+        addDockWidget(Qt::LeftDockWidgetArea,m_dockGlsa);
+    else if (state == 1)
+        addDockWidget(Qt::RightDockWidgetArea,m_dockGlsa);
+    m_dockGlsa->show();
+}
+
+void pertubis::MainWindow::setRepositoryDock(int state)
+{
+    removeDockWidget(m_dockRepo);
+    if (state == 0)
+        addDockWidget(Qt::LeftDockWidgetArea,m_dockRepo);
+    else if (state == 1)
+        addDockWidget(Qt::RightDockWidgetArea,m_dockRepo);
+    m_dockRepo->show();
+}
+
+void pertubis::MainWindow::switchPackageHeader(bool state)
+{
+    onStartOfPaludisAction();
+    m_packageModel->clear(Package::po_last);
+    if (m_headerMode == state)
+        return;
+    if (state)
+    {
+        m_headerMode=true;
+        m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
+        // start bugfix
+        // without these lines qt throws an ASSERT
+        m_packageView->header()->showSection(4);
+        m_packageView->header()->showSection(5);
+        m_packageView->header()->showSection(6);
+        // end bug fix
+        m_packageFilterModel->setFilterOff(false);
+        m_packageModel->setReportMode(false);
+    }
+    else
+    {
+        m_headerMode=false;
+        m_glsaModel->clear();
+        m_packageModel->setHorizontalHeaderLabels(m_reportHeader);
+        // start bugfix
+        // without these lines qt throws an ASSERT
+        m_packageView->header()->hideSection(4);
+        m_packageView->header()->hideSection(5);
+        m_packageView->header()->hideSection(6);
+        // end bug fix
+        m_packageFilterModel->setFilterOff(true);
+        m_packageModel->setReportMode(true);
+    }
 }
 
 void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ )
@@ -933,48 +987,9 @@ void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ 
     if ( !origIndex.isValid() || 0 != origIndex.column() || m_packageViewThread->isRunning())
         return;
 
-    qDebug() << "pertubis::MainWindow::onCategoryChanged() 1";
     switchPackageHeader(true);
-    qDebug() << "pertubis::MainWindow::onCategoryChanged() 2";
     m_currentCat = m_catModel->data(origIndex).toString();
-    qDebug() << "pertubis::MainWindow::onCategoryChanged() 3";
     m_packageViewThread->start(m_currentCat);
-    qDebug() << "pertubis::MainWindow::onCategoryChanged() 4";
-}
-
-void pertubis::MainWindow::switchPackageHeader(bool state)
-{
-    onStartOfPaludisAction();
-
-    if (state)
-    {
-        m_packageModel->clear(Package::po_last);
-        m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
-        // start bugfix
-        // without these lines qt throws an ASSERT
-        m_packageView->header()->showSection(4);
-        m_packageView->header()->showSection(5);
-        m_packageView->header()->showSection(6);
-        // end bug fix
-        m_packageOrReportHeader=true;
-        m_packageFilterModel->setFilterOff(false);
-        m_packageModel->setReportMode(false);
-    }
-    else
-    {
-        m_glsaModel->clear();
-        m_packageModel->clear(Package::po_last);
-        m_packageModel->setHorizontalHeaderLabels(m_reportHeader);
-        // start bugfix
-        // without these lines qt throws an ASSERT
-        m_packageView->header()->hideSection(4);
-        m_packageView->header()->hideSection(5);
-        m_packageView->header()->hideSection(6);
-        // end bug fix
-        m_packageOrReportHeader=false;
-        m_packageFilterModel->setFilterOff(true);
-        m_packageModel->setReportMode(true);
-    }
 }
 
 void pertubis::MainWindow::onRepositoryChanged( const QModelIndex& index )
@@ -986,7 +1001,7 @@ void pertubis::MainWindow::onRepositoryChanged( const QModelIndex& index )
     {
         int state = m_repoListModel->data(index,Qt::CheckStateRole).toInt();
         m_repoListModel->setData(index, (state == Qt::Checked ) ? Qt::Unchecked :Qt::Checked);
-        onReposChanged();
+        restartFilters();
         statusBar()->showMessage(tr("%1 packages found").arg(m_packageFilterModel->rowCount()));
     }
     else
@@ -997,7 +1012,7 @@ void pertubis::MainWindow::onRepositoryChanged( const QModelIndex& index )
     }
 }
 
-void pertubis::MainWindow::onReposChanged()
+void pertubis::MainWindow::restartFilters()
 {
     m_packageFilterModel->setFilter(m_repoListModel->activeRepositories());
     m_packageFilterModel->invalidate();
@@ -1027,6 +1042,13 @@ void pertubis::MainWindow::onSystemReport()
         return;
     switchPackageHeader(false);
     m_sysRep->start();
+}
+
+void pertubis::MainWindow::onUnselectAll()
+{
+    m_packageModel->unselectAll();
+    if (m_currentDisplay == dm_selections)
+        onShowSelections();
 }
 
 void pertubis::MainWindow::onStartTasks()
@@ -1112,14 +1134,12 @@ void pertubis::MainWindow::onEndOfPaludisAction()
 void pertubis::MainWindow::onShowSelections()
 {
     switchPackageHeader(true);
-    m_packageModel->clear(Package::po_last);
     m_selectionsThread->start();
 }
 
 void pertubis::MainWindow::onSearch(QString query)
 {
     switchPackageHeader(true);
-    m_packageModel->clear(Package::po_last);
     statusBar()->showMessage(QString(tr("searching for %1...")).arg(query) );
 }
 

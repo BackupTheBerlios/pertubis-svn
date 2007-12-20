@@ -18,7 +18,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "name_extractor.hh"
+#include "NameDescriptionExtractor.hh"
 #include "matcher.hh"
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>

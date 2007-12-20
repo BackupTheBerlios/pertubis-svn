@@ -35,7 +35,7 @@ int main( int argc, char **argv )
 
     if (argc == 1)
     {
-        QSettings settings;
+        QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
         settings.beginGroup( "i18npage" );
         QString lang = settings.value("language").toString();
         settings.endGroup();

@@ -130,8 +130,8 @@ void pertubis::PackageInstallTask::display_one_clean_all_pre_list_entry(const pa
     emit sendMessage(QString::fromStdString(color(paludis::stringify(c),"blue")));
 }
 
-std::string pertubis::PackageInstallTask::make_resume_command(const paludis::PackageIDSequence& s) const
-{
+// std::string pertubis::PackageInstallTask::make_resume_command(const paludis::PackageIDSequence& /*s*/) const
+// {
 //     using namespace paludis;
 //     std::string resume_command = environment()->paludis_command()
 //             + " --" + QObject::tr("Install following packages").toLocal8Bit().data();
@@ -141,10 +141,10 @@ std::string pertubis::PackageInstallTask::make_resume_command(const paludis::Pac
 //         resume_command = resume_command + " '=" + stringify(**i) + "'";
 //
 //     return resume_command;
-    return "";
-}
+//     return "";
+// }
 
-void pertubis::PackageInstallTask::show_resume_command() const
-{
-}
+// void pertubis::PackageInstallTask::show_resume_command() const
+// {
+// }
 

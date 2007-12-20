@@ -231,19 +231,9 @@ void pertubis::DetailsThread::start( paludis::tr1::shared_ptr<const paludis::Pac
 
 void pertubis::DetailsThread::run()
 {
-    m_text = QString(
-"<html>\n"
-"<body>\n"
-"    <table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\">\n"
-"            <colgroup>\n"
-"                <col width=\"30%\">\n"
-"                <col width=\"70%\">\n"
-"            </colgroup>\n"
-"            <tr>\n"
-"               <th bgcolor=\"#5a3aca\"></th>\n"
-"               <th bgcolor=\"#000000\" align=\"left\"><font color=\"#ffffff\">%1-%2</font></th>\n"
-"            </tr>\n"
-"            <tbody >\n").arg(stringify(m_id->name()).c_str()).arg(stringify(m_id->version()).c_str());
+    m_text = QString("<html><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\">\
+    <colgroup><col width=\"30%\"><col width=\"70%\"></colgroup><tr><th bgcolor=\"#5a3aca\"></th><th bgcolor=\"#000000\" align=\"left\"><font color=\"#ffffff\">%1-%2</font></th>\n</tr><tbody>\n")
+            .arg(stringify(m_id->name()).c_str()).arg(stringify(m_id->version()).c_str());
 
     Displayer ds(this,m_env.get(),m_id,paludis::mkt_significant);
     Displayer dn(this,m_env.get(),m_id,paludis::mkt_normal);
@@ -252,10 +242,7 @@ void pertubis::DetailsThread::run()
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dn));
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dp));
 
-    m_text.append(QString(
-"            </tbody>\n"
-"        </table>\n"
-" </body>\n"
-"</html>\n"));
+    m_text.append("</tbody></table></body></html>\n");
+    qDebug() << m_text;
     emit sendResult(m_text);
 }

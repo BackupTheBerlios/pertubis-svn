@@ -23,7 +23,7 @@
 
 #include "GLSAParser.hh"
 
-QString sign(QString op)
+static QString sign(QString op)
 {
     if ( op == "le")
         return "&lt;=";
@@ -47,13 +47,13 @@ QString sign(QString op)
         return "";
 }
 
-GLSAParser::GLSAParser(QTextBrowser *browser) : m_browser(browser),m_putInTable(false), m_dontUse(false), m_isUnaffected(false),m_isVulnerable(false)
+pertubis::GlsaParser::GlsaParser(QTextBrowser *browser) : m_browser(browser),m_putInTable(false), m_dontUse(false), m_isUnaffected(false),m_isVulnerable(false)
 {
     m_html ="<html><head><link title=\"new\" rel=\"stylesheet\" type=\"text/css\" href=\"/usr/lib/pertubis/glsa.css\"></head><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\"><colgroup><col width=\"100%\"></colgroup><tbody><tr><td>\n";
     m_table = "<table class=\"ntable\" border=\"0\"><tbody >\n";
 }
 
-bool GLSAParser::startElement(const QString & /* namespaceURI */,
+bool pertubis::GlsaParser::startElement(const QString & /* namespaceURI */,
                               const QString & /* localName */,
                               const QString &qName,
                               const QXmlAttributes &attributes)
@@ -73,7 +73,7 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
     else if (qName == "product")
     {
         m_putInTable=true;
-        m_currentElement.append( "<tr><td class=\"infohead\">Advisory Reference</td><td class=\"tableinfo\">GLSA " + m_id + " / " );
+        m_currentElement.append( "<tr><td class=\"infohead\">Advisory Reference</td><td class=\"tableinfo\">Glsa " + m_id + " / " );
     }
     else if (qName == "background")
     {
@@ -157,7 +157,7 @@ bool GLSAParser::startElement(const QString & /* namespaceURI */,
     return true;
 }
 
-bool GLSAParser::characters(const QString &str)
+bool pertubis::GlsaParser::characters(const QString &str)
 {
     if (m_dontUse)
         return true;
@@ -177,7 +177,7 @@ bool GLSAParser::characters(const QString &str)
     return true;
 }
 
-bool GLSAParser::endElement(const QString & /* namespaceURI */,
+bool pertubis::GlsaParser::endElement(const QString & /* namespaceURI */,
                             const QString & /* localName */,
                             const QString &qName)
 {
@@ -262,24 +262,12 @@ bool GLSAParser::endElement(const QString & /* namespaceURI */,
     return true;
 }
 
-bool GLSAParser::fatalError(const QXmlParseException &exception)
+bool pertubis::GlsaParser::fatalError(const QXmlParseException &exception)
 {
-    QMessageBox::warning(0, QObject::tr("SAX Handler"),
-                         QObject::tr("Parse error at line %1, column "
-                                     "%2:\n%3.")
-                         .arg(exception.lineNumber())
-                         .arg(exception.columnNumber())
-                         .arg(exception.message()));
     return false;
 }
-/*
-bool GLSAParser::startDocument()
-{
 
-    return true;
-}*/
-
-bool GLSAParser::endDocument()
+bool pertubis::GlsaParser::endDocument()
 {
     m_table.append("</tbody></table>");
     QString text(m_html.arg(m_table));

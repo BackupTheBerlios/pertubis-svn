@@ -21,59 +21,48 @@
 
 #include "QuerySettings.hh"
 
-#include <QTableView>
-#include <QStandardItemModel>
-#include <QItemSelectionModel>
-#include <QStandardItem>
-#include <QSettings>
-#include <QComboBox>
-#include <QGroupBox>
 #include <QButtonGroup>
-#include <QLabel>
-#include <QCheckBox>
-#include <QHeaderView>
-#include <QDebug>
-#include <QStringList>
-#include <QRadioButton>
+#include <QComboBox>
 #include <QGridLayout>
-#include <QSizePolicy>
+#include <QGroupBox>
+#include <QLabel>
+#include <QRadioButton>
+#include <QSettings>
+#include <QStringList>
 
 pertubis::QuerySettingsModel::QuerySettingsModel(QObject *pobj) :
         QObject(pobj),
         m_kindModel(-1),
         m_matcherModel(-1)
 {
-    qDebug() << "QuerySettingsModel::QuerySettingsModel()";
-    loadSettings();
-}
-
-pertubis::QuerySettingsModel::~QuerySettingsModel()
-{
-    qDebug("QuerySettingsModel::~QuerySettingsModel() - start");
-    saveSettings();
-    qDebug("QuerySettingsModel::~QuerySettingsModel() - done");
-}
-
-void pertubis::QuerySettingsModel::loadSettings()
-{
-    qDebug("QuerySettingsModel::loadSettings() - start");
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "Query" );
     m_matcherModel = settings.value("matcher",0).toInt();
     m_kindModel  = settings.value("kind", 0).toInt();
     settings.endGroup();
-    qDebug("QuerySettingsModel::loadSettings() - done");
 }
 
-void pertubis::QuerySettingsModel::saveSettings()
+pertubis::QuerySettingsModel::~QuerySettingsModel()
 {
-    qDebug("QuerySettingsModel::saveSettings() - start");
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "Query" );
     settings.setValue("matcher",m_matcherModel);
     settings.setValue("kind",m_kindModel);
     settings.endGroup();
-    qDebug("QuerySettingsModel::saveSettings() - done");
+}
+
+void pertubis::QuerySettingsModel::onKindChanged(int value)
+{
+    if (m_kindModel != value)
+        emit kindChanged(value);
+    m_kindModel = value;
+}
+
+void pertubis::QuerySettingsModel::onMatcherChanged(int value)
+{
+    if (m_matcherModel != value)
+        emit matcherChanged(value);
+    m_matcherModel = value;
 }
 
 pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel* model) :
@@ -91,9 +80,9 @@ pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel*
     mLayout->addWidget(mRadio1);
     mLayout->addWidget(mRadio2);
     matcherGroup->setLayout(mLayout);
-    m_matcherGroup= new QButtonGroup(pobj);
-    m_matcherGroup->addButton(mRadio1,0);
-    m_matcherGroup->addButton(mRadio2,1);
+    m_matcherButtonGroup= new QButtonGroup(pobj);
+    m_matcherButtonGroup->addButton(mRadio1,0);
+    m_matcherButtonGroup->addButton(mRadio2,1);
     setMatcher(m_model->m_matcherModel);
     QGroupBox* kindGroup(new QGroupBox(tr("kind")));
     kindGroup->setToolTip(tr("Packages of this kind only"));
@@ -104,10 +93,10 @@ pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel*
     QRadioButton* kRadio3 = new QRadioButton(tr("all"));
     kRadio3->setToolTip(tr("all packages"));
     QVBoxLayout* kLayout(new QVBoxLayout);
-    m_kindGroup= new QButtonGroup(pobj);
-    m_kindGroup->addButton(kRadio1,0);
-    m_kindGroup->addButton(kRadio2,1);
-    m_kindGroup->addButton(kRadio3,2);
+    m_kindButtonGroup= new QButtonGroup(pobj);
+    m_kindButtonGroup->addButton(kRadio1,0);
+    m_kindButtonGroup->addButton(kRadio2,1);
+    m_kindButtonGroup->addButton(kRadio3,2);
     kLayout->addWidget(kRadio1);
     kLayout->addWidget(kRadio2);
     kLayout->addWidget(kRadio3);
@@ -127,14 +116,13 @@ pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel*
     mainLayout->addWidget(group);
     mainLayout->addStretch(10);
     setLayout(mainLayout);
-    loadSettings();
 
-    connect(m_matcherGroup,
+    connect(m_matcherButtonGroup,
             SIGNAL(buttonClicked(int)),
             m_model,
             SLOT(onMatcherChanged(int)));
 
-    connect(m_kindGroup,
+    connect(m_kindButtonGroup,
             SIGNAL(buttonClicked(int)),
             m_model,
             SLOT(onKindChanged(int)));
@@ -152,30 +140,12 @@ pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel*
 
 void pertubis::QuerySettingsView::setKind(int value)
 {
-    QAbstractButton* button(m_kindGroup->button(value));
+    QAbstractButton* button(m_kindButtonGroup->button(value));
     button->setChecked(!button->isChecked());
 }
 
 void pertubis::QuerySettingsView::setMatcher(int button)
 {
-    QAbstractButton* mybutton(m_matcherGroup->button(button));
+    QAbstractButton* mybutton(m_matcherButtonGroup->button(button));
     mybutton->setChecked(!mybutton->isChecked());
-}
-
-pertubis::QuerySettingsView::~QuerySettingsView()
-{
-    qDebug("QuerySettingsView::~QuerySettingsView() - start");
-    qDebug("QuerySettingsView::~QuerySettingsView() - done");
-}
-
-void pertubis::QuerySettingsView::loadSettings()
-{
-    qDebug("QuerySettingsView::loadSettings() - start");
-    qDebug("QuerySettings::loadSettings() - done");
-}
-
-void pertubis::QuerySettingsView::saveSettings()
-{
-    qDebug("QuerySettingsView::saveSettings() - start");
-    qDebug("QuerySettingsView::saveSettings() - done");
 }

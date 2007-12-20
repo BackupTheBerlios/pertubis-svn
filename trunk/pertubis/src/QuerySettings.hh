@@ -22,49 +22,27 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_QUERY_SETTINGS_H 1
 
 #include <QWidget>
-#include <QSet>
-#include <QDebug>
 
-class QCheckBox;
 class QComboBox;
-class QStandardItemModel;
-class QItemSelectionModel;
-class QTableView;
 class QButtonGroup;
-
 
 namespace pertubis
 {
-
     class QuerySettingsModel : public QObject
     {
         Q_OBJECT
 
         public:
 
-            ///@name Constructors
-            ///@{
 
             /// std constructor
             QuerySettingsModel(QObject *parent);
-            ///@}
 
-            ~QuerySettingsModel();
-
-            ///@name Content modification
-            ///@{
-
-            /// loads all settings for the gui
-            void loadSettings();
-
-            /// saves all settings for the gui
-            void saveSettings();
-
-            ///@}
+            /// destructor
+            virtual ~QuerySettingsModel();
 
             /// \name data
             ///@{
-
 
             int m_kindModel;
             int m_matcherModel;
@@ -76,19 +54,8 @@ namespace pertubis
 
         private slots:
 
-            void onKindChanged(int value)
-            {
-                if (m_kindModel != value)
-                    emit kindChanged(value);
-                m_kindModel = value;
-            }
-
-            void onMatcherChanged(int value)
-            {
-                if (m_matcherModel != value)
-                    emit matcherChanged(value);
-                m_matcherModel = value;
-            }
+            void onKindChanged(int value);
+            void onMatcherChanged(int value);
     };
 
     class QuerySettingsView : public QWidget
@@ -97,42 +64,24 @@ namespace pertubis
 
         public:
 
-            ///@name Constructors
-            ///@{
-
             /// std constructor
             QuerySettingsView(QWidget *parent,QuerySettingsModel* model);
-            ///@}
 
-            ~QuerySettingsView();
-
-            ///@name Content modification
-            ///@{
-
-            /// loads all settings for the gui
-            void loadSettings();
-
-            /// saves all settings for the gui
-            void saveSettings();
-
-            ///@}
-
-            /// \name install options
-            ///@{
+            /// destructor
+            virtual ~QuerySettingsView() {}
 
             QuerySettingsModel* m_model;
-            QButtonGroup*       m_kindGroup;
-            QButtonGroup*       m_matcherGroup;
-            QCheckBox*          m_nameExtractor;
-            QCheckBox*          m_descExtractor;
-            ///@}
 
         private slots:
 
             void setKind(int value);
             void setMatcher(int value);
+
+        private:
+
+            QButtonGroup*       m_kindButtonGroup;
+            QButtonGroup*       m_matcherButtonGroup;
     };
 }
 
 #endif
-

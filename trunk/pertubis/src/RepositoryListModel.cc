@@ -31,6 +31,7 @@
 #include <QList>
 #include <QSettings>
 #include <QString>
+#include <QMutexLocker>
 #include <QDebug>
 #include <QColor>
 #include <QBrush>
@@ -57,7 +58,7 @@ bool pertubis::RepositoryListItem::setData(int col,const QVariant& value)
 void pertubis::RepositoryListThread::run()
 {
     using namespace paludis;
-    ThreadBase::lock();
+    QMutexLocker locker(&m_paludisAccess);
     QStringList list;
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
          r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
@@ -66,7 +67,6 @@ void pertubis::RepositoryListThread::run()
         list << QString::fromStdString(paludis::stringify(r->name()));
     }
     emit sendNames(list);
-    ThreadBase::unlock();
 }
 
 pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj) : QAbstractTableModel(pobj)
@@ -185,7 +185,7 @@ const QSet<QString>&  pertubis::RepositoryListModel::activeRepositories() const
 void pertubis::RepositoryListModel::loadSettings()
 {
     qDebug() << "pertubis::RepositoryListModel::loadSettings() - start";
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "RepositoryListModel" );
     QVariantList selected(settings.value("activeRepositories",QVariantList()).toList());
     settings.endGroup();
@@ -206,8 +206,8 @@ void pertubis::RepositoryListModel::saveSettings()
     {
         selected.push_back(*it);
     }
-
-    QSettings settings;
+    qDebug() << selected;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup("RepositoryListModel");
     settings.setValue("activeRepositories", selected);
     settings.endGroup();

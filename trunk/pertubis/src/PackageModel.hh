@@ -94,6 +94,7 @@ namespace pertubis
         void appendPackage(Package* item);
         void prependPackage(Package* item);
         void clear(int columns);
+        void unselectAll();
 
     private:
 

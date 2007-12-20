@@ -48,7 +48,7 @@ pertubis::UninstallSettingsModel::~UninstallSettingsModel()
 
 void pertubis::UninstallSettingsModel::loadSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "UninstallSettingsModel" );
     m_deps = settings.value("deps",false).toBool();
     m_unusedDeps = settings.value("unusedDeps",false).toBool();
@@ -59,7 +59,7 @@ void pertubis::UninstallSettingsModel::loadSettings()
 
 void pertubis::UninstallSettingsModel::saveSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "UninstallSettingsModel" );
     settings.setValue("deps",m_deps);
     settings.setValue("unusedDeps",m_unusedDeps);
@@ -146,11 +146,3 @@ pertubis::UninstallSettingsView::~UninstallSettingsView()
     qDebug("UninstallSettingsView::~UninstallSettingsView() - start");
     qDebug("UninstallSettingsView::~UninstallSettingsView() - done");
 }
-
-// void pertubis::UninstallSettingsView::setDefaultsView()
-// {
-//     m_deps->setChecked(true);
-//     m_unusedDeps->setChecked(true);
-//     m_allVersions->setChecked(true);
-//     m_unsafeUninstall->setChecked(true);
-// }

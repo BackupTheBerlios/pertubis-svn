@@ -20,13 +20,14 @@
 
 #include "Settings.hh"
 #include "InstallSettings.hh"
+#include "GeneralSettings.hh"
 #include "DepListSettings.hh"
 #include "QuerySettings.hh"
 #include "UninstallSettings.hh"
 #include <QApplication>
 #include <QComboBox>
 #include <QDebug>
-#include <QDir>
+
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -38,110 +39,13 @@
 #include <QScrollArea>
 #include <QPushButton>
 #include <QSettings>
+#include <QTranslator>
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-static QStringList findTranslationFiles()
-{
-    QDir dir(":i18n");
-    QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files,
-                                          QDir::Name);
-
-
-    for (QList<QString>::iterator i(fileNames.begin()), iEnd(fileNames.end());
-        i != iEnd;++i)
-    {
-        QFileInfo info(*i);
-        QString tmp(dir.filePath(info.baseName()));
-        qDebug() << "pertubis::findTranslationFiles() - found" << tmp;
-        *i = tmp;
-    }
-
-    return fileNames;
-}
-
-
-static QString languageName(const QString &qmFile)
-{
-    QString prefix(qmFile.split("-").value(1));
-    if (prefix == "de")
-        return ("Deutsch");
-    if (prefix == "fr")
-        return ("Français");
-    return ("English");
-}
-
-pertubis::LanguageSettings::LanguageSettings(QWidget *pobj)
-     : QWidget(pobj)
-{
-    QGroupBox *packagesGroup = new QGroupBox(tr("Language Settings"));
-    QLabel *nameLabel = new QLabel(tr("Language:"));
-
-    QComboBox *choice = new QComboBox;
-
-    QStringList list = findTranslationFiles();
-    QString filename;
-    int i=0;
-    foreach (filename,list)
-    {
-        QString name = languageName(filename);
-        m_langToTranslation.insert(name,filename);
-        choice->addItem(name);
-        if (filename == m_currentLanguage)
-            choice->setCurrentIndex(i);
-        ++i;
-    }
-
-    connect(choice,
-            SIGNAL(currentIndexChanged(const QString&)),
-            this,
-            SLOT(languageChanged(const QString&)));
-
-    QGridLayout *packagesLayout = new QGridLayout;
-    packagesLayout->addWidget(nameLabel, 0, 0);
-    packagesLayout->addWidget(choice, 0, 1);
-    packagesGroup->setLayout(packagesLayout);
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(packagesGroup);
-    mainLayout->addSpacing(12);
-    mainLayout->addStretch(1);
-    setLayout(mainLayout);
-    loadSettings();
-    qDebug() << "LanguageSettings::LanguageSettings() - done";
-}
-
-pertubis::LanguageSettings::~LanguageSettings()
-{
-    qDebug() << "LanguageSettings::~LanguageSettings() - start";
-    saveSettings();
-    qDebug() << "LanguageSettings::~LanguageSettings() - done";
-}
-
-void pertubis::LanguageSettings::loadSettings()
-{
-    QSettings settings;
-    settings.beginGroup( "LanguageSettings" );
-        m_currentLanguage=settings.value("language",":i18n/pertubis-de").toString();
-    settings.endGroup();
-}
-
-void pertubis::LanguageSettings::saveSettings()
-{
-    QSettings settings;
-    settings.beginGroup( "LanguageSettings" );
-        settings.setValue("language",m_currentLanguage);
-    settings.endGroup();
-}
-
-void pertubis::LanguageSettings::languageChanged(const QString& language)
-{
-    m_currentLanguage=m_langToTranslation[language];
-    QMessageBox msgBox;
-    msgBox.information(this,tr("pertubis info"),tr("language setting changes will be applied after a restart"));
-}
 
 pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
-        m_languageView(new LanguageSettings(pobj)),
+        m_generalView(new GeneralSettingsView(pobj,new GeneralSettingsModel(pobj))),
         m_installView(new InstallSettingsView(pobj,new InstallSettingsModel(pobj))),
         m_deinstallView(new UninstallSettingsView(pobj,new UninstallSettingsModel(pobj))),
         m_queryView(new QuerySettingsView(pobj,new QuerySettingsModel(pobj))),
@@ -149,7 +53,7 @@ pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
         m_pagesView(new QListWidget(pobj)),
         m_pagesStore(new QStackedWidget())
 {
-    m_pagesStore->addWidget(m_languageView);
+    m_pagesStore->addWidget(m_generalView);
     m_pagesStore->addWidget(m_installView);
     m_pagesStore->addWidget(m_deinstallView);
     m_pagesStore->addWidget(m_queryView);
@@ -162,10 +66,11 @@ pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
     m_pagesView->setSpacing(36);
 
     m_pagesView->setMovement(QListView::Static);
-    QListWidgetItem *tLang = new QListWidgetItem(m_pagesView);
-    tLang->setIcon(QIcon(":/images/settings.png"));
-    tLang->setText(tr("Language"));
-    tLang->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *tGeneral = new QListWidgetItem(m_pagesView);
+    tGeneral->setIcon(QIcon(":/images/settings.png"));
+    tGeneral->setText(tr("General"));
+    tGeneral->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     QListWidgetItem *tInstall = new QListWidgetItem(m_pagesView);
     tInstall->setIcon(QIcon(":/images/install.png"));
@@ -234,7 +139,7 @@ void pertubis::Settings::changePage(QListWidgetItem *current, QListWidgetItem *p
 
 void pertubis::Settings::loadSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "Settings" );
     setVisible(settings.value( "visible",false).toBool());
     resize(settings.value("size",QVariant(QSize(320,600))).toSize());
@@ -246,7 +151,7 @@ void pertubis::Settings::loadSettings()
 
 void pertubis::Settings::saveSettings()
 {
-    QSettings settings;
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "Settings" );
     settings.setValue("visible", isVisible() );
     settings.setValue("size", size() );

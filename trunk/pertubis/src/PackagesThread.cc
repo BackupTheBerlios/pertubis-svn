@@ -60,7 +60,7 @@ void pertubis::PackagesThread::start(QString str)
 
 void pertubis::PackagesThread::run()
 {
-    ThreadBase::lock();
+    QMutexLocker locker(&m_paludisAccess);
     using namespace paludis;
     CategoryNamePart cat(m_query.toLatin1().data());
     const tr1::shared_ptr< const PackageIDSequence > packageIds(
@@ -111,6 +111,8 @@ void pertubis::PackagesThread::run()
             emit addPackage(p_item);
         }
 
+        if (m_stopExec)
+            return;
         QStringList vReasons;
         for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
                 m != m_end ; ++m)
@@ -145,6 +147,5 @@ void pertubis::PackagesThread::run()
 
         p_item->prependChild(v_item);
     }
-    ThreadBase::unlock();
     emit finished(count);
 }

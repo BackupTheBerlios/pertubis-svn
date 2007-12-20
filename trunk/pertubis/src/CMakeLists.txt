@@ -16,8 +16,9 @@ SET(PERTUBIS_SRCS
     ItemInstallTask.cc
     MainWindow.cc
     matcher.cc
+    GeneralSettings.cc
     MessageOutput.cc
-    name_extractor.cc
+    NameDescriptionExtractor.cc
     OptionsDelegate.cc
     Package.cc
     PackageDeinstallTask.cc
@@ -53,6 +54,7 @@ SET(PERTUBIS_MOC_HDRS
     DeinstallTask.hh
     DepListSettings.hh
     DetailsThread.hh
+    GeneralSettings.hh
     InstallSettings.hh
     InstallTask.hh
     ItemInstallTask.hh

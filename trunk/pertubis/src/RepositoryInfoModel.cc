@@ -21,13 +21,13 @@
 #include "HtmlFormatter.hh"
 #include <QHeaderView>
 #include <QDebug>
+#include <QMutexLocker>
 #include <paludis/repository.hh>
 #include <paludis/name.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
-
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -172,7 +172,7 @@ QVariant pertubis::RepositoryInfoModel::headerData(int section, Qt::Orientation 
 void pertubis::RepositoryInfoThread ::run()
 {
     using namespace paludis;
-    ThreadBase::lock();
+    QMutexLocker locker(&m_paludisAccess);
     m_list.clear();
 
     RepositoryName repoName(m_repName.toStdString());
@@ -183,7 +183,6 @@ void pertubis::RepositoryInfoThread ::run()
     std::for_each(indirect_iterator(keys.begin()), indirect_iterator(keys.end()), accept_visitor(i));
 
     emit sendResult(m_list);
-    ThreadBase::unlock();
 }
 
 void pertubis::RepositoryInfoThread::append(QString a,QString b)

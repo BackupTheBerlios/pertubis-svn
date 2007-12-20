@@ -40,6 +40,7 @@ pertubis::MessageOutput::MessageOutput(QWidget* pObj) : QTextEdit(pObj),
                                     m_master_fd(-1),
                                     m_slave_fd(-1)
 {
+    redirectOutput();
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name("pertubis");
     QVBoxLayout* mylayout = new QVBoxLayout;
@@ -53,7 +54,6 @@ pertubis::MessageOutput::MessageOutput(QWidget* pObj) : QTextEdit(pObj),
     setPalette(p);
     setAutoFillBackground(true);
     show();
-    redirectOutput();
 }
 
 void pertubis::MessageThread::run()

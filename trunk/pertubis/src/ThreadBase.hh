@@ -53,13 +53,10 @@ namespace pertubis
         ///\}
 
         /// tries to lock the mutex and returns the result
-        static bool tryLock();
+//         static void lock();
 
         /// tries to lock the mutex and returns the result
-        static void lock();
-
-        /// tries to lock the mutex and returns the result
-        static void unlock();
+//         static void unlock();
 
         /// request cancel thread execution
         void stopExec() { m_stopExec=true;}

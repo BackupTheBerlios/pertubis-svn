@@ -62,15 +62,14 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_MAIN_WINDOW_H
 #define _PERTUBIS_ENTRY_PROTECTOR_MAIN_WINDOW_H 1
 
-#include <QMainWindow>
-#include <QSystemTrayIcon>
-
-#include <QTreeView>
-#include <QDir>
-#include <QThread>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/environment-fwd.hh>
 
+#include <QMainWindow>
+#include <QSystemTrayIcon>
+#include <QTreeView>
+
+class QActionGroup;
 class QDockWidget;
 class QMenu;
 class QModelIndex;
@@ -80,7 +79,6 @@ class QTableView;
 class QTextBrowser;
 class QToolBar;
 class QTabWidget;
-class QUrl;
 
 namespace pertubis
 {
@@ -142,6 +140,13 @@ namespace pertubis
 
     public:
 
+        enum DisplayMode {
+            dm_category=0,
+            dm_selections,
+            dm_system_report,
+            dm_search
+        };
+
         /// @name Constructors
         ///@{
 
@@ -178,7 +183,7 @@ namespace pertubis
         /// query for new detail data
         void onDetailsChanged(const QModelIndex & index);
 
-        /// starts all tasks
+        /// starts all tasks like installation and deinstallation
         void onStartTasks();
 
         /// clean data structures and refetch displayed information
@@ -193,13 +198,11 @@ namespace pertubis
         /// exit
         void onQuit();
 
-        /// changes filter attribute and restart filtering
+        /// changes active repositories and calls onReposChanged()
         void onRepositoryChanged( const QModelIndex& index );
 
-
-
-        /// restart filtering
-        void onReposChanged();
+        /// provides new filter sets for the item filters and restarts filtering
+        void restartFilters();
 
         /// start search
         void onSearch(QString query);
@@ -208,13 +211,19 @@ namespace pertubis
         void onSearchStopped();
 
         /// adding a glsa entry into the glsa list
-        void addGLSA(QString name, QString path);
+        void addGlsa(QString name, QString path);
 
         /// must be called before every access to paludis api
         void onEndOfPaludisAction();
 
         /// must be called after every access to paludis api
         void onStartOfPaludisAction();
+
+        void setToolbarDisplayMode(int state);
+        void setCatDock(int state);
+        void setRepositoryDock(int state);
+        void setSetDock(int state);
+        void setGlsaDock(int state);
 
         /// sync selected repositories
         void onSync();
@@ -225,13 +234,19 @@ namespace pertubis
         /// starts selections thread
         void onShowSelections();
 
-        /// show the sync end to the user
+        /// unselects all user selections
+        void onUnselectAll();
+
+        /// shows the sync end
         void displaySyncFinished();
 
-        /// show the succcessful search end to the user
-        void displaySearchFinished(int count,int total=0);
+        /// shows a succcessful search
+        void displaySearchFinished(int count);
 
-        void displayGLSA(const QModelIndex&);
+        /// shows the statistics for a system report in statusbar
+        void displaySystemReportFinished(int total,int issues);
+
+        void displayGlsa(const QModelIndex&);
 
         ///@}
 
@@ -261,12 +276,16 @@ namespace pertubis
 
         /// show/hide main window
         void toggleMainWindow();
+
         /// show/hide package window
         void togglePackageView();
+
         /// show/hide search window
         void toggleSearchWindow();
+
         /// show/hide settings window
         void toggleSettings();
+
         /// activate system tray window
         void toggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
         ///@}
@@ -276,24 +295,7 @@ namespace pertubis
         /// @name Creation methods
         ///@{
         /// create all needed model, view and control objects
-        void createActions();
-        void createCatbar();
-        void createConnections();
-        void createDetails();
-        void createGLSAList();
-        void createOptionsMenu();
-        void createOutput();
-        void createPackageView();
-        void createRepositoryBar();
-        void createRepositoryView();
 
-        void createSetListView();
-        void createTab();
-        void createTaskBox();
-        void createTasks();
-        void createToolBar();
-        void createTrayMenu();
-        void createWindowSearch();
         void initGUI();
         void initLayout();
 
@@ -312,9 +314,10 @@ namespace pertubis
         void saveSettings();
         ///@}
 
-        QString                 m_currentCat;
         QStringList             m_packageHeader;
         QStringList             m_reportHeader;
+        QString                 m_currentCat;
+
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
 
         CategoryFilterModel*    m_categoryFilterModel;
@@ -331,38 +334,18 @@ namespace pertubis
         PackagesThread*         m_packageViewThread;
         PackageView*            m_packageView;
         PertubisSyncTask*       m_syncTask;
-        QAction*                m_acAbout;
-        QAction*                m_acDeinstall;
-        QAction*                m_acEditUse;
-        QAction*                m_acFinish;
-        QAction*                m_acGLSA;
-        QAction*                m_acInstall;
-        QAction*                m_acMasking;
-        QAction*                m_acPref;
-        QAction*                m_acQuit;
-        QAction*                m_acSelected;
-        QAction*                m_acSelection;
         QAction*                m_acSync;
-        QAction*                m_acSysRep;
-        QAction*                m_acToggleCatBar;
-        QAction*                m_acToggleMainWindow;
         QAction*                m_acTogglePackageView;
-        QAction*                m_acToggleRepoBar;
-        QAction*                m_acToggleSearchWindow;
-        QAction*                m_acToggleSetBar;
-        QAction*                m_acToggleUseBar;
         QDockWidget*            m_dockCat;
-        QDockWidget*            m_dockDetails;
-        QDockWidget*            m_dockGLSA;
+        QDockWidget*            m_dockGlsa;
         QDockWidget*            m_dockRepo;
         QDockWidget*            m_dockSet;
-        QDockWidget*            m_dockUse;
         QMenu*                  m_options;
         QMenu*                  m_trayMenu;
         QSplitter*              m_vSplit;
         QSystemTrayIcon*        m_sysTray;
         QTableView*             m_categoryView;
-        QTableView*             m_glsaListView;
+        QTableView*             m_glsaView;
         QTableView*             m_repoInfoView;
         QTableView*             m_repoListView;
         QTableView*             m_setListView;
@@ -382,12 +365,13 @@ namespace pertubis
         SystemReport*           m_sysRep;
         TaskBox*                m_box;
 
+        DisplayMode             m_currentDisplay;
         int                     m_tidInstall;
         int                     m_tidDeinstall;
         int                     m_repoViewTabID;
         int                     m_outputTabID;
         int                     m_detailsTabID;
-        bool                    m_packageOrReportHeader;
+        bool                    m_headerMode;
     };
 }
 

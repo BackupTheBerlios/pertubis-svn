@@ -18,6 +18,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <QMutexLocker>
 #include "SystemReport.hh"
 #include "Package.hh"
 #include "TaskBox.hh"
@@ -46,7 +47,7 @@ void pertubis::SystemReport::on_report_package_success(const tr1::shared_ptr<con
 
 void pertubis::SystemReport::run()
 {
-    ThreadBase::lock();
+    QMutexLocker locker(&m_paludisAccess);
     try
     {
         execute();
@@ -56,7 +57,10 @@ void pertubis::SystemReport::run()
         qDebug() << h.message().c_str() << QString(h.what());
         emit finished(0,0);
     }
-    ThreadBase::unlock();
+    catch(...)
+    {
+        qFatal("uncatched error");
+    }
 }
 
 void pertubis::SystemReport::on_report_package_failure_pre(const tr1::shared_ptr<const PackageID> & id)
@@ -73,10 +77,10 @@ void pertubis::SystemReport::on_report_package_failure_pre(const tr1::shared_ptr
     emit appendPackage(m_node);
 }
 
-void pertubis::SystemReport::on_report_package_is_masked(const tr1::shared_ptr<const PackageID> & id,
+void pertubis::SystemReport::on_report_package_is_masked(const tr1::shared_ptr<const PackageID> &,
         const tr1::shared_ptr<const PackageID> & origin)
 {
-    QString tmp("masked by repository: ");
+    QString tmp("masked by: ");
     for (PackageID::MasksConstIterator m(origin->begin_masks()), m_end(origin->end_masks()) ;
          m != m_end ; ++m)
     {
@@ -91,7 +95,7 @@ void pertubis::SystemReport::on_report_package_is_masked(const tr1::shared_ptr<c
     ++_n_errors;
 }
 
-void pertubis::SystemReport::on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> &id)
+void pertubis::SystemReport::on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> &)
 {
     QString old = m_node->data(rho_reasons).toString();
     if (!old.isEmpty())
@@ -101,7 +105,7 @@ void pertubis::SystemReport::on_report_package_is_vulnerable_pre(const tr1::shar
     ++_n_errors;
 }
 
-void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &id, const GLSADepTag & tag)
+void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &, const GLSADepTag & tag)
 {
     QString old(m_node->data(rho_reasons).toString());
     old.append(QString(" ")+QString::fromStdString(tag.short_text()));
@@ -112,31 +116,30 @@ void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_p
 
 void pertubis::SystemReport::on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> &)
 {
-    QString old = m_node->data(rho_reasons).toString();
-    old.append(QString("\n"));
-    m_node->setData(rho_reasons,old);
 }
 
-void pertubis::SystemReport::on_report_package_is_missing(const tr1::shared_ptr<const PackageID> &id,
+void pertubis::SystemReport::on_report_package_is_missing(const tr1::shared_ptr<const PackageID> &,
         const RepositoryName & repo_name)
 {
     QString old(m_node->data(rho_reasons).toString());
     if (!old.isEmpty())
         old.append(QString("\n"));
-    old.append(tr("no longer existing in repository `%1'").arg(stringify(repo_name).c_str()));
+    old.append(tr("deleted in repository: %1").arg(stringify(repo_name).c_str()));
     m_node->setData(rho_reasons,old);
     ++_n_errors;
 }
 
-void pertubis::SystemReport::on_report_package_is_unused(const tr1::shared_ptr<const PackageID>& id)
+void pertubis::SystemReport::on_report_package_is_unused(const tr1::shared_ptr<const PackageID> &)
 {
     QString old(m_node->data(rho_reasons).toString());
-    old.append("\nunused");
+    if (!old.isEmpty())
+        old.append(QString("\n"));
+    old.append(tr("package is unused"));
     m_node->setData(rho_reasons,old);
     ++_n_errors;
 }
 
-void pertubis::SystemReport::on_report_package_failure_post(const tr1::shared_ptr<const PackageID> &id)
+void pertubis::SystemReport::on_report_package_failure_post(const tr1::shared_ptr<const PackageID> &)
 {
 }
 
