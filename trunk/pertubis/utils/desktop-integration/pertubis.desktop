@@ -6,5 +6,5 @@ Name=pertubis
 Type=Application
 GenericName=Package Manager
 StartupNotify=No
-Exec=@PERTUBIS_SU_TOOL@ /usr/sbin/pertubis
+Exec=/usr/bin/pertubis-launcher
 Icon=pertubis.png
