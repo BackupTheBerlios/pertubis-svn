@@ -31,7 +31,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 bool pertubis::DeinstallTask::available(Package* item) const
 {
