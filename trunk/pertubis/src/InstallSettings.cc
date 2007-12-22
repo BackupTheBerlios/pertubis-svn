@@ -102,6 +102,7 @@ void pertubis::InstallSettingsModel::loadSettings()
     m_config = settings.value("no_config_protect",false).toBool();
     m_noSafeResume = settings.value("no_safe_resume",false).toBool();
     m_pretend = settings.value("pretend",false).toBool();
+    m_preserve = settings.value("preserve",false).toBool();
     m_continueOnFailure  = settings.value("continue_on_failure",0).toInt();
     m_checks = settings.value("checks",1).toInt();
     settings.endGroup();
@@ -116,6 +117,7 @@ void pertubis::InstallSettingsModel::saveSettings()
     settings.setValue("no_config_protect",m_config);
     settings.setValue("no_safe_resume",m_noSafeResume);
     settings.setValue("pretend",m_pretend);
+    settings.setValue("preserve",m_preserve);
     settings.setValue("continue_on_failure",m_continueOnFailure);
     settings.setValue("checks",m_checks);
     settings.endGroup();
@@ -123,58 +125,66 @@ void pertubis::InstallSettingsModel::saveSettings()
 
 pertubis::InstallSettingsView::InstallSettingsView(QWidget *pobj,InstallSettingsModel* model) :
         QWidget(pobj),
-        m_model(model),
-        m_debug(new QComboBox(pobj)),
-        m_fetch(new QCheckBox(tr("fetch"),pobj)),
-        m_noConfigProtection(new QCheckBox(tr("no-config-protection"),pobj)),
-        m_noSafeResume(new QCheckBox(tr("no-safe-resume"),pobj)),
-        m_pretend(new QCheckBox(tr("pretend"),pobj)),
-        m_continueOnFailure(new QComboBox(pobj)),
-        m_checks(new QComboBox(pobj)),
-        m_worldSpec(new QLineEdit(pobj))
+        m_model(model)
 {
-    QGroupBox* group(new QGroupBox(tr("Installation Settings"),pobj));
+    QCheckBox* fetch(new QCheckBox(tr("fetch"),pobj));
+    fetch->setToolTip( tr("Only fetch sources; don't install anything") );
+    fetch->setChecked(model->m_fetch);
 
-    m_debug->setToolTip( tr("debug build") );
-    m_debug->addItem( tr("none") );
-    m_debug->addItem( tr("split") );
-    m_debug->addItem( tr("internal") );
-    m_debug->setCurrentIndex(m_model->m_debug);
-    m_fetch->setToolTip( tr("Only fetch sources; don't install anything") );
-    m_fetch->setChecked(m_model->m_fetch);
-    m_noConfigProtection->setToolTip(tr("Disable config file protection (dangerous)"));
-    m_noConfigProtection->setChecked(m_model->m_config);
-    m_noSafeResume->setToolTip( tr("Do not allow interrupted downloads to be resumed"));
-    m_noSafeResume->setChecked(m_model->m_noSafeResume);
-    m_pretend->setToolTip( tr("Pretend only") );
-    m_pretend->setChecked(m_model->m_pretend);
-    m_continueOnFailure->setToolTip(tr("Whether to continue after a fetch or install error"));
+    QCheckBox* noConfigProtection(new QCheckBox(tr("no-config-protection"),pobj));
+    noConfigProtection->setToolTip(tr("Disable config file protection (dangerous)"));
+    noConfigProtection->setChecked(model->m_config);
+    QCheckBox* noSafeResume(new QCheckBox(tr("no-safe-resume"),pobj));
+    noSafeResume->setToolTip( tr("Do not allow interrupted downloads to be resumed"));
+    noSafeResume->setChecked(model->m_noSafeResume);
 
-    m_checks->addItem("none");
-    m_checks->addItem("default");
-    m_checks->addItem("always");
+    QCheckBox* pretend(new QCheckBox(tr("pretend"),pobj));
+    pretend->setToolTip( tr("Pretend only") );
+    pretend->setChecked(model->m_pretend);
 
-    m_continueOnFailure->addItem("if-fetch-only");
-    m_continueOnFailure->addItem("never");
-    m_continueOnFailure->addItem("if-satisfied");
-    m_continueOnFailure->addItem("if-independent");
-    m_continueOnFailure->addItem("always");
-    m_continueOnFailure->setCurrentIndex(m_model->m_continueOnFailure);
+    QCheckBox* preserveWorld(new QCheckBox(tr("preserve world"),pobj));
+    preserveWorld->setToolTip( tr("Whether to preserve the world file when (un)installing packages") );
+    preserveWorld->setChecked(model->m_preserve);
+
+    QComboBox* checks(new QComboBox(pobj));
+    checks->addItem("none");
+    checks->addItem("default");
+    checks->addItem("always");
+
+    QComboBox* debug(new QComboBox(pobj));
+    debug->setToolTip( tr("debug build") );
+    debug->addItem( tr("none") );
+    debug->addItem( tr("split") );
+    debug->addItem( tr("internal") );
+    debug->setCurrentIndex(model->m_debug);
+
+    QComboBox* continueOnFailure(new QComboBox(pobj));
+    continueOnFailure->setToolTip(tr("Whether to continue after a fetch or install error"));
+    continueOnFailure->addItem("if-fetch-only");
+    continueOnFailure->addItem("never");
+    continueOnFailure->addItem("if-satisfied");
+    continueOnFailure->addItem("if-independent");
+    continueOnFailure->addItem("always");
+    continueOnFailure->setCurrentIndex(model->m_continueOnFailure);
+
+    QLineEdit* worldSpec(new QLineEdit(pobj));
 
     QGridLayout *groupLayout = new QGridLayout;
-    groupLayout->addWidget(m_pretend, 0, 0);
-    groupLayout->addWidget(m_fetch, 1, 0);
-    groupLayout->addWidget(m_noConfigProtection, 2, 0);
-    groupLayout->addWidget(m_noSafeResume, 3, 0);
-    groupLayout->addWidget(new QLabel(tr("debug"),m_debug), 4, 0);
-    groupLayout->addWidget(m_debug, 4, 1);
-    groupLayout->addWidget(new QLabel(tr("continue on failure"),m_continueOnFailure), 5, 0);
-    groupLayout->addWidget(m_continueOnFailure, 5, 1);
-    groupLayout->addWidget(new QLabel(tr("checks"),m_checks), 6, 0);
-    groupLayout->addWidget(m_checks, 6, 1);
-    groupLayout->addWidget(new QLabel(tr("world spec"),m_checks), 7, 0);
-    groupLayout->addWidget(m_worldSpec, 7, 1);
+    groupLayout->addWidget(pretend, 0, 0);
+    groupLayout->addWidget(fetch, 1, 0);
+    groupLayout->addWidget(noConfigProtection, 2, 0);
+    groupLayout->addWidget(noSafeResume, 3, 0);
+    groupLayout->addWidget(preserveWorld, 4, 0);
+    groupLayout->addWidget(new QLabel(tr("debug"),debug), 5, 0);
+    groupLayout->addWidget(debug, 5, 1);
+    groupLayout->addWidget(new QLabel(tr("continue on failure"),continueOnFailure), 6, 0);
+    groupLayout->addWidget(continueOnFailure, 6, 1);
+    groupLayout->addWidget(new QLabel(tr("checks"),checks), 7, 0);
+    groupLayout->addWidget(checks, 7, 1);
+    groupLayout->addWidget(new QLabel(tr("world spec"),checks), 8, 0);
+    groupLayout->addWidget(worldSpec, 8, 1);
 
+    QGroupBox* group(new QGroupBox(tr("Installation Settings"),pobj));
     group->setLayout(groupLayout);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -183,74 +193,74 @@ pertubis::InstallSettingsView::InstallSettingsView(QWidget *pobj,InstallSettings
     mainLayout->addStretch(1);
     setLayout(mainLayout);
 
-    connect(m_debug,
+    connect(debug,
             SIGNAL(currentIndexChanged(int)),
-            m_model,
+            model,
             SLOT(changeDebug(int)));
 
-    connect(m_fetch,
+    connect(fetch,
             SIGNAL(clicked(bool)),
-            m_model,
+            model,
             SLOT(changeFetch(bool)));
 
-    connect(m_noConfigProtection,
+    connect(noConfigProtection,
             SIGNAL(clicked(bool)),
-            m_model,
+            model,
             SLOT(changeNoConfig(bool)));
 
-    connect(m_noSafeResume,
+    connect(noSafeResume,
             SIGNAL(clicked(bool)),
-            m_model,
+            model,
             SLOT(changeNoSafe(bool)));
 
-    connect(m_pretend,
+    connect(pretend,
             SIGNAL(clicked(bool)),
-            m_model,
+            model,
             SLOT(changePretend(bool)));
 
-    connect(m_continueOnFailure,
+    connect(continueOnFailure,
             SIGNAL(currentIndexChanged(int)),
-            m_model,
+            model,
             SLOT(changeContinue(int)));
 
-    connect(m_worldSpec,
+    connect(worldSpec,
             SIGNAL(textChanged(QString)),
-            m_model,
+            model,
             SLOT(changeWorldSpec(QString)));
 
-    connect(m_model,
+    connect(model,
             SIGNAL(debugChanged(int)),
-            m_debug,
+            debug,
             SLOT(setCurrentIndex(int)));
 
-    connect(m_model,
+    connect(model,
             SIGNAL(fetchChanged(bool)),
-            m_fetch,
+            fetch,
             SLOT(setChecked(bool)));
 
-    connect(m_model,
+    connect(model,
             SIGNAL(noConfigChanged(bool)),
-            m_noConfigProtection,
+            noConfigProtection,
             SLOT(setChecked(bool)));
 
-    connect(m_model,
+    connect(model,
             SIGNAL(noSafeChanged(bool)),
-            m_noSafeResume,
+            noSafeResume,
             SLOT(setChecked(bool)));
 
-    connect(m_model,
+    connect(model,
             SIGNAL(pretendChanged(bool)),
-            m_pretend,
+            pretend,
             SLOT(setChecked(bool)));
 
-    connect(m_model,
+    connect(model,
             SIGNAL(continueChanged(int)),
-            m_continueOnFailure,
+            continueOnFailure,
             SLOT(setCurrentIndex(int)));
 
-    connect(m_model,
+    connect(model,
             SIGNAL(worldSpecChanged(const QString &)),
-            m_worldSpec,
+            worldSpec,
             SLOT(setText(const QString &)));
 }
 

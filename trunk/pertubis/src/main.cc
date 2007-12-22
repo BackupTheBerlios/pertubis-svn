@@ -36,11 +36,9 @@ int main( int argc, char **argv )
     if (argc == 1)
     {
         QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-        settings.beginGroup( "i18npage" );
-        QString lang = settings.value("language").toString();
+        settings.beginGroup( "GeneralSettingsModel" );
+        QString lang = settings.value("language",":i18n/pertubis-en").toString();
         settings.endGroup();
-//         qDebug() << "\033[32mactual language =" << lang.toLatin1().data() << "\033[0m";
-
         QTranslator t;
         t.load(lang);
         QApplication a( argc, argv );
@@ -62,8 +60,7 @@ int main( int argc, char **argv )
     }
     else
     {
-        printf("usage: %s [OPTION]\n\n\
-  -v\t\tshow programm version\n",argv[0]);
+        printf("usage: %s [-v]\n\n-v\t\tshow programm version\n",argv[0]);
     }
 
     return 0;

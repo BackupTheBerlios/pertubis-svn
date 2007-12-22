@@ -4,7 +4,7 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/Settings.cc" line="70"/>
+        <location filename="../src/GeneralSettings.cc~" line="60"/>
         <source>English</source>
         <translation>français</translation>
     </message>
@@ -323,54 +323,79 @@
 <context>
     <name>pertubis::GeneralSettingsView</name>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="77"/>
+        <location filename="../src/GeneralSettings.cc~" line="111"/>
         <source>General Settings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="79"/>
+        <location filename="../src/GeneralSettings.cc~" line="113"/>
         <source>icon only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="80"/>
+        <location filename="../src/GeneralSettings.cc~" line="114"/>
         <source>text under icon</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="95"/>
+        <location filename="../src/GeneralSettings.cc~" line="129"/>
         <source>left</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="96"/>
+        <location filename="../src/GeneralSettings.cc~" line="130"/>
         <source>right</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="100"/>
+        <location filename="../src/GeneralSettings.cc~" line="134"/>
         <source>toolbar display mode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="102"/>
+        <location filename="../src/GeneralSettings.cc~" line="136"/>
         <source>category dock position</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="104"/>
+        <location filename="../src/GeneralSettings.cc~" line="138"/>
         <source>repository dock position</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="106"/>
+        <location filename="../src/GeneralSettings.cc~" line="140"/>
         <source>set dock position</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="108"/>
+        <location filename="../src/GeneralSettings.cc~" line="142"/>
         <source>glsa dock position</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/GeneralSettings.cc~" line="147"/>
+        <source>Language Settings</source>
+        <translation>Choix du langage</translation>
+    </message>
+    <message>
+        <location filename="../src/GeneralSettings.cc~" line="236"/>
+        <source>pertubis info</source>
+        <translation>Pertubis info</translation>
+    </message>
+    <message>
+        <location filename="../src/GeneralSettings.cc~" line="236"/>
+        <source>language setting changes will be applied after a restart</source>
+        <translation>Les changements de la langue vont être appliqués après un redémarrage</translation>
+    </message>
+    <message>
+        <location filename="../src/GeneralSettings.cc~" line="148"/>
+        <source>Language</source>
+        <translation>langage</translation>
+    </message>
+    <message>
+        <location filename="../src/GeneralSettings.cc~" line="110"/>
+        <source>english</source>
+        <translation>français</translation>
     </message>
 </context>
 <context>
@@ -464,29 +489,6 @@
         <location filename="../src/InstallSettings.cc" line="175"/>
         <source>world spec</source>
         <translation></translation>
-    </message>
-</context>
-<context>
-    <name>pertubis::LanguageSettings</name>
-    <message>
-        <location filename="../src/Settings.cc" line="76"/>
-        <source>Language Settings</source>
-        <translation>Choix du langage</translation>
-    </message>
-    <message>
-        <location filename="../src/Settings.cc" line="77"/>
-        <source>English</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/Settings.cc" line="139"/>
-        <source>pertubis info</source>
-        <translation>Pertubis info</translation>
-    </message>
-    <message>
-        <location filename="../src/Settings.cc" line="139"/>
-        <source>language setting changes will be applied after a restart</source>
-        <translation>Les changements de la langue vont être appliqués après un redémarrage</translation>
     </message>
 </context>
 <context>
@@ -1031,42 +1033,37 @@
 <context>
     <name>pertubis::Settings</name>
     <message>
-        <location filename="../src/Settings.cc" line="210"/>
+        <location filename="../src/Settings.cc" line="108"/>
         <source>Close</source>
         <translation>Fermer</translation>
     </message>
     <message>
-        <location filename="../src/Settings.cc" line="224"/>
+        <location filename="../src/Settings.cc" line="122"/>
         <source>pertubis :: settings</source>
         <translation>Pertubis :: Options</translation>
     </message>
     <message>
-        <location filename="../src/Settings.cc" line="169"/>
-        <source>Language</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/Settings.cc" line="174"/>
+        <location filename="../src/Settings.cc" line="72"/>
         <source>General</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/Settings.cc" line="179"/>
+        <location filename="../src/Settings.cc" line="77"/>
         <source>Installation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/Settings.cc" line="184"/>
+        <location filename="../src/Settings.cc" line="82"/>
         <source>Deinstallation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/Settings.cc" line="189"/>
+        <location filename="../src/Settings.cc" line="87"/>
         <source>Query List</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/Settings.cc" line="194"/>
+        <location filename="../src/Settings.cc" line="92"/>
         <source>Dependency List</source>
         <translation></translation>
     </message>

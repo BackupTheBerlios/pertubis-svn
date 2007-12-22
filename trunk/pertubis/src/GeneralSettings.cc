@@ -80,7 +80,7 @@ void pertubis::GeneralSettingsModel::loadSettings()
     m_repositoryDockPosition = settings.value("repositoryDockPosition",0).toInt();
     m_setDockPosition = settings.value("setDockPosition",0).toInt();
     m_glsaDockPosition = settings.value("glsaDockPosition",0).toInt();
-    m_currentLanguage=settings.value("language",":i18n/pertubis-en").toString();
+    m_currentLanguage=settings.value("language",":i18n/pertubis-en.ts").toString();
     settings.endGroup();
 }
 
@@ -106,6 +106,8 @@ pertubis::GeneralSettingsView::GeneralSettingsView(QWidget *pobj,GeneralSettings
             m_setDockPosition(new QComboBox(pobj)),
             m_glsaDockPosition(new QComboBox(pobj))
 {
+    // to translators: translate this into the name of your language in your language
+    tr("english");
     QGroupBox* group(new QGroupBox(tr("General Settings"),pobj));
 
     m_toolbarDisplayMode->addItem( tr("icon only") );
@@ -143,7 +145,7 @@ pertubis::GeneralSettingsView::GeneralSettingsView(QWidget *pobj,GeneralSettings
     group->setLayout(groupLayout);
 
     QGroupBox *languageGroup = new QGroupBox(tr("Language Settings"));
-    QLabel *nameLabel = new QLabel(tr("English"));
+    QLabel *nameLabel = new QLabel(tr("Language"));
 
     QComboBox *choice = new QComboBox;
 

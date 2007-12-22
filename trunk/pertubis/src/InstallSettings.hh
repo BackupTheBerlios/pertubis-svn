@@ -183,14 +183,7 @@ namespace pertubis
             /// \name install options
             ///@{
 
-            QComboBox* m_debug;
-            QCheckBox* m_fetch;
-            QCheckBox* m_noConfigProtection;
-            QCheckBox* m_noSafeResume;
-            QCheckBox* m_pretend;
-            QComboBox* m_continueOnFailure;
-            QComboBox* m_checks;
-            QLineEdit* m_worldSpec;
+
             ///@}
 
     };
