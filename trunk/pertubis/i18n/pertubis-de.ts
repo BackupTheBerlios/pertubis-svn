@@ -4,7 +4,7 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="60"/>
+        <location filename="../src/GeneralSettings.cc" line="60"/>
         <source>English</source>
         <translation>Deutsch</translation>
     </message>
@@ -323,77 +323,77 @@
 <context>
     <name>pertubis::GeneralSettingsView</name>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="111"/>
+        <location filename="../src/GeneralSettings.cc" line="111"/>
         <source>General Settings</source>
         <translation>Allgemeine Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="113"/>
+        <location filename="../src/GeneralSettings.cc" line="113"/>
         <source>icon only</source>
         <translation>nur Symbole</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="114"/>
+        <location filename="../src/GeneralSettings.cc" line="114"/>
         <source>text under icon</source>
         <translation>Text unter Symbol</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="129"/>
+        <location filename="../src/GeneralSettings.cc" line="129"/>
         <source>left</source>
         <translation>links</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="130"/>
+        <location filename="../src/GeneralSettings.cc" line="130"/>
         <source>right</source>
         <translation>rechts</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="134"/>
+        <location filename="../src/GeneralSettings.cc" line="134"/>
         <source>toolbar display mode</source>
         <translation>Anzeigemodus Werkzeuleiste</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="136"/>
+        <location filename="../src/GeneralSettings.cc" line="136"/>
         <source>category dock position</source>
         <translation>Position des Kategoriendockfensters</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="138"/>
+        <location filename="../src/GeneralSettings.cc" line="138"/>
         <source>repository dock position</source>
         <translation>Position des Repositorydockfensters</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="140"/>
+        <location filename="../src/GeneralSettings.cc" line="140"/>
         <source>set dock position</source>
         <translation>Position des Setdockfensters</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="142"/>
+        <location filename="../src/GeneralSettings.cc" line="142"/>
         <source>glsa dock position</source>
         <translation>Position des Sicherheitsdockfensters</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="147"/>
+        <location filename="../src/GeneralSettings.cc" line="147"/>
         <source>Language Settings</source>
         <translation>Spracheinstellungen</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="236"/>
+        <location filename="../src/GeneralSettings.cc" line="236"/>
         <source>pertubis info</source>
         <translation>pertubis Informationen</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="236"/>
+        <location filename="../src/GeneralSettings.cc" line="236"/>
         <source>language setting changes will be applied after a restart</source>
         <translation>Änderungen der Spracheinstellungen werden erst nach einem Neustart wirksam</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="148"/>
+        <location filename="../src/GeneralSettings.cc" line="148"/>
         <source>Language</source>
         <translation>Sprache</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc~" line="110"/>
+        <location filename="../src/GeneralSettings.cc" line="110"/>
         <source>english</source>
         <translation>Deutsch</translation>
     </message>
@@ -401,94 +401,104 @@
 <context>
     <name>pertubis::InstallSettingsView</name>
     <message>
-        <location filename="../src/InstallSettings.cc" line="128"/>
+        <location filename="../src/InstallSettings.cc" line="130"/>
         <source>fetch</source>
         <translation>Herunterladen</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="129"/>
+        <location filename="../src/InstallSettings.cc" line="134"/>
         <source>no-config-protection</source>
         <translation>kein Konfigurationsschutz</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="130"/>
+        <location filename="../src/InstallSettings.cc" line="137"/>
         <source>no-safe-resume</source>
         <translation>kein sicheres Wiederaufnehem</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="131"/>
+        <location filename="../src/InstallSettings.cc" line="141"/>
         <source>pretend</source>
         <translation>Testlauf (pretend)</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="136"/>
+        <location filename="../src/InstallSettings.cc" line="187"/>
         <source>Installation Settings</source>
         <translation>Installationseinstellungen</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="138"/>
+        <location filename="../src/InstallSettings.cc" line="155"/>
         <source>debug build</source>
         <translation>baue als Testat (debug)</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="139"/>
+        <location filename="../src/InstallSettings.cc" line="156"/>
         <source>none</source>
         <translation>kein</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="140"/>
+        <location filename="../src/InstallSettings.cc" line="157"/>
         <source>split</source>
         <translation>trennen</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="141"/>
+        <location filename="../src/InstallSettings.cc" line="158"/>
         <source>internal</source>
         <translation>intern</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="143"/>
+        <location filename="../src/InstallSettings.cc" line="131"/>
         <source>Only fetch sources; don&apos;t install anything</source>
         <translation>Lade nur die Quellen herunter; installiere nichts</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="145"/>
+        <location filename="../src/InstallSettings.cc" line="135"/>
         <source>Disable config file protection (dangerous)</source>
         <translation>Schalte den Kofigurationsschutz aus (gefährlich)</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="147"/>
+        <location filename="../src/InstallSettings.cc" line="138"/>
         <source>Do not allow interrupted downloads to be resumed</source>
         <translation>Erlaube unterbrochenen Downloads nichts, wiederaufgenommen zu werden</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="149"/>
+        <location filename="../src/InstallSettings.cc" line="142"/>
         <source>Pretend only</source>
         <translation>Tue nur so als ob installiert werden würde</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="151"/>
+        <location filename="../src/InstallSettings.cc" line="162"/>
         <source>Whether to continue after a fetch or install error</source>
         <translation>Ob nach einem Fehler weitergemacht werden soll</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="169"/>
+        <location filename="../src/InstallSettings.cc" line="178"/>
         <source>debug</source>
         <translation>Testat</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="171"/>
+        <location filename="../src/InstallSettings.cc" line="180"/>
         <source>continue on failure</source>
         <translation>Mache weiter nach Fehler</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="173"/>
+        <location filename="../src/InstallSettings.cc" line="182"/>
         <source>checks</source>
         <translation>Tests</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="175"/>
+        <location filename="../src/InstallSettings.cc" line="184"/>
         <source>world spec</source>
         <translation>alternative Installationsbezeichnung</translation>
+    </message>
+    <message>
+        <location filename="../src/InstallSettings.cc" line="145"/>
+        <source>preserve world</source>
+        <translation>welt bewahren</translation>
+    </message>
+    <message>
+        <location filename="../src/InstallSettings.cc" line="146"/>
+        <source>Whether to preserve the world file when (un)installing packages</source>
+        <translation>Ob die Weltdatei bei (De)installationen bewahrt werden soll</translation>
     </message>
 </context>
 <context>
