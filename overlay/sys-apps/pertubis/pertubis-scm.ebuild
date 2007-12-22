@@ -43,19 +43,10 @@ src_compile() {
 	replace-flags -Os -O2
 	replace-flags -O3 -O2
 
-	if use tests; then
-		mycmakeargs="${mycmakeargs} -DPERTUBIS_TESTS=ON"
-	fi
-
 	if use doc; then
         mycmakeargs="${mycmakeargs} -DPERTUBIS_BUILD_DOCS=ON -DPERTUBIS_DOC_PATH=/usr/share/doc/${PF}"
     fi
 
-    if use kde; then
-        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=kde"
-    elif use gnome; then
-        mycmakeargs="${mycmakeargs} -DPERTUBIS_SU_TOOL=gnome"
-    fi
 
     einfo "mycmakeargs = ${mycmakeargs}"
 
