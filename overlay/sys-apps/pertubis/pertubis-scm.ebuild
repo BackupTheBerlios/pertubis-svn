@@ -20,7 +20,7 @@ KEYWORDS="~x86 ~amd64"
 LICENSE="GPL-2"
 
 SLOT="0"
-IUSE="debug doc tests"
+IUSE="debug doc"
 
 # TODO: kde and gnome should be exclusive or, or if both are set, prefer kde?/gnome?
 # the su tool
