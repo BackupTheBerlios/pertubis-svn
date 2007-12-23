@@ -1,0 +1,3 @@
+
+@DOXYGEN@ @DOXYGEN_INPUT@
+rm @APIDOC_DIR@/*.map @APIDOC_DIR@/*.md5

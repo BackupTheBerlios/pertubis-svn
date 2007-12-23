@@ -1,0 +1,16 @@
+#!/bin/sh
+
+kde_tool=`which kdesu`
+gnome_tool=`which gksu`
+
+if  [[ -n ${KDE_SESSION_UID} && -n ${kde_tool} ]];then
+    ${kde_tool} -t -i pertubis.png /usr/lib/pertubis/pertubis
+elif [[ -n ${GNOME_SESSION_ID} && -n ${gnome_tool} ]];then
+    ${gnome_tool} -t /usr/lib/pertubis/pertubis
+elif [ -n ${gnome_tool} ]; then
+    ${gnome_tool} /usr/lib/pertubis/pertubis
+elif [  -n ${kde_tool} ];then
+    ${kde_tool} /usr/lib/pertubis/pertubis
+else
+    /usr/lib/pertubis
+fi
