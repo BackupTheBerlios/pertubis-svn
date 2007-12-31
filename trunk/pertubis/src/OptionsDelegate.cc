@@ -37,59 +37,55 @@ void pertubis::OptionsDelegate::OptionsDelegate::paint(QPainter* painter,
                                         const QStyleOptionViewItem& option,
                                         const QModelIndex& mix) const
 {
-    if (!mix.isValid())
-        return;
-    painter->save();
-
-    QModelIndex index(m_proxy->mapToSource(mix));
-    Package* item = static_cast<Package*>(index.internalPointer());
-    if (!item)
-        return;
-    QVariantList selections = item->data(Package::po_selected).toList();
-    QBrush in(QColor(0,255,0));
-    QBrush out(QColor(255,0,0));
-
-    QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    painter->setPen(pen);
-    int ypos( option.rect.y()+ (option.rect.height()-12) /2 );
-    if (item->state() != Package::ps_masked)
+    // custom paint if this is a selection column, otherwise use the std layout
+    // if this is a selection column but the Package is masked, don't paint anything
+    int column(mix.column());
+    if (po_install != column && po_deinstall != column)
     {
-        painter->drawRect(option.rect.x(),ypos,12,12);
-        painter->drawRect(option.rect.x()+16,ypos,12,12);
-        switch (selections.value(0).toInt() )
-        {
-            case Qt::PartiallyChecked:
-            case Qt::Checked:
-                painter->fillRect(option.rect.x()+2,ypos+2,9,9,in);
-                break;
-            default:                ;
-        }
-        switch (selections.value(1).toInt() )
-        {
-            case Qt::PartiallyChecked:
-            case Qt::Checked:
-                painter->fillRect(option.rect.x()+18,ypos+2,9,9,out);
-                break;
-            default:
-                ;
-        }
+        QItemDelegate::paint(painter,option,mix);
+        return;
     }
 
-    painter->restore();
-}
-
-QSize pertubis::OptionsDelegate::sizeHint(const QStyleOptionViewItem &option,
-                              const QModelIndex &index) const
-{
-    QRect decorationRect = rect(option, index, Qt::DecorationRole);
-    QRect displayRect;
-//     Package* item = static_cast<Package*>(index.internalPointer());
-    if (index.column() == Package::po_selected)
-        displayRect = QRect(QPoint(0,0),QPoint(32,16));
+    QModelIndex index;
+    if (m_proxy != 0)
+        index = m_proxy->mapToSource(mix);
     else
-        displayRect = rect(option, index, Qt::DisplayRole);
-    QRect checkRect = rect(option, index, Qt::CheckStateRole);
+        index = mix;
 
-    doLayout(option, &checkRect, &decorationRect, &displayRect, true);
-    return (decorationRect|displayRect|checkRect).size();
+    Package* item = static_cast<Package*>(index.internalPointer());
+    Q_ASSERT(item != 0);
+
+    if (item->state() != ps_masked)
+    {
+        painter->save();
+        QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        painter->setPen(pen);
+        int ypos( option.rect.y()+ (option.rect.height()-12) /2 );
+        painter->drawRect(option.rect.x(),ypos,12,12);
+        if (po_install == column && Qt::Checked == item->data(po_install).toInt() )
+        {
+            painter->fillRect(option.rect.x()+2,ypos+2,9,9,QBrush(QColor(0,255,0)));
+        }
+        else if (po_deinstall == column && Qt::Checked == item->data(po_deinstall).toInt() )
+        {
+            painter->fillRect(option.rect.x()+2,ypos+2,9,9,QBrush(QColor(255,0,0)));
+        }
+        painter->restore();
+    }
 }
+
+// QSize pertubis::OptionsDelegate::sizeHint(const QStyleOptionViewItem &option,
+//                               const QModelIndex &index) const
+// {
+//     QRect decorationRect = rect(option, index, Qt::DecorationRole);
+//     QRect displayRect;
+// //     Package* item = static_cast<Package*>(index.internalPointer());
+//     if (index.column() == po_install || index.column() == po_deinstall)
+//         displayRect = QRect(QPoint(0,0),QPoint(16,16));
+//     else
+//         displayRect = rect(option, index, Qt::DisplayRole);
+//     QRect checkRect = rect(option, index, Qt::CheckStateRole);
+//
+//     doLayout(option, &checkRect, &decorationRect, &displayRect, true);
+//     return (decorationRect|displayRect|checkRect).size();
+// }

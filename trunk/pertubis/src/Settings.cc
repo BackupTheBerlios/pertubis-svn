@@ -23,7 +23,7 @@
 #include "GeneralSettings.hh"
 #include "DepListSettings.hh"
 #include "QuerySettings.hh"
-#include "UninstallSettings.hh"
+#include "DeinstallSettings.hh"
 #include <QApplication>
 #include <QComboBox>
 #include <QDebug>
@@ -47,11 +47,11 @@
 pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
         m_generalView(new GeneralSettingsView(pobj,new GeneralSettingsModel(pobj))),
         m_installView(new InstallSettingsView(pobj,new InstallSettingsModel(pobj))),
-        m_deinstallView(new UninstallSettingsView(pobj,new UninstallSettingsModel(pobj))),
+        m_deinstallView(new DeinstallSettingsView(pobj,new DeinstallSettingsModel(pobj))),
         m_queryView(new QuerySettingsView(pobj,new QuerySettingsModel(pobj))),
         m_depListView(new DepListSettingsView(pobj, new DepListSettingsModel(pobj))),
         m_pagesView(new QListWidget(pobj)),
-        m_pagesStore(new QStackedWidget())
+        m_pagesStore(new QStackedWidget(pobj))
 {
     m_pagesStore->addWidget(m_generalView);
     m_pagesStore->addWidget(m_installView);

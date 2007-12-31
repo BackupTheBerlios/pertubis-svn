@@ -21,32 +21,53 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H 1
 
-#include <QThread>
+#include <QObject>
 #include <paludis/install_task.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/package_id.hh>
 
 namespace pertubis
 {
+    class Package;
+    class Selections;
     /*! \brief installs packages
      *
      * \ingroup PaludisAdapter
-     * This threaded class controlls all aspects and steps of installing packages
+     * This class controlls all aspects and steps of installing packages
      * \todo this thread blocks the main application thread and gui. Find the issue!
      */
-    class PackageInstallTask : public QThread,
+    class PertubisInstallTask : public QObject,
         public paludis::InstallTask
     {
         Q_OBJECT
         public:
-            PackageInstallTask(QObject* pobj,
+
+            enum Count
+            {
+                max_count,
+                new_count,
+                upgrade_count,
+                downgrade_count,
+                new_slot_count,
+                rebuild_count,
+                error_count,
+                suggested_count,
+                last_count
+            };
+
+            PertubisInstallTask(QObject* pobj,
                     paludis::Environment* env,
                     const paludis::DepListOptions & options,
-                    paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations);
-            ~PackageInstallTask() {}
+                    paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations,
+                    Selections* install,
+                    Selections* deinstall);
+            ~PertubisInstallTask() {}
 
             void run();
 
+            virtual void display_merge_list_post_counts();
+            virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID & c);
             virtual void on_all_masked_error(const paludis::AllMaskedError&) {}
             virtual void on_ambiguous_package_name_error(const paludis::AmbiguousPackageNameError&) {}
             virtual void on_build_cleanlist_post(const paludis::DepListEntry&) {}
@@ -67,7 +88,7 @@ namespace pertubis
             virtual void on_display_failure_summary_skipped_unsatisfied(const paludis::DepListEntry&, const paludis::PackageDepSpec&) {}
             virtual void on_display_failure_summary_success(const paludis::DepListEntry&) {}
             virtual void on_display_failure_summary_totals(int, int, int, int) {}
-            virtual void on_display_merge_list_entry(const paludis::DepListEntry&) {}
+            virtual void on_display_merge_list_entry(const paludis::DepListEntry&);
             virtual void on_display_merge_list_post() {}
             virtual void on_display_merge_list_pre();
             virtual void on_fetch_action_error(const paludis::FetchActionError&) {}
@@ -98,14 +119,19 @@ namespace pertubis
             virtual void on_update_world_skip(const paludis::SetName&, const std::string&) {}
             virtual void on_use_requirements_not_met_error(const paludis::UseRequirementsNotMetError&) {}
 
-//             virtual paludis::HookResult perform_hook(const paludis::Hook & hook) const;
-            virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID & c);
+            template <Count count_>
+            int count() const
+            {
+                return m_counts[count_];
+            }
 
-//             void show_resume_command() const;
-//             std::string make_resume_command(const paludis::PackageIDSequence& seq) const;
+            template <Count count_>
+            void set_count(const int value)
+            {
+                m_counts[count_] = value;
+            }
 
         signals:
-
 
             /*! \brief sending the output of the build and install process to the main thread / window
             *
@@ -117,9 +143,18 @@ namespace pertubis
             */
             void rebuildMyself(const QString& message);
 
+            void appendPackage(Package * node);
+
+            void depListResult(QString);
+
+            void addEntryToDeinstallSelections(paludis::tr1::shared_ptr< const paludis::PackageID >);
+
         private:
 
-            std::string                                         m_resumeCommand;
+            std::string     m_resumeCommand;
+            Selections*     m_install;
+            Selections*     m_deinstall;
+            int             m_counts[last_count];
     };
 }
 

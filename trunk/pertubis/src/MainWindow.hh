@@ -75,6 +75,7 @@ class QMenu;
 class QModelIndex;
 class QSplitter;
 class QString;
+class QStackedWidget;
 class QTableView;
 class QTextBrowser;
 class QToolBar;
@@ -86,13 +87,16 @@ namespace pertubis
     class CategoryModel;
     class CategoryItem;
     class CategoryThread;
+    class DeinstallSelections;
     class DetailsThread;
     class MessageOutput;
+    class InstallSelections;
     class Package;
     class PackageFilterModel;
     class PackageModel;
     class PackagesThread;
     class PertubisSyncTask;
+    class ReportPackageModel;
     class RepositoryInfoModel;
     class RepositoryInfoThread;
     class RepositoryListModel;
@@ -101,9 +105,8 @@ namespace pertubis
     class SearchWindow;
     class SetThread;
     class Settings;
-    class ShowSelectionsThread;
+    class SelectionModel;
     class SystemReport;
-    class TaskBox;
 
     /*! \brief this widget is the package overview
      * \ingroup Widget
@@ -140,13 +143,6 @@ namespace pertubis
 
     public:
 
-        enum DisplayMode {
-            dm_category=0,
-            dm_selections,
-            dm_system_report,
-            dm_search
-        };
-
         /// @name Constructors
         ///@{
 
@@ -178,7 +174,7 @@ namespace pertubis
         ///@{
 
         /// task state changed
-        void onDeinstallTask(bool mystate);
+        void onDeinstallSelections(bool mystate);
 
         /// query for new detail data
         void onDetailsChanged(const QModelIndex & index);
@@ -186,11 +182,8 @@ namespace pertubis
         /// starts all tasks like installation and deinstallation
         void onStartTasks();
 
-        /// clean data structures and refetch displayed information
-        void onTasksFinished();
-
         /// task state changed
-        void onInstallTask(bool mystate);
+        void onInstallSelections(bool mystate);
 
         /// open an browser with link
         void onOpenURL(const QUrl&);
@@ -248,6 +241,8 @@ namespace pertubis
 
         void displayGlsa(const QModelIndex&);
 
+        void displayGlsaTag(const QModelIndex&);
+
         ///@}
 
         /// @name Displaying slots
@@ -267,6 +262,13 @@ namespace pertubis
 
         /// change sync icon gimmick
         void displayNextIcon();
+
+        void depListResult(QString);
+
+        void startInstallTask(bool pretend, QString target ="");
+        void startDeinstallTask(bool pretend);
+
+        void startSetInstallTask(const QModelIndex & ix);
 
         void aboutPertubis();
         ///@}
@@ -301,9 +303,6 @@ namespace pertubis
 
         ///@}
 
-        /// sets package header columns if true, else report header columns
-        void switchPackageHeader(bool state);
-
         /// @name Session persistence
         ///@{
 
@@ -313,9 +312,6 @@ namespace pertubis
         /// saving application settings
         void saveSettings();
         ///@}
-
-        QStringList             m_packageHeader;
-        QStringList             m_reportHeader;
         QString                 m_currentCat;
 
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
@@ -327,22 +323,30 @@ namespace pertubis
         CategoryModel*          m_setModel;
         CategoryThread*         m_categoryThread;
         DetailsThread*          m_detailsThread;
+        InstallSelections*            m_installTask;
+        DeinstallSelections*          m_deinstallTask;
         MessageOutput*          m_output;
         PackageFilterModel*     m_packageFilterModel;
+        PackageFilterModel*     m_searchPackageFilterModel;
         Package*                m_current;
         PackageModel*           m_packageModel;
+        PackageModel*           m_searchPackageModel;
+        ReportPackageModel*     m_reportPackageModel;
         PackagesThread*         m_packageViewThread;
         PackageView*            m_packageView;
+        PackageView*            m_searchPackageView;
+        PackageView*            m_selectionView;
         PertubisSyncTask*       m_syncTask;
         QAction*                m_acSync;
         QAction*                m_acTogglePackageView;
         QDockWidget*            m_dockCat;
         QDockWidget*            m_dockGlsa;
         QDockWidget*            m_dockRepo;
+        QDockWidget*            m_dockTabs;
         QDockWidget*            m_dockSet;
         QMenu*                  m_options;
         QMenu*                  m_trayMenu;
-        QSplitter*              m_vSplit;
+        QStackedWidget*         m_mainWidget;
         QSystemTrayIcon*        m_sysTray;
         QTableView*             m_categoryView;
         QTableView*             m_glsaView;
@@ -353,6 +357,7 @@ namespace pertubis
         QTextBrowser*           m_details;
         QTimer*                 m_timer;
         QToolBar*               m_toolBar;
+        QTreeView*              m_reportPackageView;
         RepositoryInfoModel*    m_repoInfoModel;
         RepositoryInfoThread*   m_repoInfoThread;
         RepositoryListModel*    m_repoListModel;
@@ -361,17 +366,14 @@ namespace pertubis
         SearchWindow*           m_searchWindow;
         SetThread*              m_setThread;
         Settings*               m_settings;
-        ShowSelectionsThread*   m_selectionsThread;
+        SelectionModel*         m_selectionModel;
         SystemReport*           m_sysRep;
-        TaskBox*                m_box;
 
-        DisplayMode             m_currentDisplay;
         int                     m_tidInstall;
         int                     m_tidDeinstall;
         int                     m_repoViewTabID;
         int                     m_outputTabID;
         int                     m_detailsTabID;
-        bool                    m_headerMode;
     };
 }
 

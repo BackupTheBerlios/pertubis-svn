@@ -83,8 +83,7 @@ namespace pertubis
 
             /// std constructor
             RepositoryListThread(QObject* pobj,
-                                 paludis::tr1::shared_ptr<paludis::Environment>  env,
-                                TaskBox* box) : ThreadBase(pobj,env,box) {}
+                                 paludis::tr1::shared_ptr<paludis::Environment>  env) : ThreadBase(pobj,env) {}
             ///@}
 
             /// overloaded from QThread
@@ -183,5 +182,5 @@ namespace pertubis
             QSet<QString>               m_activeRepos;
     };
 }
-#endif
 
+#endif

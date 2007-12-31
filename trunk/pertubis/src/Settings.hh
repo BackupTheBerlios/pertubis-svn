@@ -33,7 +33,7 @@ namespace pertubis
     class GeneralSettingsView;
     class InstallSettingsView;
     class QuerySettingsView;
-    class UninstallSettingsView;
+    class DeinstallSettingsView;
 
     /*! \brief Presents a settings window with different configuration groups.
     *
@@ -69,7 +69,7 @@ namespace pertubis
             InstallSettingsView*    m_installView;
 
             /// the deinstall settings page
-            UninstallSettingsView*    m_deinstallView;
+            DeinstallSettingsView*    m_deinstallView;
 
             /// the language settings page
             QuerySettingsView*    m_queryView;

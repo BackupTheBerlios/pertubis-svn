@@ -18,7 +18,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "UninstallSettings.hh"
+#include "DeinstallSettings.hh"
 #include "FormatterUtils.hh"
 #include <QLabel>
 #include <QLabel>
@@ -30,7 +30,7 @@
 
 #include <paludis/dep_list.hh>
 
-pertubis::UninstallSettingsModel::UninstallSettingsModel(QObject *pobj) :
+pertubis::DeinstallSettingsModel::DeinstallSettingsModel(QObject *pobj) :
         QObject(pobj),
         m_deps(false),
         m_unusedDeps(false),
@@ -41,15 +41,15 @@ pertubis::UninstallSettingsModel::UninstallSettingsModel(QObject *pobj) :
 }
 
 
-pertubis::UninstallSettingsModel::~UninstallSettingsModel()
+pertubis::DeinstallSettingsModel::~DeinstallSettingsModel()
 {
     saveSettings();
 }
 
-void pertubis::UninstallSettingsModel::loadSettings()
+void pertubis::DeinstallSettingsModel::loadSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "UninstallSettingsModel" );
+    settings.beginGroup( "DeinstallSettingsModel" );
     m_deps = settings.value("deps",false).toBool();
     m_unusedDeps = settings.value("unusedDeps",false).toBool();
     m_allVersions = settings.value("allVersions",false).toBool();
@@ -57,10 +57,10 @@ void pertubis::UninstallSettingsModel::loadSettings()
     settings.endGroup();
 }
 
-void pertubis::UninstallSettingsModel::saveSettings()
+void pertubis::DeinstallSettingsModel::saveSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "UninstallSettingsModel" );
+    settings.beginGroup( "DeinstallSettingsModel" );
     settings.setValue("deps",m_deps);
     settings.setValue("unusedDeps",m_unusedDeps);
     settings.setValue("allVersions",m_allVersions);
@@ -68,7 +68,7 @@ void pertubis::UninstallSettingsModel::saveSettings()
     settings.endGroup();
 }
 
-pertubis::UninstallSettingsView::UninstallSettingsView(QWidget *pobj,UninstallSettingsModel* model) :
+pertubis::DeinstallSettingsView::DeinstallSettingsView(QWidget *pobj,DeinstallSettingsModel* model) :
         QWidget(pobj),
         m_model(model),
         m_deps(new QCheckBox(tr("with deps"),pobj)),
@@ -141,8 +141,8 @@ pertubis::UninstallSettingsView::UninstallSettingsView(QWidget *pobj,UninstallSe
             SLOT(setChecked(bool)));
 }
 
-pertubis::UninstallSettingsView::~UninstallSettingsView()
+pertubis::DeinstallSettingsView::~DeinstallSettingsView()
 {
-    qDebug("UninstallSettingsView::~UninstallSettingsView() - start");
-    qDebug("UninstallSettingsView::~UninstallSettingsView() - done");
+    qDebug("DeinstallSettingsView::~DeinstallSettingsView() - start");
+    qDebug("DeinstallSettingsView::~DeinstallSettingsView() - done");
 }

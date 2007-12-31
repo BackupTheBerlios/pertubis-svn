@@ -52,7 +52,7 @@ struct MetadataKeyComparator
     }
 };
 
-void pertubis::InfoDisplayer::visit(const MetadataSectionKey & k)
+void pertubis::InfoDisplayer::visit(const MetadataSectionKey & /*k*/)
 {
 }
 
@@ -66,15 +66,15 @@ void pertubis::InfoDisplayer::visit(const MetadataFSEntryKey & k)
     m_thread->append(QString::fromStdString(k.human_name()),QString::fromStdString(stringify(k.value())));
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataPackageIDKey & k)
+void pertubis::InfoDisplayer::visit(const MetadataPackageIDKey &)
 {
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataRepositoryMaskInfoKey & k)
+void pertubis::InfoDisplayer::visit(const MetadataRepositoryMaskInfoKey &)
 {
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataContentsKey & k)
+void pertubis::InfoDisplayer::visit(const MetadataContentsKey &)
 {
 }
 
@@ -91,27 +91,27 @@ void pertubis::InfoDisplayer::visit(const MetadataTimeKey & k)
     }
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
 {
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
 {
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
 {
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
+void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
 {
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<DependencySpecTree> &)
 {
 }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
+void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
 {
 }
 

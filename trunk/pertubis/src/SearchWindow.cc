@@ -52,9 +52,11 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
     label->setBuddy(m_line);
 
     m_bStart->setDefault(true);
-    m_bOptions->setAutoDefault(false);
     m_bStop->setDisabled(true);
     m_bOptions->setCheckable(true);
+
+    m_bOptions->setAutoDefault(false);
+    m_bStop->setAutoDefault(false);
     m_bOptions->setAutoDefault(false);
 
     m_bar=new QProgressBar(this);
@@ -145,7 +147,6 @@ void pertubis::SearchWindow::onStart()
             m_thread->stopExec();
             m_thread->wait();
     }
-    m_bStop->setDefault(true);
     displaySearch(true);
     m_thread->start(query);
     emit search(query);
@@ -155,15 +156,17 @@ void pertubis::SearchWindow::onStop()
 {
     m_thread->stopExec();
     displaySearch(false);
+    m_bar->hide();
     emit stopSearch();
 }
 
 void pertubis::SearchWindow::displaySearch(bool start)
 {
     m_bStart->setDisabled(start);
-    m_bStart->setDefault(start);
+    m_bStart->setDefault(!start);
     m_bar->setVisible(start);
     m_bStop->setEnabled(start);
+    m_bStop->setDefault(start);
 }
 
 void pertubis::SearchWindow::loadSettings()

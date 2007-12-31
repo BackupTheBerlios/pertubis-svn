@@ -5,43 +5,44 @@ SET(PERTUBIS_SRCS
     CategoryFilterModel.cc
     CategoryModel.cc
     CategoryThread.cc
-    DeinstallTask.cc
+    DeinstallSelections.cc
+    DeinstallSettings.cc
     DepListSettings.cc
     DetailsThread.cc
     extractor.cc
+    GeneralSettings.cc
     GLSAParser.cc
     HtmlFormatter.cc
+    InstallSelections.cc
     InstallSettings.cc
-    InstallTask.cc
-    ItemInstallTask.cc
     MainWindow.cc
     matcher.cc
-    GeneralSettings.cc
     MessageOutput.cc
     NameDescriptionExtractor.cc
     OptionsDelegate.cc
     Package.cc
-    PackageDeinstallTask.cc
     PackageFilterModel.cc
     PackageModel.cc
     PackagesThread.cc
     PaludisUtils.cc
+    PertubisDeinstallTask.cc
+    PertubisInstallTask.cc
     QuerySettings.cc
     RegexMatcher.cc
+    ReportPackage.cc
+    ReportPackageModel.cc
     RepositoryInfoModel.cc
     RepositoryListModel.cc
     SearchThread.cc
     SearchWindow.cc
+    SelectionModel.cc
+    Selections.cc
     SetThread.cc
     Settings.cc
-    ShowSelectionsThread.cc
-    SystemReport.cc
     SyncTask.cc
-    TaskBox.cc
-    Task.cc
+    SystemReport.cc
     text_matcher.cc
     ThreadBase.cc
-    UninstallSettings.cc
 )
 
 SET(PERTUBIS_MAIN_SRCS
@@ -51,13 +52,13 @@ SET(PERTUBIS_MOC_HDRS
     CategoryFilterModel.hh
     CategoryModel.hh
     CategoryThread.hh
-    DeinstallTask.hh
+    DeinstallSelections.hh
+    DeinstallSettings.hh
     DepListSettings.hh
     DetailsThread.hh
     GeneralSettings.hh
+    InstallSelections.hh
     InstallSettings.hh
-    InstallTask.hh
-    ItemInstallTask.hh
     MainWindow.hh
     MessageOutput.hh
     OptionsDelegate.hh
@@ -65,21 +66,21 @@ SET(PERTUBIS_MOC_HDRS
     Package.hh
     PackageModel.hh
     PackagesThread.hh
-    PackageDeinstallTask.hh
+    PertubisDeinstallTask.hh
+    PertubisInstallTask.hh
     QuerySettings.hh
+    ReportPackageModel.hh
     RepositoryInfoModel.hh
     RepositoryListModel.hh
     SearchThread.hh
     SearchWindow.hh
+    SelectionModel.hh
+    Selections.hh
     SetThread.hh
-    SystemReport.hh
     Settings.hh
-    ShowSelectionsThread.hh
     SyncTask.hh
-    TaskBox.hh
-    Task.hh
+    SystemReport.hh
     ThreadBase.hh
-    UninstallSettings.hh
 )
 
 EXEC_PROGRAM("/bin/sh"

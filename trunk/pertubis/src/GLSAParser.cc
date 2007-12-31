@@ -262,7 +262,7 @@ bool pertubis::GlsaParser::endElement(const QString & /* namespaceURI */,
     return true;
 }
 
-bool pertubis::GlsaParser::fatalError(const QXmlParseException &exception)
+bool pertubis::GlsaParser::fatalError(const QXmlParseException &)
 {
     return false;
 }
@@ -271,7 +271,6 @@ bool pertubis::GlsaParser::endDocument()
 {
     m_table.append("</tbody></table>");
     QString text(m_html.arg(m_table));
-    qDebug() << text;
     m_browser->setHtml(text);
     return true;
 }

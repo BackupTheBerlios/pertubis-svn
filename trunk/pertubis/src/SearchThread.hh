@@ -29,6 +29,7 @@ class QString;
 namespace pertubis
 {
     class Package;
+    class Selections;
     class QuerySettingsModel;
 
     /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
@@ -47,9 +48,10 @@ namespace pertubis
 
         /// std constructor
         SearchThread(QObject* parent,
-                     paludis::tr1::shared_ptr<paludis::Environment>  env,
-                     QuerySettingsModel* querySettings,
-                     TaskBox* box);
+                    paludis::tr1::shared_ptr<paludis::Environment>  env,
+                    QuerySettingsModel* querySettings,
+                    Selections* install,
+                    Selections* deinstall);
         ///@}
 
         ~SearchThread();
@@ -85,6 +87,8 @@ namespace pertubis
 
         QuerySettingsModel*                     m_querySettings;
 
+        Selections*                             m_install;
+        Selections*                             m_deinstall;
     };
 }
 

@@ -30,7 +30,6 @@
 namespace pertubis
 {
     class CategoryItem;
-    class Taskbox;
 
     /*! \brief thread for fetching categories from repositories and returns a list of names
      *
@@ -48,8 +47,7 @@ namespace pertubis
 
         /// std constructor
         CategoryThread(QObject* parent,
-                   const paludis::tr1::shared_ptr<paludis::Environment>&  env,
-                   TaskBox* box);
+                   const paludis::tr1::shared_ptr<paludis::Environment>&  env);
         ///@}
 
     protected:

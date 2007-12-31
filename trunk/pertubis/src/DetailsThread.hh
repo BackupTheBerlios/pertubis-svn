@@ -42,8 +42,7 @@ namespace pertubis
     public:
 
         DetailsThread(QObject* pobj,
-                      const paludis::tr1::shared_ptr<paludis::Environment>&  env,
-                     TaskBox* box);
+                      const paludis::tr1::shared_ptr<paludis::Environment>&  env);
         void start(paludis::tr1::shared_ptr<const paludis::PackageID> id);
 
 //         void appendOutput(const QString& row) { m_text.append(row); }

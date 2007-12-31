@@ -21,17 +21,20 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_MODEL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_MODEL_H 1
 
+#include "Package-fwd.hh"
+
 #include <QAbstractItemModel>
 #include <QStringList>
 #include <QModelIndex>
 #include <QVariant>
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/package_id-fwd.hh>
 
 class QAction;
 
 namespace pertubis
 {
-    class Package;
-    class TaskBox;
+
 
     /*! \brief holds package data fetched from paludis in a tree structure
      *
@@ -43,9 +46,9 @@ namespace pertubis
 
     public:
 
-        PackageModel(QObject* parent=0);
+        PackageModel(QObject* parent);
 
-        ~PackageModel();
+        virtual ~PackageModel();
 
         ///@name Content information
         ///@{
@@ -80,37 +83,53 @@ namespace pertubis
 
         void setHorizontalHeaderLabels ( const QStringList & labels );
 
-        bool setSelectionData( const QModelIndex & ix, int taskid, bool mystate);
-
-        void setBox(TaskBox* t);
-
-        /// set this to true if we want to display the SystemReport output
-        void setReportMode(bool value) { m_reportMode = value;}
-
         ///@}
 
     public slots:
 
         void appendPackage(Package* item);
         void prependPackage(Package* item);
-        void clear(int columns);
-        void unselectAll();
+        virtual void clear();
 
     private:
 
         QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
 
         Package*        m_root;
-        TaskBox*        m_box;
         QStringList     m_header;
-
-        QAction*        m_toggleInstall;
-        QAction*        m_toggleDeinstall;
-        QAction*        m_toggleSlot;
-
-        bool            m_reportMode;
-
     };
+
+    /** \brief creates a node to diplay a package, can have version subnodes
+     * \ingroup PackageModelClass
+     *
+     */
+    Package* makePackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                         Qt::CheckState install,
+                         Qt::CheckState deinstall,
+                         QString pack,
+                         QString cat,
+                         Qt::CheckState isInstalled,
+                         PackageState mystate,
+                         Package* myparent,
+                         QString mask_reasons);
+
+    /** \brief creates a subnode to display a version
+     * \ingroup PackageModelClass
+     *
+     */
+    Package* makeVersionPackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+                                Qt::CheckState install,
+                                Qt::CheckState deinstall,
+                                QString version,
+                                QString rep,
+                                Qt::CheckState isInstalled,
+                                PackageState mystate,
+                                Package* pitem,
+                                QString mask_reasons);
+
+    Package* makeRootPackage();
+
+
 }
 
 #endif

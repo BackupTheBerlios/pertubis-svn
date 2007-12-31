@@ -18,33 +18,28 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "PackageDeinstallTask.hh"
+#include "PertubisDeinstallTask.hh"
 #include "FormatterUtils.hh"
 #include <paludis/package_database.hh>
 #include <paludis/uninstall_list.hh>
 #include <paludis/util/tr1_memory.hh>
 
-void pertubis::PackageDeinstallTask::run()
-{
-    execute();
-}
-
-void pertubis::PackageDeinstallTask::on_build_unmergelist_pre()
+void pertubis::PertubisDeinstallTask::on_build_unmergelist_pre()
 {
     emit message("Building unmerge list... ");
 }
 
-void pertubis::PackageDeinstallTask::on_build_unmergelist_post()
+void pertubis::PertubisDeinstallTask::on_build_unmergelist_post()
 {
     emit message("done... ");
 }
 
-void pertubis::PackageDeinstallTask::on_display_unmerge_list_pre()
+void pertubis::PertubisDeinstallTask::on_display_unmerge_list_pre()
 {
     emit message(color( QString("These packages will be uninstalled:"),QString("green")));
 }
 
-void pertubis::PackageDeinstallTask::on_display_unmerge_list_post()
+void pertubis::PertubisDeinstallTask::on_display_unmerge_list_post()
 {
     if (m_error_count)
     {
@@ -56,7 +51,7 @@ void pertubis::PackageDeinstallTask::on_display_unmerge_list_post()
     }
 }
 
-void pertubis::PackageDeinstallTask::on_display_unmerge_list_entry(const paludis::UninstallListEntry & d)
+void pertubis::PertubisDeinstallTask::on_display_unmerge_list_entry(const paludis::UninstallListEntry & d)
 {
     switch (d.kind)
     {
@@ -79,11 +74,11 @@ void pertubis::PackageDeinstallTask::on_display_unmerge_list_entry(const paludis
     }
 }
 
-void pertubis::PackageDeinstallTask::on_uninstall_all_pre()
+void pertubis::PertubisDeinstallTask::on_uninstall_all_pre()
 {
 }
 
-void pertubis::PackageDeinstallTask::on_uninstall_pre(const paludis::UninstallListEntry & d)
+void pertubis::PertubisDeinstallTask::on_uninstall_pre(const paludis::UninstallListEntry & d)
 {
     using namespace paludis;
     std::string msg("(" + stringify(++m_current_count) + " of " +
@@ -92,42 +87,42 @@ void pertubis::PackageDeinstallTask::on_uninstall_pre(const paludis::UninstallLi
     emit message(QString::fromStdString(color(msg,"green")));
 }
 
-void pertubis::PackageDeinstallTask::on_uninstall_post(const paludis::UninstallListEntry &)
+void pertubis::PertubisDeinstallTask::on_uninstall_post(const paludis::UninstallListEntry &)
 {
 }
 
-void pertubis::PackageDeinstallTask::on_uninstall_all_post()
+void pertubis::PertubisDeinstallTask::on_uninstall_all_post()
 {
 }
 
-void pertubis::PackageDeinstallTask::on_not_continuing_due_to_errors()
+void pertubis::PertubisDeinstallTask::on_not_continuing_due_to_errors()
 {
     using namespace paludis;
     emit message( color(QString("Cannot continue with uninstall due to the errors indicated above"),QString("red")));
 }
 
-void pertubis::PackageDeinstallTask::on_update_world_pre()
+void pertubis::PertubisDeinstallTask::on_update_world_pre()
 {
     emit message( color(QString("Updating world file"),QString("green")));
 }
 
-void pertubis::PackageDeinstallTask::on_update_world(const paludis::PackageDepSpec & a)
+void pertubis::PertubisDeinstallTask::on_update_world(const paludis::PackageDepSpec & a)
 {
     if (a.package_ptr())
         emit message( QString("* removing %1\n\n").arg( QString::fromStdString(color( paludis::stringify(*a.package_ptr()),std::string("green") ))));
 }
 
-void pertubis::PackageDeinstallTask::on_update_world(const paludis::SetName & a)
+void pertubis::PertubisDeinstallTask::on_update_world(const paludis::SetName & a)
 {
     emit message( QString("* removing %1\n\n").arg(color(paludis::stringify(a),std::string("green")).c_str() ));
 }
 
-void pertubis::PackageDeinstallTask::on_update_world_post()
+void pertubis::PertubisDeinstallTask::on_update_world_post()
 {
     emit message("\n\n");
 }
 
-void pertubis::PackageDeinstallTask::on_preserve_world()
+void pertubis::PertubisDeinstallTask::on_preserve_world()
 {
     emit message(color(QString("Updating world file\n* --preserve-world was specified, skipping world changes"),QString("green") ));
 }

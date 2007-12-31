@@ -18,39 +18,49 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H
-#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_SELECTION_MODEL_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SELECTION_MODEL_H 1
 
-#include <QSortFilterProxyModel>
-#include <QSet>
-#include <QString>
-
-class QModelIndex;
+#include "PackageModel.hh"
+#include <QStringList>
 
 namespace pertubis
 {
-    /*! \brief filters packages by repository
+    class Package;
+    class TaskBox;
+
+    /*! \brief holds package data fetched from paludis in a tree structure
      *
-     * \ingroup ItemModelClass
-     * If any repository of m_repositories does not contain this package, the filter rejects the package
+     * \ingroup ModelClass
      */
-    class PackageFilterModel : public QSortFilterProxyModel
+    class SelectionModel : public PackageModel
     {
         Q_OBJECT
-        public:
 
-            PackageFilterModel(QObject * pobj);
+    public:
 
-            void setFilter(const QSet<QString>& repos) { m_repositories = repos;}
-            bool filterAcceptsRow(int sourceRow,
-                             const QModelIndex &sourceParent) const;
+        enum SelectionPackageOrder
+        {
+            spo_selected,
+            spo_package,
+            spo_category,
+            spo_version,
+            spo_repository,
+            spo_last
+        };
 
-        private:
+        SelectionModel(QObject* parent);
 
-            QSet<QString> m_repositories;
+        virtual ~SelectionModel() {};
+
+        ///@name Content information
+        ///@{
+
+        QVariant data ( const QModelIndex & index,
+                        int role = Qt::DisplayRole ) const;
+
+        Qt::ItemFlags flags(const QModelIndex &index) const;
     };
-
 }
 
 #endif
-

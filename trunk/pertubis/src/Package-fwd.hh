@@ -18,24 +18,45 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_SYSTEM_REPORT_FWD_H
-#define _PERTUBIS_ENTRY_PROTECTOR_SYSTEM_REPORT_FWD_H 1
-
-
-#include <paludis/report_task.hh>
-#include <paludis/package_id-fwd.hh>
-#include <paludis/package_id.hh>
-#include "ThreadBase.hh"
-
-using namespace paludis;
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FWD_H
+#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FWD_H 1
 
 namespace pertubis
 {
-    class ReportPackage;
+    class Package;
+    class PartiallyMadePackage;
+    class PartiallyMadePackageData;
 
-    class SystemReport;
+    enum PackageState
+    {
+        ps_stable,
+        ps_unstable,
+        ps_masked,
+        ps_last
+    };
 
+    enum PackageOrder
+    {
+        po_install,
+        po_deinstall,
+        po_installed,
+        po_package,
+        po_category,
+        po_repository,
+        po_mask_reasons,
+        po_last
+    };
 
+    enum PackageType
+    {
+        pt_nothing,
+        pt_parent,
+        pt_child,
+        pt_node_full,
+        pt_node_only,
+        pt_last
+    };
 }
 
 #endif
+

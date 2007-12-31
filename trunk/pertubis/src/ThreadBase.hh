@@ -30,7 +30,6 @@
 
 namespace pertubis
 {
-    class TaskBox;
 
     /*! \brief provides the paludis infrastructure we need for the threads
      *
@@ -48,8 +47,7 @@ namespace pertubis
 
         /// std constructor
         ThreadBase(QObject* pobj,
-                    const paludis::tr1::shared_ptr<paludis::Environment>&  env,
-                    TaskBox* box);
+                    const paludis::tr1::shared_ptr<paludis::Environment>&  env);
         ///\}
 
         /// tries to lock the mutex and returns the result
@@ -65,9 +63,6 @@ namespace pertubis
 
         /// the environment
         paludis::tr1::shared_ptr<paludis::Environment>  m_env;
-
-        /// ptr to TaskBox
-        TaskBox*                                        m_taskbox;
 
         /// execution will be stopped, if true
         bool                                            m_stopExec;

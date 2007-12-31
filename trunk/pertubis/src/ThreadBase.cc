@@ -24,8 +24,7 @@
 QMutex pertubis::ThreadBase::m_paludisAccess;
 
 pertubis::ThreadBase::ThreadBase(QObject* pobj,
-                                const paludis::tr1::shared_ptr<paludis::Environment>&  env,
-                                TaskBox* box) : QThread(pobj), m_env(env), m_taskbox(box),m_stopExec(false)
+    const paludis::tr1::shared_ptr<paludis::Environment>&  env) : QThread(pobj), m_env(env), m_stopExec(false)
 {
 
 }

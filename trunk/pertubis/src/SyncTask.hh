@@ -47,7 +47,7 @@ namespace pertubis
 
             /// constructs a PertubisSyncTask object
             PertubisSyncTask(paludis::tr1::shared_ptr<paludis::Environment> env, QObject* pobj) :
-                ThreadBase(pobj,paludis::tr1::shared_ptr<paludis::Environment>(),0),
+                ThreadBase(pobj,paludis::tr1::shared_ptr<paludis::Environment>()),
                 SyncTask(env.get(),true)
             {
             }

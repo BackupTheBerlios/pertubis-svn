@@ -21,6 +21,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_TASK_H
 #define _PERTUBIS_ENTRY_PROTECTOR_TASK_H 1
 
+#include "Package.hh"
 #include <list>
 #include <QObject>
 #include <QString>
@@ -36,26 +37,16 @@ class QAction;
 
 namespace pertubis
 {
-    class Package;
-    class TaskBox;
     class Settings;
+    class SelectionModel;
     class MessageOutput;
 
-//     class IDCompare
-//     {
-//         public:
-//             bool operator() (const paludis::tr1::shared_ptr<const paludis::PackageID>& a,
-//                           const paludis::tr1::shared_ptr<const paludis::PackageID>& b) const;
-//     };
-
     /*! \brief Holds PackageIDs for concrete task classes. This is an abstract base class
-     * \see InstallTask, DeinstallTask
+     * \see InstallSelections, DeinstallSelections
      * \ingroup Selection
      */
-    class Task : public QObject
+    class Selections : public QObject
     {
-
-        friend class TaskBox;
         Q_OBJECT
 
     public:
@@ -66,11 +57,14 @@ namespace pertubis
         ///@name Constructors
         ///@{
 
-        /// creates a Task object
-        Task(QObject* pobject,
+        /// creates a Selections object
+        Selections(QObject* pobject,
             QAction* action,
-            QString name);
+            QString myname,
+            PackageOrder);
         ///@}
+
+        virtual ~Selections() {}
 
         ///\name Content modification
         ///\{
@@ -89,20 +83,20 @@ namespace pertubis
 
         virtual void clear();
 
-        /*! \brief returns the number of selected Packages for this task
-         *
-         */
-        int itemCount() const { return m_data.size();}
-
         /*! \brief sets the action this task is referring to
          *
          */
         void setAction(QAction* myaction) {m_action = myaction;}
 
+        /*! \brief sets the name
+         *
+         */
+        void setName(const QString & myname) {m_name = myname;}
+
         /*! \brief sets Qt::Checked or Qt::Unchecked as result of hasEntry(item)
          *
          */
-        void fillAction(Package* item);
+        void prepareAction(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
         /*! \brief adds a selection specified by PackageID
          *
@@ -114,35 +108,25 @@ namespace pertubis
          */
         void deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
-        /*! \brief starts the corresponding paludis task
-         *
-         */
-        virtual void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env, Settings*,MessageOutput* output)=0;
-
         ///\}
 
         ///\name Content information
         ///\{
 
-        /*! \brief returns the action connected with this task
-        *
-        */
-        QAction* action() const {return m_action;}
-
-        /*! \brief returns a reference to the data
-        *
-        */
-        paludis::PackageIDSet& data() { return m_data;}
-
-        /*! \brief returns the unique integer key for this task
-        *
-        */
-        int taskid() const { return m_taskid;}
+        /*! \brief returns the number of selected Packages for this task
+         *
+         */
+        int entryCount() const { return m_data.size();}
 
         /*! \brief checks if this package is already selected for this task
         *
         */
-        bool hasEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) const;
+        Qt::CheckState hasEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) const;
+
+        /*! \brief returns the action connected with this task
+         *
+         */
+        QAction* action() const {return m_action;}
 
         /*! \brief returns the literal name of this task
         *
@@ -151,29 +135,32 @@ namespace pertubis
 
         virtual bool available(Package* item) const = 0;
 
-        ///\}
+        bool hasEntries() { return ! m_data.empty() ;}
 
+        paludis::PackageIDSet::ConstIterator entriesBegin() { return m_data.begin();}
+        paludis::PackageIDSet::ConstIterator entriesEnd() { return m_data.end();}
+
+        ///\}
 
     protected:
 
         /// stores the PackageID of packages that are about to be used for this task
         paludis::PackageIDSet m_data;
-        /// the QAction which triggers the execution of this task
-        QAction*        m_action;
+
         /// the translated name of this task
         QString         m_name;
 
-        /// this internal task number of this task are used for mapping the selection data in an Package to the correct task
-        int             m_taskid;
+        /// the QAction which triggers the execution of this task
+        QAction*        m_action;
+
+        /// in which columns we should set a selection information when preparing a Package
+        PackageOrder   m_position;
 
     private:
 
-        /*! \brief only for internal use
-         */
-        void setTaskid(int id);
+        /// \brief prohibit copying
+        Selections(const Selections& other);
     };
-
-//     inline bool operator==(const Task& a,const Task& b) { return a.name() == b.name();}
 
 }
 

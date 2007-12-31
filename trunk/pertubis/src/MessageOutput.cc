@@ -27,7 +27,6 @@
 #include <QTextDocument>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <iostream>
 #include <cstdlib>
@@ -79,7 +78,7 @@ void pertubis::MessageOutput::redirectOutput()
     messages_stream.reset(new paludis::FDOutputStream(m_slave_fd));
     paludis::set_run_command_stdout_fds(m_slave_fd, m_master_fd);
     paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
-    paludis::PStream::set_stderr_fd(m_slave_fd, m_master_fd);
+
     fcntl(m_master_fd,F_SETFL,fcntl(m_master_fd,F_GETFL) | O_NONBLOCK);
     paludis::Log::get_instance()->set_log_stream(messages_stream.get());
     m_thread = new MessageThread(this,m_master_fd);

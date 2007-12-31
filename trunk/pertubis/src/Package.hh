@@ -18,9 +18,11 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_ITEM_H
-#define _PERTUBIS_ENTRY_PROTECTOR_ITEM_H
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_H
+#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_H 1
 
+#include "Package-fwd.hh"
+#include <QVector>
 #include <QList>
 #include <QDebug>
 #include <QVariant>
@@ -28,83 +30,95 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
 
-/*! \enum pertubis::Package::PackageState
+/** \enum pertubis::Package::PackageState
  * An Package can be stable, unstable and masked. This is a higher level view on packages
  */
 
-/*! \enum pertubis::Package::PackageState pertubis::Package::ps_stable
+/** \enum pertubis::Package::PackageState pertubis::Package::ps_stable
  * means this package (version) is stable
  */
 
-/*! \enum pertubis::Package::PackageState pertubis::Package::ps_unstable
+/** \enum pertubis::Package::PackageState pertubis::Package::ps_unstable
  * means this package (version) is unstable
  */
 
-/*! \enum pertubis::Package::PackageState pertubis::Package::ps_masked
+/** \enum pertubis::Package::PackageState pertubis::Package::ps_masked
  * means this package (version) is masked
  */
 
-/*! \enum pertubis::Package::PackageOrder
+/** \enum pertubis::Package::PackageState pertubis::Package::ps_last
+ * number of package states
+ */
+
+/** \enum pertubis::Package::PackageOrder
  * The order of information in pertubis::Package::m_data and column order in the package view
  */
 
-/*! \enum pertubis::Package::PackageOrder* pertubis::Package::po_selected
+/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_selected
  * QVariant<QVariantList>. Stores the task selection states
  */
 
-/*! \enum pertubis::Package::PackageOrder* pertubis::Package::po_package
+/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_package
  * QVariant<QString>. paludis::PackagePartName
  */
 
-/*! \enum pertubis::Package::PackageOrder* pertubis::Package::po_category
+/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_category
  * QVariant<QString>. paludis::CategoryPartName
  */
 
-/*! \enum pertubis::Package::PackageOrder* pertubis::Package::po_repository
+/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_repository
  * QVariant<QString>. paludis::RepositoryName
  */
 
-/*! \enum pertubis::Package::PackageOrder* pertubis::Package::po_installed
+/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_installed
  * QVariant<bool>. true if the package is installed
  */
 
-/*! \enum pertubis::Package::PackageOrder* pertubis::Package::po_mask_reasons
+/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_mask_reasons
  * QVariant<QString>. paludis::MaskReasons
  */
 
-/*! \enum pertubis::Package::PackageOrder* pertubis::Package::po_change
+/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_change
  * QVariant<QString>. shows if an packages best version is not the installed version, e.g. upgrade or downgrade
  */
 
-/*! \enum pertubis::Package::PackageType
+/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_last
+ * number of named columns
+ */
+
+/** \enum pertubis::Package::PackageType
  * The package overview uses this Package class for storing the information about the package it represents. In which direction we want model updates
  */
 
-/*! \enum pertubis::Package::PackageType* pertubis::Package::pt_nothing
+/** \enum pertubis::Package::PackageType* pertubis::Package::pt_nothing
  * This value is only used when the default constructor was called
  */
 
-/*! \enum pertubis::Package::PackageType* pertubis::Package::pt_parent
+/** \enum pertubis::Package::PackageType* pertubis::Package::pt_parent
  * update this parent node and all child nodes ( down )
  */
 
-/*! \enum pertubis::Package::PackageType* pertubis::Package::pt_child
+/** \enum pertubis::Package::PackageType* pertubis::Package::pt_child
  * update from parent and all child nodes, including this child node ( up )
  */
 
-/*! \enum pertubis::Package::PackageType* pertubis::Package::pt_node_full
+/** \enum pertubis::Package::PackageType* pertubis::Package::pt_node_full
  * The item can have childs, and an parent Package.
  * when manipulated parent of this node, all childs and the node itself will be updated ( up and down )
  */
 
-/*! \enum pertubis::Package::PackageType* pertubis::Package::pt_node_only
+/** \enum pertubis::Package::PackageType* pertubis::Package::pt_node_only
  * The item will have any childs, and maybe any parent.
  * when manipulated only this node will be updated
  */
 
+/** \enum pertubis::Package::PackageType* pertubis::Package::pt_last
+ * number of package types
+ */
+
 namespace pertubis
 {
-    /*! \brief package information / metadata storage
+    /** \brief package information / metadata storage
      *
      * \ingroup PackageModelClass
      * The package overview uses this Package class for storing the information about the package it represents.
@@ -117,52 +131,24 @@ namespace pertubis
 
         public:
 
-            enum PackageState { ps_stable, ps_unstable, ps_masked };
-
-            enum PackageOrder
-            {
-                po_selected,
-                po_package,
-                po_category,
-                po_repository,
-                po_installed,
-                po_mask_reasons,
-                po_change,
-                po_last
-            };
-
-            enum PackageType
-            {
-                pt_nothing,
-                pt_parent,
-                pt_child,
-                pt_node_full,
-                pt_node_only,
-            };
-
             /// defines a const iterator used for iterating over all child Packages
             typedef QList<Package*>::const_iterator ConstPackageIterator;
+
             /// defines a const iterator used for iterating over all child Packages
             typedef QList<Package*>::iterator PackageIterator;
 
             ///@name Constructors
             ///@{
 
-            /// default constructor
-            Package();
-
-            /// copy constructor
-            Package(const Package& other);
-
             /// that's the usual way to create an Package object
             Package(paludis::tr1::shared_ptr<const paludis::PackageID> id,
-                 const QList<QVariant> &dats,
-                 PackageState mystate,
-                 PackageType itype,
-                 Package* parent);
+                                     const QVector<QVariant> & dats,
+                                     PackageState mystate,
+                                     PackageType itype,
+                                     Package* parent);
             ///@}
             /// destructor
-            ~Package();
+            virtual ~Package();
 
              ///@name Content modification
             ///@{
@@ -173,18 +159,22 @@ namespace pertubis
             /// prepends a new child Package
             void prependChild(Package *child);  // test
 
-            /*! @brief
+            /** @brief
              *
-             * This is a convenience method for setting the selection state for one Task. To set all selection states you can use Package::setData()
+             * This is a convenience method for setting the selection state for one Task. To set all selection states use Package::setData()
              */
             void setTaskState(int taskid, Qt::CheckState state);  // test
 
-            /// sets a new displayable value in column
+            bool bestChildTest() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /** sets a displayable value in column
+             *
+             * accepts only columns less than columnCount()
+             */
             void setData(int column, QVariant data);  // test
 
             /// sets a new parent node / Package object
             void setParent(Package* pitem);  // test
-
 
             /// changes the PackageState of this Package object
             void setPackageState(PackageState s);  // test
@@ -231,7 +221,7 @@ namespace pertubis
             /// returns the parent Package object of this Package object if present. Returns 0 if not
             Package *parent() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /*! \brief when it has a best child, it returns the bestChilds' PackageID, otherwise it returns its' PackageID
+            /** \brief when it has a best child, it returns the bestChilds' PackageID, otherwise it returns its' PackageID
              */
             paludis::tr1::shared_ptr<const paludis::PackageID> ID() const PALUDIS_ATTRIBUTE((warn_unused_result)); // test
             ///@}
@@ -254,7 +244,7 @@ namespace pertubis
         protected:
 
             /// the data to are to be rendered (shown)
-            QList<QVariant>     m_data;
+            QVector<QVariant>     m_data;
 
             /// children storage
             QList<Package*>        m_children;
@@ -273,42 +263,14 @@ namespace pertubis
 
             /// the type of the Package
             PackageType            m_itemType;
+
+        private:
+
+            /// copy constructor
+            Package(const Package& other);
     };
 
-
-//     QString stateDescription(Package::PackageState status);
-
-    /*! \brief helps us creating a PackagePackage
-     * \ingroup PackageModelClass
-     *
-     */
-    Package* makePackagePackage(
-        paludis::tr1::shared_ptr<const paludis::PackageID> id,
-        QVariantList selections,
-        QString pack,
-        QString cat,
-        Qt::CheckState isInstalled,
-        Package::PackageState mystate,
-        Package* pitem,
-        QString mask_reasons);
-
-    /*! \brief helps us creating a VersionPackage
-     * \ingroup PackageModelClass
-     *
-     */
-    Package* makeVersionPackage(
-        paludis::tr1::shared_ptr<const paludis::PackageID> id,
-        QVariantList selections,
-        QString version,
-        QString rep,
-        Qt::CheckState isInstalled,
-        Package::PackageState mystate,
-        Package* pitem,
-        QString mask_reasons);
-
-    Package* makeRootPackage(int columns);
-
-    inline Package::PackageType pertubis::Package::itemType() const
+    inline PackageType pertubis::Package::itemType() const
     {
         return m_itemType;
     }
@@ -318,7 +280,7 @@ namespace pertubis
         return m_bestChild;
     }
 
-    inline int pertubis::Package::indexOf(Package* item) const
+    inline int Package::indexOf(Package* item) const
     {
         return m_children.indexOf(item);
     }
@@ -354,3 +316,4 @@ namespace pertubis
 QDebug operator<<(QDebug dbg, const pertubis::Package &c);
 
 #endif
+

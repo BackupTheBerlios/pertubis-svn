@@ -21,30 +21,34 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_DEINSTALL_TASK_H
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_DEINSTALL_TASK_H 1
 
-#include <QThread>
+#include <QObject>
 #include <paludis/uninstall_task.hh>
 #include <paludis/environment-fwd.hh>
 
 namespace pertubis
 {
-    class PackageDeinstallTask :
-            public QThread,
+    /*! \brief deinstalls packages
+     *
+     * \ingroup PaludisAdapter
+     * This class controlls all aspects and steps of deinstalling packages
+     * \todo this thread blocks the main application thread and gui. Find the issue!
+     */
+    class PertubisDeinstallTask :
+            public QObject,
             public paludis::UninstallTask
     {
         Q_OBJECT
 
 
         public:
-            PackageDeinstallTask(QObject* pobject,paludis::tr1::shared_ptr<paludis::Environment> e) :
-                QThread(pobject),
+            PertubisDeinstallTask(QObject* pobject,paludis::tr1::shared_ptr<paludis::Environment> e) :
+                QObject(pobject),
                 paludis::UninstallTask(e.get()),
                     m_count(0),
                     m_current_count(0),
                     m_error_count(0)
             {
             }
-
-            void run();
 
             virtual void on_build_unmergelist_pre();
 

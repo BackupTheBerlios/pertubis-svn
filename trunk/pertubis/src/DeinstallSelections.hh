@@ -21,19 +21,16 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_DEINSTALL_TASK_H
 #define _PERTUBIS_ENTRY_PROTECTOR_DEINSTALL_TASK_H 1
 
-#include "Task.hh"
+#include "Selections.hh"
 
 namespace pertubis
 {
-    class Package;
-    class PackageDeinstallTask;
-
-    /*! \brief installs packages
+    /*! \brief selection storage for package deinstallation
      * \ingroup Selection
-     * This threaded class controlls all aspects and steps of installing packages
-     * \todo this thread blocks the main application thread and gui. Find the issue!
+     * Here we store the packages the user wishes to deinstall
      */
-    class DeinstallTask : public Task
+
+    class DeinstallSelections : public Selections
     {
         Q_OBJECT
 
@@ -43,9 +40,12 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            DeinstallTask(QObject* pobject,
+            DeinstallSelections(QObject* pobject,
                         QAction* myaction,
-                        QString tname) : Task(pobject,myaction,tname),m_task(0) {}
+                        QString tname,
+                        PackageOrder pos) : Selections(pobject,myaction,tname,pos) {}
+
+            virtual ~DeinstallSelections() {}
 
             ///@}
 
@@ -57,26 +57,10 @@ namespace pertubis
 
             /*! @brief makes the actual changes in this object and in the Package object when a user visually changes the selection state
              * @param item the Package to be changed
-             * @param mystate the new selection state for this Task
+             * @param mystate the new selection state for this Selections
              */
             bool changeStates(Package* item, int mystate);
             ///@}
-
-            /// @name Content modification
-            ///@{
-
-            /// starts m_task
-            void startTask(const paludis::tr1::shared_ptr<paludis::Environment>& env, Settings* settings, MessageOutput* output);
-            ///@}
-
-        signals:
-
-            /// says "I and the paludis install tasks are finished"
-            void finished();
-
-        private:
-
-            PackageDeinstallTask* m_task;
     };
 }
 

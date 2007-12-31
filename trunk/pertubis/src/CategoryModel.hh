@@ -54,7 +54,7 @@ namespace pertubis
             ///@{
 
             /// sets the header data
-            void setHorizontalHeaderLabels ( const QStringList & labels );
+            void setHorizontalHeaderLabels ( const QStringList & labels ) { m_header = labels; }
 
             void clear();
 
@@ -74,8 +74,12 @@ namespace pertubis
              */
             QModelIndex index(int row, int column, const QModelIndex &parentIndex) const;
 
+            CategoryItem* getItem(int ix) { return m_data.value(ix); }
+
             /// returns the number of rows the CategoryItem descibed by QModelIndex has
             int rowCount( const QModelIndex & index ) const;
+
+            int indexOf(const QString & text);
 
             /// returns the number of columns the CategoryItem descibed by QModelIndex has
             int columnCount( const QModelIndex & index ) const;

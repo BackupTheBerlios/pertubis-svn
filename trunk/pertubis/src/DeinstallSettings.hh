@@ -30,7 +30,7 @@ class QComboBox;
 namespace pertubis
 {
 
-    class UninstallSettingsModel : public QObject
+    class DeinstallSettingsModel : public QObject
     {
         Q_OBJECT
 
@@ -40,10 +40,10 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            UninstallSettingsModel(QObject *pobj);
+            DeinstallSettingsModel(QObject *pobj);
             ///@}
 
-            ~UninstallSettingsModel();
+            ~DeinstallSettingsModel();
 
             ///@name Content modification
             ///@{
@@ -103,7 +103,7 @@ namespace pertubis
 
     };
 
-    class UninstallSettingsView : public QWidget
+    class DeinstallSettingsView : public QWidget
     {
         Q_OBJECT
 
@@ -113,12 +113,12 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            UninstallSettingsView(QWidget *parent,UninstallSettingsModel* model);
+            DeinstallSettingsView(QWidget *parent,DeinstallSettingsModel* model);
             ///@}
 
-            ~UninstallSettingsView();
+            ~DeinstallSettingsView();
 
-            UninstallSettingsModel*  m_model;
+            DeinstallSettingsModel*  m_model;
 
     private:
 

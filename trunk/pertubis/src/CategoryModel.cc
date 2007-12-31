@@ -40,10 +40,15 @@ pertubis::CategoryModel::~CategoryModel()
     qDeleteAll(m_data);
     m_data.clear();
 }
-
-void pertubis::CategoryModel::setHorizontalHeaderLabels ( const QStringList & labels )
+int pertubis::CategoryModel::indexOf ( const QString & text )
 {
-    m_header = labels;
+    for (QList<CategoryItem*>::const_iterator iStart(m_data.constBegin()),iEnd(m_data.constEnd());
+        iStart != iEnd;++iStart)
+    {
+        if (text == (*iStart)->name())
+            return m_data.indexOf(*iStart);
+    }
+    return -1;
 }
 
 QVariant pertubis::CategoryModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -137,4 +142,5 @@ void pertubis::CategoryModel::clear()
 {
     qDeleteAll(m_data);
     m_data.clear();
+    emit layoutChanged();
 }

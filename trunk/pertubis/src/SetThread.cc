@@ -34,8 +34,7 @@
 #include <QStringList>
 
 pertubis::SetThread::SetThread(QObject* pobj,
-                                         const paludis::tr1::shared_ptr<paludis::Environment>&  env,
-                                         TaskBox* box) : ThreadBase(pobj,env,box)
+                                         const paludis::tr1::shared_ptr<paludis::Environment>&  env) : ThreadBase(pobj,env)
 {
 }
 

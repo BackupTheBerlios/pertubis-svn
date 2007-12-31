@@ -21,7 +21,6 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_SYSTEM_REPORT_H
 #define _PERTUBIS_ENTRY_PROTECTOR_SYSTEM_REPORT_H 1
 
-
 #include <paludis/report_task.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/package_id.hh>
@@ -33,25 +32,25 @@ using namespace paludis;
 namespace pertubis
 {
 
+    class Selections;
 
     class SystemReport :
         public ThreadBase,
         public paludis::ReportTask
     {
         Q_OBJECT
-        private:
-            int _n_packages;
-            int _n_errors;
-            const Environment * const env;
-            Package* m_node;
 
         public:
-            SystemReport(QObject* obj, tr1::shared_ptr<Environment> e,TaskBox* box) :
-                ThreadBase(obj,e,box),
+
+            SystemReport(QObject* obj,
+                        tr1::shared_ptr<Environment> e,
+                        Selections* selects) :
+                ThreadBase(obj,e),
                 ReportTask(e.get()),
-                _n_packages(0),
-                _n_errors(0),
-                env(e.get())
+                m_dSelections(selects),
+                m_env(e.get()),
+                m_totalCount(0),
+                m_errorCount(0)
             {
             }
 
@@ -78,10 +77,18 @@ namespace pertubis
             void finished(int total,int errors);
 
             /// requests  to append and show this package in main thread
-            void appendPackage(Package* node);
+            void appendPackage(ReportPackage* node);
 
             /// sends a glsa entry
             void notifyAboutGLSA(QString name, QString path);
+
+        private:
+
+            Selections*                         m_dSelections;
+            const Environment * const           m_env;
+            ReportPackage*                      m_node;
+            int                                 m_totalCount;
+            int                                 m_errorCount;
     };
 }
 

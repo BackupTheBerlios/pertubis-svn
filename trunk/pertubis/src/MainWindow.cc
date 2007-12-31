@@ -22,12 +22,15 @@
 #include "CategoryItem.hh"
 #include "CategoryModel.hh"
 #include "CategoryThread.hh"
-#include "DeinstallTask.hh"
 #include "DetailsThread.hh"
 #include "FormatterUtils.hh"
 #include "GeneralSettings.hh"
 #include "GLSAParser.hh"
-#include "InstallTask.hh"
+#include "InstallSelections.hh"
+#include "InstallSettings.hh"
+#include "DeinstallSettings.hh"
+#include "DepListSettings.hh"
+#include "DeinstallSelections.hh"
 #include "MainWindow.hh"
 #include "MessageOutput.hh"
 #include "OptionsDelegate.hh"
@@ -35,17 +38,20 @@
 #include "Package.hh"
 #include "PackageModel.hh"
 #include "PackagesThread.hh"
+#include "PertubisInstallTask.hh"
+#include "PertubisDeinstallTask.hh"
 #include "QuerySettings.hh"
+#include "ReportPackage.hh"
+#include "ReportPackageModel.hh"
 #include "RepositoryInfoModel.hh"
 #include "RepositoryListModel.hh"
 #include "SearchThread.hh"
 #include "SearchWindow.hh"
 #include "SetThread.hh"
 #include "Settings.hh"
-#include "ShowSelectionsThread.hh"
+#include "SelectionModel.hh"
 #include "SyncTask.hh"
 #include "SystemReport.hh"
-#include "TaskBox.hh"
 #include "version.hh"
 
 #include <paludis/environment_maker.hh>
@@ -74,7 +80,7 @@
 #include <QProcess>
 #include <QPushButton>
 #include <QSettings>
-
+#include <QStackedWidget>
 #include <QSplitter>
 #include <QStatusBar>
 
@@ -185,24 +191,6 @@ void pertubis::MainWindow::initObject()
     rootTest("");
 }
 
-void pertubis::MainWindow::initLayout()
-{
-    m_vSplit = new QSplitter(Qt::Vertical, this);
-    m_vSplit->addWidget(m_packageView);
-    m_vSplit->addWidget(m_tabs);
-    m_vSplit->setStretchFactor(0,1);
-    m_vSplit->setStretchFactor(1,1);
-    setWindowTitle( tr("pertubis :: Main Window") );
-    QPixmap logoIcon( ":images/logo.png" );
-    setWindowIcon(logoIcon);
-    setCentralWidget(m_vSplit);
-    setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
-    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
-    setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
-    setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
-    show();
-}
-
 void pertubis::MainWindow::initGUI()
 {
     m_output = new MessageOutput(this);
@@ -224,7 +212,7 @@ void pertubis::MainWindow::initGUI()
     m_acTogglePackageView->setToolTip( html_tooltip(tr("enable/disable the package window in the middle"),m_acTogglePackageView->text()));
 
     QAction* acToggleSearchWindow = new QAction( QPixmap(":images/find.png"),tr("find") ,this);
-    acToggleSearchWindow->setShortcut( tr("CTRL+F"));
+    acToggleSearchWindow->setShortcut( tr("CTRL+f"));
     acToggleSearchWindow->setToolTip(html_tooltip( tr("toggle search window"),acToggleSearchWindow->text() ) );
 
     QAction* acPref = new QAction( QPixmap(":images/settings.png"),tr( "Settings"),this);
@@ -294,20 +282,16 @@ void pertubis::MainWindow::initGUI()
     m_repoInfoView->setPalette(p);
 
     m_tabs = new QTabWidget(this);
-
+    m_dockTabs = new QDockWidget(tr("details"),this);
+    m_dockTabs->setObjectName("details_dock");
     m_detailsTabID = m_tabs->addTab(m_details,tr("Package Details") );
     m_repoViewTabID = m_tabs->addTab(m_repoInfoView,tr("repository details") );
     m_outputTabID = m_tabs->addTab(m_output,tr("Messages"));
+    m_dockTabs->setWidget(m_tabs);
 
-    //
-    m_box = new TaskBox(this);
+    m_installTask = new InstallSelections( this,acInstall,tr("install"),po_install);
 
-    //
-
-    InstallTask* tmp(new InstallTask( this,acInstall,tr("install")));
-    m_tidInstall = m_box->addTask(tmp);
-    DeinstallTask* dtask(new DeinstallTask( this,acDeinstall,tr("deinstall")));
-    m_tidDeinstall = m_box->addTask(dtask);
+    m_deinstallTask = new DeinstallSelections( this,acDeinstall,tr("deinstall"),po_deinstall);
 
     m_catModel = new CategoryModel(this);
     m_catModel->setHorizontalHeaderLabels(QStringList() << tr("category"));
@@ -421,40 +405,96 @@ void pertubis::MainWindow::initGUI()
     acToggleSetBar->setShortcut(tr("F12"));
     acToggleSetBar->setToolTip(html_tooltip(tr("enable/disable the set sidebar"),acToggleSetBar->text()) );
 
+    m_mainWidget = new QStackedWidget(this);
+    setCentralWidget(m_mainWidget);
+
     //
     m_packageModel = new PackageModel(this);
-    m_packageModel->setBox(m_box);
 
-    m_packageHeader <<
-        tr("marked") <<
-        tr("package") <<
-        tr("category") <<
-        tr("repository") <<
-        tr("installed") <<
-        tr("masked by") <<
-        tr("change");
-
-    m_reportHeader <<
-            tr("marked") <<
+    m_packageModel->setHorizontalHeaderLabels(QStringList() <<
+            tr("+") <<
+            tr("-") <<
             tr("package") <<
             tr("category") <<
-            tr("reasons");
-
-    m_headerMode = true;
-    m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
+            tr("repository") <<
+            tr("installed") <<
+            tr("masked by") <<
+            tr("change"));
     m_packageView = new PackageView(this);
-    m_packageView->setRootIsDecorated(true);
     m_packageView->setItemsExpandable(true);
     m_packageFilterModel = new PackageFilterModel(this);
     m_packageFilterModel->setSourceModel(m_packageModel);
     m_packageView->setContextMenuPolicy(Qt::CustomContextMenu);
-    m_packageView->setItemDelegateForColumn(Package::po_selected,new OptionsDelegate(this,m_packageFilterModel));
+//     m_packageView->setItemDelegate(new OptionsDelegate(this,m_packageFilterModel));
     m_packageView->setModel(m_packageFilterModel);
     m_packageView->header()->setVisible(true);
     m_packageView->header()->setResizeMode(QHeaderView::ResizeToContents);
     m_packageView->setSelectionBehavior(QAbstractItemView::SelectRows);
-
     m_packageView->setFont(myfont);
+    m_mainWidget->addWidget(m_packageView);
+
+    //
+    m_searchPackageModel = new PackageModel(this);
+    m_searchPackageModel->setHorizontalHeaderLabels(QStringList() <<
+            tr("marked") <<
+            tr("package") <<
+            tr("category") <<
+            tr("repository") <<
+            tr("installed") <<
+            tr("masked by") <<
+            tr("change"));
+    m_searchPackageView = new PackageView(this);
+    m_searchPackageView->setItemsExpandable(true);
+    m_searchPackageFilterModel = new PackageFilterModel(this);
+    m_searchPackageFilterModel->setSourceModel(m_searchPackageModel);
+    m_searchPackageView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_searchPackageView->setItemDelegate(new OptionsDelegate(this,m_searchPackageFilterModel));
+    m_searchPackageView->setModel(m_searchPackageFilterModel);
+    m_searchPackageView->header()->setVisible(true);
+    m_searchPackageView->header()->setResizeMode(QHeaderView::ResizeToContents);
+    m_searchPackageView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_searchPackageView->setFont(myfont);
+    m_mainWidget->addWidget(m_searchPackageView);
+
+    //
+
+    m_selectionModel = new SelectionModel(this);
+    m_selectionModel->setHorizontalHeaderLabels(QStringList() <<
+            tr("marked") <<
+            tr("package") <<
+            tr("category") <<
+            tr("version") <<
+            tr("repository"));
+    m_selectionView = new PackageView(this);
+    m_selectionView->setItemsExpandable(true);
+    m_selectionView->setItemDelegate(new OptionsDelegate(this,0));
+    m_selectionView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_selectionView->setModel(m_selectionModel);
+    m_selectionView->header()->setVisible(true);
+    m_selectionView->header()->setResizeMode(QHeaderView::ResizeToContents);
+    m_selectionView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_selectionView->setFont(myfont);
+    m_mainWidget->addWidget(m_selectionView);
+
+    //
+
+    m_reportPackageModel = new ReportPackageModel(this);
+    m_mainWidget->addWidget(m_packageView);
+
+    m_reportPackageModel->setHorizontalHeaderLabels(QStringList() <<
+            tr("deinstall") <<
+            tr("package") <<
+            tr("category") <<
+            tr("version"));
+    m_reportPackageView = new QTreeView(this);
+    m_reportPackageView->setItemsExpandable(true);
+    m_reportPackageView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_reportPackageView->setModel(m_reportPackageModel);
+    m_reportPackageView->header()->setVisible(true);
+    m_reportPackageView->header()->setResizeMode(QHeaderView::ResizeToContents);
+    m_reportPackageView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_reportPackageView->setFont(myfont);
+    m_mainWidget->addWidget(m_reportPackageView);
 
     //
     m_toolBar = new QToolBar(tr("pertubis toolbar"),this);
@@ -477,8 +517,7 @@ void pertubis::MainWindow::initGUI()
     m_toolBar->addAction(acAbout);
     m_options  = new QMenu(tr("Package Options"),this);
 
-
-    m_searchThread = new SearchThread(this,m_env,m_settings->m_queryView->m_model,m_box);
+    m_searchThread = new SearchThread(this,m_env,m_settings->m_queryView->m_model,m_installTask,m_deinstallTask);
     m_searchWindow = new SearchWindow(this,m_settings->m_queryView->m_model,m_searchThread);
 
     qDebug() << "pertubis::MainWindow::createTrayMenu()";
@@ -498,21 +537,21 @@ void pertubis::MainWindow::initGUI()
     addDockWidget(m_settings->m_generalView->m_model->m_repositoryDockPosition == 0  ? Qt::LeftDockWidgetArea : Qt::RightDockWidgetArea, m_dockRepo);
     addDockWidget(m_settings->m_generalView->m_model->m_setDockPosition == 0  ? Qt::LeftDockWidgetArea : Qt::RightDockWidgetArea, m_dockSet);
     addDockWidget(m_settings->m_generalView->m_model->m_glsaDockPosition == 0  ? Qt::LeftDockWidgetArea : Qt::RightDockWidgetArea, m_dockGlsa);
-    m_sysRep = new SystemReport(this,m_env,m_box);
-    m_repoInfoThread = new RepositoryInfoThread(this,m_env,m_box);
-    m_categoryThread = new CategoryThread(this,m_env,m_box);
-    m_packageViewThread = new PackagesThread(this,m_env,m_box);
-    m_detailsThread = new DetailsThread(this,m_env,m_box);
-    m_selectionsThread = new ShowSelectionsThread(this,m_env,m_box);
-    m_setThread = new SetThread(this,m_env,m_box);
-    m_repoListThread = new RepositoryListThread(this,m_env,m_box);
+    addDockWidget(Qt::BottomDockWidgetArea, m_dockTabs);
+    m_sysRep = new SystemReport(this,m_env,m_deinstallTask);
+    m_repoInfoThread = new RepositoryInfoThread(this,m_env);
+    m_categoryThread = new CategoryThread(this,m_env);
+    m_packageViewThread = new PackagesThread(this,m_env,m_installTask,m_deinstallTask);
+    m_detailsThread = new DetailsThread(this,m_env);
+    m_setThread = new SetThread(this,m_env);
+    m_repoListThread = new RepositoryListThread(this,m_env);
     m_syncTask = new PertubisSyncTask(m_env,this);
     m_timer = new QTimer(this);
 
     connect(acDeinstall,
             SIGNAL(toggled(bool)),
             this,
-            SLOT(onDeinstallTask(bool)));
+            SLOT(onDeinstallSelections(bool)));
 
     connect(acFinish,
             SIGNAL(triggered()),
@@ -522,7 +561,7 @@ void pertubis::MainWindow::initGUI()
     connect(acInstall,
             SIGNAL(toggled(bool)),
             this,
-            SLOT(onInstallTask(bool)));
+            SLOT(onInstallSelections(bool)));
 
     connect(m_acSync,
             SIGNAL(triggered()),
@@ -564,15 +603,20 @@ void pertubis::MainWindow::initGUI()
             this,
             SLOT(toggleSearchWindow()));
 
-    connect(dtask,
-            SIGNAL(finished()),
+    connect(m_installTask,
+            SIGNAL(depListResult(QString)),
             this,
-            SLOT(onTasksFinished()));
+            SLOT(depListResult(QString)));
 
     connect(m_categoryView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
             SLOT(onCategoryChanged( const QModelIndex& )) );
+
+    connect(m_setListView,
+            SIGNAL(clicked( const QModelIndex&)),
+            this,
+            SLOT(startSetInstallTask( const QModelIndex& )) );
 
     connect(m_glsaView,
             SIGNAL(clicked( const QModelIndex&)),
@@ -614,7 +658,17 @@ void pertubis::MainWindow::initGUI()
             this,
             SLOT(onDetailsChanged( const QModelIndex& )) );
 
+    connect(m_searchPackageView,
+            SIGNAL(clicked( const QModelIndex&)),
+            this,
+            SLOT(onDetailsChanged( const QModelIndex& )) );
+
     connect(m_packageView,
+            SIGNAL(clicked(const QModelIndex&)),
+            this,
+            SLOT(displayOptionsMenu(const QModelIndex&)));
+
+    connect(m_searchPackageView,
             SIGNAL(clicked(const QModelIndex&)),
             this,
             SLOT(displayOptionsMenu(const QModelIndex&)));
@@ -626,7 +680,7 @@ void pertubis::MainWindow::initGUI()
 
     connect(m_searchThread,
             SIGNAL(packageResult(Package*)),
-            m_packageModel,
+            m_searchPackageModel,
             SLOT(appendPackage(Package*)));
 
     connect(m_searchThread,
@@ -644,25 +698,15 @@ void pertubis::MainWindow::initGUI()
             this,
             SLOT(onSearch(QString)));
 
-    connect(m_selectionsThread,
-            SIGNAL(appendPackage(Package*)),
-            m_packageModel,
-            SLOT(appendPackage(Package*)));
-
-    connect(m_selectionsThread,
-            SIGNAL(finished()),
-            this,
-            SLOT(displaySelectedPackages()));
-
     connect(acSysRep,
             SIGNAL(triggered()),
             this,
             SLOT(onSystemReport()));
 
     connect(m_sysRep,
-            SIGNAL(appendPackage(Package*)),
-            m_packageModel,
-            SLOT(appendPackage(Package*)));
+            SIGNAL(appendPackage(ReportPackage*)),
+            m_reportPackageModel,
+            SLOT(appendPackage(ReportPackage*)));
 
     connect(m_sysRep,
             SIGNAL(finished(int,int)),
@@ -724,6 +768,11 @@ void pertubis::MainWindow::initGUI()
             this,
             SLOT(addGlsa(QString,QString)));
 
+    connect(m_reportPackageView,
+            SIGNAL(clicked( const QModelIndex&)),
+            this,
+            SLOT(displayGlsaTag( const QModelIndex& )) );
+
     connect(m_settings->m_generalView->m_model,
             SIGNAL(toolbarDisplayModeChanged(int)),
             this,
@@ -748,6 +797,20 @@ void pertubis::MainWindow::initGUI()
             SIGNAL(glsaDockChanged(int)),
             this,
             SLOT(setGlsaDock(int)));
+
+
+}
+
+void pertubis::MainWindow::initLayout()
+{
+    setWindowTitle( tr("pertubis :: Main Window") );
+    QPixmap logoIcon( ":images/logo.png" );
+    setWindowIcon(logoIcon);
+    setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+    setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+    setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+    show();
 }
 
 void pertubis::MainWindow::closeEvent(QCloseEvent* ev)
@@ -763,8 +826,6 @@ void pertubis::MainWindow::loadSettings()
         resize(settings.value("size",QVariant(QSize(800,600))).toSize());
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
         m_currentCat = settings.value("currentCategory","").toString();
-        m_vSplit->restoreState(settings.value("vsplt").toByteArray());
-        m_vSplit->setVisible(m_acTogglePackageView->isChecked());
         QByteArray tmp(settings.value("mystate",true).toByteArray());
     settings.endGroup();
     restoreState(tmp);
@@ -778,7 +839,6 @@ void pertubis::MainWindow::saveSettings()
         settings.setValue("size", size() );
         settings.setValue("pos", pos());
         settings.setValue("currentCategory", m_currentCat);
-        settings.setValue("vsplt", m_vSplit->saveState());
     settings.endGroup();
     qDebug() << "pertubis::MainWindow::saveSettings() - done";
 }
@@ -787,7 +847,6 @@ void pertubis::MainWindow::displayCategoryChanged()
 {
     statusBar()->showMessage(tr("%1 packages found").arg(m_packageFilterModel->rowCount()));
     onEndOfPaludisAction();
-    m_currentDisplay = dm_category;
 }
 
 void pertubis::MainWindow::displayPackageDetails(QString details)
@@ -804,7 +863,6 @@ void pertubis::MainWindow::displaySelectedPackages()
 {
     statusBar()->showMessage(tr("%1 packages found").arg(m_packageFilterModel->rowCount()));
     onEndOfPaludisAction();
-    m_currentDisplay = dm_selections;
 }
 
 void pertubis::MainWindow::displayNextIcon()
@@ -841,6 +899,8 @@ void pertubis::MainWindow::displayGlsa(const QModelIndex& ix)
     if (item == 0)
         return;
     QFile file(*item->repos().begin());
+    if (! file.exists() )
+        return;
     QXmlInputSource inputSource(&file);
     QXmlSimpleReader reader;
     GlsaParser handler(m_details);
@@ -850,29 +910,64 @@ void pertubis::MainWindow::displayGlsa(const QModelIndex& ix)
     m_tabs->setCurrentIndex(m_detailsTabID);
 }
 
-void pertubis::MainWindow::displayOptionsMenu(const QModelIndex& mix)
+void pertubis::MainWindow::displayGlsaTag(const QModelIndex& ix)
 {
-    QModelIndex index(m_packageFilterModel->mapToSource(mix));
-    if (index.column() != Package::po_selected)
+    ReportPackage* item(static_cast<ReportPackage*>(ix.internalPointer()));
+    if (item == 0)
         return;
+    if ( tr("vulnerable") != item->data(ReportPackage::ro_package).toString() )
+        return;
+    int res = m_glsaModel->indexOf(item->data(ReportPackage::ro_category).toString());
+    if(res == -1)
+        return;
+    QFile file(*m_glsaModel->getItem(res)->repos().begin());
+    if (! file.exists() )
+        return;
+    QXmlInputSource inputSource(&file);
+    QXmlSimpleReader reader;
+    GlsaParser handler(m_details);
+    reader.setContentHandler(&handler);
+    reader.setErrorHandler(&handler);
+    reader.parse(inputSource);
+    m_tabs->setCurrentIndex(m_detailsTabID);
+}
 
-    m_options->clear();
-    m_current= static_cast<Package*>(index.internalPointer());
-
-    for (QVector<Task*>::const_iterator tStart(m_box->taskBegin()),
-         tEnd(m_box->taskEnd());
-         tStart != tEnd; ++tStart )
-    {
-        if ((*tStart)->available(m_current) )
-        {
-            (*tStart)->fillAction(m_current);
-            m_options->addAction( (*tStart)->action() );
-        }
-    }
-
-//     m_options->addAction(m_acEditUse);
-//     m_options->addAction(m_acMasking);
-    m_options->popup(m_packageView->mapToGlobal(m_packageView->m_mousePos));
+void pertubis::MainWindow::displayOptionsMenu(const QModelIndex &)
+{
+//     QModelIndex ix;
+//     QPoint mousePos;
+//     if (m_packageView == m_mainWidget->currentWidget())
+//     {
+//         ix = m_packageFilterModel->mapToSource(index);
+//         mousePos = m_packageView->mapToGlobal(m_packageView->m_mousePos);
+//     }
+//     else if (m_searchPackageView == m_mainWidget->currentWidget() )
+//     {
+//         ix = m_searchPackageFilterModel->mapToSource(index);
+//         mousePos =  m_packageView->mapToGlobal(m_searchPackageView->m_mousePos);
+//     }
+//     else
+//         return;
+//     if (ix.column() != po_selected)
+//         return;
+//
+//     m_options->clear();
+//     m_current= static_cast<Package*>(ix.internalPointer());
+//
+//     for (QVector<Task*>::const_iterator tStart(m_box->taskBegin()),
+//          tEnd(m_box->taskEnd());
+//          tStart != tEnd; ++tStart )
+//     {
+//         if ((*tStart)->available(m_current) )
+//         {
+//             (*tStart)->fillAction(m_current);
+//             m_options->addAction( (*tStart)->action() );
+//         }
+//     }
+//
+// //     m_options->addAction(m_acEditUse);
+// //     m_options->addAction(m_acMasking);
+//     m_options->popup(mousePos);
 }
 
 void pertubis::MainWindow::displaySearchFinished(int count)
@@ -880,13 +975,12 @@ void pertubis::MainWindow::displaySearchFinished(int count)
     onEndOfPaludisAction();
     m_searchWindow->displaySearch(false);
     statusBar()->showMessage(tr("%1 packages found").arg(count));
-    m_currentDisplay = dm_search;
 }
 
 void pertubis::MainWindow::displaySystemReportFinished(int total,int count)
 {
     onEndOfPaludisAction();
-    m_currentDisplay = dm_system_report;
+    m_reportPackageView->expandAll();
     statusBar()->showMessage(tr("%1 installed packages processed, %2 issues found").arg(total).arg(count));
 }
 
@@ -946,48 +1040,15 @@ void pertubis::MainWindow::setRepositoryDock(int state)
     m_dockRepo->show();
 }
 
-void pertubis::MainWindow::switchPackageHeader(bool state)
-{
-    onStartOfPaludisAction();
-    m_packageModel->clear(Package::po_last);
-    if (m_headerMode == state)
-        return;
-    if (state)
-    {
-        m_headerMode=true;
-        m_packageModel->setHorizontalHeaderLabels(m_packageHeader);
-        // start bugfix
-        // without these lines qt throws an ASSERT
-        m_packageView->header()->showSection(4);
-        m_packageView->header()->showSection(5);
-        m_packageView->header()->showSection(6);
-        // end bug fix
-        m_packageFilterModel->setFilterOff(false);
-        m_packageModel->setReportMode(false);
-    }
-    else
-    {
-        m_headerMode=false;
-        m_glsaModel->clear();
-        m_packageModel->setHorizontalHeaderLabels(m_reportHeader);
-        // start bugfix
-        // without these lines qt throws an ASSERT
-        m_packageView->header()->hideSection(4);
-        m_packageView->header()->hideSection(5);
-        m_packageView->header()->hideSection(6);
-        // end bug fix
-        m_packageFilterModel->setFilterOff(true);
-        m_packageModel->setReportMode(true);
-    }
-}
-
 void pertubis::MainWindow::onCategoryChanged( const QModelIndex& /*proxyIndex*/ )
 {
     QModelIndex origIndex(m_categoryFilterModel->mapToSource(m_categoryView->currentIndex()));
     if ( !origIndex.isValid() || 0 != origIndex.column() || m_packageViewThread->isRunning())
         return;
 
-    switchPackageHeader(true);
+    onStartOfPaludisAction();
+    m_packageModel->clear();
+    m_mainWidget->setCurrentWidget(m_packageView);
     m_currentCat = m_catModel->data(origIndex).toString();
     m_packageViewThread->start(m_currentCat);
 }
@@ -1016,39 +1077,77 @@ void pertubis::MainWindow::restartFilters()
 {
     m_packageFilterModel->setFilter(m_repoListModel->activeRepositories());
     m_packageFilterModel->invalidate();
+    m_searchPackageFilterModel->setFilter(m_repoListModel->activeRepositories());
+    m_searchPackageFilterModel->invalidate();
     m_categoryFilterModel->setFilter(m_repoListModel->activeRepositories());
     m_categoryFilterModel->invalidate();
     m_setFilterModel->setFilter(m_repoListModel->activeRepositories());
     m_setFilterModel->invalidate();
 }
 
-void pertubis::MainWindow::onInstallTask(bool mystate)
+void pertubis::MainWindow::onInstallSelections(bool mystate)
 {
-    qDebug() << "pertubis::MainWindow::onInstallTask()";
-    QModelIndex origIndex(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
-    m_packageModel->setSelectionData(origIndex,m_tidInstall,mystate);
+    qDebug() << "pertubis::MainWindow::onInstallSelections()";
+    Qt::CheckState state(mystate ? Qt::Checked : Qt::Unchecked);
+    if (m_packageView == m_mainWidget->currentWidget())
+    {
+        QModelIndex ix(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
+        Package* package(static_cast<Package*>(ix.internalPointer()));
+        if (package == 0)
+            return;
+        m_installTask->changeStates(package, state);
+    }
+    else if (m_searchPackageView == m_mainWidget->currentWidget() )
+    {
+        QModelIndex ix(m_searchPackageFilterModel->mapToSource(m_searchPackageView->currentIndex()));
+        Package* package(static_cast<Package*>(ix.internalPointer()));
+        if (package == 0)
+            return;
+        m_installTask->changeStates(package, state);
+    }
 }
 
-void pertubis::MainWindow::onDeinstallTask(bool mystate)
+void pertubis::MainWindow::onDeinstallSelections(bool mystate)
 {
-    qDebug() << "pertubis::MainWindow::onDeinstallTask()";
-    QModelIndex index(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
-    m_packageModel->setSelectionData(index,m_tidDeinstall,mystate);
+    qDebug() << "pertubis::MainWindow::onDeinstallSelections()";
+    Qt::CheckState state(mystate ? Qt::Checked : Qt::Unchecked);
+    if (m_packageView == m_mainWidget->currentWidget())
+    {
+        QModelIndex ix(m_packageFilterModel->mapToSource(m_packageView->currentIndex()));
+        Package* package(static_cast<Package*>(ix.internalPointer()));
+        if (package == 0)
+            return;
+        m_deinstallTask->changeStates(package, state);
+    }
+    else if (m_searchPackageView == m_mainWidget->currentWidget() )
+    {
+        QModelIndex ix(m_searchPackageFilterModel->mapToSource(m_searchPackageView->currentIndex()));
+        Package* package(static_cast<Package*>(ix.internalPointer()));
+        if (package == 0)
+            return;
+        m_deinstallTask->changeStates(package, state);
+    }
 }
 
 void pertubis::MainWindow::onSystemReport()
 {
     if (!rootTest(tr("This feature is only available for system administrators")))
         return;
-    switchPackageHeader(false);
+    onStartOfPaludisAction();
+    m_reportPackageModel->clear();
+    m_glsaModel->clear();
+    m_mainWidget->setCurrentWidget(m_reportPackageView);
     m_sysRep->start();
 }
 
 void pertubis::MainWindow::onUnselectAll()
 {
-    m_packageModel->unselectAll();
-    if (m_currentDisplay == dm_selections)
+    m_installTask->clear();
+    m_deinstallTask->clear();
+    if (m_selectionView == m_mainWidget->currentWidget() )
+    {
         onShowSelections();
+    }
 }
 
 void pertubis::MainWindow::onStartTasks()
@@ -1056,29 +1155,162 @@ void pertubis::MainWindow::onStartTasks()
     if (!rootTest(tr("This feature is only available for system administrators")))
         return;
 
-    m_sysTray->showMessage(tr("pertubis"),tr("Installing %1, Deleting %2 Packages").arg(m_box->task(m_tidInstall)->itemCount()).arg(m_box->task(m_tidDeinstall)->itemCount()));
+    m_sysTray->showMessage(tr("pertubis"),tr("Installing %1, Deleting %2 Packages").arg(m_installTask->entryCount()).arg(m_deinstallTask->entryCount()));
     m_sysTray->setIcon(QPixmap(":images/run.png"));
-    onStartOfPaludisAction();
+    m_selectionModel->clear();
     m_output->clear();
-    m_box->startAllTasks(m_env,m_settings,m_output);
+    m_mainWidget->setCurrentWidget(m_selectionView);
+    startDeinstallTask(false);
+    startInstallTask(false,"");
+    m_sysTray->setIcon(QPixmap(":images/logo.png"));
 }
 
-void pertubis::MainWindow::onTasksFinished()
+void pertubis::MainWindow::startSetInstallTask(const QModelIndex & ix)
 {
-    m_box->slotClear();
-    onEndOfPaludisAction();
-    m_sysTray->setIcon(QPixmap(":images/logo.png"));
-    onCategoryChanged( QModelIndex());
+    qDebug() << "pertubis::MainWindow::startInstallTask()";
+    m_selectionModel->clear();
+    m_mainWidget->setCurrentWidget(m_selectionView);
+    m_output->clear();
+
+    paludis::DepListOptions options;
+    PertubisInstallTask mytask(this,m_env.get(),options,m_env->default_destinations(),m_installTask,m_deinstallTask);
+    m_settings->m_installView->m_model->populate_install_task(m_env.get(),mytask);
+    m_settings->m_depListView->populate_install_task(m_env.get(),mytask);
+    mytask.set_pretend(true);
+
+    connect(&mytask,
+            SIGNAL(sendMessage(QString)),
+            m_output,
+            SLOT(append(QString)));
+
+    connect(&mytask,
+            SIGNAL(appendPackage(Package*)),
+            m_selectionModel,
+            SLOT(appendPackage(Package*)));
+
+    connect(&mytask,
+            SIGNAL(depListResult(QString)),
+            this,
+            SLOT(depListResult(QString)));
+
+    try
+    {
+        mytask.add_target(m_setModel->data(ix).toString().toStdString());
+        mytask.execute();
+    }
+    catch(const paludis::NoSuchPackageError& e)
+    {
+        qDebug() << "no such package";
+    }
+
+    qDebug() << "pertubis::MainWindow::startInstallTask() - done";
+
+}
+
+void pertubis::MainWindow::startInstallTask(bool pretend, QString target)
+{
+    qDebug() << "pertubis::MainWindow::startInstallTask()";
+
+    paludis::DepListOptions options;
+    PertubisInstallTask mytask(this,m_env.get(),options,m_env->default_destinations(),m_installTask,m_deinstallTask);
+    m_settings->m_installView->m_model->populate_install_task(m_env.get(),mytask);
+    m_settings->m_depListView->populate_install_task(m_env.get(),mytask);
+    mytask.set_pretend(pretend);
+
+    connect(&mytask,
+            SIGNAL(sendMessage(QString)),
+            m_output,
+            SLOT(append(QString)));
+
+    connect(&mytask,
+            SIGNAL(finished()),
+            this,
+            SIGNAL(finished()));
+
+    connect(&mytask,
+            SIGNAL(appendPackage(Package*)),
+            m_selectionModel,
+            SLOT(appendPackage(Package*)));
+
+    connect(&mytask,
+            SIGNAL(depListResult(QString)),
+            this,
+            SLOT(depListResult(QString)));
+
+    if (target.isEmpty() && m_installTask->entryCount() > 0)
+    {
+        for (paludis::PackageIDSet::ConstIterator i(m_installTask->entriesBegin()), i_end(m_installTask->entriesEnd());
+            i != i_end ; ++i)
+        {
+            mytask.add_exact_package(*i);
+        }
+        mytask.execute();
+    }
+    else
+    {
+        try
+        {
+            mytask.add_target(target.toStdString());
+            mytask.execute();
+        }
+        catch(...)
+        {
+        }
+    }
+    qDebug() << "pertubis::MainWindow::startInstallTask() - done";
+}
+
+void pertubis::MainWindow::startDeinstallTask(bool pretend)
+{
+    qDebug() << "pertubis::MainWindow::startDeinstallTask() - start";
+
+    PertubisDeinstallTask mytask(this,m_env);
+    mytask.set_pretend(m_settings->m_installView->m_model->m_pretend);
+    mytask.set_no_config_protect(m_settings->m_installView->m_model->m_config);
+    mytask.set_preserve_world(m_settings->m_installView->m_model->m_preserve);
+    mytask.set_with_unused_dependencies(m_settings->m_deinstallView->m_model->m_unusedDeps);
+    mytask.set_with_dependencies(m_settings->m_deinstallView->m_model->m_deps);
+    mytask.set_check_safety(! m_settings->m_deinstallView->m_model->m_unsafeUninstall);
+    mytask.set_all_versions( m_settings->m_deinstallView->m_model->m_allVersions);
+    mytask.set_pretend(pretend);
+
+    connect(&mytask,
+            SIGNAL(message(QString)),
+            m_output,
+            SLOT(append(QString)));
+
+    if (m_deinstallTask->entryCount() > 0)
+    {
+        for (paludis::PackageIDSet::ConstIterator i(m_deinstallTask->entriesBegin()), i_end(m_deinstallTask->entriesEnd());
+             i != i_end ; ++i)
+        {
+            std::string target("=" + stringify((*i)->name()) + "-" + (*i)->canonical_form(paludis::idcf_version));
+            mytask.add_target(target);
+        }
+        mytask.execute();
+    }
+    qDebug() << "pertubis::MainWindow::startDeinstallTask() - done";
+}
+
+void pertubis::MainWindow::depListResult(QString text)
+{
+    statusBar()->showMessage(text);
 }
 
 void pertubis::MainWindow::onDetailsChanged(const QModelIndex & index)
 {
-    QModelIndex ix = m_packageFilterModel->mapToSource(index);
+    QModelIndex ix;
+    if (m_packageView == m_mainWidget->currentWidget())
+        ix = m_packageFilterModel->mapToSource(index);
+    else if (m_searchPackageView == m_mainWidget->currentWidget() )
+        ix = m_searchPackageFilterModel->mapToSource(index);
+    else
+        return;
     Package* item = static_cast<Package*>(ix.internalPointer());
 
     if (!ix.isValid() ||
          m_detailsThread->isRunning() ||
-         ix.column() != Package::po_package)
+         ix.column() != po_package)
         return;
     onStartOfPaludisAction();
     m_detailsThread->start(item->ID());
@@ -1133,13 +1365,19 @@ void pertubis::MainWindow::onEndOfPaludisAction()
 
 void pertubis::MainWindow::onShowSelections()
 {
-    switchPackageHeader(true);
-    m_selectionsThread->start();
+    onStartOfPaludisAction();
+    m_selectionModel->clear();
+    m_output->clear();
+    m_mainWidget->setCurrentWidget(m_selectionView);
+    startDeinstallTask(true);
+    startInstallTask(true,"");
+    onEndOfPaludisAction();
 }
 
 void pertubis::MainWindow::onSearch(QString query)
 {
-    switchPackageHeader(true);
+    onStartOfPaludisAction();
+    m_searchPackageModel->clear();
     statusBar()->showMessage(QString(tr("searching for %1...")).arg(query) );
 }
 
@@ -1172,7 +1410,10 @@ void pertubis::MainWindow::toggleSearchWindow()
 {
     if (!m_searchWindow)
         return;
-    m_searchWindow->exec();
+    m_searchWindow->show();
+    m_searchWindow->raise();
+    m_searchWindow->activateWindow();
+    m_mainWidget->setCurrentWidget(m_searchPackageView);
 }
 
 void pertubis::MainWindow::toggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
