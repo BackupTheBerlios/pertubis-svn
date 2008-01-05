@@ -53,7 +53,7 @@ void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName &
 
 void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
 {
-    sendMessage(color(QString("Sync error: * %1 %1").arg(e.backtrace("\n  * ").c_str()).arg(e.message().c_str()),"red"));
+    sendMessage(color(QString("Sync error: * %1 %2\n").arg(e.backtrace("<br>  * ").c_str()).arg(e.message().c_str()),"red"));
 }
 
 void pertubis::PertubisSyncTask::on_sync_all_post()

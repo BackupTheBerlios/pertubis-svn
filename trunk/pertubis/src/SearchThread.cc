@@ -146,6 +146,7 @@ pertubis::SearchThread::SearchThread(QObject* pobj,
 
 pertubis::SearchThread::~SearchThread()
 {
+    qDebug() << "SearchThread::~SearchThread() 1";
     m_stopExec=true;
     wait();
 }
@@ -160,8 +161,13 @@ void pertubis::SearchThread::start(const QString& str)
 void pertubis::SearchThread::run()
 {
     using namespace paludis;
+    qDebug() << "SearchThread:.run() 1";
+    if (m_stopExec)
+        return;
     QMutexLocker locker(&m_paludisAccess);
-
+    if (m_stopExec)
+        return;
+    qDebug() << "SearchThread:.run() 2";
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
     emit progress(0);
@@ -243,10 +249,10 @@ void pertubis::SearchThread::run()
     for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
          i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
     {
-        if (! i->second)
-            continue;
         if (m_stopExec)
             return;
+        if (! i->second)
+            continue;
 
         const tr1::shared_ptr< const PackageIDSequence > versionIds(
                 m_env->package_database()->query(
@@ -308,14 +314,14 @@ void pertubis::SearchThread::run()
             p_item->prependChild(v_item);
         }
         QStringList ptmp(pReasons.toList());
-        p_item->setData(po_mask_reasons,ptmp.join(", "));
+        p_item->setData(pho_mask_reasons,ptmp.join(", "));
 
         if ( 0 < ip )
-            p_item->setData(po_installed,Qt::Checked);
+            p_item->setData(pho_installed,Qt::Checked);
         if (mp == p_item->childCount())
             p_item->setPackageState(ps_masked);
         emit packageResult(p_item);
-        p_item->setData(po_installed,piState);
+        p_item->setData(pho_installed,piState);
         ++count;
     }
     emit progress(100);

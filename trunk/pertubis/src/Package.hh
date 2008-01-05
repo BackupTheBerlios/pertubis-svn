@@ -154,33 +154,27 @@ namespace pertubis
             ///@{
 
             /// appends a new child Package
-            void appendChild(Package *child); // test
+            virtual void appendChild(Package *child); // test
 
             /// prepends a new child Package
-            void prependChild(Package *child);  // test
+            virtual void prependChild(Package *child);  // test
 
-            /** @brief
-             *
-             * This is a convenience method for setting the selection state for one Task. To set all selection states use Package::setData()
-             */
-            void setTaskState(int taskid, Qt::CheckState state);  // test
-
-            bool bestChildTest() PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool bestChildTest() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /** sets a displayable value in column
              *
              * accepts only columns less than columnCount()
              */
-            void setData(int column, QVariant data);  // test
+            virtual void setData(int column, QVariant data);  // test
 
             /// sets a new parent node / Package object
-            void setParent(Package* pitem);  // test
+            virtual void setParent(Package* pitem);  // test
 
             /// changes the PackageState of this Package object
-            void setPackageState(PackageState s);  // test
+            virtual void setPackageState(PackageState s);  // test
 
             /// sets the best child Package object
-            void setBestChild(Package* item);  // test
+            virtual void setBestChild(Package* item);  // test
 
             /// sets a new PackageID
             void setID(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) { m_id = id;} // test
@@ -189,56 +183,56 @@ namespace pertubis
             ///@{
 
             /// returns the best child Package object if present, else returns 0
-            Package* bestChild() const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
+            virtual Package* bestChild() const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
 
             /// returns true if the Packages' PackageState is not Package::ps_masked
-            bool available() const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
+            virtual bool available() const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
 
             /// returns the state of the Package
-            PackageState state() const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
+            virtual PackageState state() const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
 
             /// returns the child Package of this Package object with number "row" if present, and 0 if not
-            Package *child(int row) const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
+            virtual Package *child(int row) const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
 
             /// get the index/position of the child Package
-            int indexOf(Package* child) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual int indexOf(Package* child) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// returns the total number of childs of this Package object
-            int childCount() const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
+            virtual int childCount() const PALUDIS_ATTRIBUTE((warn_unused_result));  // test
 
             /// returns the total number of displayable data in this Package object
-            int columnCount() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual int columnCount() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// returns the displayable data in "column"
-            QVariant data(int column) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual QVariant data(int column) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// returns the row index of this Package object in parent if parent is valid, else -1
-            int row() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual int row() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// returns the type of this Package object
-            PackageType itemType() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual PackageType itemType() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// returns the parent Package object of this Package object if present. Returns 0 if not
             Package *parent() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /** \brief when it has a best child, it returns the bestChilds' PackageID, otherwise it returns its' PackageID
              */
-            paludis::tr1::shared_ptr<const paludis::PackageID> ID() const PALUDIS_ATTRIBUTE((warn_unused_result)); // test
+            virtual paludis::tr1::shared_ptr<const paludis::PackageID> ID() const PALUDIS_ATTRIBUTE((warn_unused_result)); // test
             ///@}
             ///@name Iteration
             ///@{
 
             /// returns const iterator of the first child
-            ConstPackageIterator constChildBegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ConstPackageIterator constChildBegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// returns const iterator of the end child ( the iterator after the last child )
-            ConstPackageIterator constChildEnd() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ConstPackageIterator constChildEnd() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// returns iterator of the first child
-            PackageIterator childBegin() PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual PackageIterator childBegin() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// returns iterator of the end child ( the iterator after the last child )
-            PackageIterator childEnd() PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual PackageIterator childEnd() PALUDIS_ATTRIBUTE((warn_unused_result));
             ///@}
 
         protected:
@@ -287,7 +281,7 @@ namespace pertubis
 
     inline int Package::row() const
     {
-        if (m_parent)
+        if (m_parent != 0)
             return m_parent->indexOf( const_cast< Package* >(this) );
         return 0;
     }

@@ -18,49 +18,45 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_DETAILS_THREAD_H
-#define _PERTUBIS_ENTRY_PROTECTOR_DETAILS_THREAD_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_SELECTION_MODEL_DELEGATE_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SELECTION_MODEL_DELEGATE_H 1
 
-#include "ThreadBase.hh"
+#include <QItemDelegate>
 
-#include <QString>
-#include <QVariantList>
-#include <string>
-#include <paludis/package_id-fwd.hh>
+class QMenu;
+class QSortFilterProxyModel;
+
+#include <QSize>
 
 namespace pertubis
 {
-    class DatabaseView;
 
-    /*! \brief this thread asks pertubis for package details and returns preformatted text.
-    *
+    /*! \brief Used for presenting a customized selections display in PackageView
+    * \ingroup ItemModelClass
     */
-    class DetailsThread : public ThreadBase
+    class SelectionModelDelegate : public QItemDelegate
     {
         Q_OBJECT
 
     public:
 
-        DetailsThread(QObject* pobj,
-                      const paludis::tr1::shared_ptr<paludis::Environment>&  env);
-        ~DetailsThread();
+        SelectionModelDelegate(QWidget *parent,
+                        int install,
+                        int deinstall,
+                        int installed);
 
-        void start(paludis::tr1::shared_ptr<const paludis::PackageID> id);
-
-        void appendOutput(const std::string& row) { m_text.append(QString::fromStdString(row)); }
-
-        void run();
+        void paint( QPainter* painter,
+                    const QStyleOptionViewItem& option,
+                    const QModelIndex& index) const;
 
     private:
 
-        paludis::tr1::shared_ptr<const paludis::PackageID> m_id;
-        mutable QString    m_text;
-
-    signals:
-        void sendResult(QString);
+        QMenu*                  m_menu;
+        int                     m_installColumn;
+        int                     m_deinstallColumn;
+        int                     m_installedColumn;
     };
 }
 
 #endif
-
 

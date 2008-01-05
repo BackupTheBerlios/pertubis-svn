@@ -23,6 +23,7 @@
 
 #include <QTextEdit>
 #include <QThread>
+#include "Page.hh"
 #include <paludis/util/tr1_memory.hh>
 
 class QTextEdit;
@@ -41,7 +42,10 @@ namespace pertubis
     {
         Q_OBJECT
         public:
-            MessageThread(QObject* pobj,  int fd) : QThread(pobj), m_fd(fd),m_atwork(true)
+            MessageThread(QObject* pobj,  int fd) :
+                QThread(pobj),
+                m_fd(fd),
+                m_atwork(false)
             {
             }
 
@@ -65,20 +69,28 @@ namespace pertubis
     /*! \brief output window for messages from paludis
     *
     */
-    class MessageOutput : public QTextEdit
+    class MessageOutput : public Page
     {
         Q_OBJECT
 
         public:
 
-            MessageOutput(QWidget* mywidget);
+            MessageOutput(QWidget* mywidget, MainWindow * );
             ~MessageOutput();
 
             void redirectOutput();
+            void setPollingOn() { m_thread->setAtWork(true); if (!m_thread->isRunning()) m_thread->start();}
+            void setPollingOff(){ m_thread->setAtWork(false);}
+
+        public slots:
+
+            void clear();
+            void append(QString text);
 
         private:
 
             paludis::tr1::shared_ptr<paludis::FDOutputStream>   messages_stream;
+            QTextEdit*                                          m_output;
             MessageThread*                                      m_thread;
             int                                                 m_master_fd;
             int                                                 m_slave_fd;

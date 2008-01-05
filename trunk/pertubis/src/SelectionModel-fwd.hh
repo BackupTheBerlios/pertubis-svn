@@ -18,26 +18,29 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "CategoryFilterModel.hh"
-#include "CategoryItem.hh"
-#include <QSet>
-#include <QModelIndex>
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_SELECTION_MODEL_FWD_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SELECTION_MODEL_FWD_H 1
 
-pertubis::CategoryFilterModel::CategoryFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj)
+namespace pertubis
 {
+    class Package;
+    class TaskBox;
+
+    enum SelectionPackageHeaderOrder
+    {
+        spho_install,
+        spho_deinstall,
+        spho_installed,
+        spho_package,
+        spho_category,
+        spho_old_version,
+        spho_change_sign,
+        spho_new_version,
+        spho_repository,
+        spho_last
+    };
+
+
 }
 
-bool pertubis::CategoryFilterModel::filterAcceptsRow(int sourceRow,
-        const QModelIndex &sourceParent) const
-{
-//     QModelIndex ix1 = sourceModel()->index(sourceRow,0,sourceParent);
-//     CategoryItem* p_item = static_cast<CategoryItem*>(ix1.internalPointer());
-//     for (QSet<QString>::const_iterator start(p_item->repos().constBegin()),end(p_item->repos().constEnd());
-//          start!= end;++start)
-//     {
-//         if (m_repositories.contains(*start))
-//             return true;
-//     }
-//     return false;
-    return true;
-}
+#endif

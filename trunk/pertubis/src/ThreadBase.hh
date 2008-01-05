@@ -47,14 +47,14 @@ namespace pertubis
 
         /// std constructor
         ThreadBase(QObject* pobj,
-                    const paludis::tr1::shared_ptr<paludis::Environment>&  env);
+            const paludis::tr1::shared_ptr<paludis::Environment>&  env) : QThread(pobj), m_env(env), m_stopExec(false)
+        {
+
+        }
         ///\}
 
-        /// tries to lock the mutex and returns the result
-//         static void lock();
-
-        /// tries to lock the mutex and returns the result
-//         static void unlock();
+        /// destructor
+        ~ThreadBase();
 
         /// request cancel thread execution
         void stopExec() { m_stopExec=true;}
@@ -67,7 +67,8 @@ namespace pertubis
         /// execution will be stopped, if true
         bool                                            m_stopExec;
 
-        static QMutex m_paludisAccess;
+        /// use this to limit concurrent access to the paludis api
+        static QMutex                                   m_paludisAccess;
     };
 }
 

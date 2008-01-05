@@ -133,13 +133,13 @@ bool pertubis::Package::bestChildTest()
 QDebug operator<<(QDebug dbg, const pertubis::Package &item)
 {
     dbg.space() << "\n Package(" <<
-            "install" << item.data(pertubis::po_install).toInt() << "\n" <<
-            "deinstall" << item.data(pertubis::po_deinstall).toInt() << "\n" <<
-            "package" << item.data(pertubis::po_package).toString() << "\n" <<
-            "cat" << item.data(pertubis::po_category).toString() << "\n" <<
-            "repository" << item.data(pertubis::po_repository).toString() << "\n" <<
-            "installed" << item.data(pertubis::po_installed).toString() << "\n" <<
-            "mask_reasons" << item.data(pertubis::po_mask_reasons).toString() << "\n" <<
+            "install" << item.data(pertubis::pho_install).toInt() << "\n" <<
+            "deinstall" << item.data(pertubis::pho_deinstall).toInt() << "\n" <<
+            "package" << item.data(pertubis::pho_package).toString() << "\n" <<
+            "cat" << item.data(pertubis::pho_category).toString() << "\n" <<
+            "repository" << item.data(pertubis::pho_repository).toString() << "\n" <<
+            "installed" << item.data(pertubis::pho_installed).toString() << "\n" <<
+            "mask_reasons" << item.data(pertubis::pho_mask_reasons).toString() << "\n" <<
             "state" << item.state() << "\n" <<
             "itemType" << item.itemType() << ")";
     return dbg.space();

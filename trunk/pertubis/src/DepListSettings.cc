@@ -79,6 +79,7 @@ pertubis::DepListSettingsModel::DepListSettingsModel(QObject *pobj) :
 
 pertubis::DepListSettingsModel::~DepListSettingsModel()
 {
+    qDebug() << "pertubis::DepListSettingsModel::~DepListSettingsModel()";
     saveSettings();
 }
 
@@ -366,6 +367,7 @@ void pertubis::DepListSettingsView::populate_install_task(const paludis::Environ
 
 void pertubis::DepListSettingsModel::loadSettings()
 {
+    qDebug() << "pertubis::DepListSettingsModel::loadSettings()";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "DepListSettings" );
         m_dlDepsDefault = settings.value("depsDefault",0).toInt();

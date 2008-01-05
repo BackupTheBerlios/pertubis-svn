@@ -43,6 +43,7 @@ pertubis::DeinstallSettingsModel::DeinstallSettingsModel(QObject *pobj) :
 
 pertubis::DeinstallSettingsModel::~DeinstallSettingsModel()
 {
+    qDebug() << "pertubis::DeinstallSettingsModel::~DeinstallSettingsModel()";
     saveSettings();
 }
 
@@ -51,7 +52,7 @@ void pertubis::DeinstallSettingsModel::loadSettings()
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "DeinstallSettingsModel" );
     m_deps = settings.value("deps",false).toBool();
-    m_unusedDeps = settings.value("unusedDeps",false).toBool();
+    m_unusedDeps = settings.value("unusedDeps",true).toBool();
     m_allVersions = settings.value("allVersions",false).toBool();
     m_unsafeUninstall = settings.value("unsafeUninstall",false).toBool();
     settings.endGroup();

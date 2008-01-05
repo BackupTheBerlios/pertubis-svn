@@ -41,9 +41,7 @@ namespace pertubis
 
             /// std constructor
             DeinstallSelections(QObject* pobject,
-                        QAction* myaction,
-                        QString tname,
-                        PackageOrder pos) : Selections(pobject,myaction,tname,pos) {}
+                        QString tname) : Selections(pobject,tname) {}
 
             virtual ~DeinstallSelections() {}
 
@@ -52,14 +50,17 @@ namespace pertubis
             /// @name Content information
             ///@{
 
-            /// returns if its not masked
-            bool available(Package* item) const;
+            /** \brief returns true if the Package can be uninstalled
+             *
+             * \todo who we really need this crap?
+             */
+            bool available(Package* item, int column) const;
 
             /*! @brief makes the actual changes in this object and in the Package object when a user visually changes the selection state
              * @param item the Package to be changed
              * @param mystate the new selection state for this Selections
              */
-            bool changeStates(Package* item, int mystate);
+            bool changeStates(Package* item, int mystate, int column);
             ///@}
     };
 }

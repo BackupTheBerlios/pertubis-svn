@@ -18,40 +18,38 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H
-#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_REPORT_MODEL_DELEGATE_H
+#define _PERTUBIS_ENTRY_PROTECTOR_REPORT_MODEL_DELEGATE_H 1
 
-#include <QSortFilterProxyModel>
-#include <QSet>
-#include <QString>
+#include <QItemDelegate>
 
-class QModelIndex;
+class QMenu;
+class QSortFilterProxyModel;
+
+#include <QSize>
 
 namespace pertubis
 {
-    /*! \brief filters packages by repository
-     *
-     * \ingroup ItemModelClass
-     * If any repository of m_repositories does not contain this package, the filter rejects the package
-     */
-    class PackageFilterModel : public QSortFilterProxyModel
+
+    /*! \brief Used for presenting a customized selections display in PackageView
+    * \ingroup ItemModelClass
+    */
+    class ReportModelDelegate : public QItemDelegate
     {
         Q_OBJECT
-        public:
 
-            PackageFilterModel(QObject * pobj, int repositoryColumn);
+    public:
 
-            void setFilter(const QSet<QString>& repos) { m_repositories = repos;}
-            bool filterAcceptsRow(int sourceRow,
-                             const QModelIndex &sourceParent) const;
+        ReportModelDelegate(QWidget *parent);
 
-        private:
+        void paint( QPainter* painter,
+                    const QStyleOptionViewItem& option,
+                    const QModelIndex& index) const;
 
-            QSet<QString> m_repositories;
-            int           m_repositoryColumn;
+    private:
+
+        QMenu*                  m_menu;
     };
-
 }
 
 #endif
-

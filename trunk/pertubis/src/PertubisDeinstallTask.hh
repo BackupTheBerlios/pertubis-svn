@@ -21,12 +21,16 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_DEINSTALL_TASK_H
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_DEINSTALL_TASK_H 1
 
+#include "Package-fwd.hh"
 #include <QObject>
 #include <paludis/uninstall_task.hh>
 #include <paludis/environment-fwd.hh>
 
 namespace pertubis
 {
+
+    class Selections;
+
     /*! \brief deinstalls packages
      *
      * \ingroup PaludisAdapter
@@ -41,12 +45,16 @@ namespace pertubis
 
 
         public:
-            PertubisDeinstallTask(QObject* pobject,paludis::tr1::shared_ptr<paludis::Environment> e) :
+            PertubisDeinstallTask(QObject* pobject,paludis::tr1::shared_ptr<paludis::Environment> e,
+                Selections* install,
+                Selections* deinstall) :
                 QObject(pobject),
                 paludis::UninstallTask(e.get()),
-                    m_count(0),
-                    m_current_count(0),
-                    m_error_count(0)
+                m_count(0),
+                m_current_count(0),
+                m_error_count(0),
+                m_install(install),
+                m_deinstall(deinstall)
             {
             }
 
@@ -71,6 +79,7 @@ namespace pertubis
             virtual void on_not_continuing_due_to_errors();
 
             virtual void on_update_world_pre();
+
             virtual void on_update_world(const paludis::PackageDepSpec & a);
 
             virtual void on_update_world(const paludis::SetName & a);
@@ -83,11 +92,14 @@ namespace pertubis
 
             void message(QString);
             void finished(int,int);
+            void appendPackage(Package * node);
 
         private:
             int m_count;
             int m_current_count;
             int m_error_count;
+            Selections* m_install;
+            Selections* m_deinstall;
     };
 }
 

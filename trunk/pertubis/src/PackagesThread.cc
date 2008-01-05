@@ -93,7 +93,7 @@ void pertubis::PackagesThread::run()
 
                 QStringList tmp(pReasons.toList());
                 pReasons.clear();
-                p_item->setData(po_mask_reasons,tmp.join(", "));
+                p_item->setData(pho_mask_reasons,tmp.join(", "));
             }
 
             p_item = makePackage(*vstart,
@@ -121,19 +121,20 @@ void pertubis::PackagesThread::run()
         }
         pReasons.unite(vReasons.toSet());
 
+        bool vInstalled(installed(m_env,*vstart) );
         Package* v_item = makeVersionPackage(*vstart,
                                     Qt::Unchecked,
                                     Qt::Unchecked,
                                     stringify((*vstart)->version()).c_str(),
                                     QString::fromStdString(stringify((*vstart)->repository()->name())),
-                                    ( installed(m_env,*vstart) ? Qt::Checked : Qt::Unchecked),
+                                    (vInstalled ? Qt::Checked : Qt::Unchecked),
                                     (vReasons.isEmpty() ? ps_stable : ps_masked),
                                     p_item,
                                     vReasons.join(", "));
 //         m_taskbox->setTasksInPackage(v_item);
-        if (v_item->data(po_installed).toInt() != Qt::Unchecked)
+        if (v_item->data(pho_installed).toInt() != Qt::Unchecked)
         {
-            p_item->setData(po_installed,Qt::Checked);
+            p_item->setData(pho_installed,Qt::Checked);
         }
 
         if (!v_item->available() )

@@ -38,7 +38,7 @@ namespace pertubis
 
     class QuerySettingsModel;
     class QuerySettingsView;
-    class SearchThread;
+
     /*! \brief provides a text input and option checkboxes the user may select or deselect.
      *
      * \ingroup Widget
@@ -46,6 +46,7 @@ namespace pertubis
      */
     class SearchWindow : public QDialog
     {
+        friend class SearchPage;
         Q_OBJECT
 
         public:
@@ -54,10 +55,15 @@ namespace pertubis
             ///\{
 
             /// constructs a SearchWindow object
-            SearchWindow( QWidget *pobj, QuerySettingsModel* querySettings, SearchThread* thread);
+            SearchWindow( QWidget *pobj, QuerySettingsModel* querySettings);
 
-            ~SearchWindow() { saveSettings();}
+            ~SearchWindow();
             ///@}
+
+
+            QString text();
+
+            QProgressBar*           m_bar;
 
         private:
 
@@ -65,19 +71,7 @@ namespace pertubis
             void loadSettings();
             void saveSettings();
 
-        signals:
-
-            /// sends the request to start the search
-            void                search(QString query);
-
-            /// sends the request to stop the search
-            void                stopSearch();
-
         private slots:
-
-            void onStart();
-
-            void onStop();
 
             void progress(int);
 
@@ -88,13 +82,11 @@ namespace pertubis
         private:
             /// ask for query settings
             QuerySettingsModel*     m_querySettings;
-            SearchThread*           m_thread;
             QLineEdit*              m_line;
             QPushButton*            m_bStart;
             QPushButton*            m_bStop;
             QPushButton*            m_bClose;
             QPushButton*            m_bOptions;
-            QProgressBar*           m_bar;
     };
 }
 #endif

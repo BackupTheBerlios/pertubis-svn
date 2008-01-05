@@ -44,7 +44,7 @@
 #include <QVBoxLayout>
 
 
-pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
+pertubis::SettingsPage::SettingsPage(QWidget* pobj, MainWindow* main) : Page(pobj,main),
         m_generalView(new GeneralSettingsView(pobj,new GeneralSettingsModel(pobj))),
         m_installView(new InstallSettingsView(pobj,new InstallSettingsModel(pobj))),
         m_deinstallView(new DeinstallSettingsView(pobj,new DeinstallSettingsModel(pobj))),
@@ -122,14 +122,23 @@ pertubis::Settings::Settings(QWidget* pobj) : QDialog(pobj),
     setWindowTitle(tr("pertubis :: settings"));
 }
 
-pertubis::Settings::~Settings()
+void pertubis::SettingsPage::activatePage()
 {
-    qDebug("Settings::~Settings() - start");
-    saveSettings();
-    qDebug("Settings::~Settings() - done");
 }
 
-void pertubis::Settings::changePage(QListWidgetItem *current, QListWidgetItem *previous)
+pertubis::SettingsPage::~SettingsPage()
+{
+    qDebug("SettingsPage::~SettingsPage() - start");
+    saveSettings();
+    delete m_depListView;
+    delete m_queryView;
+    delete m_deinstallView;
+    delete m_installView;
+    delete m_generalView;
+    qDebug("SettingsPage::~SettingsPage() - done");
+}
+
+void pertubis::SettingsPage::changePage(QListWidgetItem *current, QListWidgetItem *previous)
 {
     if (!current)
         current = previous;
@@ -137,10 +146,10 @@ void pertubis::Settings::changePage(QListWidgetItem *current, QListWidgetItem *p
     m_pagesStore->setCurrentIndex(m_pagesView->row(current));
 }
 
-void pertubis::Settings::loadSettings()
+void pertubis::SettingsPage::loadSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "Settings" );
+    settings.beginGroup( "SettingsPage" );
     setVisible(settings.value( "visible",false).toBool());
     resize(settings.value("size",QVariant(QSize(320,600))).toSize());
     move(settings.value("pos",QVariant(QPoint(481,143))).toPoint());
@@ -149,10 +158,10 @@ void pertubis::Settings::loadSettings()
     settings.endGroup();
 }
 
-void pertubis::Settings::saveSettings()
+void pertubis::SettingsPage::saveSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "Settings" );
+    settings.beginGroup( "SettingsPage" );
     settings.setValue("visible", isVisible() );
     settings.setValue("size", size() );
     settings.setValue("pos", pos());

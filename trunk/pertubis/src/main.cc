@@ -23,6 +23,7 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QString>
+#include <QFile>
 #include <QSettings>
 #include <QDebug>
 #include <stdio.h>
@@ -35,6 +36,9 @@ int main( int argc, char **argv )
 
     if (argc == 1)
     {
+        QFile config("/etc/pertubis/pertubis.conf");
+        bool first_start(!config.exists());
+        qDebug() << "first_start ?" << first_start;
         QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
         settings.beginGroup( "GeneralSettingsModel" );
         QString lang = settings.value("language",":i18n/pertubis-en").toString();
@@ -45,7 +49,7 @@ int main( int argc, char **argv )
         a.setApplicationName("pertubis");
         a.setOrganizationName("pertubis");
         a.installTranslator(&t);
-        pertubis::MainWindow p;
+        pertubis::MainWindow p(first_start);
         a.setActiveWindow(&p);
         p.show();
         return a.exec();

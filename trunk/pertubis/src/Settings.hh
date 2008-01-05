@@ -25,7 +25,7 @@ class QStackedWidget;
 class QListWidget;
 class QListWidgetItem;
 
-#include <QDialog>
+#include "Page.hh"
 
 namespace pertubis
 {
@@ -38,7 +38,7 @@ namespace pertubis
     /*! \brief Presents a settings window with different configuration groups.
     *
     */
-    class Settings : public QDialog
+    class SettingsPage : public Page
     {
         Q_OBJECT
 
@@ -48,10 +48,10 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            Settings(QWidget* parent);
+            SettingsPage(QWidget* parent,MainWindow* main);
             ///@}
 
-            ~Settings();
+            ~SettingsPage();
 
             ///@name Content information
             ///@{
@@ -81,6 +81,8 @@ namespace pertubis
 
             /// changes the actual settings page to display to current
             void changePage(QListWidgetItem *current, QListWidgetItem *previous);
+
+            void activatePage();
 
         private:
 

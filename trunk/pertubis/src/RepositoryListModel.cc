@@ -36,12 +36,12 @@
 #include <QColor>
 #include <QBrush>
 
-pertubis::RepositoryListItem::RepositoryListItem() : m_data(QList<QVariant>() << Qt::Checked << "")
+pertubis::RepositoryListItem::RepositoryListItem() : m_data(QList<QVariant>() << "" << Qt::Checked)
 {
 }
 
 pertubis::RepositoryListItem::RepositoryListItem(const QString& name, Qt::CheckState state) :
-        m_data(QVariantList() << state << name)
+        m_data(QVariantList() << name << state)
 {
 }
 
@@ -69,7 +69,7 @@ void pertubis::RepositoryListThread::run()
     emit sendNames(list);
 }
 
-pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj) : QAbstractTableModel(pobj)
+pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj,bool firstrun) : QAbstractTableModel(pobj) , m_firstrun(firstrun)
 {
     loadSettings();
 }
@@ -85,8 +85,8 @@ Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const
 {
     switch (mix.column())
     {
-        case 0:
-            return Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
+        case rlmho_on:
+            return Qt::ItemIsUserCheckable;
             break;
         default:
             return 0;
@@ -96,10 +96,10 @@ Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const
 
 bool pertubis::RepositoryListModel::setData ( const QModelIndex & ix, const QVariant & value, int /*role*/ )
 {
-    if (!ix.isValid() || ix.column() != 0)
+    if (!ix.isValid() || ix.column() != rlmho_on)
         return false;
-    m_data.value(ix.row())->setData(0,value);
-    changeActiveRepos(m_data.value(ix.row())->data(1).toString());
+    m_data.value(ix.row())->setData(rlmho_on,value);
+    changeActiveRepos(m_data.value(ix.row())->data(rlmho_name).toString());
     emit dataChanged(ix,ix);
     return true;
 }
@@ -120,7 +120,9 @@ void pertubis::RepositoryListModel::setHorizontalHeaderLabels ( const QStringLis
 
 QVariant pertubis::RepositoryListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count() )
+    if (role != Qt::DisplayRole ||
+        orientation == Qt::Vertical ||
+        section >= m_header.count())
         return QVariant();
     return *(m_header.begin() + section);
 }
@@ -131,7 +133,11 @@ void pertubis::RepositoryListModel::slotResult(QStringList list)
     for (QStringList::const_iterator iter(list.constBegin()),iEnd(list.constEnd());iter != iEnd;++iter)
     {
         tmp.insert(*iter);
-        RepositoryListItem* item(new RepositoryListItem(*iter,(m_activeRepos.contains(*iter) ? Qt::Checked : Qt::Unchecked) ));
+        if (m_firstrun)
+        {
+            changeActiveRepos(*iter);
+        }
+        RepositoryListItem* item(new RepositoryListItem(*iter,( m_activeRepos.contains(*iter)  ? Qt::Checked : Qt::Unchecked) ));
         m_data.push_back(item);
     }
 
@@ -162,16 +168,14 @@ QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int 
         return QBrush(QColor(0,0,0));
     }
 
-    if (role == Qt::CheckStateRole && m_index.column() == 0)
+    else if (role == Qt::DisplayRole && m_index.column() == rlmho_name)
     {
-//         qDebug() << "RepositoryListModel::data() - 0" << m_data.value(m_index.row())->data(0);
-        return m_data.value(m_index.row())->data(0);
+        return m_data.value(m_index.row())->data(rlmho_name);
     }
 
-    if (role == Qt::DisplayRole && m_index.column() == 1)
+    else if (role == Qt::CheckStateRole && m_index.column() == rlmho_on)
     {
-//         qDebug() << "RepositoryListModel::data() - 1" << m_data.value(m_index.row())->data(1);
-        return m_data.value(m_index.row())->data(1);
+        return m_data.value(m_index.row())->data(rlmho_on);
     }
 
     return QVariant();
@@ -200,6 +204,7 @@ void pertubis::RepositoryListModel::loadSettings()
 
 void pertubis::RepositoryListModel::saveSettings()
 {
+    qDebug() << "pertubis::RepositoryListModel::saveSettings() - start";
     QVariantList selected;
     for (QSet<QString>::const_iterator it(m_activeRepos.constBegin()),iEnd(m_activeRepos.constEnd());
          it != iEnd;++it)

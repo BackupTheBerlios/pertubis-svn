@@ -52,103 +52,122 @@ struct MetadataKeyComparator
     }
 };
 
-void pertubis::InfoDisplayer::visit(const MetadataSectionKey & /*k*/)
+namespace
 {
-}
-
-void pertubis::InfoDisplayer::visit(const MetadataStringKey & k)
-{
-    m_thread->append(k.human_name().c_str(),k.value().c_str());
-}
-
-void pertubis::InfoDisplayer::visit(const MetadataFSEntryKey & k)
-{
-    m_thread->append(QString::fromStdString(k.human_name()),QString::fromStdString(stringify(k.value())));
-}
-
-void pertubis::InfoDisplayer::visit(const MetadataPackageIDKey &)
-{
-}
-
-void pertubis::InfoDisplayer::visit(const MetadataRepositoryMaskInfoKey &)
-{
-}
-
-void pertubis::InfoDisplayer::visit(const MetadataContentsKey &)
-{
-}
-
-void pertubis::InfoDisplayer::visit(const MetadataTimeKey & k)
-{
-    time_t t = k.value();
-
-    if (0 == t)
-        return;
-    char buf[255];
-    if (strftime(buf, 254, "%c", gmtime(&t)))
+    class InfoDisplayer :
+            public paludis::ConstVisitor<paludis::MetadataKeyVisitorTypes>
     {
-        m_thread->append("time",buf);
-    }
-}
+        pertubis::RepositoryInfoThread* m_thread;
+        public:
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
-{
-}
+            InfoDisplayer(pertubis::RepositoryInfoThread* thread) : m_thread(thread)
+            {
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
-{
-}
+            void visit(const MetadataSectionKey & /*k*/)
+            {
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
-{
-}
+            void visit(const MetadataStringKey & k)
+            {
+                m_thread->append(k.human_name().c_str(),k.value().c_str());
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
-{
-}
+            void visit(const MetadataFSEntryKey & k)
+            {
+                m_thread->append(QString::fromStdString(k.human_name()),QString::fromStdString(stringify(k.value())));
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<DependencySpecTree> &)
-{
-}
+            void visit(const MetadataPackageIDKey &)
+            {
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
-{
-}
+            void visit(const MetadataRepositoryMaskInfoKey &)
+            {
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataCollectionKey<FSEntrySequence> & k)
-{
-    HtmlFormatter f;
-    m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
-}
+            void visit(const MetadataContentsKey &)
+            {
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataCollectionKey<PackageIDSequence> & k)
-{
-    HtmlFormatter f;
-    m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
-}
+            void visit(const paludis::MetadataSizeKey & k)
+            {
+                m_thread->append(QString::fromStdString(paludis::stringify(k.human_name())),QString::fromStdString(paludis::stringify(k.pretty_print())));
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataCollectionKey<KeywordNameSet> & k)
-{
-    HtmlFormatter f;
-    m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
-}
+            void visit(const MetadataTimeKey & k)
+            {
+                time_t t = k.value();
 
-void pertubis::InfoDisplayer::visit(const MetadataCollectionKey<IUseFlagSet> & k)
-{
-    HtmlFormatter f;
-    m_thread->append(k.human_name().c_str(),k.pretty_print_flat(f).c_str());
-}
+                if (0 == t)
+                    return;
+                char buf[255];
+                if (strftime(buf, 254, "%c", gmtime(&t)))
+                {
+                    m_thread->append("time",buf);
+                }
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataCollectionKey<UseFlagNameSet> & k)
-{
-    HtmlFormatter f;
-    m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
-}
+            void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
+            {
+            }
 
-void pertubis::InfoDisplayer::visit(const MetadataCollectionKey<Set<std::string> > & k)
-{
-    HtmlFormatter f;
-    m_thread->append(k.human_name().c_str() , k.pretty_print_flat(f).c_str());
+            void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
+            {
+            }
+
+            void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
+            {
+            }
+
+            void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
+            {
+            }
+
+            void visit(const MetadataSpecTreeKey<DependencySpecTree> &)
+            {
+            }
+
+            void visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
+            {
+            }
+
+            void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+            {
+                pertubis::HtmlFormatter f;
+                m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
+            }
+
+            void visit(const MetadataCollectionKey<PackageIDSequence> & k)
+            {
+                pertubis::HtmlFormatter f;
+                m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
+            }
+
+            void visit(const MetadataCollectionKey<KeywordNameSet> & k)
+            {
+                pertubis::HtmlFormatter f;
+                m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
+            }
+
+            void visit(const MetadataCollectionKey<IUseFlagSet> & k)
+            {
+                pertubis::HtmlFormatter f;
+                m_thread->append(k.human_name().c_str(),k.pretty_print_flat(f).c_str());
+            }
+
+            void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
+            {
+                pertubis::HtmlFormatter f;
+                m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
+            }
+
+            void visit(const MetadataCollectionKey<Set<std::string> > & k)
+            {
+                pertubis::HtmlFormatter f;
+                m_thread->append(k.human_name().c_str() , k.pretty_print_flat(f).c_str());
+            }
+    };
 }
 
 void pertubis::RepositoryInfoThread::start(const QString& name)

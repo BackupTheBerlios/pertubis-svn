@@ -146,6 +146,14 @@ namespace
                 }
             }
 
+            void visit(const paludis::MetadataSizeKey & k)
+            {
+                if (k.type() == type)
+                {
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(k.pretty_print()),std::string("bgcolor=\"#ddddff\"")));
+                }
+            }
+
             void visit(const paludis::MetadataSpecTreeKey<paludis::RestrictSpecTree> & k)
             {
                 if (k.type() == type)
@@ -220,6 +228,11 @@ namespace
 pertubis::DetailsThread::DetailsThread(QObject* pobj,
                                         const paludis::tr1::shared_ptr<paludis::Environment>&  env) : ThreadBase(pobj,env)
 {
+}
+
+pertubis::DetailsThread::~DetailsThread()
+{
+    qDebug() << "pertubis::DetailsThread::~DetailsThread()";
 }
 
 void pertubis::DetailsThread::start( paludis::tr1::shared_ptr<const paludis::PackageID> id)

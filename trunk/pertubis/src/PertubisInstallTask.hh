@@ -22,14 +22,12 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H 1
 
 #include <QObject>
+#include "Package-fwd.hh"
 #include <paludis/install_task.hh>
-#include <paludis/environment-fwd.hh>
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/package_id.hh>
 
 namespace pertubis
 {
-    class Package;
+
     class Selections;
     /*! \brief installs packages
      *
@@ -56,6 +54,14 @@ namespace pertubis
                 last_count
             };
 
+            enum DisplayMode
+            {
+                normal_entry,
+                unimportant_entry,
+                error_entry,
+                suggested_entry
+            };
+
             PertubisInstallTask(QObject* pobj,
                     paludis::Environment* env,
                     const paludis::DepListOptions & options,
@@ -64,19 +70,19 @@ namespace pertubis
                     Selections* deinstall);
             ~PertubisInstallTask() {}
 
-            void run();
+            void start(bool firstpass) { m_firstpass= firstpass;execute();}
 
             virtual void display_merge_list_post_counts();
-            virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID & c);
+            virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID &){}
             virtual void on_all_masked_error(const paludis::AllMaskedError&) {}
             virtual void on_ambiguous_package_name_error(const paludis::AmbiguousPackageNameError&) {}
             virtual void on_build_cleanlist_post(const paludis::DepListEntry&) {}
-            virtual void on_build_cleanlist_pre(const paludis::DepListEntry&);
+            virtual void on_build_cleanlist_pre(const paludis::DepListEntry&) {}
             virtual void on_build_deplist_post() {}
-            virtual void on_build_deplist_pre();
+            virtual void on_build_deplist_pre() {}
             virtual void on_clean_all_post(const paludis::DepListEntry&, const paludis::PackageIDSequence&) {}
-            virtual void on_clean_all_pre(const paludis::DepListEntry&, const paludis::PackageIDSequence&);
-            virtual void on_clean_fail(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int);
+            virtual void on_clean_all_pre(const paludis::DepListEntry&, const paludis::PackageIDSequence&) {}
+            virtual void on_clean_fail(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
             virtual void on_clean_post(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
             virtual void on_clean_pre(const paludis::DepListEntry&, const paludis::PackageID&, int, int, int, int) {}
             virtual void on_dep_list_error(const paludis::DepListError&) {}
@@ -90,7 +96,7 @@ namespace pertubis
             virtual void on_display_failure_summary_totals(int, int, int, int) {}
             virtual void on_display_merge_list_entry(const paludis::DepListEntry&);
             virtual void on_display_merge_list_post() {}
-            virtual void on_display_merge_list_pre();
+            virtual void on_display_merge_list_pre() {}
             virtual void on_fetch_action_error(const paludis::FetchActionError&) {}
             virtual void on_fetch_all_post() {}
             virtual void on_fetch_all_pre() {}
@@ -105,7 +111,7 @@ namespace pertubis
             virtual void on_install_post(const paludis::DepListEntry&, int, int, int, int) {}
             virtual void on_install_pre(const paludis::DepListEntry&, int, int, int, int) {}
             virtual void on_multiple_set_targets_specified(const paludis::MultipleSetTargetsSpecified&) {}
-            virtual void on_no_clean_needed(const paludis::DepListEntry&);
+            virtual void on_no_clean_needed(const paludis::DepListEntry&) {}
             virtual void on_no_such_package_error(const paludis::NoSuchPackageError&) {}
             virtual void on_not_continuing_due_to_errors() {}
             virtual void on_preserve_world() {}
@@ -147,14 +153,15 @@ namespace pertubis
 
             void depListResult(QString);
 
-            void addEntryToDeinstallSelections(paludis::tr1::shared_ptr< const paludis::PackageID >);
-
         private:
+
+            void makePackage(const paludis::DepListEntry&, DisplayMode m);
 
             std::string     m_resumeCommand;
             Selections*     m_install;
             Selections*     m_deinstall;
             int             m_counts[last_count];
+            bool            m_firstpass;
     };
 }
 

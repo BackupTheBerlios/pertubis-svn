@@ -28,13 +28,9 @@
 #include <QAction>
 
 pertubis::Selections::Selections(QObject* pobj,
-                     QAction* myaction,
-                     QString myname,
-                    PackageOrder pos) :
+                    QString myname) :
                     QObject(pobj),
-                    m_name(myname),
-                    m_action(myaction),
-                    m_position(pos)
+                    m_name(myname)
 {
 }
 
@@ -60,12 +56,6 @@ void pertubis::Selections::changeEntry(const paludis::tr1::shared_ptr<const palu
 {
 //     qDebug() << "pertubis::Selections::changeEntry()" << id->canonical_form(paludis::idcf_full).c_str() << mystate;
     (mystate) ? addEntry(id) : deleteEntry(id);
-}
-
-void pertubis::Selections::prepareAction(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
-{
-//     qDebug() << "pertubis::Selections::prepareAction()" << paludis::stringify(id).c_str();
-    m_action->setChecked( hasEntry(id) ? Qt::Checked : Qt::Unchecked);
 }
 
 void pertubis::Selections::clear()

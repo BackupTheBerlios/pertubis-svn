@@ -68,11 +68,14 @@ pertubis::GeneralSettingsModel::GeneralSettingsModel(QObject *pobj) :
 
 pertubis::GeneralSettingsModel::~GeneralSettingsModel()
 {
+    qDebug() << "pertubis::GeneralSettingsModel::~GeneralSettingsModel() start";
     saveSettings();
+    qDebug() << "pertubis::GeneralSettingsModel::~GeneralSettingsModel() done";
 }
 
 void pertubis::GeneralSettingsModel::loadSettings()
 {
+    qDebug() << "pertubis::GeneralSettingsModel::loadSettings()";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "GeneralSettingsModel" );
     m_toolbarDisplayMode = settings.value("toolbarDisplayMode",0).toInt();
@@ -86,6 +89,7 @@ void pertubis::GeneralSettingsModel::loadSettings()
 
 void pertubis::GeneralSettingsModel::saveSettings()
 {
+    qDebug() << "pertubis::GeneralSettingsModel::saveSettings()";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "GeneralSettingsModel" );
     settings.setValue("toolbarDisplayMode",m_toolbarDisplayMode);

@@ -24,19 +24,18 @@
 #include <QDebug>
 
 pertubis::InstallSelections::InstallSelections(QObject* pobject,
-        QAction* myaction,
-        QString tname,
-        PackageOrder pos) : Selections(pobject,myaction,tname,pos)
+        QString tname) : Selections(pobject,tname)
 {
 }
 
-bool pertubis::InstallSelections::available(Package* item) const
+bool pertubis::InstallSelections::available(Package* item, int) const
 {
     return item->available();
 }
 
-bool pertubis::InstallSelections::changeStates(Package* item, int newState)
+bool pertubis::InstallSelections::changeStates(Package* item, int newState, int position)
 {
+    qDebug() << "pertubis::InstallSelections::changeStates()" << *item << newState;
     Package::PackageIterator iStart;
     Package::PackageIterator iEnd;
     Package::PackageIterator piStart;
@@ -53,16 +52,17 @@ bool pertubis::InstallSelections::changeStates(Package* item, int newState)
                 case Qt::PartiallyChecked:
                 case Qt::Checked:
                     changeEntry(item->ID(),true);
-                    item->setData(m_position,Qt::PartiallyChecked);
+                    item->setData(position,Qt::Checked);
                     if (0 != item->bestChild())
-                        item->bestChild()->setData(m_position,Qt::Checked);
+                        item->bestChild()->setData(position,Qt::Checked);
                     break;
                 case Qt::Unchecked:
-                    item->setData(m_position,Qt::Unchecked);
+                    changeEntry(item->ID(),false);
+                    item->setData(position,Qt::Unchecked);
                     while (iStart!= iEnd)
                     {
                         changeEntry((*iStart)->ID(),false);
-                        (*iStart)->setData(m_position,Qt::Unchecked);
+                        (*iStart)->setData(position,Qt::Unchecked);
                         ++iStart;
                     }
                     break;
@@ -77,33 +77,31 @@ bool pertubis::InstallSelections::changeStates(Package* item, int newState)
             {
                 case Qt::Unchecked:
                     changeEntry(item->ID(),false);
-                    item->setData(m_position,Qt::Unchecked);
+                    item->setData(position,Qt::Unchecked);
                     while(piStart != piEnd)
                     {
-                        if ( Qt::Unchecked != (*piStart)->data(m_position).toInt() )
+                        if ( Qt::Unchecked != (*piStart)->data(position).toInt() )
                             ++i;
                         ++piStart;
                     }
                     if (i  == 0)
-                        item->parent()->setData(m_position,Qt::Unchecked);
+                        item->parent()->setData(position,Qt::Unchecked);
                     else
-                        item->parent()->setData(m_position,Qt::PartiallyChecked);
+                        item->parent()->setData(position,Qt::Checked);
                     break;
                 case Qt::PartiallyChecked:
                 case Qt::Checked:
                     changeEntry(item->ID(),true);
-                    item->setData(m_position,Qt::Checked);
+                    item->setData(position,Qt::Checked);
                     while(piStart != piEnd)
                     {
                         int mystate();
-                        if ( Qt::Unchecked != (*piStart)->data(m_position).toInt() )
+                        if ( Qt::Unchecked != (*piStart)->data(position).toInt() )
                             ++i;
                         ++piStart;
                     }
-                    if (i == item->parent()->childCount() )
-                        item->parent()->setData(m_position,Qt::Checked);
-                    else
-                        item->parent()->setData(m_position,Qt::PartiallyChecked);
+                    if (i > 0)
+                        item->parent()->setData(position,Qt::Checked);
                     break;
                 default:
                     ;
@@ -114,11 +112,11 @@ bool pertubis::InstallSelections::changeStates(Package* item, int newState)
             {
                 case Qt::Unchecked:
                     changeEntry(item->ID(),false);
-                    item->setData(m_position,Qt::Unchecked);
+                    item->setData(position,Qt::Unchecked);
                     break;
                 case Qt::Checked:
                     changeEntry(item->ID(),true);
-                    item->setData(m_position,Qt::Checked);
+                    item->setData(position,Qt::Checked);
                     break;
                 default:
                     ;

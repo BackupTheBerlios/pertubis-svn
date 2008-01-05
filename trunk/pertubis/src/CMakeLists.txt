@@ -19,28 +19,36 @@ SET(PERTUBIS_SRCS
     matcher.cc
     MessageOutput.cc
     NameDescriptionExtractor.cc
-    OptionsDelegate.cc
+    PackageBrowsingPage.cc
     Package.cc
     PackageFilterModel.cc
     PackageModel.cc
+    PackageModelDelegate.cc
     PackagesThread.cc
+    Page.cc
     PaludisUtils.cc
     PertubisDeinstallTask.cc
     PertubisInstallTask.cc
     QuerySettings.cc
     RegexMatcher.cc
+    ReportModelDelegate.cc
     ReportPackage.cc
+    RepositoryPage.cc
     ReportPackageModel.cc
     RepositoryInfoModel.cc
     RepositoryListModel.cc
+    SearchPage.cc
     SearchThread.cc
     SearchWindow.cc
     SelectionModel.cc
+    SelectionModelDelegate.cc
+    SelectionPage.cc
     Selections.cc
     SetThread.cc
     Settings.cc
     SyncTask.cc
     SystemReport.cc
+    SystemReportPage.cc
     text_matcher.cc
     ThreadBase.cc
 )
@@ -61,25 +69,33 @@ SET(PERTUBIS_MOC_HDRS
     InstallSettings.hh
     MainWindow.hh
     MessageOutput.hh
-    OptionsDelegate.hh
+    PackageBrowsingPage.hh
     PackageFilterModel.hh
     Package.hh
+    Page.hh
+    PackageModelDelegate.hh
     PackageModel.hh
     PackagesThread.hh
     PertubisDeinstallTask.hh
     PertubisInstallTask.hh
     QuerySettings.hh
+    RepositoryPage.hh
+    ReportModelDelegate.hh
     ReportPackageModel.hh
     RepositoryInfoModel.hh
     RepositoryListModel.hh
+    SearchPage.hh
     SearchThread.hh
     SearchWindow.hh
+    SelectionModelDelegate.hh
     SelectionModel.hh
+    SelectionPage.hh
     Selections.hh
     SetThread.hh
     Settings.hh
     SyncTask.hh
     SystemReport.hh
+    SystemReportPage.hh
     ThreadBase.hh
 )
 
@@ -96,3 +112,5 @@ INCLUDE_DIRECTORIES(BEFORE ${PALUDIS_INCLUDE_DIR} )
 ADD_EXECUTABLE(pertubis ${PERTUBIS_MAIN_SRCS} ${PERTUBIS_SRCS} ${PERTUBIS_MOC_SRCS} ${PERTUBIS_RCCS_SRCS} )
 TARGET_LINK_LIBRARIES(pertubis ${PALUDIS_LIB} ${PALUDIS_UTIL_LIB} ${PALUDIS_ARGS_LIB} ${QT_QTGUI_LIBRARY_DEBUG} ${QT_QTXML_LIBRARY_DEBUG} ${QT_QTCORE_LIBRARY_DEBUG} )
 INSTALL(TARGETS pertubis DESTINATION /usr/lib/pertubis COMPONENT pertubis)
+
+

@@ -23,24 +23,22 @@
 #include "QuerySettings.hh"
 
 #include <QCheckBox>
-#include <QSettings>
-#include <QProgressBar>
-#include <QMessageBox>
+#include <QDebug>
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+#include <QMessageBox>
+#include <QProgressBar>
 #include <QPushButton>
+#include <QSettings>
 #include <QVBoxLayout>
-#include <QDebug>
 
 pertubis::SearchWindow::SearchWindow( QWidget* pobj,
-                                    QuerySettingsModel* querySettings,
-                                    SearchThread* sthread) : QDialog(pobj),
+                                    QuerySettingsModel* querySettings) : QDialog(pobj),
                                     m_querySettings(querySettings),
-                                    m_thread(sthread),
                                     m_bStart(new QPushButton(tr("&Find"))),
                                     m_bStop(new QPushButton(tr("&Stop"))),
                                     m_bOptions(new QPushButton(tr("&More")))
@@ -53,10 +51,9 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
 
     m_bStart->setDefault(true);
     m_bStop->setDisabled(true);
-    m_bOptions->setCheckable(true);
-
-    m_bOptions->setAutoDefault(false);
     m_bStop->setAutoDefault(false);
+
+    m_bOptions->setCheckable(true);
     m_bOptions->setAutoDefault(false);
 
     m_bar=new QProgressBar(this);
@@ -73,11 +70,6 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
 
     QWidget* myextension = new QWidget;
 
-    connect(m_bStart,
-            SIGNAL(clicked()),
-            this,
-            SLOT(onStart()));
-
     connect(m_bOptions,
             SIGNAL(toggled(bool)),
             myextension,
@@ -87,16 +79,6 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
             SIGNAL(clicked()),
             this,
             SLOT(close()));
-
-    connect(m_bStop,
-            SIGNAL(clicked()),
-            this,
-            SLOT(onStop()));
-
-    connect(m_thread,
-            SIGNAL(progress(int)),
-            m_bar,
-            SLOT(setValue(int)));
 
     QVBoxLayout *extensionLayout = new QVBoxLayout;
     extensionLayout->setMargin(0);
@@ -124,40 +106,20 @@ pertubis::SearchWindow::SearchWindow( QWidget* pobj,
     loadSettings();
 }
 
+pertubis::SearchWindow::~SearchWindow()
+{
+    qDebug() << "pertubis::SearchWindow::~SearchWindow()";
+    saveSettings();
+}
+
 void pertubis::SearchWindow::progress(int res)
 {
     m_bar->setValue(res);
 }
 
-void pertubis::SearchWindow::onStart()
+QString pertubis::SearchWindow::text()
 {
-    m_bar->show();
-    QString query(m_line->text().trimmed());
-    if (query.isEmpty())
-        return;
-    if (m_thread->isRunning())
-    {
-        int res = QMessageBox::question( this, tr("Warning"),
-                                         tr("Search is already running! Yes for starting the new one or no for waiting until the pending is finished?"),QMessageBox::Yes,QMessageBox::No);
-        if (res == QMessageBox::No )
-        {
-            return;
-        }
-        if (res == QMessageBox::Yes )
-            m_thread->stopExec();
-            m_thread->wait();
-    }
-    displaySearch(true);
-    m_thread->start(query);
-    emit search(query);
-}
-
-void pertubis::SearchWindow::onStop()
-{
-    m_thread->stopExec();
-    displaySearch(false);
-    m_bar->hide();
-    emit stopSearch();
+    return m_line->text().trimmed();
 }
 
 void pertubis::SearchWindow::displaySearch(bool start)

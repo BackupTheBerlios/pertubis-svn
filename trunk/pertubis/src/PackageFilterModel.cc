@@ -19,9 +19,10 @@
 */
 
 #include "PackageFilterModel.hh"
-#include "Package.hh"
 
-pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj)
+pertubis::PackageFilterModel::PackageFilterModel(QObject * pobj, int r) :
+    QSortFilterProxyModel(pobj),
+    m_repositoryColumn(r)
 {
 }
 
@@ -29,17 +30,16 @@ bool pertubis::PackageFilterModel::filterAcceptsRow(int sourceRow,
     const QModelIndex &sourceParent) const
 {
     QModelIndex pmi = sourceModel()->index(sourceRow,0,sourceParent);
-    Package* p(static_cast<Package*>(pmi.internalPointer()));
     if (sourceParent == QModelIndex() && sourceModel()->rowCount(pmi) > 0)
     {
         for (uint i=0,iEnd=sourceModel()->rowCount(pmi);i<iEnd;i++)
         {
-            QModelIndex vx = sourceModel()->index(i,po_repository,pmi);
+            QModelIndex vx = sourceModel()->index(i,m_repositoryColumn,pmi);
             if (m_repositories.contains(sourceModel()->data(vx).toString()))
                 return true;
         }
         return false;
     }
-    QModelIndex ix1 = sourceModel()->index(sourceRow,po_repository,sourceParent);
+    QModelIndex ix1 = sourceModel()->index(sourceRow,m_repositoryColumn,sourceParent);
     return m_repositories.contains(sourceModel()->data(ix1).toString());
 }

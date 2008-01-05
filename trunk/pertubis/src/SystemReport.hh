@@ -77,10 +77,10 @@ namespace pertubis
             void finished(int total,int errors);
 
             /// requests  to append and show this package in main thread
-            void appendPackage(ReportPackage* node);
+            void appendPackage(Package* node);
 
             /// sends a glsa entry
-            void notifyAboutGLSA(QString name, QString path);
+//             void notifyAboutGLSA(QString name, QString path);
 
         private:
 

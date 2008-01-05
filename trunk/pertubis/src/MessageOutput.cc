@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <QColor>
 #include <QTextEdit>
+#include <QRegExp>
 #include <QTextCursor>
 #include <QTextDocument>
 #include <paludis/util/log.hh>
@@ -34,24 +35,36 @@
 #include <errno.h>
 #include <unistd.h>
 
-pertubis::MessageOutput::MessageOutput(QWidget* pObj) : QTextEdit(pObj),
-                                    m_thread(0),
-                                    m_master_fd(-1),
-                                    m_slave_fd(-1)
+static const QRegExp COLOUR_GREEN("\e[32;01m",Qt::CaseSensitive, QRegExp::FixedString);
+static const QRegExp COLOUR_YELLOW("\e[33;01m",Qt::CaseSensitive,QRegExp::FixedString);
+static const QRegExp COLOUR_RED("\e[31;01m",Qt::CaseSensitive, QRegExp::FixedString);
+static const QRegExp COLOUR_BLUE("\e[34;01m",Qt::CaseSensitive,QRegExp::FixedString);
+static const QRegExp COLOUR_PINK("\e[35;01m",Qt::CaseSensitive, QRegExp::FixedString);
+static const QRegExp COLOUR_NORMAL("\e[0m",Qt::CaseSensitive, QRegExp::FixedString);
+static const QRegExp COLOUR_NORMAL2("\e[00;00m",Qt::CaseSensitive, QRegExp::FixedString);
+static const QRegExp NEW_LINE("\n",Qt::CaseSensitive, QRegExp::FixedString);
+
+pertubis::MessageOutput::MessageOutput(QWidget* pobj, MainWindow* main) :
+        Page(pobj,main),
+        m_thread(0),
+        m_master_fd(-1),
+        m_slave_fd(-1)
 {
+    m_output = new QTextEdit(pobj);
     redirectOutput();
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name("pertubis");
     QVBoxLayout* mylayout = new QVBoxLayout;
+    mylayout->addWidget(m_output);
     mylayout->setMargin(0);
     setLayout(mylayout);
-    setReadOnly(true);
-    document()->setMaximumBlockCount(1000);
+    m_output->setReadOnly(true);
+    m_output->document()->setMaximumBlockCount(1000);
     QPalette p(palette());
     p.setColor(QPalette::Base,QColor(0,0,0)); // background color  = black
     p.setColor(QPalette::Text,QColor(255,255,255)); // text color  = white
-    setPalette(p);
-    setAutoFillBackground(true);
+    m_output->setPalette(p);
+    m_output->setAutoFillBackground(true);
     show();
 }
 
@@ -63,10 +76,24 @@ void pertubis::MessageThread::run()
         int res = read(m_fd,&buf,512);
         if (res > 0)
         {
-            sendMessage(QString::fromLocal8Bit(buf,res));
+            QString tmp(QString::fromLocal8Bit(buf,res));
+            tmp.replace(COLOUR_GREEN,"<html><font color=\"green\">").
+                    replace(COLOUR_YELLOW,"<html><font color=\"yellow\">").
+                    replace(COLOUR_RED,"<html><font color=\"red\">").
+                    replace(COLOUR_BLUE,"<html><font color=\"blue\">").
+                    replace(COLOUR_PINK,"<html><font color=\"magenta\">").
+                    replace(NEW_LINE,"<html><br></html>").
+                    replace(COLOUR_NORMAL,"</font></html>").
+                    replace(COLOUR_NORMAL2,"</font></html>");
+            sendMessage(tmp);
         }
         msleep(100);
     }
+}
+
+void pertubis::MessageOutput::append(QString text)
+{
+    m_output->append(text);
 }
 
 void pertubis::MessageOutput::redirectOutput()
@@ -84,9 +111,13 @@ void pertubis::MessageOutput::redirectOutput()
     m_thread = new MessageThread(this,m_master_fd);
     connect(m_thread,
             SIGNAL(sendMessage(QString)),
-            this,
+            m_output,
             SLOT(append(QString)));
-    m_thread->start();
+}
+
+void pertubis::MessageOutput::clear()
+{
+    m_output->clear();
 }
 
 pertubis::MessageOutput::~MessageOutput()

@@ -18,40 +18,44 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H
-#define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_FILTER_MODEL_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_SELECTION_PAGE_H
+#define _PERTUBIS_ENTRY_PROTECTOR_SELECTION_PAGE_H 1
 
-#include <QSortFilterProxyModel>
-#include <QSet>
-#include <QString>
+#include "Page.hh"
 
 class QModelIndex;
+class QTreeView;
 
 namespace pertubis
 {
-    /*! \brief filters packages by repository
-     *
-     * \ingroup ItemModelClass
-     * If any repository of m_repositories does not contain this package, the filter rejects the package
-     */
-    class PackageFilterModel : public QSortFilterProxyModel
+    class SelectionModel;
+
+    class SelectionPage : public Page
     {
         Q_OBJECT
+
         public:
 
-            PackageFilterModel(QObject * pobj, int repositoryColumn);
+            SelectionPage(QWidget* pobj, MainWindow * mainWindow);
+            virtual ~SelectionPage();
 
-            void setFilter(const QSet<QString>& repos) { m_repositories = repos;}
-            bool filterAcceptsRow(int sourceRow,
-                             const QModelIndex &sourceParent) const;
+            SelectionModel*         m_selectionModel;
+
+        public slots:
+
+            /// the work to do when a user clicks on the selection display
+            void onSelectionViewUserInteraction(const QModelIndex & mix);
+
+            /// start selection tasks
+            void activatePage();
 
         private:
 
-            QSet<QString> m_repositories;
-            int           m_repositoryColumn;
-    };
+            void loadSettings();
+            void saveSettings();
 
+            QTreeView*              m_selectionView;
+    };
 }
 
 #endif
-

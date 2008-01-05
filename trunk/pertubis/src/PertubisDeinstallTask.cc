@@ -19,10 +19,35 @@
 */
 
 #include "PertubisDeinstallTask.hh"
+#include "Package.hh"
+#include "Selections.hh"
+#include "SelectionModel-fwd.hh"
 #include "FormatterUtils.hh"
+#include <paludis/dep_tag.hh>
 #include <paludis/package_database.hh>
 #include <paludis/uninstall_list.hh>
 #include <paludis/util/tr1_memory.hh>
+
+
+static pertubis::Package*  makeNodePackage(
+    paludis::tr1::shared_ptr<const paludis::PackageID> id,
+    Qt::CheckState install,
+    Qt::CheckState deinstall,
+    const QString & pack,
+    const QString & cat,
+    const QString & version,
+    const QString & repository)
+{
+    using namespace pertubis;
+    QVector<QVariant> data(6);
+    data[pho_install] = install;
+    data[pho_deinstall] = deinstall;
+    data[pho_package] = pack;
+    data[pho_category] = cat;
+    data[pho_repository] = version ;
+    data[pho_installed] = repository;
+    return new Package(id,data,ps_stable,pt_node_only,0);
+}
 
 void pertubis::PertubisDeinstallTask::on_build_unmergelist_pre()
 {
@@ -51,22 +76,64 @@ void pertubis::PertubisDeinstallTask::on_display_unmerge_list_post()
     }
 }
 
-void pertubis::PertubisDeinstallTask::on_display_unmerge_list_entry(const paludis::UninstallListEntry & d)
+void pertubis::PertubisDeinstallTask::on_display_unmerge_list_entry(const paludis::UninstallListEntry & e)
 {
-    switch (d.kind)
+    QVector<QVariant> data(spho_last);
+    QVector<QVariant> vData(spho_last);
+    Package* node(0);
+    unsigned count(0), max_count(3);
+    switch (e.kind)
     {
         case paludis::ulk_package:
-            emit message(bold(paludis::stringify(*d.package_id)).c_str());
+            data[spho_install] = Qt::Unchecked;
+            data[spho_deinstall] = Qt::Checked;
+            data[spho_installed] = Qt::Checked;
+            data[spho_package] = QString::fromStdString(paludis::stringify(e.package_id->name().package));
+            data[spho_category] = QString::fromStdString(paludis::stringify(e.package_id->name().category));
+            data[spho_old_version] = QString::fromStdString(paludis::stringify(e.package_id->version()));
+            data[spho_repository] = QString::fromStdString(paludis::stringify(e.package_id->repository()->name()));
+            emit appendPackage(new Package(e.package_id,data,ps_stable,pt_parent,0));
             ++m_count;
             break;
 
         case paludis::ulk_virtual:
-//             cout << "* " << colour(cl_unimportant, stringify(*d.package_id));
             break;
 
         case paludis::ulk_required:
-            emit message(color(paludis::stringify(*d.package_id),std::string("red")).c_str());
+            data[spho_install] = m_install->hasEntry(e.package_id);
+            data[spho_deinstall] = m_deinstall->hasEntry(e.package_id);
+            data[spho_installed] = Qt::Checked;
+            data[spho_package] = QString::fromStdString(paludis::stringify(e.package_id->name().package));
+            data[spho_category] = QString::fromStdString(paludis::stringify(e.package_id->name().category));
+            data[spho_old_version] = QString::fromStdString(paludis::stringify(e.package_id->version()));
+            data[spho_repository] = QString::fromStdString(paludis::stringify(e.package_id->repository()->name()));
+            node = new Package(e.package_id,data,ps_stable,pt_parent,0);
+            for (paludis::Set<paludis::tr1::shared_ptr<paludis::DepTag> >::ConstIterator
+                 tag(e.tags->begin()),
+                     tag_end(e.tags->end()) ;
+                     tag != tag_end ; ++tag)
+            {
+                if ("dependency" != (*tag)->category())
+                    continue;
+
+                if (++count < max_count)
+                {
+                    //TODO: use a "safe" paludis cast
+                    paludis::DependencyDepTag * spec(static_cast<paludis::DependencyDepTag*>((*tag).get()));
+                    Q_ASSERT(spec != 0);
+                    vData.clear();
+                    vData.resize(spho_last);
+                    vData[spho_install] = Qt::Unchecked;
+                    vData[spho_deinstall] = Qt::Checked;
+                    vData[spho_installed] = Qt::Checked;
+                    vData[spho_package] = "requires";
+                    vData[spho_category] = QString::fromStdString(spec->package_id()->canonical_form(paludis::idcf_full));
+                    node->appendChild(new Package(spec->package_id(),vData,ps_masked,pt_child,node));
+                    ++max_count;
+                }
+            }
             ++m_error_count;
+            emit appendPackage(node);
             break;
 
         case paludis::last_ulk:

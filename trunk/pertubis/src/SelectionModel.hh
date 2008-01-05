@@ -21,13 +21,12 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_SELECTION_MODEL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_SELECTION_MODEL_H 1
 
+#include "SelectionModel-fwd.hh"
 #include "PackageModel.hh"
 #include <QStringList>
 
 namespace pertubis
 {
-    class Package;
-    class TaskBox;
 
     /*! \brief holds package data fetched from paludis in a tree structure
      *
@@ -37,29 +36,23 @@ namespace pertubis
     {
         Q_OBJECT
 
-    public:
+        public:
 
-        enum SelectionPackageOrder
-        {
-            spo_selected,
-            spo_package,
-            spo_category,
-            spo_version,
-            spo_repository,
-            spo_last
-        };
 
-        SelectionModel(QObject* parent);
+            SelectionModel(QObject* parent);
 
-        virtual ~SelectionModel() {};
+            virtual ~SelectionModel() {};
 
-        ///@name Content information
-        ///@{
+            ///@name Content information
+            ///@{
 
-        QVariant data ( const QModelIndex & index,
-                        int role = Qt::DisplayRole ) const;
+            QVariant data ( const QModelIndex & index,
+                            int role = Qt::DisplayRole ) const;
+            ///@}
 
-        Qt::ItemFlags flags(const QModelIndex &index) const;
+        public slots:
+
+            virtual void clear();
     };
 }
 

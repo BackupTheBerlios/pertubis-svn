@@ -35,37 +35,6 @@ namespace pertubis
 {
     class RepositoryInfoThread;
 
-    class InfoDisplayer :
-            public paludis::ConstVisitor<paludis::MetadataKeyVisitorTypes>
-            {
-                RepositoryInfoThread* m_thread;
-                public:
-
-                    InfoDisplayer(RepositoryInfoThread* thread) : m_thread(thread)
-                    {
-                    }
-
-                    void visit(const paludis::MetadataSectionKey & k);
-                    void visit(const paludis::MetadataStringKey & k);
-                    void visit(const paludis::MetadataFSEntryKey & k);
-                    void visit(const paludis::MetadataPackageIDKey & k);
-                    void visit(const paludis::MetadataRepositoryMaskInfoKey & k);
-                    void visit(const paludis::MetadataContentsKey & k);
-                    void visit(const paludis::MetadataTimeKey & k);
-                    void visit(const paludis::MetadataSpecTreeKey<paludis::RestrictSpecTree> & k);
-                    void visit(const paludis::MetadataSpecTreeKey<paludis::LicenseSpecTree> & k);
-                    void visit(const paludis::MetadataSpecTreeKey<paludis::FetchableURISpecTree> & k);
-                    void visit(const paludis::MetadataSpecTreeKey<paludis::SimpleURISpecTree> & k);
-                    void visit(const paludis::MetadataSpecTreeKey<paludis::DependencySpecTree> & k);
-                    void visit(const paludis::MetadataSpecTreeKey<paludis::ProvideSpecTree> & k);
-                    void visit(const paludis::MetadataCollectionKey<paludis::FSEntrySequence> & k);
-                    void visit(const paludis::MetadataCollectionKey<paludis::PackageIDSequence> & k);
-                    void visit(const paludis::MetadataCollectionKey<paludis::KeywordNameSet> & k);
-                    void visit(const paludis::MetadataCollectionKey<paludis::IUseFlagSet> & k);
-                    void visit(const paludis::MetadataCollectionKey<paludis::UseFlagNameSet> & k);
-                    void visit(const paludis::MetadataCollectionKey<paludis::Set<std::string> > & k);
-
-            };
 
     /*! \brief not finished
      *

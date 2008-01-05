@@ -33,8 +33,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/environment-fwd.hh>
 
-class QAction;
-
 namespace pertubis
 {
     class Settings;
@@ -59,9 +57,7 @@ namespace pertubis
 
         /// creates a Selections object
         Selections(QObject* pobject,
-            QAction* action,
-            QString myname,
-            PackageOrder);
+            QString myname);
         ///@}
 
         virtual ~Selections() {}
@@ -74,7 +70,7 @@ namespace pertubis
          * \param mystate one of the values of Qt::CheckRole
          * We have to process every change here since only the task exactly knows how to deal with it. The task must be able to ask the item for the UpdateRange
          */
-        virtual bool changeStates(Package* item, int mystate)=0;
+        virtual bool changeStates(Package* item, int mystate, int column)=0;
 
         /*! \brief actually change
          *
@@ -83,20 +79,10 @@ namespace pertubis
 
         virtual void clear();
 
-        /*! \brief sets the action this task is referring to
-         *
-         */
-        void setAction(QAction* myaction) {m_action = myaction;}
-
         /*! \brief sets the name
          *
          */
         void setName(const QString & myname) {m_name = myname;}
-
-        /*! \brief sets Qt::Checked or Qt::Unchecked as result of hasEntry(item)
-         *
-         */
-        void prepareAction(const paludis::tr1::shared_ptr<const paludis::PackageID>& id);
 
         /*! \brief adds a selection specified by PackageID
          *
@@ -123,17 +109,12 @@ namespace pertubis
         */
         Qt::CheckState hasEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) const;
 
-        /*! \brief returns the action connected with this task
-         *
-         */
-        QAction* action() const {return m_action;}
-
         /*! \brief returns the literal name of this task
         *
         */
         QString name() const { return m_name;}
 
-        virtual bool available(Package* item) const = 0;
+        virtual bool available(Package* item, int column) const = 0;
 
         bool hasEntries() { return ! m_data.empty() ;}
 
@@ -149,12 +130,6 @@ namespace pertubis
 
         /// the translated name of this task
         QString         m_name;
-
-        /// the QAction which triggers the execution of this task
-        QAction*        m_action;
-
-        /// in which columns we should set a selection information when preparing a Package
-        PackageOrder   m_position;
 
     private:
 

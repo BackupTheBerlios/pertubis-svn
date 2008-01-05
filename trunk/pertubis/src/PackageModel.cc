@@ -40,24 +40,6 @@ pertubis::PackageModel::~PackageModel()
         delete m_root;
 }
 
-Qt::ItemFlags pertubis::PackageModel::flags(const QModelIndex &mix) const
-{
-    if (!mix.isValid() )
-        return 0;
-    switch (mix.column())
-    {
-        case po_install:
-        case po_deinstall:
-            return Qt::ItemIsSelectable | Qt::ItemIsEditable |  Qt::ItemIsUserCheckable;
-            break;
-        case po_installed:
-            return Qt::ItemIsSelectable | Qt::ItemIsEditable |  Qt::ItemIsUserCheckable;
-            break;
-        default:
-            return 0;
-    }
-}
-
 QVariant pertubis::PackageModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count() )
@@ -80,20 +62,11 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
             return QBrush(QColor(255,255,255));
     }
 
-    if (role == Qt::ForegroundRole)
+    else if (role == Qt::ForegroundRole)
     {
         switch (ix.column())
         {
-            case po_install:
-                return QBrush(QColor(0,255,0));
-                break;
-            case po_deinstall:
-                return QBrush(QColor(255,0,0));
-                break;
-            case po_installed:
-                return QBrush(QColor(0,0,255));
-                break;
-            case po_mask_reasons:
+            case pho_mask_reasons:
                 return QBrush(QColor(255,0,0));
                 break;
             default:
@@ -102,26 +75,26 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
         }
     }
 
-    if (role == Qt::CheckStateRole )
+    else if (role == Qt::CheckStateRole )
     {
         switch (ix.column())
         {
-            case po_install:
-            case po_deinstall:
-            case po_installed:
+            case pho_install:
+            case pho_deinstall:
+            case pho_installed:
                 return item->data(ix.column());
             default:
                 return QVariant();
         }
     }
 
-    if (role == Qt::DisplayRole )
+    else if (role == Qt::DisplayRole )
     {
         switch (ix.column())
         {
-            case po_install:
-            case po_deinstall:
-            case po_installed:
+            case pho_install:
+            case pho_deinstall:
+            case pho_installed:
                 return QVariant();
             default:
                 return item->data(ix.column());
@@ -156,8 +129,10 @@ QModelIndex pertubis::PackageModel::parent(const QModelIndex &mix) const
         return QModelIndex();
 
     Package *childItem = static_cast<Package*>(mix.internalPointer());
+    Q_ASSERT(childItem != 0);
     Package *parentItem = childItem->parent();
-
+    if (parentItem == 0)
+        return QModelIndex();
     if (parentItem == m_root)
         return QModelIndex();
 
@@ -188,6 +163,19 @@ int pertubis::PackageModel::columnCount(const QModelIndex &pmi) const
         return 0;
 }
 
+
+bool pertubis::PackageModel::setData( const QModelIndex & ix, const QVariant & value, int)
+{
+    qDebug() << "setData()" << ix << value;
+    if (! ix.isValid() )
+        return false;
+
+    Package * package(static_cast<Package*>(ix.internalPointer()));
+    package->setData(ix.column(), value);
+    emit layoutChanged();
+    return true;
+}
+
 void pertubis::PackageModel::clear()
 {
     if (m_root != 0)
@@ -198,22 +186,20 @@ void pertubis::PackageModel::clear()
     }
 }
 
-void pertubis::PackageModel::appendPackage(Package* item)
+void pertubis::PackageModel::appendPackage(Package* package)
 {
-    if (m_root != 0)
-    {
-        m_root->appendChild(item);
-        layoutChanged();
-    }
+    Q_ASSERT(m_root != 0);
+    Q_ASSERT(package != 0);
+    m_root->appendChild(package);
+    layoutChanged();
 }
 
-void pertubis::PackageModel::prependPackage(Package* item)
+void pertubis::PackageModel::prependPackage(Package* package)
 {
-    if (m_root != 0)
-    {
-        m_root->prependChild(item);
-        layoutChanged();
-    }
+    Q_ASSERT(m_root != 0);
+    Q_ASSERT(package != 0);
+    m_root->prependChild(package);
+    layoutChanged();
 }
 
 void pertubis::PackageModel::setHorizontalHeaderLabels ( const QStringList & labels )
@@ -244,21 +230,21 @@ pertubis::Package* pertubis::makePackage(paludis::tr1::shared_ptr<const paludis:
                                         Package* pitem,
                                         QString mask_reasons)
 {
-    Package* pack(new Package(id,QVector<QVariant>(po_last),mystate,pt_child,pitem));
-    pack->setData(po_install,install);
-    pack->setData(po_deinstall,deinstall);
-    pack->setData(po_package,package);
-    pack->setData(po_category,cat);
-    pack->setData(po_repository, "");
-    pack->setData(po_installed,QVariant(static_cast<int>(isInstalled)));
-    pack->setData(po_mask_reasons,mask_reasons);
+    Package* pack(new Package(id,QVector<QVariant>(pho_last),mystate,pt_parent,pitem));
+    pack->setData(pho_install,install);
+    pack->setData(pho_deinstall,deinstall);
+    pack->setData(pho_package,package);
+    pack->setData(pho_category,cat);
+    pack->setData(pho_repository, "");
+    pack->setData(pho_installed,QVariant(static_cast<int>(isInstalled)));
+    pack->setData(pho_mask_reasons,mask_reasons);
     return pack;
 }
 
 pertubis::Package* pertubis::makeRootPackage()
 {
     return new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
-                       QVector<QVariant>(po_last),
+                       QVector<QVariant>(pho_last),
                        ps_stable,
                        pt_parent,
                        0);
@@ -274,14 +260,14 @@ pertubis::Package* pertubis::makeVersionPackage(paludis::tr1::shared_ptr<const p
         Package* pitem,
         QString mask_reasons)
 {
-    Package* pack(new Package(id,QVector<QVariant>(po_last),mystate,pt_child,pitem));
-    pack->setData(po_install,install);
-    pack->setData(po_deinstall,deinstall);
-    pack->setData(po_package,version);
-    pack->setData(po_category,"");
-    pack->setData(po_repository, rep);
-    pack->setData(po_installed,QVariant(static_cast<int>(isInstalled)));
-    pack->setData(po_mask_reasons,mask_reasons);
+    Package* pack(new Package(id,QVector<QVariant>(pho_last),mystate,pt_child,pitem));
+    pack->setData(pho_install,install);
+    pack->setData(pho_deinstall,deinstall);
+    pack->setData(pho_package,version);
+    pack->setData(pho_category,"");
+    pack->setData(pho_repository, rep);
+    pack->setData(pho_installed,QVariant(static_cast<int>(isInstalled)));
+    pack->setData(pho_mask_reasons,mask_reasons);
     return pack;
 }
 

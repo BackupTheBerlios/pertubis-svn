@@ -26,22 +26,7 @@
 
 pertubis::SelectionModel::SelectionModel(QObject* pobj) : PackageModel(pobj)
 {
-}
-
-Qt::ItemFlags pertubis::SelectionModel::flags(const QModelIndex &mix) const
-{
-    if (!mix.isValid() )
-        return 0;
-    switch (mix.column())
-    {
-        case po_install:
-        case po_deinstall:
-            return Qt::ItemIsEditable | Qt::ItemIsUserCheckable;
-            break;
-            break;
-        default:
-            return 0;
-    }
+    clear();
 }
 
 QVariant pertubis::SelectionModel::data ( const QModelIndex & ix, int role) const
@@ -53,27 +38,61 @@ QVariant pertubis::SelectionModel::data ( const QModelIndex & ix, int role) cons
 
     if (role == Qt::BackgroundRole)
     {
-        if (0  == ix.row() % 2 )
-            return QBrush(QColor(225,225,225));
-        else
-            return QBrush(QColor(255,255,255));
+        if ( pt_child == item->itemType() ||
+             0 != item->childCount() )
+            return QBrush(QColor(255,200,200));
     }
 
     if (role == Qt::ForegroundRole)
     {
-        if ( pt_child &&
-             ( tr("block") == item->data(spo_package).toString()
-             || tr("masked")  == item->data(spo_package).toString()) )
+        if ( pho_installed == ix.column())
+            return QBrush(QColor(0,0,255));
+        if ( pt_child == item->itemType())
         {
             return QBrush(QColor(255,0,0));
         }
         return QBrush(QColor(0,0,0));
     }
 
+    if (role == Qt::CheckStateRole )
+    {
+        switch (ix.column())
+        {
+            case spho_install:
+            case spho_deinstall:
+            case spho_installed:
+                return item->data(ix.column());
+            default:
+                return QVariant();
+        }
+    }
+
     if (role == Qt::DisplayRole )
     {
-        return item->data(ix.column());
+        switch (ix.column())
+        {
+            case spho_install:
+            case spho_deinstall:
+            case spho_installed:
+                return QVariant();
+            default:
+                return item->data(ix.column());
+        }
     }
 
     return QVariant();
+}
+
+void pertubis::SelectionModel::clear()
+{
+    if (m_root != 0)
+    {
+        delete m_root;
+        m_root = new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
+            QVector<QVariant>(spho_last),
+            ps_stable,
+            pt_parent,
+            0);
+        reset();
+    }
 }

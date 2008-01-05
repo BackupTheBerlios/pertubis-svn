@@ -37,9 +37,7 @@ namespace pertubis
 
         /// std constructor
         InstallSelections(QObject* pobject,
-                          QAction* myaction,
-                          QString tname,
-                          PackageOrder pos);
+                          QString tname);
 
         virtual ~InstallSelections() {}
 
@@ -47,7 +45,7 @@ namespace pertubis
         ///@{
 
             /// returns if its not masked
-        bool available(Package* item) const;
+        bool available(Package* item, int column) const;
 
         ///@}
 
@@ -58,7 +56,7 @@ namespace pertubis
          * @param item the Package to be changed
          * @param mystate the new selection state for this Selections
          */
-        bool changeStates(Package* item, int mystate);
+        bool changeStates(Package* item, int mystate, int column);
 
         ///@}
 

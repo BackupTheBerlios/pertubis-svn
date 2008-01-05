@@ -44,6 +44,7 @@ pertubis::InstallSettingsModel::InstallSettingsModel(QObject *pobj) :
 
 pertubis::InstallSettingsModel::~InstallSettingsModel()
 {
+    qDebug() << "pertubis::InstallSettingsModel::~InstallSettingsModel()";
     saveSettings();
 }
 

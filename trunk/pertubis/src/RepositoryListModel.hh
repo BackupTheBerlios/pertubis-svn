@@ -36,6 +36,12 @@
 
 namespace pertubis
 {
+    enum RepositoryListModelHeaderOrder
+    {
+        rlmho_name=0,
+        rlmho_on=1
+    };
+
      /*! \brief Represents a repository
      *
      * \ingroup ItemModelClass
@@ -112,7 +118,7 @@ namespace pertubis
             ///@{
 
             /// creates a repository container class with an QObject parent object
-            RepositoryListModel( QObject* parent);
+            RepositoryListModel( QObject* parent, bool firstrun);
             ///@}
 
             /// destructor
@@ -180,6 +186,8 @@ namespace pertubis
 
             /// a set of selected repositories ( could be used as whitelist for filtering)
             QSet<QString>               m_activeRepos;
+
+            bool                        m_firstrun;
     };
 }
 

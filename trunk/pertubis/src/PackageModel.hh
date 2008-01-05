@@ -56,8 +56,6 @@ namespace pertubis
         QVariant data ( const QModelIndex & index,
                         int role = Qt::DisplayRole ) const;
 
-        Qt::ItemFlags flags(const QModelIndex &index) const;
-
         Package* getRootPackage() const { return m_root;}
 
         QModelIndex index ( int row, int column,
@@ -76,6 +74,9 @@ namespace pertubis
          ///@name Content modification
         ///@{
 
+        /// sets displayable column data at QModelIndex index
+        bool setData( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+
         bool setHeaderData ( int section,
                              Qt::Orientation orientation,
                              const QVariant & value,
@@ -87,15 +88,19 @@ namespace pertubis
 
     public slots:
 
-        void appendPackage(Package* item);
-        void prependPackage(Package* item);
+        virtual void appendPackage(Package* item);
+        virtual void prependPackage(Package* item);
         virtual void clear();
+        virtual void onUpdateModel() { emit layoutChanged();}
+
+    protected:
+
+        Package*        m_root;
 
     private:
 
         QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
 
-        Package*        m_root;
         QStringList     m_header;
     };
 

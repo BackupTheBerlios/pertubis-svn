@@ -23,62 +23,7 @@
 #include <QDebug>
 #include <paludis/package_id.hh>
 
-pertubis::ReportPackage::ReportPackage()  :
-        m_data(QList<QVariant>() << Qt::Checked<< "" << "" << ""),
-        m_id(paludis::tr1::shared_ptr<const paludis::PackageID>()),
-        m_parent(0)
-{
-}
-
-pertubis::ReportPackage::ReportPackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
-                    const QList<QVariant> &dats,
-                    bool istag)  :
-                    m_data(dats),
-                    m_id(id),
-                    m_isTag(istag)
-{
-}
-
+/// destructor
 pertubis::ReportPackage::~ReportPackage()
 {
-    m_parent=0;
-}
-
-int pertubis::ReportPackage::columnCount() const
-{
-    return m_data.count();
-}
-
-void pertubis::ReportPackage::addTag(ReportPackage *item)
-{
-    m_tags.append(item);
-    item->setParent(this);
-}
-
-QVariant pertubis::ReportPackage::data(int column) const
-{
-    return m_data.value(column);
-}
-
-pertubis::ReportPackage* pertubis::ReportPackage::parent() const
-{
-    return m_parent;
-}
-
-void pertubis::ReportPackage::setData(int column, QVariant dats)
-{
-    if (column < m_data.count() )
-    {
-        m_data.replace(column, dats);
-    }
-}
-
-void pertubis::ReportPackage::setParent(ReportPackage* pitem)
-{
-    m_parent=pitem;
-}
-
-paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::ReportPackage::ID() const
-{
-    return m_id;
 }

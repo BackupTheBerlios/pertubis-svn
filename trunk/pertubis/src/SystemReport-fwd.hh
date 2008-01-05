@@ -31,11 +31,9 @@ using namespace paludis;
 
 namespace pertubis
 {
+    class Package;
     class ReportPackage;
-
     class SystemReport;
-
-
 }
 
 #endif

@@ -18,41 +18,33 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H
-#define _PERTUBIS_ENTRY_PROTECTOR_OPTIONS_DELEGATE_H 1
+#ifndef _PERTUBIS_ENTRY_PROTECTOR_PAGE_H
+#define _PERTUBIS_ENTRY_PROTECTOR_PAGE_H 1
 
-#include <QItemDelegate>
-
-class QMenu;
-
-#include <QSize>
+#include <QWidget>
 
 namespace pertubis
 {
+    class MainWindow;
 
-    class PackageFilterModel;
-    /*! \brief Used for presenting a customized selections display in PackageView
-    * \ingroup ItemModelClass
-    */
-    class OptionsDelegate : public QItemDelegate
+    class Page : public QWidget
     {
         Q_OBJECT
+        public:
+            Page(QWidget* pobj, MainWindow* main) :
+                QWidget(pobj),
+                m_mainWindow(main)
+                {}
 
-    public:
+            virtual ~Page() {};
 
-        OptionsDelegate(QWidget *parent, PackageFilterModel* proxy);
+        public slots:
 
-        void paint( QPainter* painter,
-                    const QStyleOptionViewItem& option,
-                    const QModelIndex& index) const;
+            virtual void activatePage() {};
 
-//         QSize sizeHint(const QStyleOptionViewItem &option,
-//                        const QModelIndex &index) const;
+        protected:
 
-    private:
-
-        QMenu*            m_menu;
-        PackageFilterModel* m_proxy;
+            MainWindow*     m_mainWindow;
     };
 }
 

@@ -35,16 +35,16 @@ namespace pertubis
         ps_last
     };
 
-    enum PackageOrder
+    enum PackageHeaderOrder
     {
-        po_install,
-        po_deinstall,
-        po_installed,
-        po_package,
-        po_category,
-        po_repository,
-        po_mask_reasons,
-        po_last
+        pho_install,
+        pho_deinstall,
+        pho_installed,
+        pho_package,
+        pho_category,
+        pho_repository,
+        pho_mask_reasons,
+        pho_last
     };
 
     enum PackageType

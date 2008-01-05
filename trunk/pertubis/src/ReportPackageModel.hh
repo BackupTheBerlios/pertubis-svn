@@ -21,7 +21,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_REPORT_PACKAGE_MODEL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_REPORT_PACKAGE_MODEL_H 1
 
-#include <QAbstractItemModel>
+#include "PackageModel.hh"
 #include <QStringList>
 #include <QModelIndex>
 #include <QVariant>
@@ -36,7 +36,7 @@ namespace pertubis
      *
      * \ingroup PackageModelClass
      */
-    class ReportPackageModel : public QAbstractItemModel
+    class ReportPackageModel : public PackageModel
     {
         Q_OBJECT
 
@@ -44,7 +44,7 @@ namespace pertubis
 
             ReportPackageModel(QObject* parent);
 
-            ~ReportPackageModel();
+            virtual ~ReportPackageModel();
 
             ///@name Content information
             ///@{
@@ -52,32 +52,10 @@ namespace pertubis
             QVariant data ( const QModelIndex & index,
                             int role = Qt::DisplayRole ) const;
 
-            Qt::ItemFlags flags(const QModelIndex &index) const;
-
-            ReportPackage* getRootPackage() const { return m_root;}
-
-            QModelIndex index ( int row, int column,
-                                const QModelIndex & parent = QModelIndex() ) const;
-
-            QModelIndex parent ( const QModelIndex & index ) const;
-
-            int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
-
-            int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
-
-            QVariant headerData(int section,
-                                Qt::Orientation orientation,
-                                int role) const;
+            ///@}
 
             ///@name Content modification
             ///@{
-
-            bool setHeaderData ( int section,
-                                 Qt::Orientation orientation,
-                                 const QVariant & value,
-                                 int role = Qt::EditRole );
-
-            void setHorizontalHeaderLabels ( const QStringList & labels );
 
             void unselectAll();
 
@@ -85,15 +63,7 @@ namespace pertubis
 
         public slots:
 
-            void appendPackage(ReportPackage* item);
-            void clear();
-
-        private:
-
-            QModelIndex createIndex ( int row, int column, void * ptr = 0 ) const;
-
-            ReportPackage*  m_root;
-            QStringList     m_header;
+            virtual void clear();
     };
 }
 

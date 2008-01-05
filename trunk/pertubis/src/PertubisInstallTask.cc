@@ -19,61 +19,37 @@
 */
 
 #include "PertubisInstallTask.hh"
-#include "Selections.hh"
 #include "Package.hh"
-#include "FormatterUtils.hh"
-#include "MessageOutput.hh"
+#include "Selections.hh"
+#include "SelectionModel-fwd.hh"
 
-#include <algorithm>
-
-#include <paludis/hook.hh>
-#include <paludis/util/indirect_iterator.hh>
-#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/query.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/set.hh>
-#include <paludis/util/set-impl.hh>
-#include <paludis/util/system.hh>
-#include <paludis/util/tr1_functional.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/version_operator.hh>
-#include <paludis/version_requirements.hh>
 
-#include <QObject>
 #include <QDebug>
 #include <QString>
 #include <QStringList>
 
 
-namespace pertubis
+static pertubis::Package*  makeNodePackage(
+    paludis::tr1::shared_ptr<const paludis::PackageID> id,
+    Qt::CheckState install,
+    Qt::CheckState deinstall,
+    const QString & pack,
+    const QString & cat,
+    const QString & version,
+    const QString & repository)
 {
-    pertubis::Package*  makeNodePackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
-                                        Qt::CheckState install,
-                                        Qt::CheckState deinstall,
-                                        const QString & pack,
-                                        const QString & cat,
-                                        const QString & version,
-                                        const QString & repository)
-                                        {
-                                            QVector<QVariant> data(6);
-                                            data[po_install] = install;
-                                            data[po_deinstall] = deinstall;
-                                            data[po_package] = pack;
-                                            data[po_category] = cat;
-                                            data[po_repository] = version ;
-                                            data[po_installed] = repository;
-                                            return new Package(id,data,ps_stable,pt_node_only,0);
-                                        }
-}
-
-
-void pertubis::PertubisInstallTask::on_clean_fail(const paludis::DepListEntry &,
-                                      const paludis::PackageID& c,
-                                      const int /*x*/,
-                                      const int /*y*/,
-                                      const int /*s*/,
-                                      const int /*f*/)
-{
-    emit sendMessage(QString("(%1 Failed cleaning").arg(QString::fromStdString(stringify(c))));
+    using namespace pertubis;
+    QVector<QVariant> data(6);
+    data[pho_install] = install;
+    data[pho_deinstall] = deinstall;
+    data[pho_package] = pack;
+    data[pho_category] = cat;
+    data[pho_repository] = version ;
+    data[pho_installed] = repository;
+    return new Package(id,data,ps_stable,pt_node_only,0);
 }
 
 pertubis::PertubisInstallTask::PertubisInstallTask(QObject* pobj,
@@ -85,7 +61,8 @@ pertubis::PertubisInstallTask::PertubisInstallTask(QObject* pobj,
                         QObject(pobj),
                         paludis::InstallTask(env, options, destinations),
                         m_install(install),
-                        m_deinstall(deinstall)
+                        m_deinstall(deinstall),
+                        m_firstpass(true)
 {
     std::fill_n( m_counts, static_cast<int>(last_count), 0);
 }
@@ -94,69 +71,155 @@ void pertubis::PertubisInstallTask::on_installed_paludis()
 {
 }
 
-void pertubis::PertubisInstallTask::on_display_merge_list_pre()
-{
-    qDebug() << "on_display_merge_list_pre()";
-//     emit sendMessage(QString::fromStdString(header(color(std::string("These packages will be installed:"),"green"))));
-}
-
 void pertubis::PertubisInstallTask::on_display_merge_list_entry(const paludis::DepListEntry& e)
 {
-    qDebug() << "on_display_merge_list_entry()";
-    if ( paludis::dlk_already_installed != e.kind )
+    using namespace paludis;
+    DisplayMode m;
+
+    do
     {
-        QStringList tags;
-        if (paludis::dlk_block == e.kind)
+        switch (e.kind)
         {
-            m_deinstall->addEntry(e.package_id);
-            for (paludis::Set<paludis::DepTagEntry>::ConstIterator
-                 tag(e.tags->begin()),
-                     tag_end(e.tags->end()) ;
-                     tag != tag_end ; ++tag)
+            case dlk_provided:
+            case dlk_virtual:
+            case dlk_already_installed:
+//                 if (! want_full_install_reasons())
+                    return;
+//                 m = unimportant_entry;
+//                 continue;
+
+            case dlk_package:
+            case dlk_subpackage:
+                m = normal_entry;
+                continue;
+
+            case dlk_suggested:
+                m = suggested_entry;
+                continue;
+
+            case dlk_masked:
+            case dlk_block:
+                m = error_entry;
+                continue;
+
+            case last_dlk:
+                break;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad d.kind");
+    } while (false);
+
+    makePackage(e, m);
+}
+
+void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, DisplayMode m)
+{
+    using namespace paludis;
+    qDebug() << "on_display_merge_list_entry()";
+    QVector<QVariant> vdata(spho_last);
+    QStringList tags;
+    Package* node(new Package(e.package_id,QVector<QVariant>(spho_last),ps_stable,pt_parent,0));
+    node->setData(spho_install,m_install->hasEntry(e.package_id));
+    node->setData(spho_deinstall,Qt::Unchecked);
+    node->setData(spho_package,QString::fromStdString(stringify(e.package_id->name().package)));
+    node->setData(spho_category,QString::fromStdString(stringify(e.package_id->name().category)));
+    tr1::shared_ptr<RepositoryName> repo;
+    if (e.destination)
+        repo.reset(new RepositoryName(e.destination->name()));
+    tr1::shared_ptr<const PackageIDSequence> existing_repo(environment()->package_database()->
+            query(query::Matches(repo ?
+                        make_package_dep_spec().package(e.package_id->name()).repository(*repo) :
+            make_package_dep_spec().package(e.package_id->name())),
+                                  qo_order_by_version));
+
+    tr1::shared_ptr<const PackageIDSequence> existing_slot_repo(environment()->package_database()->
+            query(query::Matches(repo ?
+                        make_package_dep_spec().package(e.package_id->name()).slot(e.package_id->slot()).repository(*repo) :
+            make_package_dep_spec().package(e.package_id->name()).slot(e.package_id->slot())),
+                                  qo_order_by_version));
+
+    switch (m)
+    {
+//         case unimportant_entry:
+//             if (e.kind == dlk_provided)
+//                 output_no_endl(render_as_unimportant(" [provided " +
+//                     stringify(d.package_id->canonical_form(idcf_version)) + "]"));
+//             else
+//                 output_no_endl(render_as_unimportant(" [- " +
+//                         stringify(d.package_id->canonical_form(idcf_version)) + "]"));
+//             break;
+//
+//         case suggested_entry:
+//             output_no_endl(render_as_update_mode(" [suggestion " +
+//                     stringify(d.package_id->canonical_form(idcf_version)) + "]"));
+//             set_count<suggested_count>(count<suggested_count>() + 1);
+//             break;
+        case normal_entry:
+            if (!m_firstpass)
+                return;
+
+            if ( existing_repo->empty())
             {
-                if (tag->tag->category() != "dependency")
-                    continue;
-                tags.push_back(QString::fromStdString(tag->tag->short_text()));
+                node->setData(spho_new_version,QString::fromStdString(stringify(e.package_id->version())));
+                node->setData(spho_change_sign, "N");
             }
-        }
-        else
-            m_install->addEntry(e.package_id);
+            else if ( existing_slot_repo->empty())
+            {
+                node->setData(spho_change_sign,"S");
+                node->setData(spho_new_version,QString::fromStdString(stringify(e.package_id->version())));
+            }
+            else if ( (*existing_slot_repo->last())->version() < e.package_id->version())
+            {
+                node->setData(spho_old_version,QString::fromStdString(stringify((*existing_slot_repo->last())->version())));
+                node->setData(spho_change_sign, "U");
+                node->setData(spho_new_version,QString::fromStdString(stringify(e.package_id->version())));
+            }
+            else if ((*existing_slot_repo->last())->version() > e.package_id->version())
+            {
+                node->setData(spho_old_version, QString::fromStdString(stringify((*existing_slot_repo->last())->version())));
+                node->setData(spho_change_sign,"D");
+                node->setData(spho_new_version, QString::fromStdString(stringify(e.package_id->version())));
+            }
+            else
+            {
+                node->setData(spho_change_sign, QString("R "));
+                node->setData(spho_new_version, QString::fromStdString(stringify(e.package_id->version())));
+            }
 
-        Package* node(makeNodePackage(e.package_id,
-                    m_install->hasEntry(e.package_id),
-                    m_deinstall->hasEntry(e.package_id),
-                    QString::fromStdString(paludis::stringify(e.package_id->name().package)),
-                    QString::fromStdString(paludis::stringify(e.package_id->name().category)),
-                    QString::fromStdString(paludis::stringify(e.package_id->version())),
-                    QString::fromStdString(paludis::stringify(e.package_id->repository()->name()))));
+            node->setData(spho_repository, QString::fromStdString(stringify(e.package_id->repository()->name())));
+            emit appendPackage(node);
 
-        if (paludis::dlk_block == e.kind)
-        {
-            QVector<QVariant> data(4);
-            data[0] = Qt::Unchecked;
-            data[1] = Qt::Unchecked;
-            data[2] = tr("block");
-            data[3] = tags.join(", ");
-            Package* blockTag (new Package(e.package_id,data,ps_masked,pt_child,node));
-            node->appendChild(blockTag);
-        }
+            break;
 
-        node->setData(po_install,m_install->hasEntry(e.package_id));
-        node->setData(po_deinstall,m_deinstall->hasEntry(e.package_id));
-        emit appendPackage(node);
+        case error_entry:
+
+            if (dlk_block == e.kind)
+            {
+                if (!m_firstpass)
+                    return;
+                m_deinstall->addEntry(e.package_id);
+                node->setData(spho_deinstall,Qt::Checked);
+                for (Set<DepTagEntry>::ConstIterator
+                     tag(e.tags->begin()),
+                         tag_end(e.tags->end()) ;
+                         tag != tag_end ; ++tag)
+                {
+                    if (tag->tag->category() != "dependency")
+                        continue;
+                    tags.push_back(QString::fromStdString(tag->tag->short_text()));
+                }
+
+                vdata[spho_install] = Qt::Unchecked;
+                vdata[spho_deinstall] = Qt::Unchecked;
+                vdata[spho_installed] = Qt::Unchecked;
+                vdata[spho_package] = tr("block");
+                vdata[spho_category] = tags.join(", ");
+                node->appendChild(new Package(e.package_id,vdata,ps_masked,pt_child,node));
+            }
+            break;
+        default:
+            ;
     }
-}
-
-void pertubis::PertubisInstallTask::on_build_deplist_pre()
-{
-    qDebug() << "on_build_deplist_pre()";
-//     emit sendMessage("Building dependency list");
-}
-
-void pertubis::PertubisInstallTask::on_build_cleanlist_pre(const paludis::DepListEntry & d)
-{
-    qDebug() << "on_build_cleanlist_pre()";
-    emit sendMessage(QString::fromStdString(header(color(std::string("Cleaning stale versions after installing ") + paludis::stringify(*d.package_id),"green"))));
 }
 
 void pertubis::PertubisInstallTask::display_merge_list_post_counts()
@@ -194,24 +257,4 @@ void pertubis::PertubisInstallTask::display_merge_list_post_counts()
     if (count<suggested_count>())
         text.append(tr("suggestion(s)") + " " + count<suggested_count>() );
     emit depListResult(text);
-}
-
-void pertubis::PertubisInstallTask::on_clean_all_pre(const paludis::DepListEntry& /*d*/,
-                                         const paludis::PackageIDSequence & c)
-{
-    qDebug() << "on_clean_all_pre()";
-    using namespace paludis::tr1::placeholders;
-    std::for_each(paludis::indirect_iterator(c.begin()), indirect_iterator(c.end()),
-                  paludis::tr1::bind(paludis::tr1::mem_fn(&PertubisInstallTask::display_one_clean_all_pre_list_entry), this, _1));
-}
-
-void pertubis::PertubisInstallTask::on_no_clean_needed(const paludis::DepListEntry &)
-{
-    qDebug() << "on_no_clean_needed()";
-    emit sendMessage(QString::fromStdString(header(color(std::string("No cleaning required"),std::string("green")))));
-}
-
-void pertubis::PertubisInstallTask::display_one_clean_all_pre_list_entry(const paludis::PackageID & c)
-{
-    emit sendMessage(QString::fromStdString(color(paludis::stringify(c),"blue")));
 }
