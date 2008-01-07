@@ -19,6 +19,7 @@
 */
 
 #include "PackageBrowsingPage.hh"
+#include "DetailsThread.hh"
 #include "CategoryFilterModel.hh"
 #include "PackageFilterModel.hh"
 #include "CategoryModel.hh"
@@ -35,6 +36,7 @@
 
 #include <QModelIndex>
 #include <QTableView>
+#include <QTextBrowser>
 #include <QHeaderView>
 #include <QLayout>
 #include <QTreeView>
@@ -72,10 +74,10 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
             tr("mask reason") <<
             tr("change"));
 
-    m_packageView = new QTreeView(this);
-    m_packageView->setItemsExpandable(true);
     m_packageFilterModel = new PackageFilterModel(this,pho_repository);
     m_packageFilterModel->setSourceModel(m_packageModel);
+    m_packageView = new QTreeView(this);
+    m_packageView->setItemsExpandable(true);
     m_packageView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_packageView->setItemDelegate(new PackageModelDelegate(this,m_packageFilterModel,pho_install,pho_deinstall,pho_installed));
     m_packageView->setModel(m_packageFilterModel);
@@ -84,16 +86,25 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
     m_packageView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_packageView->setFont(myfont);
 
+    qDebug() << "pertubis::PackageBrowsingPage::PackageBrowsingPage 1";
+
+    m_details = new QTextBrowser(this);
+    m_details->setOpenLinks(false);
+
+    m_vSplit = new QSplitter(Qt::Vertical,pobj);
+    m_vSplit->addWidget(m_packageView);
+    m_vSplit->addWidget(m_details);
+
     m_hSplit = new QSplitter(Qt::Horizontal,pobj);
     m_hSplit->addWidget(m_categoryView);
-    m_hSplit->addWidget(m_packageView);
+    m_hSplit->addWidget(m_vSplit);
+
     QHBoxLayout* mylayout(new QHBoxLayout);
     mylayout->addWidget(m_hSplit);
     setLayout(mylayout);
 
     m_packageViewThread = new PackagesThread(this,m_mainWindow->m_env,m_mainWindow->m_installSelections,m_mainWindow->m_deinstallSelections);
     m_categoryThread = new CategoryThread(this,m_mainWindow->m_env);
-
     connect(m_categoryView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
@@ -122,12 +133,21 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
     connect(m_packageView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
-            SLOT(onPackageViewUserInteraction( const QModelIndex& )) );
+            SLOT(onViewUserInteraction( const QModelIndex& )) );
+
+    connect(m_mainWindow->m_detailsThread,
+            SIGNAL(sendResult(QString)),
+            this,
+            SLOT(displayDetails(QString)));
+
+    qDebug() << "pertubis::SystemReportPage::PackageBrowsingPage() 1";
 
     loadSettings();
 
-    show();
+    qDebug() << "pertubis::SystemReportPage::PackageBrowsingPage() 2";
 
+    show();
+    qDebug() << "pertubis::SystemReportPage::PackageBrowsingPage() 3";
     m_categoryThread->start();
     if (!m_currentCat.isEmpty())
         m_packageViewThread->start(m_currentCat);
@@ -156,13 +176,22 @@ void pertubis::PackageBrowsingPage::activatePage()
 {
 }
 
+void pertubis::PackageBrowsingPage::displayDetails(QString details)
+{
+    if (details.isEmpty())
+        return;
+    m_details->setText(details);
+    m_mainWindow->onEndOfPaludisAction();
+}
+
 void pertubis::PackageBrowsingPage::loadSettings()
 {
     qDebug() << "pertubis::PackageBrowsingPage::loadSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "PackageBrowsingPage" );
     m_currentCat = settings.value("currentCategory","").toString();
-    m_hSplit->restoreState(settings.value("splitterSizes").toByteArray());
+    m_hSplit->restoreState(settings.value("hSplit").toByteArray());
+    m_vSplit->restoreState(settings.value("vSplit").toByteArray());
     settings.endGroup();
     qDebug() << "pertubis::PackageBrowsingPage::doneSettings() - done";
 }
@@ -172,7 +201,8 @@ void pertubis::PackageBrowsingPage::saveSettings()
     qDebug() << "pertubis::PackageBrowsingPage::saveSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "PackageBrowsingPage" );
-    settings.setValue("splitterSizes", m_hSplit->saveState());
+    settings.setValue("hSplit", m_hSplit->saveState());
+    settings.setValue("vSplit", m_vSplit->saveState());
     settings.setValue("currentCategory", m_currentCat);
     settings.endGroup();
     qDebug() << "pertubis::PackageBrowsingPage::saveSettings() - done";
@@ -196,7 +226,7 @@ void pertubis::PackageBrowsingPage::onCategoryChanged( const QModelIndex &)
     m_packageViewThread->start(m_currentCat);
 }
 
-void pertubis::PackageBrowsingPage::onPackageViewUserInteraction(const QModelIndex & mix)
+void pertubis::PackageBrowsingPage::onViewUserInteraction(const QModelIndex & mix)
 {
     QModelIndex ix(m_packageFilterModel->mapToSource(mix));
     if (! ix.isValid())

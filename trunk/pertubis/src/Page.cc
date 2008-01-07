@@ -20,3 +20,6 @@
 
 #include "Page.hh"
 
+pertubis::Page::~Page()
+{
+}

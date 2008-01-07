@@ -26,6 +26,8 @@
 
 class QModelIndex;
 class QTreeView;
+class QSplitter;
+class QTextBrowser;
 
 namespace pertubis
 {
@@ -55,14 +57,19 @@ namespace pertubis
 
             void onSystemReport();
 
+            void displayDetails(QString details);
+
         private:
 
             void loadSettings();
             void saveSettings();
 
-            ReportPackageModel*     m_reportModel;
+            QSplitter*              m_hSplit;
+            QTextBrowser*           m_details;
             QTreeView*              m_reportView;
+            ReportPackageModel*     m_reportModel;
             SystemReport*           m_reportThread;
+
     };
 }
 

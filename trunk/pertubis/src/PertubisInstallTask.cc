@@ -140,22 +140,8 @@ void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, 
 
     switch (m)
     {
-//         case unimportant_entry:
-//             if (e.kind == dlk_provided)
-//                 output_no_endl(render_as_unimportant(" [provided " +
-//                     stringify(d.package_id->canonical_form(idcf_version)) + "]"));
-//             else
-//                 output_no_endl(render_as_unimportant(" [- " +
-//                         stringify(d.package_id->canonical_form(idcf_version)) + "]"));
-//             break;
-//
-//         case suggested_entry:
-//             output_no_endl(render_as_update_mode(" [suggestion " +
-//                     stringify(d.package_id->canonical_form(idcf_version)) + "]"));
-//             set_count<suggested_count>(count<suggested_count>() + 1);
-//             break;
         case normal_entry:
-            if (!m_firstpass)
+            if (m_firstpass)
                 return;
 
             if ( existing_repo->empty())
@@ -195,10 +181,12 @@ void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, 
 
             if (dlk_block == e.kind)
             {
-                if (!m_firstpass)
+                if (m_firstpass)
+                {
+                    m_deinstall->addEntry(e.package_id);
                     return;
-                m_deinstall->addEntry(e.package_id);
-                node->setData(spho_deinstall,Qt::Checked);
+                }
+//                 node->setData(spho_deinstall,Qt::Checked);
                 for (Set<DepTagEntry>::ConstIterator
                      tag(e.tags->begin()),
                          tag_end(e.tags->end()) ;

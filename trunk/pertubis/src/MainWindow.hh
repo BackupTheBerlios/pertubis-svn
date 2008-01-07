@@ -73,11 +73,13 @@ class QMenu;
 class QSplitter;
 class QString;
 class QTabWidget;
-class QTextBrowser;
+
 class QToolBar;
 
 namespace pertubis
 {
+    class PertubisInstallTask;
+    class PertubisDeinstallTask;
     class DeinstallSelections;
     class DetailsThread;
     class InstallSelections;
@@ -118,7 +120,7 @@ namespace pertubis
         InstallSelections*      m_installSelections;
         SettingsPage*           m_settingsPage;
         MessageOutput*          m_output;
-        QTextBrowser*           m_details;
+        DetailsThread*          m_detailsThread;
         QSystemTrayIcon*        m_sysTray;
 
         bool                    m_firstrun;
@@ -142,9 +144,13 @@ namespace pertubis
 
         void pageChanged(int);
 
-        /// displayes item details
-        void displayPackageDetails(QString text);
         void showDetails(const paludis::tr1::shared_ptr<const paludis::PackageID> & id);
+
+        /// starts the installation of the user selected targets
+        void startInstallTask(bool pretend, QString target ="",bool firstpass=false);
+
+        /// starts the deinstallation of the user selected targets
+        void startDeinstallTask(bool pretend);
 
         ///@}
 
@@ -181,15 +187,15 @@ namespace pertubis
         void saveSettings();
         ///@}
 
-        DetailsThread*          m_detailsThread;
         PackageBrowsingPage*    m_packageBrowsingPage;
         SearchPage*             m_searchPage;
         SystemReportPage*       m_systemReportPage;
         SelectionPage*          m_selectionsPage;
         RepositoryPage*         m_repositoryPage;
+        PertubisInstallTask*    m_installTask;
+        PertubisDeinstallTask*    m_deinstallTask;
         QMenu*                  m_trayMenu;
         QTabWidget*             m_pages;
-        QSplitter*              m_vSplit;
     };
 }
 

@@ -18,6 +18,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "DetailsThread.hh"
 #include "CategoryFilterModel.hh"
 #include "CategoryModel.hh"
 #include "DeinstallSelections.hh"
@@ -41,6 +42,8 @@
 #include <QModelIndex>
 #include <QStatusBar>
 #include <QProgressBar>
+#include <QTextBrowser>
+#include <QSplitter>
 #include <QPushButton>
 #include <QSettings>
 #include <QTreeView>
@@ -88,9 +91,16 @@ pertubis::SearchPage::SearchPage(QWidget* pobj, MainWindow * mainWindow) :
     slayout->addWidget(m_line);
     slayout->addWidget(m_bStart);
 
+    m_details = new QTextBrowser(this);
+    m_details->setOpenLinks(false);
+
+    m_hSplit = new QSplitter(Qt::Horizontal,pobj);
+    m_hSplit->addWidget(m_searchView);
+    m_hSplit->addWidget(m_details);
+
     QVBoxLayout* mylayout(new QVBoxLayout);
     mylayout->addLayout(slayout);
-    mylayout->addWidget(m_searchView);
+    mylayout->addWidget(m_hSplit);
     setLayout(mylayout);
 
     m_bar = new QProgressBar(this);
@@ -100,7 +110,7 @@ pertubis::SearchPage::SearchPage(QWidget* pobj, MainWindow * mainWindow) :
     connect(m_searchView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
-            SLOT(onSearchViewUserInteraction( const QModelIndex& )) );
+            SLOT(onViewUserInteraction( const QModelIndex& )) );
 
     connect(m_searchThread,
             SIGNAL(packageResult(Package*)),
@@ -126,6 +136,12 @@ pertubis::SearchPage::SearchPage(QWidget* pobj, MainWindow * mainWindow) :
             SIGNAL(returnPressed()),
             this,
             SLOT(onSearch()));
+
+    connect(m_mainWindow->m_detailsThread,
+            SIGNAL(sendResult(QString)),
+            this,
+            SLOT(displayDetails(QString)));
+
     qDebug() << "pertubis::SystemReportPage::SearchPage()" << pobj;
 }
 
@@ -138,15 +154,10 @@ pertubis::SearchPage::~SearchPage()
 //         m_searchThread->wait();
 //     }
     delete m_searchThread;
-    qDebug() << "pertubis::SearchPage::~SearchPage() 1";
-    qDebug() << "pertubis::SearchPage::~SearchPage() 2";
     delete m_searchModel;
-    qDebug() << "pertubis::SearchPage::~SearchPage() 3";
     delete m_searchFilterModel;
     delete m_bar;
     delete m_bStart;
-    qDebug() << "pertubis::SearchPage::~SearchPage() 4";
-    qDebug() << "pertubis::SearchPage::~SearchPage() done";
 }
 
 void pertubis::SearchPage::restartFilters(const QSet<QString> & set)
@@ -160,7 +171,7 @@ void pertubis::SearchPage::activatePage()
     m_line->setFocus(Qt::ActiveWindowFocusReason);
 }
 
-void pertubis::SearchPage::onSearchViewUserInteraction(const QModelIndex & mix)
+void pertubis::SearchPage::onViewUserInteraction(const QModelIndex & mix)
 {
     QModelIndex ix(m_searchFilterModel->mapToSource(mix));
     if (! ix.isValid())
@@ -187,6 +198,14 @@ void pertubis::SearchPage::onSearchViewUserInteraction(const QModelIndex & mix)
     {
         m_mainWindow->showDetails(package->ID());
     }
+}
+
+void pertubis::SearchPage::displayDetails(QString details)
+{
+    if (details.isEmpty())
+        return;
+    m_details->setText(details);
+    m_mainWindow->onEndOfPaludisAction();
 }
 
 void pertubis::SearchPage::onSearch()

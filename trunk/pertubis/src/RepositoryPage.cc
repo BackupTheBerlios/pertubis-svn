@@ -35,7 +35,7 @@
 #include <QFont>
 #include <QLineEdit>
 #include <QHeaderView>
-#include <QGridLayout>
+#include <QLayout>
 #include <QDebug>
 #include <QMessageBox>
 #include <QModelIndex>
@@ -82,10 +82,6 @@ pertubis::RepositoryPage::RepositoryPage(QWidget* pobj, MainWindow * mainWindow)
     p.setColor(QPalette::Base,QColor(170,170,170)); // background color  = black
     m_repoInfoView->setPalette(p);
 
-    QHBoxLayout* left = new QHBoxLayout;
-    left->addWidget(m_repoListView);
-    left->addWidget(m_repoInfoView);
-
     qDebug() << "pertubis::MainWindow::createRepositoryView() 2";
 
     m_repoListView->verticalHeader()->setVisible(false);
@@ -94,11 +90,20 @@ pertubis::RepositoryPage::RepositoryPage(QWidget* pobj, MainWindow * mainWindow)
     m_repoListThread = new RepositoryListThread(this,m_mainWindow->m_env);
     m_repoInfoThread = new RepositoryInfoThread(this,m_mainWindow->m_env);
 
-    QGridLayout* mylayout(new QGridLayout(this));
-    mylayout->addWidget(acSync,0,0);
-    mylayout->addWidget(m_repoListView,1,0);
-    mylayout->addWidget(m_repoInfoView,1,1);
-    setLayout(mylayout);
+    QHBoxLayout* buttonLayout(new QHBoxLayout);
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(acSync);
+
+    QHBoxLayout* viewLayout(new QHBoxLayout);
+    viewLayout->addWidget(m_repoListView);
+    viewLayout->addWidget(m_repoInfoView);
+
+    QVBoxLayout* mainLayout(new QVBoxLayout);
+
+    mainLayout->addLayout(buttonLayout);
+    mainLayout->addLayout(viewLayout);
+
+    setLayout(mainLayout);
 
     m_syncTask = new PertubisSyncTask(m_mainWindow->m_env,this);
 

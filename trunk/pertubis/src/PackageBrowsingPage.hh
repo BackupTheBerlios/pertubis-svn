@@ -21,14 +21,20 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_BROWSING_PAGE_H
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_BROWSING_PAGE_H 1
 
-#include <QString>
 #include "Page.hh"
+
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/package_id-fwd.hh>
+#include <QString>
+
 
 class QModelIndex;
 class QSplitter;
+class QTextBrowser;
 class QString;
 class QTableView;
 class QTreeView;
+
 
 namespace pertubis
 {
@@ -60,9 +66,12 @@ namespace pertubis
 
             void onCategoryChanged( const QModelIndex &);
 
-            void onPackageViewUserInteraction(const QModelIndex & index);
+            void onViewUserInteraction(const QModelIndex & index);
 
             void displayCategoryChanged();
+
+             /// displayes item details
+            void displayDetails(QString text);
 
         private:
             void loadSettings();
@@ -76,7 +85,9 @@ namespace pertubis
             Package*                m_current;
             PackageModel*           m_packageModel;
             PackagesThread*         m_packageViewThread;
+            QTextBrowser*           m_details;
             QSplitter*              m_hSplit;
+            QSplitter*              m_vSplit;
             QTableView*             m_categoryView;
             QTreeView*              m_packageView;
 

@@ -84,6 +84,7 @@ namespace pertubis
 
         public slots:
 
+            void activatePage() {}
             void clear();
             void append(QString text);
 

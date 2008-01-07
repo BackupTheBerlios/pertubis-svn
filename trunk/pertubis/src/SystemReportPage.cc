@@ -19,6 +19,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "DetailsThread.hh"
 #include "SystemReportPage.hh"
 #include "SystemReport.hh"
 #include "ReportPackage.hh"
@@ -33,8 +34,10 @@
 #include <QPushButton>
 #include <QHeaderView>
 #include <QLayout>
+#include <QSplitter>
 #include <QTreeView>
 #include <QFont>
+#include <QTextBrowser>
 
 pertubis::SystemReportPage::SystemReportPage(QWidget* pobj, MainWindow * mainWindow) :
         Page(pobj,mainWindow),
@@ -60,16 +63,32 @@ pertubis::SystemReportPage::SystemReportPage(QWidget* pobj, MainWindow * mainWin
     myfont.setBold(true);
     m_reportView->setFont(myfont);
 
+    m_details = new QTextBrowser(this);
+    m_details->setOpenLinks(false);
+
+    m_hSplit = new QSplitter(Qt::Horizontal,pobj);
+    m_hSplit->addWidget(m_reportView);
+    m_hSplit->addWidget(m_details);
+
     QPushButton* b(new QPushButton(tr("&Start"),this));
+
+    QHBoxLayout* blayout(new QHBoxLayout);
+    blayout->addStretch();
+    blayout->addWidget(b);
 
     connect(b,
             SIGNAL(pressed()),
             this,
             SLOT(onSystemReport()));
 
+    connect(m_mainWindow->m_detailsThread,
+            SIGNAL(sendResult(QString)),
+            this,
+            SLOT(displayDetails(QString)));
+
     QVBoxLayout* mylayout(new QVBoxLayout);
-    mylayout->addWidget(b);
-    mylayout->addWidget(m_reportView);
+    mylayout->addLayout(blayout);
+    mylayout->addWidget(m_hSplit);
     setLayout(mylayout);
 
     qDebug() << "pertubis::SystemReportPage::SystemReportPage()" << pobj;
@@ -110,7 +129,7 @@ void pertubis::SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
             return;
         QXmlInputSource inputSource(&file);
         QXmlSimpleReader reader;
-        GlsaParser handler(m_mainWindow->m_details);
+        GlsaParser handler(m_details);
         reader.setContentHandler(&handler);
         reader.setErrorHandler(&handler);
         reader.parse(inputSource);
@@ -122,6 +141,7 @@ void pertubis::SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
 void pertubis::SystemReportPage::displaySystemReportFinished(int total, int count)
 {
     m_mainWindow->onEndOfPaludisAction();
+    m_reportView->expandAll();
     m_mainWindow->displayNotice(tr("%1 installed packages processed, %2 issues found").arg(total).arg(count));
 }
 
@@ -143,18 +163,18 @@ void pertubis::SystemReportPage::onSystemReport()
 
     connect(m_reportView,
             SIGNAL(clicked( const QModelIndex&)),
-                   this,
-                   SLOT(onViewUserInteraction( const QModelIndex& )) );
+            this,
+            SLOT(onViewUserInteraction( const QModelIndex& )) );
 
     connect(m_reportThread,
             SIGNAL(appendPackage(Package*)),
-                   m_reportModel,
-                   SLOT(appendPackage(Package*)));
+            m_reportModel,
+            SLOT(appendPackage(Package*)));
 
     connect(m_reportThread,
             SIGNAL(finished(int,int)),
-                   this,
-                   SLOT(displaySystemReportFinished(int,int)));
+            this,
+            SLOT(displaySystemReportFinished(int,int)));
 
     qDebug() << "pertubis::SystemReportPage::activatePage() 1";
     m_mainWindow->onStartOfPaludisAction();
@@ -163,3 +183,10 @@ void pertubis::SystemReportPage::onSystemReport()
     qDebug() << "pertubis::SystemReportPage::activatePage() 4";
 }
 
+void pertubis::SystemReportPage::displayDetails(QString details)
+{
+    if (details.isEmpty())
+        return;
+    m_details->setText(details);
+    m_mainWindow->onEndOfPaludisAction();
+}

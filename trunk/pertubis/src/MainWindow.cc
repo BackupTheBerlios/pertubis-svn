@@ -159,10 +159,10 @@ pertubis::MainWindow::~MainWindow()
 
 void pertubis::MainWindow::initGUI()
 {
-    m_output = new MessageOutput(this,this);
+
     m_env = paludis::EnvironmentMaker::get_instance()->make_from_spec("");
     qRegisterMetaType<QList<RepositoryListItem*> >("QList<RepositoryListItem*>");
-    qRegisterMetaType<QList<QVariantList> >("QList<QVariantList>");
+    qRegisterMetaType<QList<RepositoryListItem*> >("QList<QVariantList>");
     qRegisterMetaType<Qt::ToolButtonStyle>("Qt::ToolButtonStyle");
     qRegisterMetaType<QMap<QString, QSet<QString> > >("QMap<QString, QSet<QString> >");
     m_settingsPage = new SettingsPage(this,this);
@@ -194,7 +194,10 @@ void pertubis::MainWindow::initGUI()
     m_installSelections = new InstallSelections( this,tr("install"));
     m_deinstallSelections = new DeinstallSelections( this,tr("deinstall"));
 
+    m_detailsThread = new DetailsThread(this,m_env);
+
     m_pages = new QTabWidget(this);
+    m_output = new MessageOutput(this,this);
     m_packageBrowsingPage = new PackageBrowsingPage(this,this);
     m_searchPage = new SearchPage(this,this);
     m_repositoryPage = new RepositoryPage(this,this);
@@ -209,17 +212,8 @@ void pertubis::MainWindow::initGUI()
     m_pages->addTab(m_settingsPage, QPixmap(":images/settings.png"), tr("Settings") );
 
     //
-    m_details = new QTextBrowser(this);
-    m_details->setOpenLinks(false);
-    m_detailsThread = new DetailsThread(this,m_env);
 
-    m_vSplit = new QSplitter(Qt::Vertical,this);
-    m_vSplit->addWidget(m_pages);
-    m_vSplit->addWidget(m_details);
-
-    //
-
-    setCentralWidget(m_vSplit);
+    setCentralWidget(m_pages);
     show();
 
     connect(acQuit,
@@ -236,11 +230,6 @@ void pertubis::MainWindow::initGUI()
             SIGNAL(currentChanged(int)),
             this,
             SLOT(pageChanged(int)));
-
-    connect(m_detailsThread,
-            SIGNAL(sendResult(QString)),
-            this,
-            SLOT(displayPackageDetails(QString)));
 
     connect(m_repositoryPage,
             SIGNAL(sendFilters(QSet<QString>)),
@@ -272,7 +261,6 @@ void pertubis::MainWindow::loadSettings()
         resize(settings.value("size",QVariant(QSize(800,600))).toSize());
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
         QByteArray tmp(settings.value("mystate",true).toByteArray());
-        m_vSplit->restoreState(settings.value("splitterSizes").toByteArray());
     settings.endGroup();
     restoreState(tmp);
 }
@@ -284,7 +272,6 @@ void pertubis::MainWindow::saveSettings()
         settings.setValue("mystate", saveState() );
         settings.setValue("size", size() );
         settings.setValue("pos", pos());
-        settings.setValue("splitterSizes", m_vSplit->saveState());
     settings.endGroup();
     qDebug() << "pertubis::MainWindow::saveSettings() - done";
 }
@@ -292,14 +279,6 @@ void pertubis::MainWindow::saveSettings()
 void pertubis::MainWindow::displayNotice(const QString & notice)
 {
     statusBar()->showMessage(notice);
-}
-
-void pertubis::MainWindow::displayPackageDetails(QString details)
-{
-    if (details.isEmpty())
-        return;
-    m_details->setText(details);
-    onEndOfPaludisAction();
 }
 
 void pertubis::MainWindow::onEndOfPaludisAction()
@@ -314,9 +293,96 @@ void pertubis::MainWindow::onStartOfPaludisAction()
     m_output->setPollingOn();
 }
 
+void pertubis::MainWindow::startInstallTask(bool pretend, QString target, bool firstpass)
+{
+    qDebug() << "pertubis::MainWindow::startInstallTask()";
+
+    paludis::DepListOptions options;
+    PertubisInstallTask mytask(this,m_env.get(),options,m_env->default_destinations(),m_installSelections,m_deinstallSelections);
+    m_settingsPage->m_installView->m_model->populate_install_task(m_env.get(),mytask);
+    m_settingsPage->m_depListView->populate_install_task(m_env.get(),mytask);
+    mytask.set_pretend(pretend);
+
+    connect(&mytask,
+            SIGNAL(sendMessage(QString)),
+            m_output,
+            SLOT(append(QString)));
+
+    connect(&mytask,
+            SIGNAL(appendPackage(Package*)),
+            m_selectionsPage->m_selectionModel,
+            SLOT(appendPackage(Package*)));
+
+    if (target.isEmpty() &&
+        0 < m_installSelections->entryCount())
+    {
+        for (paludis::PackageIDSet::ConstIterator i(m_installSelections->entriesBegin()), i_end(m_installSelections->entriesEnd());
+             i != i_end ; ++i)
+        {
+            mytask.add_exact_package(*i);
+        }
+        mytask.start(firstpass);
+    }
+    else
+    {
+        try
+        {
+            mytask.add_target(target.toStdString());
+            mytask.start(firstpass);
+        }
+        catch(...)
+        {
+        }
+    }
+    qDebug() << "pertubis::MainWindow::startInstallTask() - done";
+}
+
+void pertubis::MainWindow::startDeinstallTask(bool pretend)
+{
+    qDebug() << "pertubis::MainWindow::startDeinstallTask() - start";
+
+    PertubisDeinstallTask mytask(this,m_env,m_installSelections,m_deinstallSelections);
+    mytask.set_pretend(m_settingsPage->m_installView->m_model->m_pretend);
+    mytask.set_no_config_protect(m_settingsPage->m_installView->m_model->m_config);
+    mytask.set_preserve_world(m_settingsPage->m_installView->m_model->m_preserve);
+    mytask.set_with_unused_dependencies(m_settingsPage->m_deinstallView->m_model->m_unusedDeps);
+    mytask.set_with_dependencies(m_settingsPage->m_deinstallView->m_model->m_deps);
+    mytask.set_check_safety(! m_settingsPage->m_deinstallView->m_model->m_unsafeUninstall);
+    mytask.set_all_versions( m_settingsPage->m_deinstallView->m_model->m_allVersions);
+    mytask.set_pretend(pretend);
+
+    connect(&mytask,
+            SIGNAL(message(QString)),
+            m_output,
+            SLOT(append(QString)));
+
+    connect(&mytask,
+            SIGNAL(appendPackage(Package*)),
+            m_selectionsPage->m_selectionModel,
+            SLOT(appendPackage(Package*)));
+
+    if (m_deinstallSelections->entryCount() > 0)
+    {
+        for (paludis::PackageIDSet::ConstIterator i(m_deinstallSelections->entriesBegin()), i_end(m_deinstallSelections->entriesEnd());
+             i != i_end ; ++i)
+        {
+            std::string target("=" + stringify((*i)->name()) + "-" + (*i)->canonical_form(paludis::idcf_version));
+            mytask.add_target(target);
+        }
+        mytask.execute();
+    }
+    qDebug() << "pertubis::MainWindow::startDeinstallTask() - done";
+}
+
 void pertubis::MainWindow::onQuit()
 {
     QApplication::instance()->quit();
+}
+
+void pertubis::MainWindow::showDetails(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
+{
+    onStartOfPaludisAction();
+    m_detailsThread->start(id);
 }
 
 void pertubis::MainWindow::pageChanged(int widget_index)
@@ -324,12 +390,6 @@ void pertubis::MainWindow::pageChanged(int widget_index)
     Page* page(static_cast<Page*>(m_pages->widget(widget_index)));
     if (page != 0)
         page->activatePage();
-}
-
-void pertubis::MainWindow::showDetails(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
-{
-    onStartOfPaludisAction();
-    m_detailsThread->start(id);
 }
 
 void pertubis::MainWindow::toggleTrayIcon(QSystemTrayIcon::ActivationReason reason)

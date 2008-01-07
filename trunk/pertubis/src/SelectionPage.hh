@@ -25,6 +25,8 @@
 
 class QModelIndex;
 class QTreeView;
+class QTextBrowser;
+class QSplitter;
 
 namespace pertubis
 {
@@ -46,8 +48,13 @@ namespace pertubis
             /// the work to do when a user clicks on the selection display
             void onSelectionViewUserInteraction(const QModelIndex & mix);
 
-            /// start selection tasks
             void activatePage();
+
+             /// displayes item details
+            void displayDetails(QString text);
+
+            /// start selection tasks
+            void onShowSelections();
 
         private:
 
@@ -55,6 +62,8 @@ namespace pertubis
             void saveSettings();
 
             QTreeView*              m_selectionView;
+            QSplitter*              m_hSplit;
+            QTextBrowser*           m_details;
     };
 }
 

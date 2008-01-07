@@ -36,11 +36,11 @@ namespace pertubis
                 m_mainWindow(main)
                 {}
 
-            virtual ~Page() {};
+            virtual ~Page();
 
         public slots:
 
-            virtual void activatePage() {};
+            virtual void activatePage() = 0;
 
         protected:
 

@@ -18,9 +18,11 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "DetailsThread.hh"
 #include "SelectionPage.hh"
 #include "Package.hh"
 #include "MainWindow.hh"
+#include "FormatterUtils.hh"
 #include "MessageOutput.hh"
 #include "DeinstallSelections.hh"
 #include "InstallSelections.hh"
@@ -30,7 +32,10 @@
 #include <QModelIndex>
 #include <QHeaderView>
 #include <QLayout>
+#include <QPushButton>
+#include <QSplitter>
 #include <QFont>
+#include <QTextBrowser>
 
 pertubis::SelectionPage::SelectionPage(QWidget* pobj, MainWindow * mainWindow) :
         Page(pobj,mainWindow)
@@ -55,18 +60,50 @@ pertubis::SelectionPage::SelectionPage(QWidget* pobj, MainWindow * mainWindow) :
     m_selectionView->header()->setResizeMode(QHeaderView::ResizeToContents);
     m_selectionView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
+    QPushButton* acShow = new QPushButton(QPixmap(":images/selections.png"),tr("start"),this);
+    acShow->setToolTip(html_tooltip(tr("Control your install and deinstall selections and watch out for blocks and errors!"),acShow->text()));
+
     QFont myfont(m_selectionView->font());
     myfont.setBold(true);
     m_selectionView->setFont(myfont);
 
-    QHBoxLayout* mylayout(new QHBoxLayout);
-    mylayout->addWidget(m_selectionView);
-    setLayout(mylayout);
+    m_details = new QTextBrowser(this);
+    m_details->setOpenLinks(false);
+
+    m_hSplit = new QSplitter(Qt::Horizontal,pobj);
+    m_hSplit->addWidget(m_selectionView);
+    m_hSplit->addWidget(m_details);
+
+    QHBoxLayout* buttonLayout(new QHBoxLayout);
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(acShow);
+
+    QHBoxLayout* viewLayout(new QHBoxLayout);
+    viewLayout->addWidget(m_selectionView);
+    viewLayout->addWidget(m_details);
+
+    QVBoxLayout* mainLayout(new QVBoxLayout);
+
+    mainLayout->addLayout(buttonLayout);
+    mainLayout->addLayout(viewLayout);
+
+    setLayout(mainLayout);
 
     connect(m_selectionView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
             SLOT(onSelectionViewUserInteraction( const QModelIndex& )) );
+
+    connect(acShow,
+            SIGNAL(pressed()),
+            this,
+            SLOT(onShowSelections()));
+
+    connect(m_mainWindow->m_detailsThread,
+            SIGNAL(sendResult(QString)),
+            this,
+            SLOT(displayDetails(QString)));
+
     qDebug() << "pertubis::SystemReportPage::SelectionPage()" << pobj;
 }
 
@@ -105,12 +142,23 @@ void pertubis::SelectionPage::onSelectionViewUserInteraction(const QModelIndex &
 
 void pertubis::SelectionPage::activatePage()
 {
+}
+
+void pertubis::SelectionPage::onShowSelections()
+{
     m_mainWindow->onStartOfPaludisAction();
     m_selectionModel->clear();
     m_mainWindow->m_output->clear();
     m_mainWindow->setPage(m_selectionView);
-//     startInstallTask(true,"",true);
-//     m_mainWindow->startDeinstallTask(true);
-//     startInstallTask(true,"",false);
+    m_mainWindow->startDeinstallTask(true);
+    m_mainWindow->startInstallTask(true,"",false);
+    m_mainWindow->onEndOfPaludisAction();
+}
+
+void pertubis::SelectionPage::displayDetails(QString details)
+{
+    if (details.isEmpty())
+        return;
+    m_details->setText(details);
     m_mainWindow->onEndOfPaludisAction();
 }

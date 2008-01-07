@@ -39,19 +39,19 @@ namespace
         public paludis::ConstVisitor<paludis::MetadataKeyVisitorTypes>
     {
         private:
+            const paludis::tr1::shared_ptr<const paludis::PackageID> id;
             pertubis::DetailsThread* thread;
             const paludis::Environment * const env;
-            const paludis::tr1::shared_ptr<const paludis::PackageID> id;
             const paludis::MetadataKeyType type;
 
         public:
-            Displayer(pertubis::DetailsThread *  t,
+            Displayer(const paludis::tr1::shared_ptr<const paludis::PackageID> & i,
+                    pertubis::DetailsThread *  t,
                     const paludis::Environment * const e,
-                    const paludis::tr1::shared_ptr<const paludis::PackageID> & i,
                     const paludis::MetadataKeyType k) :
+                    id(i),
                     thread(t),
                     env(e),
-                    id(i),
                     type(k)
             {
             }
@@ -165,8 +165,11 @@ namespace
 
             void visit(const paludis::MetadataCollectionKey<paludis::PackageIDSequence> & k)
             {
-                pertubis::HtmlFormatter formatter;
-                thread->appendOutput(pertubis::make_row(k.human_name(),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
+                if (k.type() == type)
+                {
+                    pertubis::HtmlFormatter formatter;
+                    thread->appendOutput(pertubis::make_row(k.human_name(),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
+                }
             }
 
             void visit(const paludis::MetadataPackageIDKey & k)
@@ -189,7 +192,7 @@ namespace
                 {
                     thread->appendOutput(pertubis::make_row(k.human_name() + ":","",std::string("bgcolor=\"#ddddff\"")));
 
-                    Displayer v(thread, env, id, type);
+                    Displayer v(id, thread, env, type);
                     std::for_each(paludis::indirect_iterator(k.begin_metadata()), paludis::indirect_iterator(k.end_metadata()),
                                   paludis::accept_visitor(v));
                 }
@@ -211,16 +214,18 @@ namespace
 
             void visit(const paludis::MetadataRepositoryMaskInfoKey & k)
             {
-                if (k.type() == type)
-                    thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()->mask_file),std::string("bgcolor=\"#ddddff\"")));
+//                 if (k.type() == type)
+//                     thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()->mask_file),std::string("bgcolor=\"#ddddff\"")));
             }
 
             void visit(const paludis::MetadataContentsKey &)
             {
             }
 
-            void visit(const paludis::MetadataFSEntryKey &)
+            void visit(const paludis::MetadataFSEntryKey & k)
             {
+//                 if (k.type() == type)
+//                     thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()),std::string("bgcolor=\"#ddddff\"")));
             }
     };
 }
@@ -247,11 +252,15 @@ void pertubis::DetailsThread::run()
     <colgroup><col width=\"30%\"><col width=\"70%\"></colgroup><tr><th bgcolor=\"#5a3aca\"></th><th bgcolor=\"#000000\" align=\"left\"><font color=\"#ffffff\">%1-%2</font></th>\n</tr><tbody>\n")
             .arg(stringify(m_id->name()).c_str()).arg(stringify(m_id->version()).c_str());
 
-    Displayer ds(this,m_env.get(),m_id,paludis::mkt_significant);
-    Displayer dn(this,m_env.get(),m_id,paludis::mkt_normal);
-    Displayer dp(this,m_env.get(),m_id,paludis::mkt_dependencies);
+    Displayer ds(m_id,this,m_env.get(),paludis::mkt_significant);
+    Displayer dn(m_id,this,m_env.get(),paludis::mkt_normal);
+    Displayer di(m_id,this,m_env.get(),paludis::mkt_internal);
+    Displayer da(m_id,this,m_env.get(),paludis::mkt_author);
+    Displayer dp(m_id,this,m_env.get(),paludis::mkt_dependencies);
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(ds));
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dn));
+    std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(di));
+    std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(da));
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dp));
 
     m_text.append("</tbody></table></body></html>\n");

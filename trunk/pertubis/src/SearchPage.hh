@@ -30,7 +30,8 @@ class QTreeView;
 class QLineEdit;
 class QProgressBar;
 class QPushButton;
-
+class QTextBrowser;
+class QSplitter;
 
 namespace pertubis
 {
@@ -49,7 +50,7 @@ namespace pertubis
 
         public slots:
 
-            void onSearchViewUserInteraction(const QModelIndex & index);
+            void onViewUserInteraction(const QModelIndex & index);
 
             /// shows a succcessful search
             void displaySearchFinished(int count);
@@ -59,6 +60,9 @@ namespace pertubis
 
             /// stopping a search
             void onSearchStopped();
+
+            /// displayes item details
+            void displayDetails(QString details);
 
             void activatePage();
 
@@ -71,9 +75,12 @@ namespace pertubis
             QProgressBar*           m_bar;
             PackageModel*           m_searchModel;
             QTreeView*              m_searchView;
+
+            QTextBrowser*           m_details;
             SearchThread*           m_searchThread;
             QLineEdit*              m_line;
             QPushButton*            m_bStart;
+            QSplitter*              m_hSplit;
             PackageFilterModel*     m_searchFilterModel;
     };
 }
