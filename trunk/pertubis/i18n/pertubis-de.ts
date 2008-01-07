@@ -12,12 +12,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/MainWindow.cc~" line="107"/>
+        <location filename="../src/MainWindow.cc" line="98"/>
         <source>unpriviledged mode</source>
         <translation>unpreviligierter Betriebsmodus</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="108"/>
+        <location filename="../src/MainWindow.cc" line="99"/>
         <source>You are a normal user. Some features will only work for administrators ( root )</source>
         <translation>Sie sind ein normaler Benutzer. Einige Funktionen werden nur für Adminstratoren funktionieren</translation>
     </message>
@@ -25,52 +25,52 @@
 <context>
     <name>pertubis::DeinstallSettingsView</name>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="74"/>
+        <location filename="../src/DeinstallSettings.cc" line="75"/>
         <source>with deps</source>
         <translation>mit Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="75"/>
+        <location filename="../src/DeinstallSettings.cc" line="76"/>
         <source>with unused deps</source>
         <translation>mit ungenutzen Abhänigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="76"/>
+        <location filename="../src/DeinstallSettings.cc" line="77"/>
         <source>all versions</source>
         <translation>alle Versionen</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="77"/>
+        <location filename="../src/DeinstallSettings.cc" line="78"/>
         <source>ignore forward dependencies </source>
         <translation>ignoriere Vorraus-Abängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="79"/>
+        <location filename="../src/DeinstallSettings.cc" line="80"/>
         <source>Deinstallation Settings</source>
         <translation>Deinstallationseinstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="80"/>
+        <location filename="../src/DeinstallSettings.cc" line="81"/>
         <source>Options which are relevant for deinstallation.</source>
         <translation>Einstellungen, die für Deinstallation relevant sind.</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="81"/>
+        <location filename="../src/DeinstallSettings.cc" line="82"/>
         <source>Also uninstall packages that depend upon the target</source>
         <translation>Deinstalliere auch Pakete, die von dem Ziel abhängen</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="83"/>
+        <location filename="../src/DeinstallSettings.cc" line="84"/>
         <source>Also uninstall any dependencies of the target that are no longer used</source>
         <translation>Deinstalliere auch alle Abhängigkeiten des Ziels, die nicht länger gebraucht werden</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="85"/>
+        <location filename="../src/DeinstallSettings.cc" line="86"/>
         <source>Uninstall all versions of a package</source>
         <translation>Deinstalliere alle Versionen des Pakets</translation>
     </message>
     <message>
-        <location filename="../src/DeinstallSettings.cc" line="87"/>
+        <location filename="../src/DeinstallSettings.cc" line="88"/>
         <source>Allow deinstallation of packagess, which are dependencies of other packages</source>
         <translation>Erlaube Deinstallation von Pakten, die Abhängigkeiten anderer Pakete sind</translation>
     </message>
@@ -78,297 +78,297 @@
 <context>
     <name>pertubis::DepListSettingsView</name>
     <message>
-        <location filename="../src/DepListSettings.cc" line="455"/>
+        <location filename="../src/DepListSettings.cc" line="457"/>
         <source>Dependency List Settings</source>
         <translation>Einstellungen Abhängkeitsliste</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="462"/>
+        <location filename="../src/DepListSettings.cc" line="464"/>
         <source>pre</source>
         <translation>davor</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="463"/>
+        <location filename="../src/DepListSettings.cc" line="465"/>
         <source>pre-or-post</source>
         <translation>devor-oder-danach</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="464"/>
+        <location filename="../src/DepListSettings.cc" line="466"/>
         <source>post</source>
         <translation>post</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="465"/>
+        <location filename="../src/DepListSettings.cc" line="467"/>
         <source>try-post</source>
         <translation>try-post</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="514"/>
+        <location filename="../src/DepListSettings.cc" line="516"/>
         <source>discard</source>
         <translation>ablehen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="461"/>
+        <location filename="../src/DepListSettings.cc" line="463"/>
         <source>Discard</source>
         <translation>Ablehnen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="462"/>
+        <location filename="../src/DepListSettings.cc" line="464"/>
         <source>As pre dependencies</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="464"/>
+        <location filename="../src/DepListSettings.cc" line="466"/>
         <source>As pre dependencies, or post dependencies where needed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="465"/>
+        <location filename="../src/DepListSettings.cc" line="467"/>
         <source>As post dependencies</source>
         <translation>Als Post-Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="473"/>
+        <location filename="../src/DepListSettings.cc" line="475"/>
         <source>Override default behaviour for all dependency classes</source>
         <translation>Überschreibe das verhalten für alle Abhängigkeitsklassen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="477"/>
+        <location filename="../src/DepListSettings.cc" line="479"/>
         <source>How to handle runtime dependencies for installed packages</source>
         <translation>Wie Laufzeitabhängigkeiten für installierte Pakete gehandhabt werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="481"/>
+        <location filename="../src/DepListSettings.cc" line="483"/>
         <source>How to handle post dependencies for installed packages</source>
         <translation>Wie Post-Abhängigkeiten für installierte Pakete gehandhabt werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="485"/>
+        <location filename="../src/DepListSettings.cc" line="487"/>
         <source>How to handle pre dependencies for uninstalled packagess</source>
         <translation>Wie Vor-Abhängigkeiten für nicht installierte Pakete gehandhabt werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="489"/>
+        <location filename="../src/DepListSettings.cc" line="491"/>
         <source>How to handle runtime dependencies for uninstalled packages</source>
         <translation>Wie Laufzeitabhängigkeiten für installierte Pakete gehandhabt werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="493"/>
+        <location filename="../src/DepListSettings.cc" line="495"/>
         <source>How to handle post dependencies for uninstalled packages</source>
         <translation>Wie Post-Abhängigkeiten für nicht installierte Pakete gehandhabt werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="497"/>
+        <location filename="../src/DepListSettings.cc" line="499"/>
         <source>How to handle suggested dependencies for uninstalled packages (only with --dl-suggested install)</source>
         <translation>Wie empfohlene Abhängigkeiten für nicht installierte Pakete gehandhabt werden sollen ( nur bei ----dl-suggested install)</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="500"/>
+        <location filename="../src/DepListSettings.cc" line="502"/>
         <source>How to handle suggested dependencies</source>
         <translation>Wie empfohlene Abhängigkeiten gehandhabt werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="501"/>
+        <location filename="../src/DepListSettings.cc" line="503"/>
         <source>show</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="502"/>
+        <location filename="../src/DepListSettings.cc" line="504"/>
         <source>install</source>
         <translation>installiere</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="506"/>
+        <location filename="../src/DepListSettings.cc" line="508"/>
         <source>How to handle circular dependencies</source>
         <translation>Wie zirkuläre Abhängigkeiten gehandhabt werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="571"/>
+        <location filename="../src/DepListSettings.cc" line="573"/>
         <source>error</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="511"/>
+        <location filename="../src/DepListSettings.cc" line="513"/>
         <source>How to handle blocks</source>
         <translation>Wie Blockierungen gehandhabt werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="512"/>
+        <location filename="../src/DepListSettings.cc" line="514"/>
         <source>accumulate</source>
         <translation>sammeln</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="517"/>
+        <location filename="../src/DepListSettings.cc" line="519"/>
         <source>Zero or more mask kinds that can be overridden as necessary (default: tilde-keyword and license)</source>
         <translation>Keine oder mehr Masikierungsarten können nach bedarf überschrieben werden ( Voreinstellung:  tilde-keyword und license)</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="538"/>
+        <location filename="../src/DepListSettings.cc" line="540"/>
         <source>When to fall back to installed packages</source>
         <translation>Wann auf installierte Pakete ausgeweicht werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="539"/>
+        <location filename="../src/DepListSettings.cc" line="541"/>
         <source>as-needed-except-targets</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="576"/>
+        <location filename="../src/DepListSettings.cc" line="578"/>
         <source>as-needed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="559"/>
+        <location filename="../src/DepListSettings.cc" line="561"/>
         <source>never</source>
         <translation>niemals</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="544"/>
+        <location filename="../src/DepListSettings.cc" line="546"/>
         <source>When to reinstall packages</source>
         <translation>Wann Pakete reinstalliert werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="575"/>
+        <location filename="../src/DepListSettings.cc" line="577"/>
         <source>always</source>
         <translation>immer</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="547"/>
+        <location filename="../src/DepListSettings.cc" line="549"/>
         <source>if-use-changed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="550"/>
+        <location filename="../src/DepListSettings.cc" line="552"/>
         <source>When to reinstall scm packages</source>
         <translation>Wann Scm-Pakete reinstalliert werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="553"/>
+        <location filename="../src/DepListSettings.cc" line="555"/>
         <source>daily</source>
         <translation>täglich</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="554"/>
+        <location filename="../src/DepListSettings.cc" line="556"/>
         <source>weekly</source>
         <translation>wöchendlich</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="557"/>
+        <location filename="../src/DepListSettings.cc" line="559"/>
         <source>Whether to reinstall targets</source>
         <translation>Ob Pakete reinstalliert werden sollen</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="558"/>
+        <location filename="../src/DepListSettings.cc" line="560"/>
         <source>auto</source>
         <translation>automatisch</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="563"/>
+        <location filename="../src/DepListSettings.cc" line="565"/>
         <source>When to upgrade packages</source>
         <translation>Wann Pakete aktualisiert werden sollen ( höhere Version)</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="574"/>
+        <location filename="../src/DepListSettings.cc" line="576"/>
         <source>When to downgrade packages</source>
         <translation>Wann Pakete niegrigerer Version installiert werden sollen  ( downgrade )</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="570"/>
+        <location filename="../src/DepListSettings.cc" line="572"/>
         <source>warning</source>
         <translation>Warnung</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="580"/>
+        <location filename="../src/DepListSettings.cc" line="582"/>
         <source>Blocks Dependencies</source>
         <translation>Block Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="583"/>
+        <location filename="../src/DepListSettings.cc" line="585"/>
         <source>Circular Dependencies</source>
         <translation>Zirkuläre Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="586"/>
+        <location filename="../src/DepListSettings.cc" line="588"/>
         <source>Default Dependencies</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="588"/>
+        <location filename="../src/DepListSettings.cc" line="590"/>
         <source>Downgrade</source>
         <translation>Deaktualisierung</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="590"/>
+        <location filename="../src/DepListSettings.cc" line="592"/>
         <source>Fallback</source>
         <translation>Ausweichlösung</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="592"/>
+        <location filename="../src/DepListSettings.cc" line="594"/>
         <source>Installed Dependencies Post</source>
         <translation>Installierte Post-Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="594"/>
+        <location filename="../src/DepListSettings.cc" line="596"/>
         <source>Installed Dependencies Pre</source>
         <translation>Nicht installierte Pre-Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="596"/>
+        <location filename="../src/DepListSettings.cc" line="598"/>
         <source>Installed Dependencies Runtime</source>
         <translation>Installierte Laufzeit-Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="598"/>
+        <location filename="../src/DepListSettings.cc" line="600"/>
         <source>New Slots</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="600"/>
+        <location filename="../src/DepListSettings.cc" line="602"/>
         <source>Reinstall</source>
         <translation>neu installieren</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="602"/>
+        <location filename="../src/DepListSettings.cc" line="604"/>
         <source>Reinstall scm</source>
         <translation>installiere scm neu</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="604"/>
+        <location filename="../src/DepListSettings.cc" line="606"/>
         <source>Reinstall Target</source>
         <translation>reinstalliere Ziel neu</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="606"/>
+        <location filename="../src/DepListSettings.cc" line="608"/>
         <source>Suggested Dependencies</source>
         <translation>Vorgeschlagene Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="608"/>
+        <location filename="../src/DepListSettings.cc" line="610"/>
         <source>Uninstalled Dependencies Post</source>
         <translation>Nicht installierte Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="610"/>
+        <location filename="../src/DepListSettings.cc" line="612"/>
         <source>Unistalled Dependencies Pre</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="612"/>
+        <location filename="../src/DepListSettings.cc" line="614"/>
         <source>Uninstalled Dependencies Runtime</source>
         <translation>Nicht installierte Laufzeitabhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="614"/>
+        <location filename="../src/DepListSettings.cc" line="616"/>
         <source>Uninstalled Dependencies Suggested</source>
         <translation>Nichtinstallierte vorgeschlagene Abhängigkeiten</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="616"/>
+        <location filename="../src/DepListSettings.cc" line="618"/>
         <source>Upgrade</source>
         <translation>Aktualisierung</translation>
     </message>
     <message>
-        <location filename="../src/DepListSettings.cc" line="618"/>
+        <location filename="../src/DepListSettings.cc" line="620"/>
         <source>Override Masks</source>
         <translation></translation>
     </message>
@@ -376,77 +376,77 @@
 <context>
     <name>pertubis::GeneralSettingsView</name>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="111"/>
+        <location filename="../src/GeneralSettings.cc" line="115"/>
         <source>General Settings</source>
         <translation>Allgemeine Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="113"/>
+        <location filename="../src/GeneralSettings.cc" line="117"/>
         <source>icon only</source>
         <translation>nur Symbole</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="114"/>
+        <location filename="../src/GeneralSettings.cc" line="118"/>
         <source>text under icon</source>
         <translation>Text unter Symbol</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="129"/>
+        <location filename="../src/GeneralSettings.cc" line="133"/>
         <source>left</source>
         <translation>links</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="130"/>
+        <location filename="../src/GeneralSettings.cc" line="134"/>
         <source>right</source>
         <translation>rechts</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="134"/>
+        <location filename="../src/GeneralSettings.cc" line="138"/>
         <source>toolbar display mode</source>
         <translation>Anzeigemodus Werkzeuleiste</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="136"/>
+        <location filename="../src/GeneralSettings.cc" line="140"/>
         <source>category dock position</source>
         <translation>Position des Kategoriendockfensters</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="138"/>
+        <location filename="../src/GeneralSettings.cc" line="142"/>
         <source>repository dock position</source>
         <translation>Position des Repositorydockfensters</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="140"/>
+        <location filename="../src/GeneralSettings.cc" line="144"/>
         <source>set dock position</source>
         <translation>Position des Setdockfensters</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="142"/>
+        <location filename="../src/GeneralSettings.cc" line="146"/>
         <source>glsa dock position</source>
         <translation>Position des Sicherheitsdockfensters</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="147"/>
+        <location filename="../src/GeneralSettings.cc" line="151"/>
         <source>Language Settings</source>
         <translation>Spracheinstellungen</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="236"/>
+        <location filename="../src/GeneralSettings.cc" line="240"/>
         <source>pertubis info</source>
         <translation>pertubis Informationen</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="236"/>
+        <location filename="../src/GeneralSettings.cc" line="240"/>
         <source>language setting changes will be applied after a restart</source>
         <translation>Änderungen der Spracheinstellungen werden erst nach einem Neustart wirksam</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="148"/>
+        <location filename="../src/GeneralSettings.cc" line="152"/>
         <source>Language</source>
         <translation>Sprache</translation>
     </message>
     <message>
-        <location filename="../src/GeneralSettings.cc" line="110"/>
+        <location filename="../src/GeneralSettings.cc" line="114"/>
         <source>english</source>
         <translation>Deutsch</translation>
     </message>
@@ -454,102 +454,102 @@
 <context>
     <name>pertubis::InstallSettingsView</name>
     <message>
-        <location filename="../src/InstallSettings.cc" line="130"/>
+        <location filename="../src/InstallSettings.cc" line="131"/>
         <source>fetch</source>
         <translation>Herunterladen</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="134"/>
+        <location filename="../src/InstallSettings.cc" line="135"/>
         <source>no-config-protection</source>
         <translation>no-config-protection</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="137"/>
+        <location filename="../src/InstallSettings.cc" line="138"/>
         <source>no-safe-resume</source>
         <translation>no-safe-resume</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="141"/>
+        <location filename="../src/InstallSettings.cc" line="142"/>
         <source>pretend</source>
         <translation>Testlauf (pretend)</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="187"/>
+        <location filename="../src/InstallSettings.cc" line="188"/>
         <source>Installation Settings</source>
         <translation>Installationseinstellungen</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="155"/>
+        <location filename="../src/InstallSettings.cc" line="156"/>
         <source>debug build</source>
         <translation>baue als Testat (debug)</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="156"/>
+        <location filename="../src/InstallSettings.cc" line="157"/>
         <source>none</source>
         <translation>none</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="157"/>
+        <location filename="../src/InstallSettings.cc" line="158"/>
         <source>split</source>
         <translation>split</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="158"/>
+        <location filename="../src/InstallSettings.cc" line="159"/>
         <source>internal</source>
         <translation>internal</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="131"/>
+        <location filename="../src/InstallSettings.cc" line="132"/>
         <source>Only fetch sources; don&apos;t install anything</source>
         <translation>Lade nur die Quellen herunter; installiere nichts</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="135"/>
+        <location filename="../src/InstallSettings.cc" line="136"/>
         <source>Disable config file protection (dangerous)</source>
         <translation>Schalte den Kofigurationsschutz aus (gefährlich)</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="138"/>
+        <location filename="../src/InstallSettings.cc" line="139"/>
         <source>Do not allow interrupted downloads to be resumed</source>
         <translation>Erlaube unterbrochenen Downloads nicht, wieder aufgenommen zu werden</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="142"/>
+        <location filename="../src/InstallSettings.cc" line="143"/>
         <source>Pretend only</source>
         <translation>Testmodus</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="162"/>
+        <location filename="../src/InstallSettings.cc" line="163"/>
         <source>Whether to continue after a fetch or install error</source>
         <translation>Ob nach einem Fehler weitergemacht werden soll</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="178"/>
+        <location filename="../src/InstallSettings.cc" line="179"/>
         <source>debug</source>
         <translation>Debug</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="180"/>
+        <location filename="../src/InstallSettings.cc" line="181"/>
         <source>continue on failure</source>
         <translation>Mache weiter nach Fehler</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="182"/>
+        <location filename="../src/InstallSettings.cc" line="183"/>
         <source>checks</source>
         <translation>Tests</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="184"/>
+        <location filename="../src/InstallSettings.cc" line="185"/>
         <source>world spec</source>
         <translation>alternative Installationsbezeichnung</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="145"/>
+        <location filename="../src/InstallSettings.cc" line="146"/>
         <source>preserve world</source>
         <translation>bewahre World</translation>
     </message>
     <message>
-        <location filename="../src/InstallSettings.cc" line="146"/>
+        <location filename="../src/InstallSettings.cc" line="147"/>
         <source>Whether to preserve the world file when (un)installing packages</source>
         <translation>Ob die Weltdatei bei (De)installationen bewahrt werden soll</translation>
     </message>
@@ -557,487 +557,168 @@
 <context>
     <name>pertubis::MainWindow</name>
     <message>
-        <location filename="../src/MainWindow.cc~" line="786"/>
+        <location filename="../src/MainWindow.cc" line="182"/>
         <source>pertubis :: Main Window</source>
         <translation>pertubis :: Hauptfenster</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="484"/>
-        <source>category</source>
-        <translation>Kategorie</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="313"/>
-        <source>category list</source>
-        <translation>Kategorienliste</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="315"/>
-        <source>F11</source>
-        <translation>F11</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="316"/>
-        <source>enable/disable the category sidebar</source>
-        <translation>Kategorienliste ein/aus</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="433"/>
-        <source>marked</source>
-        <translation>markiert</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="483"/>
-        <source>package</source>
-        <translation>Paket</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="463"/>
-        <source>repository</source>
-        <translation>Packetdepot</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="437"/>
-        <source>installed</source>
-        <translation>installiert</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="438"/>
-        <source>masked by</source>
-        <translation>maskiert durch</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="438"/>
-        <source>change</source>
-        <translation>Änderung</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="496"/>
-        <source>pertubis toolbar</source>
-        <translation>pertubis Werkzeugleiste</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="320"/>
-        <source>filter on</source>
-        <translation>Filter ein</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="341"/>
-        <source>repository list</source>
-        <translation>Repository Liste</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="338"/>
-        <source>Here you can select the repositories pertubis will use.&lt;/p&gt;&lt;p&gt;Click on a repository to enable/disable filtering by this repository</source>
-        <translation>Hier können Sie die Repositories auswählen. Markieren sie ein Repository, damit der Inhalt dieses in Suchen und Abfragen eingeschlossen wird</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="343"/>
-        <source>F10</source>
-        <translation>F10</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="344"/>
-        <source>enable/disable the repository sidebar</source>
-        <translation>Repository Leiste ein/aus</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="374"/>
-        <source>set</source>
-        <translation>Set</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="396"/>
-        <source>set list</source>
-        <translation>Setliste</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="398"/>
-        <source>F12</source>
-        <translation>F12</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="399"/>
-        <source>enable/disable the set sidebar</source>
-        <translation>schalte die Setseitenleiste ein/aus</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="263"/>
-        <source>name</source>
-        <translation>Name</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="263"/>
-        <source>state</source>
-        <translation>Status</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="280"/>
-        <source>Package Details</source>
-        <translation>Paketdetails</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="281"/>
-        <source>repository details</source>
-        <translation>Repository Details</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="282"/>
+        <location filename="../src/MainWindow.cc" line="211"/>
         <source>Messages</source>
         <translation>Nachrichten</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="358"/>
-        <source>security announcements</source>
-        <translation>Sicherheitsmeldungen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="367"/>
-        <source>security</source>
-        <translation>Sicherheit</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="368"/>
-        <source>CTRL+I</source>
-        <translation>CTRL+I</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="369"/>
-        <source>see Gentoo Linux Security Announcements</source>
-        <translation>betrachte Gentoo Linux Sicherheitsmeldungen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="204"/>
+        <location filename="../src/MainWindow.cc" line="170"/>
         <source>main window</source>
         <translation>Hauptfenster</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="207"/>
+        <location filename="../src/MainWindow.cc" line="173"/>
         <source>show/hide the pertubis main window</source>
         <translation>Hauptfenster ein/aus</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="209"/>
-        <source>packages</source>
-        <translation>Pakete</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="212"/>
-        <source>enable/disable the package window in the middle</source>
-        <translation>Paketfenster ein/aus</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="214"/>
-        <source>find</source>
-        <translation>Finden/Suchen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="216"/>
-        <source>toggle search window</source>
-        <translation>Suchmaske ein/aus</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="218"/>
+        <location filename="../src/MainWindow.cc" line="212"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="219"/>
-        <source>CTRL+P</source>
-        <translation>STRG+P</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="220"/>
-        <source>configure pertubis</source>
-        <translation>konfiguriere pertubis</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="222"/>
+        <location filename="../src/MainWindow.cc" line="209"/>
         <source>System Report</source>
         <translation>Systembericht</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="223"/>
-        <source>show all stale packages in system</source>
-        <translation>zeige alle alten oder problematischen Pakte an</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="225"/>
-        <source>selections</source>
-        <translation>Auswahl</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="226"/>
-        <source>CTRL+F11</source>
-        <translation>STRG+F11</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="227"/>
-        <source>here you check the selections you made</source>
-        <translation>hier können Sie Ihre Auswahl überprüfen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="229"/>
-        <source>unselect all</source>
-        <translation>leere Auswahl</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="230"/>
-        <source>CTRL+DEL</source>
-        <translation>STRG+Entf</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="231"/>
-        <source>here you can unselect all selections you made</source>
-        <translation>hier können Sie alle markierten Pakete wirder abwählen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="237"/>
-        <source>start</source>
-        <translation>starten</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="238"/>
-        <source>CTRL+F12</source>
-        <translation>STRG+F12</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="239"/>
-        <source>starts all pending tasks you selected</source>
-        <translation>startet alle vergemerkten Aufgaben, die Sie ausgewählt haben</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="241"/>
-        <source>sync</source>
-        <translation>synchronisiere</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="242"/>
-        <source>To get the latest releases and bugfixes it is neccessary to update the package database.&lt;br&gt;&lt;br&gt;It is sufficient to sync your repositories once a day</source>
-        <translation>Um die neuesten Pakete und Fehlerkorrekturen zu erhalten, ist es notwendig, die Repositories zu aktualisieren.&lt;/p&gt;&lt;p&gt;Es ist ausreichend, einmal am Tag zu aktualisieren</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="244"/>
+        <location filename="../src/MainWindow.cc" line="175"/>
         <source>quit</source>
         <translation>Verlassen</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="245"/>
+        <location filename="../src/MainWindow.cc" line="176"/>
         <source>closing the pertubis suite. All unsaved changes will be lost!</source>
         <translation>Schliesst die pertubis Anwendung. Alle ungespeicherten Änderungen werden verloren gehen!</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="285"/>
+        <location filename="../src/MainWindow.cc" line="194"/>
         <source>install</source>
         <translation>installiere</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="248"/>
-        <source>about pertubis</source>
-        <translation>Über pertubis</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="482"/>
+        <location filename="../src/MainWindow.cc" line="195"/>
         <source>deinstall</source>
         <translation>deinstalliere</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="250"/>
-        <source>edit useflags</source>
-        <translation>editiere useflags</translation>
+        <location filename="../src/MainWindow.cc" line="206"/>
+        <source>Package Browsing</source>
+        <translation>Paketdatenbank</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="251"/>
-        <source>opens a useflag editor for this item</source>
-        <translation>öffnet den UseflagEditor für dieses Element</translation>
+        <location filename="../src/MainWindow.cc" line="207"/>
+        <source>Search</source>
+        <translation>Suche</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="253"/>
-        <source>(un)mask</source>
-        <translation>(de-)maskieren</translation>
+        <location filename="../src/MainWindow.cc" line="208"/>
+        <source>RepositoryPage</source>
+        <translation>Depotübersicht</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="254"/>
-        <source>toggle the masking for this package</source>
-        <translation>schalte dieses Paket frei oder blockiere es</translation>
+        <location filename="../src/MainWindow.cc" line="210"/>
+        <source>Selections</source>
+        <translation>Auswahl</translation>
+    </message>
+</context>
+<context>
+    <name>pertubis::PackageBrowsingPage</name>
+    <message>
+        <location filename="../src/PackageBrowsingPage.cc" line="73"/>
+        <source>category</source>
+        <translation>Kategorie</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="971"/>
-        <source>%1 packages found</source>
-        <translation>%1 Pakete gefunden</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="872"/>
-        <source>information</source>
-        <translation>Information</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="873"/>
-        <source>syncing repositories finished</source>
-        <translation>Abgleich der Paketdatenbanken abgeschlossen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="932"/>
-        <source>%1 installed packages processed, %2 issues found</source>
-        <translation>%1 instalierte Pakete überprüft, %2 Probleme gefunden</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1109"/>
-        <source>This feature is only available for system administrators</source>
-        <translation>Diese Funktion steht nur für Systemadminstratoren zur Vefügung</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1024"/>
-        <source>pertubis</source>
-        <translation>pertubis</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1024"/>
-        <source>Installing %1, Deleting %2 Packages</source>
-        <translation>Installiere %1, lösche %2 Pakete</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1115"/>
-        <source>Request denied</source>
-        <translation>Anfrage abgelehnt</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1130"/>
-        <source>Question</source>
-        <translation>Frage</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1131"/>
-        <source>Do you really want syncing the following repositories?
-
-%1</source>
-        <translation>Möchten sie wirklich folgende Repositoires abgleichen
-%1</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1165"/>
-        <source>searching for %1...</source>
-        <translation>suche nach %1...</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1170"/>
-        <source>Search stopped</source>
-        <translation>Suche abgrbrochen</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1436"/>
-        <source>&lt;html&gt;&lt;body&gt;&lt;table&gt;&lt;colgroup&gt;&lt;col width=&quot;40%&quot;&gt;&lt;col width=&quot;60%&quot;&gt;
-&lt;/colgroup&gt;
-&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;version&lt;/td&gt;&lt;td&gt;%1.%2.%3&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Revision&lt;/td&gt;&lt;td&gt;%4&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;author&lt;/td&gt;&lt;td&gt;&#xa9;2007 by Stefan K&#xf6;gl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;homepage&lt;/td&gt;&lt;td&gt;&lt;a ref=&quot;http://pertubis.berlios.de&quot;&gt;http://pertubis.berlios.de/&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;body&gt;&lt;table&gt;&lt;colgroup&gt;&lt;col width=&quot;40%&quot;&gt;&lt;col width=&quot;60%&quot;&gt;
-&lt;/colgroup&gt;
-&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;version&lt;/td&gt;&lt;td&gt;%1.%2.%3&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Revision&lt;/td&gt;&lt;td&gt;%4&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;author&lt;/td&gt;&lt;td&gt;©2007 Stefan Kögl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;homepage&lt;/td&gt;&lt;td&gt;&lt;a ref=&quot;http://pertubis.berlios.de&quot;&gt;http://pertubis.berlios.de/&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="1449"/>
-        <source>pertubis - an interactive frontend for paludis</source>
-        <translation>pertubis - eine interaktive Oberfläche für paludis</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="215"/>
-        <source>CTRL+f</source>
-        <translation>STRG+f</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="278"/>
-        <source>details</source>
-        <translation>Details</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="484"/>
-        <source>version</source>
-        <translation>Version</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="904"/>
-        <source>vulnerable</source>
-        <translation>unsicher</translation>
-    </message>
-    <message>
-        <location filename="../src/MainWindow.cc~" line="457"/>
+        <location filename="../src/PackageBrowsingPage.cc" line="69"/>
         <source>+</source>
         <translation>+</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="458"/>
+        <location filename="../src/PackageBrowsingPage.cc" line="70"/>
         <source>-</source>
         <translation>-</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="411"/>
+        <location filename="../src/PackageBrowsingPage.cc" line="71"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="459"/>
-        <source>=</source>
-        <translation>=</translation>
+        <location filename="../src/PackageBrowsingPage.cc" line="72"/>
+        <source>package</source>
+        <translation>Paket</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="462"/>
-        <source>old version</source>
-        <translation>alte Version</translation>
+        <location filename="../src/PackageBrowsingPage.cc" line="74"/>
+        <source>repository</source>
+        <translation>Packetdepot</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc" line="463"/>
-        <source>?</source>
-        <translation>?</translation>
+        <location filename="../src/PackageBrowsingPage.cc" line="75"/>
+        <source>mask reason</source>
+        <translation>Maskierungsgrund</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cc~" line="463"/>
-        <source>new version</source>
-        <translation>neue Version</translation>
+        <location filename="../src/PackageBrowsingPage.cc" line="75"/>
+        <source>change</source>
+        <translation>Änderung</translation>
+    </message>
+    <message>
+        <location filename="../src/PackageBrowsingPage.cc" line="260"/>
+        <source>%1 packages found</source>
+        <translation>%1 Pakete gefunden</translation>
     </message>
 </context>
 <context>
     <name>pertubis::PertubisInstallTask</name>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="151"/>
+        <location filename="../src/PertubisInstallTask.cc" line="203"/>
         <source>block</source>
         <translation>blockiert</translation>
     </message>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="164"/>
+        <location filename="../src/PertubisInstallTask.cc" line="216"/>
         <source>Total</source>
         <translation>Total</translation>
     </message>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="170"/>
+        <location filename="../src/PertubisInstallTask.cc" line="222"/>
         <source>new</source>
         <translation>neu</translation>
     </message>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="174"/>
+        <location filename="../src/PertubisInstallTask.cc" line="226"/>
         <source>upgrade(s)</source>
         <translation>Aktualisierung(en)</translation>
     </message>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="178"/>
+        <location filename="../src/PertubisInstallTask.cc" line="230"/>
         <source>downgrade(s)</source>
         <translation>Aktualisierung(en)  (Alte Versionen)</translation>
     </message>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="182"/>
+        <location filename="../src/PertubisInstallTask.cc" line="234"/>
         <source>new slot(s)</source>
         <translation>neue Slots(s)</translation>
     </message>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="186"/>
+        <location filename="../src/PertubisInstallTask.cc" line="238"/>
         <source>rebuild(s)</source>
         <translation>wieder bauen</translation>
     </message>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="191"/>
+        <location filename="../src/PertubisInstallTask.cc" line="243"/>
         <source>error(s)</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../src/PertubisInstallTask.cc~" line="194"/>
+        <location filename="../src/PertubisInstallTask.cc" line="246"/>
         <source>suggestion(s)</source>
         <translation>Vorschläge</translation>
     </message>
@@ -1126,55 +807,232 @@
     </message>
 </context>
 <context>
+    <name>pertubis::RepositoryPage</name>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="52"/>
+        <source>repository</source>
+        <translation>Packetdepot</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="52"/>
+        <source>filter on</source>
+        <translation>Filter ein</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="64"/>
+        <source>sync</source>
+        <translation>synchronisiere</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="65"/>
+        <source>To get the latest releases and bugfixes it is neccessary to update the package database.&lt;br&gt;&lt;br&gt;It is sufficient to sync your repositories once a day</source>
+        <translation>Um die neuesten Pakete und Fehlerkorrekturen zu erhalten, ist es notwendig, die Repositories zu aktualisieren.&lt;/p&gt;&lt;p&gt;Es ist ausreichend, einmal am Tag zu aktualisieren</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="71"/>
+        <source>name</source>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="71"/>
+        <source>state</source>
+        <translation>Status</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="180"/>
+        <source>information</source>
+        <translation>Information</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="181"/>
+        <source>syncing repositories finished</source>
+        <translation>Abgleich der Paketdatenbanken abgeschlossen</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="223"/>
+        <source>Request denied</source>
+        <translation>Anfrage abgelehnt</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="239"/>
+        <source>Question</source>
+        <translation>Frage</translation>
+    </message>
+    <message>
+        <location filename="../src/RepositoryPage.cc" line="240"/>
+        <source>Do you really want syncing the following repositories?
+
+%1</source>
+        <translation>Möchten sie wirklich folgende Repositoires abgleichen
+%1</translation>
+    </message>
+</context>
+<context>
+    <name>pertubis::SearchPage</name>
+    <message>
+        <location filename="../src/SearchPage.cc" line="57"/>
+        <source>+</source>
+        <translation>+</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="58"/>
+        <source>-</source>
+        <translation>-</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="59"/>
+        <source>#</source>
+        <translation>#</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="60"/>
+        <source>package</source>
+        <translation>Paket</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="61"/>
+        <source>category</source>
+        <translation>Kategorie</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="62"/>
+        <source>repository</source>
+        <translation>Packetdepot</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="63"/>
+        <source>mask reason</source>
+        <translation>Maskierungsgrund</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="63"/>
+        <source>change</source>
+        <translation>Änderung</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="80"/>
+        <source>Search:</source>
+        <translation>Suche:</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="84"/>
+        <source>&amp;Search</source>
+        <translation>&amp;suche</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="221"/>
+        <source>Stop</source>
+        <translation>Anhalten</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="227"/>
+        <source>searching for %1...</source>
+        <translation>suche nach %1...</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="232"/>
+        <source>Search stopped</source>
+        <translation>Suche abgebrochen</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="242"/>
+        <source>&amp;start</source>
+        <translation>&amp;start</translation>
+    </message>
+    <message>
+        <location filename="../src/SearchPage.cc" line="244"/>
+        <source>%1 packages found</source>
+        <translation>%1 Pakete gefunden</translation>
+    </message>
+</context>
+<context>
     <name>pertubis::SearchWindow</name>
     <message>
-        <location filename="../src/SearchWindow.cc" line="44"/>
+        <location filename="../src/SearchWindow.cc" line="42"/>
         <source>&amp;Find</source>
         <translation>&amp;Suche</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc" line="45"/>
+        <location filename="../src/SearchWindow.cc" line="43"/>
         <source>&amp;Stop</source>
         <translation>&amp;Stoppen</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc" line="46"/>
+        <location filename="../src/SearchWindow.cc" line="44"/>
         <source>&amp;More</source>
         <translation>&amp;Weitere Optionen</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc" line="50"/>
+        <location filename="../src/SearchWindow.cc" line="48"/>
         <source>&amp;Search:</source>
         <translation>&amp;Suche:</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc" line="122"/>
+        <location filename="../src/SearchWindow.cc" line="104"/>
         <source>Searching</source>
         <translation>Suchen</translation>
     </message>
+</context>
+<context>
+    <name>pertubis::SelectionPage</name>
     <message>
-        <location filename="../src/SearchWindow.cc" line="140"/>
-        <source>Warning</source>
-        <translation>Warnung</translation>
+        <location filename="../src/SelectionPage.cc" line="46"/>
+        <source>+</source>
+        <translation>+</translation>
     </message>
     <message>
-        <location filename="../src/SearchWindow.cc" line="141"/>
-        <source>Search is already running! Yes for starting the new one or no for waiting until the pending is finished?</source>
-        <translation>Suche läuft bereits! Ja drücken, um die aktuelle Suche zu starten oder nein, um auf Beendigung der Laufenden zu warten?</translation>
+        <location filename="../src/SelectionPage.cc" line="47"/>
+        <source>-</source>
+        <translation>-</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="48"/>
+        <source>=</source>
+        <translation>=</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="49"/>
+        <source>package</source>
+        <translation>Paket</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="50"/>
+        <source>category</source>
+        <translation>Kategorie</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="51"/>
+        <source>old version</source>
+        <translation>alte Version</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="52"/>
+        <source>?</source>
+        <translation>?</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="53"/>
+        <source>new version</source>
+        <translation>neue Version</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="53"/>
+        <source>repository</source>
+        <translation>Packetdepot</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="63"/>
+        <source>start</source>
+        <translation>starten</translation>
+    </message>
+    <message>
+        <location filename="../src/SelectionPage.cc" line="64"/>
+        <source>Control your install and deinstall selections and watch out for blocks and errors!</source>
+        <translation>Kontrollieren SIe ihre Installations- und Deinstallationsauswahl und achten Sie auf Blockierungen und Fehler!</translation>
     </message>
 </context>
 <context>
-    <name>pertubis::Settings</name>
-    <message>
-        <location filename="../src/Settings.cc" line="108"/>
-        <source>Close</source>
-        <translation>Schliessen</translation>
-    </message>
-    <message>
-        <location filename="../src/Settings.cc" line="122"/>
-        <source>pertubis :: settings</source>
-        <translation>pertubis :: Einstellungen</translation>
-    </message>
+    <name>pertubis::SettingsPage</name>
     <message>
         <location filename="../src/Settings.cc" line="72"/>
         <source>General</source>
@@ -1200,28 +1058,71 @@
         <source>Dependency List</source>
         <translation>Abhängigkeitsliste</translation>
     </message>
+    <message>
+        <location filename="../src/Settings.cc" line="108"/>
+        <source>Close</source>
+        <translation>Schliessen</translation>
+    </message>
+    <message>
+        <location filename="../src/Settings.cc" line="122"/>
+        <source>pertubis :: settings</source>
+        <translation>pertubis :: Einstellungen</translation>
+    </message>
 </context>
 <context>
     <name>pertubis::SystemReport</name>
     <message>
-        <location filename="../src/SystemReport.cc~" line="128"/>
+        <location filename="../src/SystemReport.cc" line="153"/>
         <source>package is unused</source>
         <translation>Paket unbenutzt</translation>
     </message>
     <message>
-        <location filename="../src/SystemReport.cc~" line="88"/>
+        <location filename="../src/SystemReport.cc" line="104"/>
         <source>masked by</source>
         <translation>maskiert durch</translation>
     </message>
     <message>
-        <location filename="../src/SystemReport.cc~" line="102"/>
+        <location filename="../src/SystemReport.cc" line="122"/>
         <source>vulnerable</source>
         <translation>unsicher</translation>
     </message>
     <message>
-        <location filename="../src/SystemReport.cc~" line="118"/>
+        <location filename="../src/SystemReport.cc" line="141"/>
         <source>deleted in repository</source>
         <translation>gelöscht in Repository</translation>
+    </message>
+</context>
+<context>
+    <name>pertubis::SystemReportPage</name>
+    <message>
+        <location filename="../src/SystemReportPage.cc" line="49"/>
+        <source>deinstall</source>
+        <translation>deinstalliere</translation>
+    </message>
+    <message>
+        <location filename="../src/SystemReportPage.cc" line="50"/>
+        <source>package</source>
+        <translation>Paket</translation>
+    </message>
+    <message>
+        <location filename="../src/SystemReportPage.cc" line="51"/>
+        <source>category</source>
+        <translation>Kategorie</translation>
+    </message>
+    <message>
+        <location filename="../src/SystemReportPage.cc" line="51"/>
+        <source>version</source>
+        <translation>Version</translation>
+    </message>
+    <message>
+        <location filename="../src/SystemReportPage.cc" line="73"/>
+        <source>&amp;Start</source>
+        <translation>&amp;Starten</translation>
+    </message>
+    <message>
+        <location filename="../src/SystemReportPage.cc" line="145"/>
+        <source>%1 installed packages processed, %2 issues found</source>
+        <translation>%1 instalierte Pakete überprüft, %2 Probleme gefunden</translation>
     </message>
 </context>
 </TS>
