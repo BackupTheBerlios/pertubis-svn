@@ -175,6 +175,10 @@ void pertubis::MainWindow::initGUI()
     QAction* acQuit = new QAction( QPixmap(":images/quit.png"),tr("quit") ,this);
     acQuit->setToolTip(html_tooltip(tr("closing the pertubis suite. All unsaved changes will be lost!"),acQuit->text()));
 
+    QAction* acSearch = new QAction( QPixmap(":images/find.png"),tr("find") ,this);
+    acSearch->setShortcut(tr("CTRL+f"));
+    addAction(acSearch);
+
     ReleaseEater* filter = new ReleaseEater(this);
     installEventFilter(filter);
     statusBar()->setVisible(true);
@@ -220,6 +224,11 @@ void pertubis::MainWindow::initGUI()
             SIGNAL(triggered()),
             qApp,
             SLOT(quit()));
+
+    connect(acSearch,
+            SIGNAL(triggered()),
+            this,
+            SLOT(goToSearch()));
 
     connect(acToggleMainWindow,
             SIGNAL(toggled(bool)),
@@ -402,4 +411,9 @@ void pertubis::MainWindow::toggleTrayIcon(QSystemTrayIcon::ActivationReason reas
         default:
             ;
     }
+}
+
+void pertubis::MainWindow::goToSearch()
+{
+    m_pages->setCurrentWidget(m_searchPage);
 }

@@ -68,9 +68,12 @@ pertubis::SearchPage::SearchPage(QWidget* pobj, MainWindow * mainWindow) :
     m_searchView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_searchView->setItemDelegate(new PackageModelDelegate(this,m_searchFilterModel,pho_install,pho_deinstall,pho_installed));
     m_searchView->setModel(m_searchFilterModel);
+    m_searchView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_searchView->setSortingEnabled(true);
+    m_searchView->sortByColumn(pho_package,Qt::AscendingOrder);
+    m_searchView->header()->setMovable(false);
     m_searchView->header()->setVisible(true);
     m_searchView->header()->setResizeMode(QHeaderView::ResizeToContents);
-    m_searchView->setSelectionBehavior(QAbstractItemView::SelectRows);
     QFont myfont(m_searchView->font());
     myfont.setBold(true);
     m_searchView->setFont(myfont);

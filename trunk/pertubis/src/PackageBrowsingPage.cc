@@ -81,10 +81,13 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
     m_packageView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_packageView->setItemDelegate(new PackageModelDelegate(this,m_packageFilterModel,pho_install,pho_deinstall,pho_installed));
     m_packageView->setModel(m_packageFilterModel);
-    m_packageView->header()->setVisible(true);
-    m_packageView->header()->setResizeMode(QHeaderView::ResizeToContents);
     m_packageView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_packageView->setFont(myfont);
+    m_packageView->setSortingEnabled(true);
+    m_packageView->sortByColumn(pho_package,Qt::AscendingOrder);
+    m_packageView->header()->setMovable(false);
+    m_packageView->header()->setVisible(true);
+    m_packageView->header()->setResizeMode(QHeaderView::ResizeToContents);
 
     qDebug() << "pertubis::PackageBrowsingPage::PackageBrowsingPage 1";
 
@@ -212,6 +215,9 @@ void pertubis::PackageBrowsingPage::restartFilters(const QSet<QString> & set)
 {
     m_packageFilterModel->setFilter(set);
     m_packageFilterModel->invalidate();
+
+    m_categoryFilterModel->setFilter(set);
+    m_categoryFilterModel->invalidate();
 }
 
 void pertubis::PackageBrowsingPage::onCategoryChanged( const QModelIndex &)

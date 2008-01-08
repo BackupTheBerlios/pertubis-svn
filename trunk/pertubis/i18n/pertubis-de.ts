@@ -115,12 +115,12 @@
     <message>
         <location filename="../src/DepListSettings.cc" line="464"/>
         <source>As pre dependencies</source>
-        <translation></translation>
+        <translation>Als Pre-Abhängigkeiten</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="466"/>
         <source>As pre dependencies, or post dependencies where needed</source>
-        <translation></translation>
+        <translation>Als Pre-Abhängigkeiten, oder Post-Abhängigkeiten wo benötigt</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="467"/>
@@ -170,7 +170,7 @@
     <message>
         <location filename="../src/DepListSettings.cc" line="503"/>
         <source>show</source>
-        <translation></translation>
+        <translation>zeige</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="504"/>
@@ -210,12 +210,12 @@
     <message>
         <location filename="../src/DepListSettings.cc" line="541"/>
         <source>as-needed-except-targets</source>
-        <translation></translation>
+        <translation>as-needed-except-targets</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="578"/>
         <source>as-needed</source>
-        <translation></translation>
+        <translation>as-needed</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="561"/>
@@ -235,7 +235,7 @@
     <message>
         <location filename="../src/DepListSettings.cc" line="549"/>
         <source>if-use-changed</source>
-        <translation></translation>
+        <translation>if-use-changed</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="552"/>
@@ -290,7 +290,7 @@
     <message>
         <location filename="../src/DepListSettings.cc" line="588"/>
         <source>Default Dependencies</source>
-        <translation></translation>
+        <translation>Vorgabe Abhängigkeiten</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="590"/>
@@ -320,7 +320,7 @@
     <message>
         <location filename="../src/DepListSettings.cc" line="600"/>
         <source>New Slots</source>
-        <translation></translation>
+        <translation>Neue Schächte</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="602"/>
@@ -350,7 +350,7 @@
     <message>
         <location filename="../src/DepListSettings.cc" line="612"/>
         <source>Unistalled Dependencies Pre</source>
-        <translation></translation>
+        <translation>Nicht installierte Pre-Abhängigkeiten</translation>
     </message>
     <message>
         <location filename="../src/DepListSettings.cc" line="614"/>
@@ -370,7 +370,7 @@
     <message>
         <location filename="../src/DepListSettings.cc" line="620"/>
         <source>Override Masks</source>
-        <translation></translation>
+        <translation>Überschreibe Abhängigkeiten</translation>
     </message>
 </context>
 <context>

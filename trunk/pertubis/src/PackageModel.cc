@@ -54,12 +54,17 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
 
     Package* item = static_cast<Package*>(ix.internalPointer());
 
-    if (role == Qt::BackgroundRole)
+    if (role == Qt::DisplayRole )
     {
-        if (0  == ix.row() % 2 )
-            return QBrush(QColor(225,225,225));
-        else
-            return QBrush(QColor(255,255,255));
+        switch (ix.column())
+        {
+            case pho_install:
+            case pho_deinstall:
+            case pho_installed:
+                return QVariant();
+            default:
+                return item->data(ix.column());
+        }
     }
 
     else if (role == Qt::ForegroundRole)
@@ -88,18 +93,6 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
         }
     }
 
-    else if (role == Qt::DisplayRole )
-    {
-        switch (ix.column())
-        {
-            case pho_install:
-            case pho_deinstall:
-            case pho_installed:
-                return QVariant();
-            default:
-                return item->data(ix.column());
-        }
-    }
 
     return QVariant();
 }

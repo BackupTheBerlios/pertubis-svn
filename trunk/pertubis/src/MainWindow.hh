@@ -169,6 +169,8 @@ namespace pertubis
 
         /// activate system tray window
         void toggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
+
+        void goToSearch();
         ///@}
 
     private:
