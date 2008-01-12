@@ -145,11 +145,14 @@ pertubis::SearchPage::SearchPage(QWidget* pobj, MainWindow * mainWindow) :
             this,
             SLOT(displayDetails(QString)));
 
+    loadSettings();
+
     qDebug() << "pertubis::SystemReportPage::SearchPage()" << pobj;
 }
 
 pertubis::SearchPage::~SearchPage()
 {
+    saveSettings();
     qDebug() << "pertubis::SearchPage::~SearchPage() start";
 //     if (!m_searchThread->isFinished())
 //     {
@@ -163,6 +166,26 @@ pertubis::SearchPage::~SearchPage()
     delete m_bStart;
 }
 
+void pertubis::SearchPage::loadSettings()
+{
+    qDebug() << "pertubis::SearchPage::loadSettings() - start";
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    settings.beginGroup( "SearchPage" );
+    m_hSplit->restoreState(settings.value("hSplit").toByteArray());
+    settings.endGroup();
+    qDebug() << "pertubis::SearchPage::doneSettings() - done";
+}
+
+void pertubis::SearchPage::saveSettings()
+{
+    qDebug() << "pertubis::SearchPage::saveSettings() - start";
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    settings.beginGroup( "SearchPage" );
+    settings.setValue("hSplit", m_hSplit->saveState());
+    settings.endGroup();
+    qDebug() << "pertubis::SearchPage::saveSettings() - done";
+}
+
 void pertubis::SearchPage::restartFilters(const QSet<QString> & set)
 {
     m_searchFilterModel->setFilter(set);
@@ -172,6 +195,8 @@ void pertubis::SearchPage::restartFilters(const QSet<QString> & set)
 void pertubis::SearchPage::activatePage()
 {
     m_line->setFocus(Qt::ActiveWindowFocusReason);
+    if (m_dirty)
+        onRefreshPage();
 }
 
 void pertubis::SearchPage::onViewUserInteraction(const QModelIndex & mix)

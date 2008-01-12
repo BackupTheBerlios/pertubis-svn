@@ -28,6 +28,7 @@
 class QModelIndex;
 
 class QTableView;
+class QSplitter;
 
 namespace pertubis
 {
@@ -60,6 +61,8 @@ namespace pertubis
 
             void restartFilters();
 
+            void onRefreshPage();
+
             void onSync();
 
         private:
@@ -73,6 +76,7 @@ namespace pertubis
             RepositoryListModel*    m_repoListModel;
             RepositoryInfoModel*    m_repoInfoModel;
             PertubisSyncTask*       m_syncTask;
+            QSplitter*              m_hSplit;
     };
 }
 

@@ -35,7 +35,7 @@ bool pertubis::InstallSelections::available(Package* item, int) const
 
 bool pertubis::InstallSelections::changeStates(Package* item, int newState, int position)
 {
-    qDebug() << "pertubis::InstallSelections::changeStates()" << *item << newState;
+//     qDebug() << "pertubis::InstallSelections::changeStates()" << *item << newState;
     Package::PackageIterator iStart;
     Package::PackageIterator iEnd;
     Package::PackageIterator piStart;

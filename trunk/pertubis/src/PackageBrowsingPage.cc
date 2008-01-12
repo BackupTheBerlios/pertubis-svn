@@ -29,11 +29,13 @@
 #include "PackageModelDelegate.hh"
 #include "CategoryThread.hh"
 #include "PackagesThread.hh"
+#include "SetThread.hh"
 #include "MainWindow.hh"
 #include "PackageModel.hh"
 #include <QSettings>
 #include <QSplitter>
 
+#include <QAction>
 #include <QModelIndex>
 #include <QTableView>
 #include <QTextBrowser>
@@ -46,24 +48,23 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
         Page(pobj, mainWindow)
 {
     m_catModel = new CategoryModel(this);
-    m_catModel->setHorizontalHeaderLabels(QStringList() << tr("category"));
+    m_catModel->setHorizontalHeaderLabels(QStringList(tr("categories")));
 
     m_categoryFilterModel = new CategoryFilterModel(this);
     m_categoryFilterModel->setSourceModel(m_catModel);
 
     m_categoryView = new QTableView(this);
     m_categoryView->setObjectName("m_categoryView");
-    m_categoryView->horizontalHeader()->setVisible(false);
-    m_categoryView->verticalHeader()->setVisible(false);
     m_categoryView->setModel(m_categoryFilterModel);
-    m_categoryView->setShowGrid(false);
     m_categoryView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    m_categoryView->verticalHeader()->setVisible(false);
+    m_categoryView->setShowGrid(false);
+
     QFont myfont(m_categoryView->font());
     myfont.setBold(true);
     m_categoryView->setFont(myfont);
 
     m_packageModel = new PackageModel(this);
-
     m_packageModel->setHorizontalHeaderLabels(QStringList() <<
             tr("+") <<
             tr("-") <<
@@ -76,12 +77,13 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
 
     m_packageFilterModel = new PackageFilterModel(this,pho_repository);
     m_packageFilterModel->setSourceModel(m_packageModel);
+
     m_packageView = new QTreeView(this);
-    m_packageView->setItemsExpandable(true);
-    m_packageView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_packageView->setObjectName("m_packageView");
     m_packageView->setItemDelegate(new PackageModelDelegate(this,m_packageFilterModel,pho_install,pho_deinstall,pho_installed));
     m_packageView->setModel(m_packageFilterModel);
     m_packageView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_packageView->setSelectionMode(QAbstractItemView::SingleSelection);
     m_packageView->setFont(myfont);
     m_packageView->setSortingEnabled(true);
     m_packageView->sortByColumn(pho_package,Qt::AscendingOrder);
@@ -89,7 +91,25 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
     m_packageView->header()->setVisible(true);
     m_packageView->header()->setResizeMode(QHeaderView::ResizeToContents);
 
+    m_setModel = new CategoryModel(this);
+    m_setModel->setHorizontalHeaderLabels(QStringList(tr("sets")));
+
+    m_setFilterModel = new CategoryFilterModel(this);
+    m_setFilterModel->setSourceModel(m_setModel);
+
+    m_setView = new QTableView(this);
+    m_setView->setObjectName("m_packageView");
+    m_setView->setModel(m_setFilterModel);
+    m_setView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    m_setView->verticalHeader()->setVisible(false);
+    m_setView->setShowGrid(false);
+    m_setView->setFont(myfont);
+
     qDebug() << "pertubis::PackageBrowsingPage::PackageBrowsingPage 1";
+
+    QAction* acRefresh(new QAction(tr("refresh"),this));
+    acRefresh->setShortcut(tr("F5"));
+    addAction(acRefresh);
 
     m_details = new QTextBrowser(this);
     m_details->setOpenLinks(false);
@@ -98,8 +118,12 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
     m_vSplit->addWidget(m_packageView);
     m_vSplit->addWidget(m_details);
 
+    m_lSplit = new QSplitter(Qt::Vertical,pobj);
+    m_lSplit->addWidget(m_categoryView);
+    m_lSplit->addWidget(m_setView);
+
     m_hSplit = new QSplitter(Qt::Horizontal,pobj);
-    m_hSplit->addWidget(m_categoryView);
+    m_hSplit->addWidget(m_lSplit);
     m_hSplit->addWidget(m_vSplit);
 
     QHBoxLayout* mylayout(new QHBoxLayout);
@@ -108,6 +132,13 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
 
     m_packageViewThread = new PackagesThread(this,m_mainWindow->m_env,m_mainWindow->m_installSelections,m_mainWindow->m_deinstallSelections);
     m_categoryThread = new CategoryThread(this,m_mainWindow->m_env);
+    m_setThread = new SetThread(this,m_mainWindow->m_env);
+
+    connect(acRefresh,
+            SIGNAL(triggered()),
+            this,
+            SLOT(onRefreshCategory()) );
+
     connect(m_categoryView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
@@ -143,19 +174,18 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(QWidget* pobj, MainWindow * m
             this,
             SLOT(displayDetails(QString)));
 
-    qDebug() << "pertubis::SystemReportPage::PackageBrowsingPage() 1";
+    connect(m_setThread,
+            SIGNAL(sendSet(QMap<QString, QSet<QString> >)),
+            m_setModel,
+            SLOT(appendCategory(QMap<QString, QSet<QString> >)));
 
+//     connect(m_setView,
+//             SIGNAL(clicked( const QModelIndex&)),
+//             this,
+//             SLOT(onStartSetInstallTask( const QModelIndex& )) );
     loadSettings();
-
-    qDebug() << "pertubis::SystemReportPage::PackageBrowsingPage() 2";
-
     show();
-    qDebug() << "pertubis::SystemReportPage::PackageBrowsingPage() 3";
-    m_categoryThread->start();
-    if (!m_currentCat.isEmpty())
-        m_packageViewThread->start(m_currentCat);
-
-    qDebug() << "pertubis::SystemReportPage::PackageBrowsingPage()" << pobj;
+    onRefreshPage();
 }
 
 pertubis::PackageBrowsingPage::~PackageBrowsingPage()
@@ -177,7 +207,15 @@ pertubis::PackageBrowsingPage::~PackageBrowsingPage()
 
 void pertubis::PackageBrowsingPage::activatePage()
 {
+    if (m_dirty)
+        onRefreshPage();
 }
+
+// void pertubis::PackageBrowsingPage::onShowSetTask(const QModelIndex & model)
+// {
+//     m_setModel->data(ix).toString().toStdString();
+//     m_main->
+// }
 
 void pertubis::PackageBrowsingPage::displayDetails(QString details)
 {
@@ -195,6 +233,7 @@ void pertubis::PackageBrowsingPage::loadSettings()
     m_currentCat = settings.value("currentCategory","").toString();
     m_hSplit->restoreState(settings.value("hSplit").toByteArray());
     m_vSplit->restoreState(settings.value("vSplit").toByteArray());
+    m_lSplit->restoreState(settings.value("lSplit").toByteArray());
     settings.endGroup();
     qDebug() << "pertubis::PackageBrowsingPage::doneSettings() - done";
 }
@@ -206,6 +245,7 @@ void pertubis::PackageBrowsingPage::saveSettings()
     settings.beginGroup( "PackageBrowsingPage" );
     settings.setValue("hSplit", m_hSplit->saveState());
     settings.setValue("vSplit", m_vSplit->saveState());
+    settings.setValue("lSplit", m_lSplit->saveState());
     settings.setValue("currentCategory", m_currentCat);
     settings.endGroup();
     qDebug() << "pertubis::PackageBrowsingPage::saveSettings() - done";
@@ -215,7 +255,8 @@ void pertubis::PackageBrowsingPage::restartFilters(const QSet<QString> & set)
 {
     m_packageFilterModel->setFilter(set);
     m_packageFilterModel->invalidate();
-
+    m_setFilterModel->setFilter(set);
+    m_setFilterModel->invalidate();
     m_categoryFilterModel->setFilter(set);
     m_categoryFilterModel->invalidate();
 }
@@ -226,9 +267,26 @@ void pertubis::PackageBrowsingPage::onCategoryChanged( const QModelIndex &)
     if ( !origIndex.isValid() || 0 != origIndex.column() || m_packageViewThread->isRunning())
         return;
 
+    m_currentCat = m_catModel->data(origIndex).toString();
+    changeCategory();
+}
+
+void pertubis::PackageBrowsingPage::onRefreshPage()
+{
+    qDebug() << "onRefreshCategory()";
+    m_categoryThread->start();
+    m_setThread->start();
+    if (!m_currentCat.isEmpty())
+        changeCategory();
+    m_dirty=false;
+}
+
+void pertubis::PackageBrowsingPage::changeCategory()
+{
+    if (m_currentCat.isEmpty())
+        return;
     m_mainWindow->onStartOfPaludisAction();
     m_packageModel->clear();
-    m_currentCat = m_catModel->data(origIndex).toString();
     m_packageViewThread->start(m_currentCat);
 }
 

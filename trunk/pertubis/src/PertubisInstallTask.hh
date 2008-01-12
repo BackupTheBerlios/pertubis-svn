@@ -21,7 +21,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H 1
 
-#include <QObject>
+#include <QThread>
 #include "Package-fwd.hh"
 #include <paludis/install_task.hh>
 
@@ -35,7 +35,7 @@ namespace pertubis
      * This class controlls all aspects and steps of installing packages
      * \todo this thread blocks the main application thread and gui. Find the issue!
      */
-    class PertubisInstallTask : public QObject,
+    class PertubisInstallTask : public QThread,
         public paludis::InstallTask
     {
         Q_OBJECT
@@ -70,7 +70,8 @@ namespace pertubis
                     Selections* deinstall);
             ~PertubisInstallTask() {}
 
-            void start(bool firstpass) { m_firstpass= firstpass;execute();}
+            void start(bool firstpass) { m_firstpass= firstpass;QThread::start();}
+            void run() {execute();emit finished();}
 
             virtual void display_merge_list_post_counts();
             virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID &){}

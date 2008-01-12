@@ -94,30 +94,20 @@ pertubis::SettingsPage::SettingsPage(QWidget* pobj, MainWindow* main) : Page(pob
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QHBoxLayout *horizontalLayout = new QHBoxLayout;
-    QHBoxLayout *buttonsLayout = new QHBoxLayout;
 
     horizontalLayout->addWidget(m_pagesView);
     horizontalLayout->addWidget(m_pagesStore);
     horizontalLayout->setSpacing(0);
 
     mainLayout->addLayout(horizontalLayout);
-    mainLayout->addLayout(buttonsLayout);
 
     setLayout(mainLayout);
-
-    QPushButton *closeButton = new QPushButton(tr("Close"));
-
-    buttonsLayout->addStretch(1);
-    buttonsLayout->addWidget(closeButton);
 
     connect(m_pagesView,
             SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             this,
             SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
-    connect(closeButton,
-            SIGNAL(clicked()),
-            this,
-            SLOT(close()));
+
     loadSettings();
     setWindowTitle(tr("pertubis :: settings"));
 }

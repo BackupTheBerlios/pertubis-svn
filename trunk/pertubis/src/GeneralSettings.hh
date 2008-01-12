@@ -25,9 +25,8 @@
 #include <QString>
 #include <QMap>
 
-class QCheckBox;
-class QLineEdit;
-class QComboBox;
+class QSpinBox;
+class QFontComboBox;
 
 namespace pertubis
 {
@@ -60,64 +59,12 @@ namespace pertubis
             /// \name "real" option data
             ///@{
 
-             /// maps language to translation file
+            /// maps tr() language name to translation file
             QMap<QString,QString>  m_languageToTranslation;
+
             QString     m_currentLanguage;
-            int         m_toolbarDisplayMode;
-            int         m_categoryDockPosition;
-            int         m_repositoryDockPosition;
-            int         m_setDockPosition;
-            int         m_glsaDockPosition;
 
             ///@}
-
-        signals:
-
-            void toolbarDisplayModeChanged(int state);
-            void glsaDockChanged(int state);
-            void repositoryDockChanged(int state);
-            void setDockChanged(int state);
-            void categoryDockChanged(int state);
-
-
-        public slots:
-
-            void changeToolbarDisplayMode(int state)
-            {
-                if (m_toolbarDisplayMode != state)
-                    emit toolbarDisplayModeChanged(state);
-                m_toolbarDisplayMode = state;
-            }
-
-            void changeCategoryDockPosition(int state)
-            {
-                if (m_categoryDockPosition != state)
-                    emit categoryDockChanged(state);
-                m_categoryDockPosition = state;
-            }
-
-            void changeGlsaDockPosition(int state)
-            {
-                if (m_glsaDockPosition != state)
-                    emit glsaDockChanged(state);
-                m_glsaDockPosition = state;
-            }
-
-            void changeSetDockPosition(int state)
-            {
-                if (m_setDockPosition != state)
-                    emit setDockChanged(state);
-                m_setDockPosition = state;
-            }
-
-            void changeRepositoryDockPosition(int state)
-            {
-                if (m_repositoryDockPosition != state)
-                    emit repositoryDockChanged(state);
-                m_repositoryDockPosition = state;
-            }
-
-
     };
 
     class GeneralSettingsView : public QWidget
@@ -140,19 +87,9 @@ namespace pertubis
 
             ///@}
 
-            GeneralSettingsModel* m_model;
-
-        private:
-
-            /// \name install options
-            ///@{
-
-            QComboBox* m_toolbarDisplayMode;
-            QComboBox* m_categoryDockPosition;
-            QComboBox* m_repositoryDockPosition;
-            QComboBox* m_setDockPosition;
-            QComboBox* m_glsaDockPosition;
-            ///@}
+            GeneralSettingsModel*   m_model;
+            QFontComboBox*          m_fonts;
+            QSpinBox*               m_fontSize;
 
         private slots:
 

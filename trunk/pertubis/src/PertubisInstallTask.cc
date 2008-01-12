@@ -58,7 +58,7 @@ pertubis::PertubisInstallTask::PertubisInstallTask(QObject* pobj,
                         paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations,
                         Selections* install,
                         Selections* deinstall) :
-                        QObject(pobj),
+                        QThread(pobj),
                         paludis::InstallTask(env, options, destinations),
                         m_install(install),
                         m_deinstall(deinstall),

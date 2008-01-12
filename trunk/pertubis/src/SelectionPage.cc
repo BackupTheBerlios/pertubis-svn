@@ -27,6 +27,8 @@
 #include "DeinstallSelections.hh"
 #include "InstallSelections.hh"
 #include "SelectionModel.hh"
+#include "InstallSelections.hh"
+#include "DeinstallSelections.hh"
 #include "SelectionModelDelegate.hh"
 #include <QTreeView>
 #include <QModelIndex>
@@ -34,6 +36,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QSplitter>
+#include <QSettings>
 #include <QFont>
 #include <QTextBrowser>
 
@@ -56,12 +59,10 @@ pertubis::SelectionPage::SelectionPage(QWidget* pobj, MainWindow * mainWindow) :
     m_selectionView->setItemDelegate(new SelectionModelDelegate(this,spho_install,spho_deinstall,spho_installed));
     m_selectionView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_selectionView->setModel(m_selectionModel);
+    m_selectionView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_selectionView->setSelectionMode(QAbstractItemView::SingleSelection);
     m_selectionView->header()->setVisible(true);
     m_selectionView->header()->setResizeMode(QHeaderView::ResizeToContents);
-    m_selectionView->setSelectionBehavior(QAbstractItemView::SelectRows);
-
-    QPushButton* acShow = new QPushButton(QPixmap(":images/selections.png"),tr("start"),this);
-    acShow->setToolTip(html_tooltip(tr("Control your install and deinstall selections and watch out for blocks and errors!"),acShow->text()));
 
     QFont myfont(m_selectionView->font());
     myfont.setBold(true);
@@ -70,24 +71,28 @@ pertubis::SelectionPage::SelectionPage(QWidget* pobj, MainWindow * mainWindow) :
     m_details = new QTextBrowser(this);
     m_details->setOpenLinks(false);
 
+    QPushButton* acShow = new QPushButton(QPixmap(":images/selections.png"),tr("start pretend"),this);
+    acShow->setToolTip(html_tooltip(tr("Control your install and deinstall selections and watch out for blocks and errors!"),acShow->text()));
+
+    QPushButton* acStart = new QPushButton(QPixmap(":images/install.png"),tr("start"),this);
+    acShow->setToolTip(html_tooltip(tr("Control your install and deinstall selections and watch out for blocks and errors!"),acShow->text()));
+
+    QPushButton* acUnselectAll = new QPushButton(tr("unselect all"),this);
+    acUnselectAll->setToolTip(html_tooltip(tr("Clears all selections you made"),acUnselectAll->text()));
+
+    QHBoxLayout* buttonLayout(new QHBoxLayout);
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(acUnselectAll);
+    buttonLayout->addWidget(acShow);
+    buttonLayout->addWidget(acStart);
+
     m_hSplit = new QSplitter(Qt::Horizontal,pobj);
     m_hSplit->addWidget(m_selectionView);
     m_hSplit->addWidget(m_details);
 
-    QHBoxLayout* buttonLayout(new QHBoxLayout);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(acShow);
-
-    QHBoxLayout* viewLayout(new QHBoxLayout);
-    viewLayout->addWidget(m_selectionView);
-    viewLayout->addWidget(m_details);
-
-    QVBoxLayout* mainLayout(new QVBoxLayout);
-
+    QVBoxLayout* mainLayout(new QVBoxLayout(this));
     mainLayout->addLayout(buttonLayout);
-    mainLayout->addLayout(viewLayout);
-
-    setLayout(mainLayout);
+    mainLayout->addWidget(m_hSplit);
 
     connect(m_selectionView,
             SIGNAL(clicked( const QModelIndex&)),
@@ -99,10 +104,22 @@ pertubis::SelectionPage::SelectionPage(QWidget* pobj, MainWindow * mainWindow) :
             this,
             SLOT(onShowSelections()));
 
+    connect(acStart,
+            SIGNAL(pressed()),
+            this,
+            SLOT(onStart()));
+
+    connect(acUnselectAll,
+            SIGNAL(pressed()),
+            this,
+            SLOT(onUnselectAll()));
+
     connect(m_mainWindow->m_detailsThread,
             SIGNAL(sendResult(QString)),
             this,
             SLOT(displayDetails(QString)));
+
+    loadSettings();
 
     qDebug() << "pertubis::SystemReportPage::SelectionPage()" << pobj;
 }
@@ -110,6 +127,27 @@ pertubis::SelectionPage::SelectionPage(QWidget* pobj, MainWindow * mainWindow) :
 pertubis::SelectionPage::~SelectionPage()
 {
     qDebug() << "pertubis::SelectionPage::~SelectionPage()";
+    saveSettings();
+}
+
+void pertubis::SelectionPage::loadSettings()
+{
+    qDebug() << "pertubis::SelectionPage::loadSettings() - start";
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    settings.beginGroup( "SelectionPage" );
+    m_hSplit->restoreState(settings.value("hSplit").toByteArray());
+    settings.endGroup();
+    qDebug() << "pertubis::SelectionPage::doneSettings() - done";
+}
+
+void pertubis::SelectionPage::saveSettings()
+{
+    qDebug() << "pertubis::SelectionPage::saveSettings() - start";
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    settings.beginGroup( "SelectionPage" );
+    settings.setValue("hSplit", m_hSplit->saveState());
+    settings.endGroup();
+    qDebug() << "pertubis::SelectionPage::saveSettings() - done";
 }
 
 void pertubis::SelectionPage::onSelectionViewUserInteraction(const QModelIndex & ix)
@@ -142,17 +180,31 @@ void pertubis::SelectionPage::onSelectionViewUserInteraction(const QModelIndex &
 
 void pertubis::SelectionPage::activatePage()
 {
+    if (m_mainWindow->m_dirty)
+        onRefreshPage();
+}
+
+void pertubis::SelectionPage::onRefreshPage()
+{
+    m_dirty=false;
 }
 
 void pertubis::SelectionPage::onShowSelections()
 {
     m_mainWindow->onStartOfPaludisAction();
     m_selectionModel->clear();
-    m_mainWindow->m_output->clear();
-    m_mainWindow->setPage(m_selectionView);
     m_mainWindow->startDeinstallTask(true);
     m_mainWindow->startInstallTask(true,"",false);
     m_mainWindow->onEndOfPaludisAction();
+}
+
+void pertubis::SelectionPage::onStart()
+{
+    m_mainWindow->onStartOfPaludisAction();
+    m_selectionModel->clear();
+    m_mainWindow->m_messagePage->clear();
+    m_mainWindow->startDeinstallTask(false);
+    m_mainWindow->startInstallTask(false,"",false);
 }
 
 void pertubis::SelectionPage::displayDetails(QString details)

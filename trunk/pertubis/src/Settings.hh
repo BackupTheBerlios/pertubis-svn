@@ -84,6 +84,8 @@ namespace pertubis
 
             void activatePage();
 
+            void onRefreshPage() {}
+
         private:
 
             /// a list widget

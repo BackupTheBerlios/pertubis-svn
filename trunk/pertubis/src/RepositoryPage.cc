@@ -42,6 +42,7 @@
 #include <QProgressBar>
 #include <QPushButton>
 #include <QSettings>
+#include <QSplitter>
 #include <QTableView>
 
 pertubis::RepositoryPage::RepositoryPage(QWidget* pobj, MainWindow * mainWindow) :
@@ -57,6 +58,8 @@ pertubis::RepositoryPage::RepositoryPage(QWidget* pobj, MainWindow * mainWindow)
     m_repoListView->setModel(m_repoListModel);
     m_repoListView->horizontalHeader()->setVisible(false);
     m_repoListView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    m_repoListView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_repoListView->setSelectionMode(QAbstractItemView::SingleSelection);
     QFont myfont(m_repoListView->font());
     myfont.setBold(true);
     m_repoListView->setFont(myfont);
@@ -94,16 +97,13 @@ pertubis::RepositoryPage::RepositoryPage(QWidget* pobj, MainWindow * mainWindow)
     buttonLayout->addStretch();
     buttonLayout->addWidget(acSync);
 
-    QHBoxLayout* viewLayout(new QHBoxLayout);
-    viewLayout->addWidget(m_repoListView);
-    viewLayout->addWidget(m_repoInfoView);
+    m_hSplit = new QSplitter(Qt::Horizontal,pobj);
+    m_hSplit->addWidget(m_repoListView);
+    m_hSplit->addWidget(m_repoInfoView);
 
-    QVBoxLayout* mainLayout(new QVBoxLayout);
-
+    QVBoxLayout* mainLayout(new QVBoxLayout(this));
     mainLayout->addLayout(buttonLayout);
-    mainLayout->addLayout(viewLayout);
-
-    setLayout(mainLayout);
+    mainLayout->addWidget(m_hSplit);
 
     m_syncTask = new PertubisSyncTask(m_mainWindow->m_env,this);
 
@@ -134,7 +134,7 @@ pertubis::RepositoryPage::RepositoryPage(QWidget* pobj, MainWindow * mainWindow)
 
     connect(m_syncTask,
             SIGNAL(sendMessage(QString)),
-            m_mainWindow->m_output,
+            m_mainWindow->m_messagePage,
             SLOT(append(QString)));
 
     connect(m_syncTask,
@@ -142,7 +142,9 @@ pertubis::RepositoryPage::RepositoryPage(QWidget* pobj, MainWindow * mainWindow)
             this,
             SLOT(displaySyncFinished()));
 
-    m_repoListThread->start();
+    loadSettings();
+
+    onRefreshPage();
 
     qDebug() << "pertubis::SystemReportPage::RepositoryPage()" << pobj;
 }
@@ -150,6 +152,7 @@ pertubis::RepositoryPage::RepositoryPage(QWidget* pobj, MainWindow * mainWindow)
 pertubis::RepositoryPage::~RepositoryPage()
 {
     qDebug() << "pertubis::RepositoryPage::~RepositoryPage()";
+    saveSettings();
     if (!m_repoListThread->isFinished())
     {
         m_repoListThread->stopExec();
@@ -162,6 +165,26 @@ pertubis::RepositoryPage::~RepositoryPage()
     }
     delete m_repoListModel;
     delete m_repoInfoModel;
+}
+
+void pertubis::RepositoryPage::loadSettings()
+{
+    qDebug() << "pertubis::RepositoryPage::loadSettings() - start";
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    settings.beginGroup( "RepositoryPage" );
+    m_hSplit->restoreState(settings.value("hSplit").toByteArray());
+    settings.endGroup();
+    qDebug() << "pertubis::RepositoryPage::doneSettings() - done";
+}
+
+void pertubis::RepositoryPage::saveSettings()
+{
+    qDebug() << "pertubis::RepositoryPage::saveSettings() - start";
+    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    settings.beginGroup( "RepositoryPage" );
+    settings.setValue("hSplit", m_hSplit->saveState());
+    settings.endGroup();
+    qDebug() << "pertubis::RepositoryPage::saveSettings() - done";
 }
 
 void pertubis::RepositoryPage::restartFilters()
@@ -190,6 +213,8 @@ void pertubis::RepositoryPage::displaySyncFinished()
 
 void pertubis::RepositoryPage::activatePage()
 {
+    if (m_dirty)
+        onRefreshPage();
 }
 
 void pertubis::RepositoryPage::onRepositoryChanged( const QModelIndex& index )
@@ -211,6 +236,11 @@ void pertubis::RepositoryPage::onRepositoryChanged( const QModelIndex& index )
     }
 }
 
+void pertubis::RepositoryPage::onRefreshPage()
+{
+    m_repoListThread->start();
+    m_dirty=false;
+}
 
 void pertubis::RepositoryPage::onSync()
 {
@@ -244,9 +274,8 @@ void pertubis::RepositoryPage::onSync()
     q.setDefaultButton(QMessageBox::Ok);
     if (QMessageBox::Cancel == q.exec())
         return;
-    m_mainWindow->setPage(m_mainWindow->m_output);
+    m_mainWindow->setPage(m_mainWindow->m_messagePage);
 //     m_timer->start(1000);
     m_mainWindow->onStartOfPaludisAction();
     m_syncTask->start(repos);
 }
-

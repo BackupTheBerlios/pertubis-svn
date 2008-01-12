@@ -46,6 +46,7 @@ namespace pertubis
     class CategoryItem;
     class MainWindow;
     class CategoryThread;
+    class SetThread;
     class PackageModel;
 
     class PackageBrowsingPage : public Page
@@ -70,12 +71,15 @@ namespace pertubis
 
             void displayCategoryChanged();
 
+            void onRefreshPage();
+
              /// displayes item details
             void displayDetails(QString text);
 
         private:
             void loadSettings();
             void saveSettings();
+            void changeCategory();
 
             QString                 m_currentCat;
             CategoryFilterModel*    m_categoryFilterModel;
@@ -85,10 +89,15 @@ namespace pertubis
             Package*                m_current;
             PackageModel*           m_packageModel;
             PackagesThread*         m_packageViewThread;
+            CategoryFilterModel*    m_setFilterModel;
+            CategoryModel*          m_setModel;
+            SetThread*              m_setThread;
             QTextBrowser*           m_details;
             QSplitter*              m_hSplit;
             QSplitter*              m_vSplit;
+            QSplitter*              m_lSplit;
             QTableView*             m_categoryView;
+            QTableView*             m_setView;
             QTreeView*              m_packageView;
 
     };

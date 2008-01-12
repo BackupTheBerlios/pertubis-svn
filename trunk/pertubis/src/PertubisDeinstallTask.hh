@@ -22,9 +22,10 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_DEINSTALL_TASK_H 1
 
 #include "Package-fwd.hh"
-#include <QObject>
+#include <QThread>
 #include <paludis/uninstall_task.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/util/log.hh>
 
 namespace pertubis
 {
@@ -38,7 +39,7 @@ namespace pertubis
      * \todo this thread blocks the main application thread and gui. Find the issue!
      */
     class PertubisDeinstallTask :
-            public QObject,
+            public QThread,
             public paludis::UninstallTask
     {
         Q_OBJECT
@@ -47,16 +48,20 @@ namespace pertubis
         public:
             PertubisDeinstallTask(QObject* pobject,paludis::tr1::shared_ptr<paludis::Environment> e,
                 Selections* install,
-                Selections* deinstall) :
-                QObject(pobject),
+                Selections* deinstall,
+                std::ostream * const s) :
+                QThread(pobject),
                 paludis::UninstallTask(e.get()),
+                m_install(install),
+                m_deinstall(deinstall),
+                m_stream(s),
                 m_count(0),
                 m_current_count(0),
-                m_error_count(0),
-                m_install(install),
-                m_deinstall(deinstall)
+                m_error_count(0)
             {
             }
+
+            void run() { execute();}
 
             virtual void on_build_unmergelist_pre();
 
@@ -95,11 +100,13 @@ namespace pertubis
             void appendPackage(Package * node);
 
         private:
+
+            Selections* m_install;
+            Selections* m_deinstall;
+            std::ostream * m_stream;
             int m_count;
             int m_current_count;
             int m_error_count;
-            Selections* m_install;
-            Selections* m_deinstall;
     };
 }
 

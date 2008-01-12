@@ -21,12 +21,18 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_MESSAGE_OUTPUT_H
 #define _PERTUBIS_ENTRY_PROTECTOR_MESSAGE_OUTPUT_H 1
 
-#include <QTextEdit>
+#define MAXPBUF 80
+#define MAXARGS 15
+
+#include <QTextCharFormat>
+#include <QTextCursor>
 #include <QThread>
+#include <QColor>
 #include "Page.hh"
 #include <paludis/util/tr1_memory.hh>
 
 class QTextEdit;
+
 
 namespace paludis
 {
@@ -38,19 +44,31 @@ namespace pertubis
     /*! \brief transfering status messages from paludis api to pertubis
      * \ingroup Thread
      */
+
+    enum TERM_COLOR
+    {
+        tc_normal=0,
+        tc_black=30,
+        tc_red=31,
+        tc_green=32,
+        tc_yellow=33,
+        tc_blue=34,
+        tc_pink=35
+    };
+
     class MessageThread : public QThread
     {
         Q_OBJECT
         public:
             MessageThread(QObject* pobj,  int fd) :
                 QThread(pobj),
-                m_fd(fd),
-                m_atwork(false)
-            {
-            }
+                        m_fd(fd),
+                             m_atwork(false)
+                             {
+                             }
 
-            void setAtWork(bool t) { m_atwork = t;}
-            bool atWork() const { return m_atwork;}
+                             void setAtWork(bool t) { m_atwork = t;}
+                             bool atWork() const { return m_atwork;}
 
         protected:
 
@@ -67,34 +85,84 @@ namespace pertubis
     };
 
     /*! \brief output window for messages from paludis
-    *
-    */
-    class MessageOutput : public Page
+     *
+     */
+    class MessagePage : public Page
     {
         Q_OBJECT
 
         public:
 
-            MessageOutput(QWidget* mywidget, MainWindow * );
-            ~MessageOutput();
+            MessagePage(QWidget* mywidget, MainWindow * );
+            ~MessagePage();
 
             void redirectOutput();
-            void setPollingOn() { m_thread->setAtWork(true); if (!m_thread->isRunning()) m_thread->start();}
-            void setPollingOff(){ m_thread->setAtWork(false);}
+            void setPollingOn();
+            void setPollingOff();
+
+            paludis::tr1::shared_ptr<paludis::FDOutputStream>   messages_stream;
 
         public slots:
 
             void activatePage() {}
             void clear();
             void append(QString text);
+            void appendRawText(QString text);
+
+            void onRefreshPage() {};
 
         private:
 
-            paludis::tr1::shared_ptr<paludis::FDOutputStream>   messages_stream;
+            enum RENDITION
+            {
+                RE_BOLD=0,
+                RE_UNDERLINE,
+                RE_BLINK,
+                RE_REVERSE
+            };
+
+            void setRendition(RENDITION r);
+
+            void setDefaultRendition();
+
+            void moveUp(int value);
+            void moveDown(int value);
+            void moveLeft(int value);
+            void moveRight(int value);
+
+            void receiveChar(int chr);
+            void tau(int, int, int);
+            void addDigit(int dig);
+            void addArgument();
+            void loadSettings();
+            void saveSettings();
+            void initTokenizer();
+            void resetToken();
+            void pushToToken(int);
+
+            void setColor(int color, bool fg);
+            void setCursorX(int value);
+            void setCursorY(int value);
+            void setCursorXY(int x, int y);
+            void setFont(const QFont &);
+            void setFontSize(int);
+
+            QFont                                               m_currentFont;
+            QTextCharFormat                                     m_format;
+            QTextCursor                                         m_cursor;
+
             QTextEdit*                                          m_output;
             MessageThread*                                      m_thread;
+            int                                                 m_tbl[256];
+            int                                                 m_argv[MAXARGS];
+            int                                                 m_pbuf[MAXPBUF];
+            int                                                 m_argc;
             int                                                 m_master_fd;
             int                                                 m_slave_fd;
+            int                                                 m_currentColor;
+            int                                                 m_newColor;
+            int                                                 m_fontSize;
+            int                                                 m_ppos;
     };
 }
 

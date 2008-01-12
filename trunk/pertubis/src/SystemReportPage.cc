@@ -56,8 +56,9 @@ pertubis::SystemReportPage::SystemReportPage(QWidget* pobj, MainWindow * mainWin
     m_reportView->setItemDelegateForColumn(rpho_deinstall, new ReportModelDelegate(this));
     m_reportView->setModel(m_reportModel);
     m_reportView->header()->setVisible(true);
-    m_reportView->header()->setResizeMode(QHeaderView::ResizeToContents);
     m_reportView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_reportView->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_reportView->header()->setResizeMode(QHeaderView::ResizeToContents);
 
     QFont myfont(m_reportView->font());
     myfont.setBold(true);
@@ -70,7 +71,7 @@ pertubis::SystemReportPage::SystemReportPage(QWidget* pobj, MainWindow * mainWin
     m_hSplit->addWidget(m_reportView);
     m_hSplit->addWidget(m_details);
 
-    QPushButton* b(new QPushButton(tr("&Start"),this));
+    QPushButton* b(new QPushButton(tr("&Check"),this));
 
     QHBoxLayout* blayout(new QHBoxLayout);
     blayout->addStretch();
@@ -116,7 +117,8 @@ void pertubis::SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
     ReportPackage* package = static_cast<ReportPackage*>(ix.internalPointer());
     Q_ASSERT(package != 0);
     int column(ix.column());
-    if (rpho_deinstall == column )
+    if (rpho_deinstall == column &&
+        tk_normal == package->tag())
     {
         int mystate(m_mainWindow->m_deinstallSelections->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
         m_mainWindow->m_deinstallSelections->changeStates(package, mystate,rpho_deinstall);
@@ -147,6 +149,14 @@ void pertubis::SystemReportPage::displaySystemReportFinished(int total, int coun
 
 void pertubis::SystemReportPage::activatePage()
 {
+    if (m_dirty)
+        onRefreshPage();
+}
+
+void pertubis::SystemReportPage::onRefreshPage()
+{
+    onSystemReport();
+    m_dirty=false;
 }
 
 void pertubis::SystemReportPage::onSystemReport()
@@ -176,11 +186,8 @@ void pertubis::SystemReportPage::onSystemReport()
             this,
             SLOT(displaySystemReportFinished(int,int)));
 
-    qDebug() << "pertubis::SystemReportPage::activatePage() 1";
     m_mainWindow->onStartOfPaludisAction();
-    qDebug() << "pertubis::SystemReportPage::activatePage() 2";
     m_reportThread->start();
-    qDebug() << "pertubis::SystemReportPage::activatePage() 4";
 }
 
 void pertubis::SystemReportPage::displayDetails(QString details)

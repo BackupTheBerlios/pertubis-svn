@@ -66,6 +66,8 @@ namespace pertubis
 
             void activatePage();
 
+            void onRefreshPage() {m_dirty=false;}
+
             void restartFilters(const QSet<QString> & set);
 
         private:

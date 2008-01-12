@@ -33,18 +33,29 @@ namespace pertubis
         public:
             Page(QWidget* pobj, MainWindow* main) :
                 QWidget(pobj),
-                m_mainWindow(main)
+                m_mainWindow(main),
+                m_dirty(false)
                 {}
 
             virtual ~Page();
+
+            void setDirty() { m_dirty=true;}
+
+        signals:
+
+            /// send this signal whenever the some tasks have finished
+            void dirty();
 
         public slots:
 
             virtual void activatePage() = 0;
 
+            virtual void onRefreshPage() = 0;
+
         protected:
 
             MainWindow*     m_mainWindow;
+            bool            m_dirty;
     };
 }
 

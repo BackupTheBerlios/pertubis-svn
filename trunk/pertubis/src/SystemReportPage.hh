@@ -59,6 +59,8 @@ namespace pertubis
 
             void displayDetails(QString details);
 
+            void onRefreshPage();
+
         private:
 
             void loadSettings();

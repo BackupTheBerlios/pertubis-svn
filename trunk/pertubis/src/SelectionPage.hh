@@ -56,6 +56,10 @@ namespace pertubis
             /// start selection tasks
             void onShowSelections();
 
+            void onStart();
+
+            void onRefreshPage();
+
         private:
 
             void loadSettings();

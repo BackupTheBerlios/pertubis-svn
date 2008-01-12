@@ -28,6 +28,11 @@
 #include <paludis/uninstall_list.hh>
 #include <paludis/util/tr1_memory.hh>
 
+#include <paludis/util/log.hh>
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 static pertubis::Package*  makeNodePackage(
     paludis::tr1::shared_ptr<const paludis::PackageID> id,
@@ -164,32 +169,31 @@ void pertubis::PertubisDeinstallTask::on_uninstall_all_post()
 
 void pertubis::PertubisDeinstallTask::on_not_continuing_due_to_errors()
 {
-    using namespace paludis;
-    emit message( color(QString("Cannot continue with uninstall due to the errors indicated above"),QString("red")));
+    *m_stream << endl << "Cannot continue with uninstall due to the errors indicated above" << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_update_world_pre()
 {
-    emit message( color(QString("Updating world file"),QString("green")));
+    *m_stream << endl << endl << "\e[35;1m" << "Updating world file" << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_update_world(const paludis::PackageDepSpec & a)
 {
     if (a.package_ptr())
-        emit message( QString("* removing %1\n\n").arg( QString::fromStdString(color( paludis::stringify(*a.package_ptr()),std::string("green") ))));
+        *m_stream << endl << "\e[31;1m" << "* removing " <<  paludis::stringify(*a.package_ptr()) << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_update_world(const paludis::SetName & a)
 {
-    emit message( QString("* removing %1\n\n").arg(color(paludis::stringify(a),std::string("green")).c_str() ));
+    *m_stream << endl << "\e[32;1m" << "* removing color(paludis::stringify(a)" << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_update_world_post()
 {
-    emit message("\n\n");
+    *m_stream << endl << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_preserve_world()
 {
-    emit message(color(QString("Updating world file\n* --preserve-world was specified, skipping world changes"),QString("green") ));
+    *m_stream << endl << "\e[32;1m" << "Updating world file\n* --preserve-world was specified, skipping world changes" << "\e[0;0m" << endl;
 }

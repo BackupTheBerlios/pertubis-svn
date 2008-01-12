@@ -67,6 +67,7 @@
 #include <paludis/environment-fwd.hh>
 
 #include <QMainWindow>
+#include <QMutex>
 #include <QSystemTrayIcon>
 
 class QMenu;
@@ -83,7 +84,7 @@ namespace pertubis
     class DeinstallSelections;
     class DetailsThread;
     class InstallSelections;
-    class MessageOutput;
+    class MessagePage;
     class PackageBrowsingPage;
     class RepositoryPage;
     class SearchPage;
@@ -119,10 +120,10 @@ namespace pertubis
         DeinstallSelections*    m_deinstallSelections;
         InstallSelections*      m_installSelections;
         SettingsPage*           m_settingsPage;
-        MessageOutput*          m_output;
+        MessagePage*            m_messagePage;
         DetailsThread*          m_detailsThread;
         QSystemTrayIcon*        m_sysTray;
-
+        bool                    m_dirty;
         bool                    m_firstrun;
 
     public slots:
@@ -152,6 +153,8 @@ namespace pertubis
         /// starts the deinstallation of the user selected targets
         void startDeinstallTask(bool pretend);
 
+        void setAllPagesDirty();
+
         ///@}
 
     protected:
@@ -169,6 +172,11 @@ namespace pertubis
 
         /// activate system tray window
         void toggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
+
+        void installTaskFinished();
+        void deinstallTaskFinished();
+
+        void displayAllTasksFinished();
 
         void goToSearch();
         ///@}
@@ -195,9 +203,11 @@ namespace pertubis
         SelectionPage*          m_selectionsPage;
         RepositoryPage*         m_repositoryPage;
         PertubisInstallTask*    m_installTask;
-        PertubisDeinstallTask*    m_deinstallTask;
+        PertubisDeinstallTask*  m_deinstallTask;
         QMenu*                  m_trayMenu;
         QTabWidget*             m_pages;
+        int                     m_queuedTaskCount;
+        QMutex                  m_qtcMutex;
     };
 }
 
