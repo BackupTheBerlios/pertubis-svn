@@ -68,11 +68,8 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
-
-
 namespace pertubis
 {
-    struct MainWindowPrivate;
     class DetailsThread;
     class SettingsPage;
     class MessagePage;
@@ -92,6 +89,8 @@ namespace pertubis
         Q_OBJECT
 
     public:
+
+        struct MainWindowPrivate;
 
         /// @name Constructors
         ///@{

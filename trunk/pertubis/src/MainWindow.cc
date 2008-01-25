@@ -104,14 +104,11 @@ namespace
             }
         }
     };
-
-
 }
-
 
 namespace pertubis
 {
-    struct MainWindowPrivate
+    struct MainWindow::MainWindowPrivate
     {
         MainWindowPrivate(bool firstrun) :
             m_firstrun(firstrun)
@@ -151,7 +148,8 @@ namespace pertubis
 pertubis::MainWindow::MainWindow(bool firstrun) :
         m_imp(new MainWindowPrivate(firstrun) )
 {
-    rootTest("");
+    if (rootTest("") )
+        onQuit();
     initGUI();
     loadSettings();
 }

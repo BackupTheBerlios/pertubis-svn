@@ -24,6 +24,7 @@
 #include "MainWindow.hh"
 #include "MessageOutput.hh"
 
+#include <QApplication>
 #include <QColor>
 #include <QDebug>
 #include <QFile>
@@ -288,6 +289,7 @@ void pertubis::Vt102Display::appendRawText(QString text)
             receiveChar(text[i].unicode());
         }
     }
+    qApp->processEvents();
 }
 
 void pertubis::Vt102Display::setRendition(RENDITION r)
