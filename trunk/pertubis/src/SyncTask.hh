@@ -25,69 +25,13 @@
 
 #include <QSet>
 #include <QString>
-#include <paludis/sync_task.hh>
+
 #include <paludis/util/tr1_memory.hh>
+#include <ostream>
 
 namespace pertubis
 {
-    /*! \brief syncing repositories
-     * \ingroup PaludisAdapter
-     * \ingroup Thread
-     */
-    class PertubisSyncTask :
-        public ThreadBase,
-        public paludis::SyncTask
-    {
-        Q_OBJECT
 
-        public:
-
-            ///\name Constructors
-            ///\{
-
-            /// constructs a PertubisSyncTask object
-            PertubisSyncTask(paludis::tr1::shared_ptr<paludis::Environment> env, QObject* pobj) :
-                ThreadBase(pobj,paludis::tr1::shared_ptr<paludis::Environment>()),
-                SyncTask(env.get(),true)
-            {
-            }
-            ///@}
-
-            /// std destructor
-            ~PertubisSyncTask() {}
-
-            ///@name Callback methods
-            ///@{
-            /// overloaded from paludis::SyncTask
-            virtual void on_sync_all_pre();
-            virtual void on_sync_pre(const paludis::RepositoryName &);
-            virtual void on_sync_post(const paludis::RepositoryName &);
-            virtual void on_sync_skip(const paludis::RepositoryName &);
-            virtual void on_sync_fail(const paludis::RepositoryName &, const paludis::SyncFailedError &);
-            virtual void on_sync_status(int, int, int) {}
-            virtual void on_sync_succeed(const paludis::RepositoryName &);
-            virtual void on_sync_all_post();
-            ///@}
-
-            ///
-            void start(const QSet<QString>& repositories);
-
-        protected:
-
-
-
-            /// overloaded from QThread
-            void run();
-
-        signals:
-
-            /// sends a status message from paludis api to the main thread
-            void sendMessage(QString message);
-
-        private:
-
-
-    };
 }
 
 #endif

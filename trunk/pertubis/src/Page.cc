@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -19,7 +19,59 @@
 */
 
 #include "Page.hh"
+#include "MainWindow.hh"
+
+struct PagePrivate
+{
+    PagePrivate(pertubis::MainWindow* main) :
+        m_mainWindow(main),
+        m_outOfDate(false),
+        m_used(false)
+    {
+    }
+
+    pertubis::MainWindow*     m_mainWindow;
+    bool            m_outOfDate;
+
+    /** \brief displays this page information to the user or not
+            * set this attribute to true whenever information was fetched and could be out-of-date and so must be retrieved again
+            * so it is
+        */
+    bool                  m_used;
+};
+
+pertubis::Page::Page(MainWindow* main) :
+        QWidget( qobject_cast<QWidget*>(main) ),
+        m_imp(new PagePrivate(main))
+{
+}
 
 pertubis::Page::~Page()
 {
+    delete m_imp;
+}
+
+pertubis::MainWindow* pertubis::Page::mainWindow()
+{
+    return m_imp->m_mainWindow;
+}
+
+bool pertubis::Page::used()
+{
+    return m_imp->m_used;
+}
+
+bool pertubis::Page::outOfDate()
+{
+    return m_imp->m_outOfDate;
+}
+
+void pertubis::Page::setUsed(bool b)
+{
+    m_imp->m_used = b;
+}
+
+void pertubis::Page::setOutOfDate(bool b)
+{
+    m_imp->m_outOfDate = b;
 }

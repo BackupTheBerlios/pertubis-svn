@@ -44,14 +44,14 @@
 #include <QVBoxLayout>
 
 
-pertubis::SettingsPage::SettingsPage(QWidget* pobj, MainWindow* main) : Page(pobj,main),
-        m_generalView(new GeneralSettingsView(pobj,new GeneralSettingsModel(pobj))),
-        m_installView(new InstallSettingsView(pobj,new InstallSettingsModel(pobj))),
-        m_deinstallView(new DeinstallSettingsView(pobj,new DeinstallSettingsModel(pobj))),
-        m_queryView(new QuerySettingsView(pobj,new QuerySettingsModel(pobj))),
-        m_depListView(new DepListSettingsView(pobj, new DepListSettingsModel(pobj))),
-        m_pagesView(new QListWidget(pobj)),
-        m_pagesStore(new QStackedWidget(pobj))
+pertubis::SettingsPage::SettingsPage(MainWindow* main) : Page(main),
+        m_generalView(new GeneralSettingsView(this,new GeneralSettingsModel(this))),
+        m_installView(new InstallSettingsView(this,new InstallSettingsModel(this))),
+        m_deinstallView(new DeinstallSettingsView(this,new DeinstallSettingsModel(this))),
+        m_queryView(new QuerySettingsView(this,new QuerySettingsModel(this))),
+        m_depListView(new DepListSettingsView(this, new DepListSettingsModel(this))),
+        m_pagesView(new QListWidget(this)),
+        m_pagesStore(new QStackedWidget(this))
 {
     m_pagesStore->addWidget(m_generalView);
     m_pagesStore->addWidget(m_installView);

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -18,7 +18,6 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <QMutexLocker>
 #include "SystemReport.hh"
 #include "ReportPackage.hh"
 #include "Selections.hh"
@@ -50,10 +49,9 @@ void pertubis::SystemReport::on_report_package_success(const tr1::shared_ptr<con
 void pertubis::SystemReport::run()
 {
     // qDebug() << "pertubis::SystemReport::run start";
-    if (m_stopExec)
+    if (!execMode() )
         return;
-    QMutexLocker locker(&m_paludisAccess);
-    if (m_stopExec)
+    if (!execMode() )
         return;
     try
     {

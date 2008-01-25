@@ -22,7 +22,6 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_THREAD_BASE_H 1
 
 #include <QThread>
-#include <QMutex>
 
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/environment-fwd.hh>
@@ -35,7 +34,10 @@ namespace pertubis
      *
      * \ingroup PaludisAdapter
      * \ingroup Threads
+     * \see TaskQueue, ThreadBase, CategoryThread, DetailsThread, PackagesThread, SearchThread, SetThread
      */
+    class ThreadBasePrivate;
+
     class ThreadBase : public QThread
     {
         Q_OBJECT
@@ -47,28 +49,43 @@ namespace pertubis
 
         /// std constructor
         ThreadBase(QObject* pobj,
-            const paludis::tr1::shared_ptr<paludis::Environment>&  env) : QThread(pobj), m_env(env), m_stopExec(false)
-        {
-
-        }
+            const paludis::tr1::shared_ptr<paludis::Environment>&  env);
         ///\}
 
         /// destructor
         ~ThreadBase();
 
-        /// request cancel thread execution
-        void stopExec() { m_stopExec=true;}
+        paludis::tr1::shared_ptr<paludis::Environment> env();
 
-    protected:
+        /** \brief returns true if this thread should be running/executing.
+         *
+         * It's not the real state of the thread, which can be polled by QTHread::isRunning() or QTHread::isFinished().
+         * It's only a hint for a QThread:.run() implementation, which should be stopped.
+         * \code
+         * MyThread : public ThreadBase
+         * ...
+         * void run()
+         * {
+         *      while (execMode() )
+         *      {
+         *          // process
+         *      }
+         * }
+         * \endcode
+         * \see setExecMode()
+         */
+        bool execMode();
 
-        /// the environment
-        paludis::tr1::shared_ptr<paludis::Environment>  m_env;
+        /** \brief start or stop the thread
+         *
+         * It depends on the actual implementation, if this is used.
+         * If possible ask as mch as possible in QThread::run() possible to use this inconjunction with execMode()
+         * \see execMode()
+         */
+        void setExecMode(bool mode);
 
-        /// execution will be stopped, if true
-        bool                                            m_stopExec;
-
-        /// use this to limit concurrent access to the paludis api
-        static QMutex                                   m_paludisAccess;
+    private:
+        ThreadBasePrivate* const m_imp;
     };
 }
 

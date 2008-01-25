@@ -144,3 +144,4 @@ void pertubis::CategoryModel::clear()
     m_data.clear();
     emit layoutChanged();
 }
+

@@ -62,36 +62,25 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_MAIN_WINDOW_H
 #define _PERTUBIS_ENTRY_PROTECTOR_MAIN_WINDOW_H 1
 
+#include <QMainWindow>
+#include <QSystemTrayIcon>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
-#include <QMainWindow>
-#include <QMutex>
-#include <QSystemTrayIcon>
 
-class QMenu;
-class QSplitter;
-class QString;
-class QTabWidget;
-
-class QToolBar;
 
 namespace pertubis
 {
+    struct MainWindowPrivate;
+    class DetailsThread;
+    class SettingsPage;
+    class MessagePage;
+    class InstallSelections;
+    class DeinstallSelections;
+    class TaskQueue;
     class PertubisInstallTask;
     class PertubisDeinstallTask;
-    class DeinstallSelections;
-    class DetailsThread;
-    class InstallSelections;
-    class MessagePage;
-    class PackageBrowsingPage;
-    class RepositoryPage;
-    class SearchPage;
-    class SelectionPage;
-    class SettingsPage;
-    class SystemReportPage;
-
     /*! \brief Our main window
      * \ingroup Widget
      *
@@ -114,22 +103,22 @@ namespace pertubis
         /// std destructor
         virtual ~MainWindow();
 
-        paludis::tr1::shared_ptr<paludis::Environment>  m_env;
-
-
-        DeinstallSelections*    m_deinstallSelections;
-        InstallSelections*      m_installSelections;
-        SettingsPage*           m_settingsPage;
-        MessagePage*            m_messagePage;
-        DetailsThread*          m_detailsThread;
-        QSystemTrayIcon*        m_sysTray;
-        bool                    m_dirty;
-        bool                    m_firstrun;
+        /// @name getters
+        ///@{
+        paludis::tr1::shared_ptr<paludis::Environment> env();
+        InstallSelections* installSelections();
+        DeinstallSelections* deinstallSelections();
+        DetailsThread* detailsThread();
+        QWidget* currentPage();
+        SettingsPage* settingsPage();
+        MessagePage* messagePage();
+        TaskQueue*  taskQueue();
+        /// changes the actual visble page
+        void setPage(QWidget* page);
+        bool firstRun();
+        ///@}
 
     public slots:
-
-         /// @name Action starting slots
-        ///@{
 
         /// must be called before every access to paludis api
         void onEndOfPaludisAction();
@@ -140,22 +129,14 @@ namespace pertubis
         /// displays a notice in the status bar
         void displayNotice(const QString & notice);
 
-        /// changes the actual visble page
-        void setPage(QWidget* page);
+        /// will be activated if user changes the actual page \p pn. It calls the dependend Page::activatePage()
+        void pageChanged(int pn);
 
-        void pageChanged(int);
+        /// hard reset of all information stored to save memory and get the lastest information from paludis
+        void onInvalidate();
 
-        void showDetails(const paludis::tr1::shared_ptr<const paludis::PackageID> & id);
-
-        /// starts the installation of the user selected targets
-        void startInstallTask(bool pretend, QString target ="",bool firstpass=false);
-
-        /// starts the deinstallation of the user selected targets
-        void startDeinstallTask(bool pretend);
-
+        /// indicates all pages that they could be out of date and should refetch their information
         void setAllPagesDirty();
-
-        ///@}
 
     protected:
 
@@ -172,11 +153,6 @@ namespace pertubis
 
         /// activate system tray window
         void toggleTrayIcon(QSystemTrayIcon::ActivationReason reason);
-
-        void installTaskFinished();
-        void deinstallTaskFinished();
-
-        void displayAllTasksFinished();
 
         void goToSearch();
         ///@}
@@ -197,17 +173,7 @@ namespace pertubis
         void saveSettings();
         ///@}
 
-        PackageBrowsingPage*    m_packageBrowsingPage;
-        SearchPage*             m_searchPage;
-        SystemReportPage*       m_systemReportPage;
-        SelectionPage*          m_selectionsPage;
-        RepositoryPage*         m_repositoryPage;
-        PertubisInstallTask*    m_installTask;
-        PertubisDeinstallTask*  m_deinstallTask;
-        QMenu*                  m_trayMenu;
-        QTabWidget*             m_pages;
-        int                     m_queuedTaskCount;
-        QMutex                  m_qtcMutex;
+        MainWindowPrivate* const      m_imp;
     };
 }
 

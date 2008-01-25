@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -21,7 +21,7 @@
 #ifndef _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H
 #define _PERTUBIS_ENTRY_PROTECTOR_INSTALL_H 1
 
-#include <QThread>
+#include "ThreadBase.hh"
 #include "Package-fwd.hh"
 #include <paludis/install_task.hh>
 
@@ -35,7 +35,7 @@ namespace pertubis
      * This class controlls all aspects and steps of installing packages
      * \todo this thread blocks the main application thread and gui. Find the issue!
      */
-    class PertubisInstallTask : public QThread,
+    class PertubisInstallTask : public ThreadBase,
         public paludis::InstallTask
     {
         Q_OBJECT
@@ -63,15 +63,14 @@ namespace pertubis
             };
 
             PertubisInstallTask(QObject* pobj,
-                    paludis::Environment* env,
+                    paludis::tr1::shared_ptr<paludis::Environment> e,
                     const paludis::DepListOptions & options,
                     paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations,
                     Selections* install,
                     Selections* deinstall);
             ~PertubisInstallTask() {}
 
-            void start(bool firstpass) { m_firstpass= firstpass;QThread::start();}
-            void run() {execute();emit finished();}
+            void run();
 
             virtual void display_merge_list_post_counts();
             virtual void display_one_clean_all_pre_list_entry(const paludis::PackageID &){}
@@ -140,11 +139,6 @@ namespace pertubis
 
         signals:
 
-            /*! \brief sending the output of the build and install process to the main thread / window
-            *
-            */
-            void sendMessage(const QString& message);
-
             /*! \brief after updating paludis we must rebuild pertubis
             *
             */
@@ -167,4 +161,3 @@ namespace pertubis
 }
 
 #endif
-

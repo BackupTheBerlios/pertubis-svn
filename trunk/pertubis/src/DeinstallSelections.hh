@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -52,7 +52,7 @@ namespace pertubis
 
             /** \brief returns true if the Package can be uninstalled
              *
-             * \todo who we really need this crap?
+             * \todo why we really need this crap?
              */
             bool available(Package* item, int column) const;
 

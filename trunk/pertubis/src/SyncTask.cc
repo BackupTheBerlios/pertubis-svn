@@ -19,66 +19,97 @@
 */
 
 #include "SyncTask.hh"
-#include "FormatterUtils.hh"
 #include <paludis/util/stringify.hh>
 #include <paludis/syncer.hh>
-#include <iomanip>
 #include <iostream>
-#include <QMutexLocker>
 #include <string>
 
-void pertubis::PertubisSyncTask::on_sync_all_pre()
+/*! \brief syncing repositories
+ * \ingroup PaludisAdapter
+ * \ingroup Thread
+ */
+namespace pertubis
 {
-}
-
-void pertubis::PertubisSyncTask::on_sync_pre(const paludis::RepositoryName & r)
-{
-    sendMessage(QString("Sync %1 started").arg(QString::fromStdString(color(stringify(r),"magenta"))));
-}
-
-void pertubis::PertubisSyncTask::on_sync_post(const paludis::RepositoryName &r)
-{
-    sendMessage(QString("Sync %1 finished").arg(QString::fromStdString(color(stringify(r),"magenta"))));
-}
-
-void pertubis::PertubisSyncTask::on_sync_skip(const paludis::RepositoryName & r)
-{
-    sendMessage(QString("Sync %1 skipped").arg(QString::fromStdString(color(stringify(r),"magenta"))));
-}
-
-void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
-{
-    sendMessage(QString("Sync %1 completed").arg(stringify(r).c_str()));
-}
-
-void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
-{
-    sendMessage(color(QString("Sync error: * %1 %2\n").arg(e.backtrace("<br>  * ").c_str()).arg(e.message().c_str()),"red"));
-}
-
-void pertubis::PertubisSyncTask::on_sync_all_post()
-{
-    sendMessage("Sync complete");
-}
-
-void pertubis::PertubisSyncTask::start(const QSet<QString>& repos)
-{
-    for (QSet<QString>::const_iterator rStart(repos.constBegin()),rEnd(repos.constEnd());
-         rStart != rEnd; ++rStart)
-         add_target(rStart->toStdString());
-    QThread::start();
-}
-
-void pertubis::PertubisSyncTask::run()
-{
-    QMutexLocker locker(&m_paludisAccess);
-    try
+    class PertubisSyncTask :
+        public ThreadBase,
+        public paludis::SyncTask
     {
-        execute();
-    }
-    catch(...)
-    {
-        qDebug() << "error occured while syncing";
-    }
-    emit finished();
+        Q_OBJECT
+
+        public:
+
+            ///\name Constructors
+            ///\{
+
+            /// constructs a PertubisSyncTask object
+            PertubisSyncTask(paludis::tr1::shared_ptr<paludis::Environment> myenv, QObject* pobj) :
+                ThreadBase(pobj,paludis::tr1::shared_ptr<paludis::Environment>()),
+                           SyncTask(myenv.get(),true)
+            {
+            }
+            ///@}
+
+            /// std destructor
+            ~PertubisSyncTask() {}
+
+            ///@name Callback methods
+            ///@{
+            /// overloaded from paludis::SyncTask
+            void pertubis::PertubisSyncTask::on_sync_all_pre()
+            {
+            }
+
+            void pertubis::PertubisSyncTask::on_sync_pre(const paludis::RepositoryName & r)
+            {
+                std::cout << "Sync " << "\e[35;1m" << stringify(r) << "\e[0;0m" << std::endl;
+            }
+
+            void pertubis::PertubisSyncTask::on_sync_post(const paludis::RepositoryName &r)
+            {
+                std::cout << "Sync " << "\e[35;1m" << stringify(r) << "\e[0;0m" << " finished" << std::endl;
+            }
+
+            void pertubis::PertubisSyncTask::on_sync_skip(const paludis::RepositoryName & r)
+            {
+                std::cout << "Sync " << "\e[35;1m" << stringify(r) << "\e[0;0m" << " skipped" << std::endl;
+            }
+
+            void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
+            {
+                std::cout << "Sync "<< "\e[35;1m" << stringify(r) << "\e[0;0m" << " completed" << std::endl;
+            }
+
+            void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
+            {
+                std::cout << "\e[31;1m" << "Sync error " << e.backtrace("<br>  * ") << e.message() << std::endl;
+            }
+
+            void pertubis::PertubisSyncTask::on_sync_all_post()
+            {
+                std::cout << "Sync complete" << std::endl;
+            }
+
+            ///@}
+
+            void pertubis::PertubisSyncTask::setup(const QSet<QString>& repos)
+            {
+                for (QSet<QString>::const_iterator rStart(repos.constBegin()),rEnd(repos.constEnd());
+                     rStart != rEnd; ++rStart)
+                    add_target(rStart->toStdString());
+            }
+
+        signals:
+
+            /// sends a status message from paludis api to the main thread
+            void sendMessage(QString message);
+
+
+        protected:
+
+            /// overloaded from QThread
+            void pertubis::PertubisSyncTask::run()
+            {
+                execute();
+            }
+    };
 }

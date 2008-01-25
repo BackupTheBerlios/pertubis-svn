@@ -27,25 +27,25 @@
 
 namespace pertubis
 {
-	class TaskBox;
+    class TaskBox;
 
-	class InstallTaskTest : public QObject
-	{
-		Q_OBJECT
-	public:
+    class InstallTaskTest : public QObject
+    {
+        Q_OBJECT
+        public:
 
         InstallTaskTest() {}
-		~InstallTaskTest() {}
+        ~InstallTaskTest() {}
 
-	private slots:
-		void getSetTaskid();
-		void addEntry();
-// 		void deleteEntry(Item* item);
-// 		void setTaskid(int id);
-// 		void hasEntry(Item* item);
-// 		void name() const { return m_name;}
-// 		void processTaskState(Item* item,bool mystate);
-	};
+    private slots:
+        void getSetTaskid();
+        void addEntry();
+//         void deleteEntry(Item* item);
+//         void setTaskid(int id);
+//         void hasEntry(Item* item);
+//         void name() const { return m_name;}
+//         void processTaskState(Item* item,bool mystate);
+    };
 }
 
 #endif

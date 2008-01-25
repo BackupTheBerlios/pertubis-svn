@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -142,7 +142,7 @@ namespace
                 if (k.type() == type)
                 {
                     pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()).c_str(),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -212,7 +212,7 @@ namespace
                 }
             }
 
-            void visit(const paludis::MetadataRepositoryMaskInfoKey & k)
+            void visit(const paludis::MetadataRepositoryMaskInfoKey &)
             {
 //                 if (k.type() == type)
 //                     thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()->mask_file),std::string("bgcolor=\"#ddddff\"")));
@@ -222,7 +222,7 @@ namespace
             {
             }
 
-            void visit(const paludis::MetadataFSEntryKey & k)
+            void visit(const paludis::MetadataFSEntryKey &)
             {
 //                 if (k.type() == type)
 //                     thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()),std::string("bgcolor=\"#ddddff\"")));
@@ -231,7 +231,7 @@ namespace
 }
 
 pertubis::DetailsThread::DetailsThread(QObject* pobj,
-                                        const paludis::tr1::shared_ptr<paludis::Environment>&  env) : ThreadBase(pobj,env)
+                                        const paludis::tr1::shared_ptr<paludis::Environment>&  myenv) : ThreadBase(pobj,myenv)
 {
 }
 
@@ -240,23 +240,22 @@ pertubis::DetailsThread::~DetailsThread()
     qDebug() << "pertubis::DetailsThread::~DetailsThread()";
 }
 
-void pertubis::DetailsThread::start( paludis::tr1::shared_ptr<const paludis::PackageID> id)
+void pertubis::DetailsThread::setup( paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
     m_id = id;
-    QThread::start();
 }
 
 void pertubis::DetailsThread::run()
 {
-    m_text = QString("<html><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\">\
+    m_text = QString("<html><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"10\">\
     <colgroup><col width=\"30%\"><col width=\"70%\"></colgroup><tr><th bgcolor=\"#5a3aca\"></th><th bgcolor=\"#000000\" align=\"left\"><font color=\"#ffffff\">%1-%2</font></th>\n</tr><tbody>\n")
-            .arg(stringify(m_id->name()).c_str()).arg(stringify(m_id->version()).c_str());
+            .arg(QString::fromStdString(stringify(m_id->name()))).arg(QString::fromStdString(stringify(m_id->version())));
 
-    Displayer ds(m_id,this,m_env.get(),paludis::mkt_significant);
-    Displayer dn(m_id,this,m_env.get(),paludis::mkt_normal);
-    Displayer di(m_id,this,m_env.get(),paludis::mkt_internal);
-    Displayer da(m_id,this,m_env.get(),paludis::mkt_author);
-    Displayer dp(m_id,this,m_env.get(),paludis::mkt_dependencies);
+    Displayer ds(m_id,this,env().get(),paludis::mkt_significant);
+    Displayer dn(m_id,this,env().get(),paludis::mkt_normal);
+    Displayer di(m_id,this,env().get(),paludis::mkt_internal);
+    Displayer da(m_id,this,env().get(),paludis::mkt_author);
+    Displayer dp(m_id,this,env().get(),paludis::mkt_dependencies);
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(ds));
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dn));
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(di));
@@ -264,6 +263,6 @@ void pertubis::DetailsThread::run()
     std::for_each(indirect_iterator(m_id->begin_metadata()), indirect_iterator(m_id->end_metadata()), accept_visitor(dp));
 
     m_text.append("</tbody></table></body></html>\n");
-    qDebug() << m_text;
+//     qDebug() << m_text;
     emit sendResult(m_text);
 }

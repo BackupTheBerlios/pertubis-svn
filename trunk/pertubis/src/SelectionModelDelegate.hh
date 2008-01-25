@@ -36,7 +36,7 @@ namespace pertubis
     */
     class SelectionModelDelegate : public QItemDelegate
     {
-        Q_OBJECT
+//         Q_OBJECT
 
     public:
 
@@ -59,4 +59,3 @@ namespace pertubis
 }
 
 #endif
-

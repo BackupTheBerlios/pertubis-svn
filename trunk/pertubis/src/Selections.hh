@@ -40,12 +40,16 @@ namespace pertubis
     class MessageOutput;
 
     /*! \brief Holds PackageIDs for concrete task classes. This is an abstract base class
+     *
+     * This is a an abstract base class, which provides the commom storage functionality
+     * for handling the packages a user wish to process.
      * \see InstallSelections, DeinstallSelections
      * \ingroup Selection
+     * \warning interface is not freezed
      */
     class Selections : public QObject
     {
-        Q_OBJECT
+//         Q_OBJECT
 
     public:
 
@@ -55,10 +59,16 @@ namespace pertubis
         ///@name Constructors
         ///@{
 
-        /// creates a Selections object
-        Selections(QObject* pobject,
-            QString myname);
+        /** creates the base part of Selections objects
+         *
+         * \see InstallSelections, DeinstallSelections
+         */
+        Selections( QObject * pobject,
+                    const QString & myname);
         ///@}
+
+        /// should return the result of some clever checks if given Package could be used for this type of selection
+        virtual bool available(Package * item, int column) const = 0;
 
         virtual ~Selections() {}
 
@@ -70,7 +80,7 @@ namespace pertubis
          * \param mystate one of the values of Qt::CheckRole
          * We have to process every change here since only the task exactly knows how to deal with it. The task must be able to ask the item for the UpdateRange
          */
-        virtual bool changeStates(Package* item, int mystate, int column)=0;
+        virtual bool changeStates(Package * item, int mystate, int column)=0;
 
         /*! \brief actually change
          *
@@ -102,7 +112,7 @@ namespace pertubis
         /*! \brief returns the number of selected Packages for this task
          *
          */
-        int entryCount() const { return m_data.size();}
+        int entryCount() const;
 
         /*! \brief checks if this package is already selected for this task
         *
@@ -112,14 +122,13 @@ namespace pertubis
         /*! \brief returns the literal name of this task
         *
         */
-        QString name() const { return m_name;}
+        QString name() const;
 
-        virtual bool available(Package* item, int column) const = 0;
+        bool hasEntries();
 
-        bool hasEntries() { return ! m_data.empty() ;}
+        paludis::PackageIDSet::ConstIterator entriesBegin();
 
-        paludis::PackageIDSet::ConstIterator entriesBegin() { return m_data.begin();}
-        paludis::PackageIDSet::ConstIterator entriesEnd() { return m_data.end();}
+        paludis::PackageIDSet::ConstIterator entriesEnd();
 
         ///\}
 
@@ -137,6 +146,31 @@ namespace pertubis
         Selections(const Selections& other);
     };
 
+}
+
+inline int pertubis::Selections::entryCount() const
+{
+    return m_data.size();
+}
+
+inline bool pertubis::Selections::hasEntries()
+{
+    return !m_data.empty() ;
+}
+
+inline QString pertubis::Selections::name() const
+{
+    return m_name;
+}
+
+inline paludis::PackageIDSet::ConstIterator pertubis::Selections::entriesBegin()
+{
+    return m_data.begin();
+}
+
+inline paludis::PackageIDSet::ConstIterator pertubis::Selections::entriesEnd()
+{
+    return m_data.end();
 }
 
 #endif

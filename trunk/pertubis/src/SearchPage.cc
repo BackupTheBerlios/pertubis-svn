@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -31,6 +31,7 @@
 #include "SearchPage.hh"
 #include "SearchThread.hh"
 #include "Settings.hh"
+#include "TaskQueue.hh"
 
 #include <QAction>
 #include <QFont>
@@ -48,11 +49,36 @@
 #include <QSettings>
 #include <QTreeView>
 
-pertubis::SearchPage::SearchPage(QWidget* pobj, MainWindow * mainWindow) :
-        Page(pobj,mainWindow)
+
+namespace pertubis
 {
-    m_searchModel = new PackageModel(this);
-    m_searchModel->setHorizontalHeaderLabels(QStringList() <<
+    struct SearchPagePrivate
+    {
+
+        ~SearchPagePrivate()
+        {
+            delete m_searchModel;
+            delete m_searchFilterModel;
+            delete m_bar;
+            delete m_bStart;
+        }
+        QProgressBar*           m_bar;
+        PackageModel*           m_searchModel;
+        QTreeView*              m_searchView;
+        QTextBrowser*           m_details;
+        QLineEdit*              m_line;
+        QPushButton*            m_bStart;
+        QSplitter*              m_hSplit;
+        PackageFilterModel*     m_searchFilterModel;
+    };
+}
+
+pertubis::SearchPage::SearchPage(MainWindow * main) :
+        Page(main),
+        m_imp(new SearchPagePrivate)
+{
+    m_imp->m_searchModel = new PackageModel(this);
+    m_imp->m_searchModel->setHorizontalHeaderLabels(QStringList() <<
             tr("+") <<
             tr("-") <<
             tr("#") <<
@@ -61,109 +87,82 @@ pertubis::SearchPage::SearchPage(QWidget* pobj, MainWindow * mainWindow) :
             tr("repository") <<
             tr("mask reason") <<
             tr("change"));
-    m_searchView = new QTreeView(this);
-    m_searchView->setItemsExpandable(true);
-    m_searchFilterModel = new PackageFilterModel(this,pho_repository);
-    m_searchFilterModel->setSourceModel(m_searchModel);
-    m_searchView->setContextMenuPolicy(Qt::CustomContextMenu);
-    m_searchView->setItemDelegate(new PackageModelDelegate(this,m_searchFilterModel,pho_install,pho_deinstall,pho_installed));
-    m_searchView->setModel(m_searchFilterModel);
-    m_searchView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_searchView->setSortingEnabled(true);
-    m_searchView->sortByColumn(pho_package,Qt::AscendingOrder);
-    m_searchView->header()->setMovable(false);
-    m_searchView->header()->setVisible(true);
-    m_searchView->header()->setResizeMode(QHeaderView::ResizeToContents);
-    QFont myfont(m_searchView->font());
+    m_imp->m_searchView = new QTreeView(this);
+    m_imp->m_searchView->setItemsExpandable(true);
+    m_imp->m_searchFilterModel = new PackageFilterModel(this,pho_repository);
+    m_imp->m_searchFilterModel->setSourceModel(m_imp->m_searchModel);
+    m_imp->m_searchView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_imp->m_searchView->setItemDelegate(new PackageModelDelegate(this,m_imp->m_searchFilterModel,pho_install,pho_deinstall,pho_installed));
+    m_imp->m_searchView->setModel(m_imp->m_searchFilterModel);
+    m_imp->m_searchView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_imp->m_searchView->setSortingEnabled(true);
+    m_imp->m_searchView->sortByColumn(pho_package,Qt::AscendingOrder);
+    m_imp->m_searchView->header()->setMovable(false);
+    m_imp->m_searchView->header()->setVisible(true);
+    m_imp->m_searchView->header()->setResizeMode(QHeaderView::ResizeToContents);
+    QFont myfont(m_imp->m_searchView->font());
     myfont.setBold(true);
-    m_searchView->setFont(myfont);
-
-    m_searchThread = new SearchThread(this,m_mainWindow->m_env,m_mainWindow->m_settingsPage->m_queryView->m_model,m_mainWindow->m_installSelections,m_mainWindow->m_deinstallSelections);
+    m_imp->m_searchView->setFont(myfont);
 
     QLabel* label = new QLabel(tr("Search:"));
-    m_line = new QLineEdit;
-    label->setBuddy(m_line);
+    m_imp->m_line = new QLineEdit;
+    label->setBuddy(m_imp->m_line);
 
-    m_bStart = new QPushButton(tr("&Search")),
-    m_bStart->setDefault(true);
-    m_bStart->setAutoDefault(true);
-    m_bStart->setAutoExclusive(true);
+    m_imp->m_bStart = new QPushButton(tr("&Search"),this);
+    m_imp->m_bStart->setDefault(true);
+    m_imp->m_bStart->setAutoDefault(true);
+    m_imp->m_bStart->setAutoExclusive(true);
 
     QHBoxLayout* slayout(new QHBoxLayout);
     slayout->addWidget(label);
-    slayout->addWidget(m_line);
-    slayout->addWidget(m_bStart);
+    slayout->addWidget(m_imp->m_line);
+    slayout->addWidget(m_imp->m_bStart);
 
-    m_details = new QTextBrowser(this);
-    m_details->setOpenLinks(false);
+    m_imp->m_details = new QTextBrowser(this);
+    m_imp->m_details->setOpenLinks(false);
 
-    m_hSplit = new QSplitter(Qt::Horizontal,pobj);
-    m_hSplit->addWidget(m_searchView);
-    m_hSplit->addWidget(m_details);
+    m_imp->m_hSplit = new QSplitter(Qt::Horizontal,this);
+    m_imp->m_hSplit->addWidget(m_imp->m_searchView);
+    m_imp->m_hSplit->addWidget(m_imp->m_details);
 
-    QVBoxLayout* mylayout(new QVBoxLayout);
-    mylayout->addLayout(slayout);
-    mylayout->addWidget(m_hSplit);
-    setLayout(mylayout);
+    QVBoxLayout* vlayout(new QVBoxLayout);
+    vlayout->addWidget(m_imp->m_hSplit);
 
-    m_bar = new QProgressBar(this);
-    m_bar->setRange(0,100);
-    m_bar->hide();
+    QVBoxLayout* mainlayout(new QVBoxLayout);
+    mainlayout->addLayout(slayout);
+    mainlayout->addLayout(vlayout);
+    setLayout(mainlayout);
 
-    connect(m_searchView,
+    m_imp->m_bar = new QProgressBar(this);
+    m_imp->m_bar->setRange(0,100);
+    mainWindow()->statusBar()->addPermanentWidget(m_imp->m_bar);
+    m_imp->m_bar->hide();
+
+    connect(m_imp->m_searchView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
             SLOT(onViewUserInteraction( const QModelIndex& )) );
 
-    connect(m_searchThread,
-            SIGNAL(packageResult(Package*)),
-            m_searchModel,
-            SLOT(appendPackage(Package*)));
-
-    connect(m_searchThread,
-            SIGNAL(finished(int)),
-            this,
-            SLOT(displaySearchFinished(int)));
-
-    connect(m_searchThread,
-            SIGNAL(progress(int)),
-            m_bar,
-            SLOT(setValue(int)));
-
-    connect(m_bStart,
+    connect(m_imp->m_bStart,
             SIGNAL(clicked()),
             this,
             SLOT(onSearch()));
 
-    connect(m_line,
+    connect(m_imp->m_line,
             SIGNAL(returnPressed()),
             this,
             SLOT(onSearch()));
 
-    connect(m_mainWindow->m_detailsThread,
-            SIGNAL(sendResult(QString)),
-            this,
-            SLOT(displayDetails(QString)));
-
     loadSettings();
-
-    qDebug() << "pertubis::SystemReportPage::SearchPage()" << pobj;
+    show();
+    qDebug() << "pertubis::SystemReportPage::SearchPage()" << this;
 }
 
 pertubis::SearchPage::~SearchPage()
 {
     saveSettings();
+    delete m_imp;
     qDebug() << "pertubis::SearchPage::~SearchPage() start";
-//     if (!m_searchThread->isFinished())
-//     {
-//         m_searchThread->stopExec();
-//         m_searchThread->wait();
-//     }
-    delete m_searchThread;
-    delete m_searchModel;
-    delete m_searchFilterModel;
-    delete m_bar;
-    delete m_bStart;
 }
 
 void pertubis::SearchPage::loadSettings()
@@ -171,7 +170,7 @@ void pertubis::SearchPage::loadSettings()
     qDebug() << "pertubis::SearchPage::loadSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "SearchPage" );
-    m_hSplit->restoreState(settings.value("hSplit").toByteArray());
+    m_imp->m_hSplit->restoreState(settings.value("hSplit").toByteArray());
     settings.endGroup();
     qDebug() << "pertubis::SearchPage::doneSettings() - done";
 }
@@ -181,27 +180,27 @@ void pertubis::SearchPage::saveSettings()
     qDebug() << "pertubis::SearchPage::saveSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "SearchPage" );
-    settings.setValue("hSplit", m_hSplit->saveState());
+    settings.setValue("hSplit", m_imp->m_hSplit->saveState());
     settings.endGroup();
     qDebug() << "pertubis::SearchPage::saveSettings() - done";
 }
 
 void pertubis::SearchPage::restartFilters(const QSet<QString> & set)
 {
-    m_searchFilterModel->setFilter(set);
-    m_searchFilterModel->invalidate();
+    m_imp->m_searchFilterModel->setFilter(set);
+    m_imp->m_searchFilterModel->invalidate();
 }
 
 void pertubis::SearchPage::activatePage()
 {
-    m_line->setFocus(Qt::ActiveWindowFocusReason);
-    if (m_dirty)
-        onRefreshPage();
+    m_imp->m_line->setFocus(Qt::ActiveWindowFocusReason);
+    if (outOfDate())
+        refreshPage();
 }
 
 void pertubis::SearchPage::onViewUserInteraction(const QModelIndex & mix)
 {
-    QModelIndex ix(m_searchFilterModel->mapToSource(mix));
+    QModelIndex ix(m_imp->m_searchFilterModel->mapToSource(mix));
     if (! ix.isValid())
         return;
 
@@ -210,64 +209,99 @@ void pertubis::SearchPage::onViewUserInteraction(const QModelIndex & mix)
     int column(ix.column());
     if (pho_install == column )
     {
-        int mystate(m_mainWindow->m_installSelections->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
-        if (m_mainWindow->m_installSelections->available(package,-1))
-            m_mainWindow->m_installSelections->changeStates(package,mystate,pho_install);
-        m_searchModel->onUpdateModel();
+        int mystate(mainWindow()->installSelections()->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
+        if (mainWindow()->installSelections()->available(package,-1))
+            mainWindow()->installSelections()->changeStates(package,mystate,pho_install);
+        m_imp->m_searchModel->onUpdateModel();
     }
     else if (pho_deinstall == column )
     {
-        int mystate(m_mainWindow->m_deinstallSelections->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
-        if (m_mainWindow->m_deinstallSelections->available(package,pho_installed) )
-            m_mainWindow->m_deinstallSelections->changeStates(package, mystate,pho_deinstall);
-        m_searchModel->onUpdateModel();
+        int mystate(mainWindow()->deinstallSelections()->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
+        if (mainWindow()->deinstallSelections()->available(package,pho_installed) )
+            mainWindow()->deinstallSelections()->changeStates(package, mystate,pho_deinstall);
+        m_imp->m_searchModel->onUpdateModel();
     }
     else
     {
-        m_mainWindow->showDetails(package->ID());
+        details(package->ID());
     }
 }
 
-void pertubis::SearchPage::displayDetails(QString details)
+void pertubis::SearchPage::clearPage()
 {
-    if (details.isEmpty())
+    m_imp->m_searchModel->clear();
+    m_imp->m_details->clear();
+}
+
+void pertubis::SearchPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
+{
+    DetailsThread* t(new DetailsThread(this,mainWindow()->env()));
+    mainWindow()->onStartOfPaludisAction();
+    connect(t,
+            SIGNAL(sendResult(QString)),
+            this,
+            SLOT(displayDetails(QString)));
+    t->setup(id);
+    mainWindow()->taskQueue()->enqueue(t,true);
+}
+
+void pertubis::SearchPage::displayDetails(QString mydetails)
+{
+    if (mydetails.isEmpty() ||
+        this != mainWindow()->currentPage())
         return;
-    m_details->setText(details);
-    m_mainWindow->onEndOfPaludisAction();
+    m_imp->m_details->setText(mydetails);
+    mainWindow()->onEndOfPaludisAction();
 }
 
 void pertubis::SearchPage::onSearch()
 {
-    QString query(m_line->text().trimmed());
-    qDebug() << "SearchPage::onSearch()" << query;
+    QString query(m_imp->m_line->text().trimmed());
     if (query.isEmpty())
         return;
-    if (m_searchThread->isRunning())
-    {
-        onSearchStopped();
-    }
-    m_bStart->setText(tr("Stop"));
-    m_mainWindow->onStartOfPaludisAction();
-    m_searchModel->clear();
-    m_searchThread->start(query);
-    m_mainWindow->statusBar()->addWidget(m_bar);
-    m_bar->show();
-    m_mainWindow->displayNotice(QString(tr("searching for %1...")).arg(query) );
+
+    SearchThread* searchThread = new SearchThread(this,
+                                    mainWindow()->env(),
+                                    mainWindow()->settingsPage()->m_queryView->m_model,
+                                    mainWindow()->installSelections(),
+                                    mainWindow()->deinstallSelections());
+
+    connect(searchThread,
+            SIGNAL(packageResult(Package*)),
+            m_imp->m_searchModel,
+            SLOT(appendPackage(Package*)));
+
+    connect(searchThread,
+            SIGNAL(finished(int)),
+            this,
+            SLOT(displaySearchFinished(int)));
+
+    connect(searchThread,
+            SIGNAL(progress(int)),
+            m_imp->m_bar,
+            SLOT(setValue(int)));
+
+    searchThread->setup(query);
+    m_imp->m_bStart->setText(tr("Stop"));
+    mainWindow()->onStartOfPaludisAction();
+    m_imp->m_searchModel->clear();
+    mainWindow()->taskQueue()->enqueue(searchThread,true);
+    m_imp->m_bar->show();
+    mainWindow()->displayNotice(QString(tr("searching for %1...")).arg(query) );
 }
 
 void pertubis::SearchPage::onSearchStopped()
 {
-    m_mainWindow->displayNotice(tr("Search stopped"));
-    m_mainWindow->onEndOfPaludisAction();
-    m_searchThread->stopExec();
-    m_bStart->setText(tr("&start"));
-    m_mainWindow->statusBar()->removeWidget(m_bar);
+    mainWindow()->displayNotice(tr("Search stopped"));
+    mainWindow()->onEndOfPaludisAction();
+    m_imp->m_bStart->setText(tr("&start"));
+    m_imp->m_bar->hide();
 }
 
 void pertubis::SearchPage::displaySearchFinished(int count)
 {
-    m_mainWindow->onEndOfPaludisAction();
-    m_bStart->setText(tr("&start"));
-    m_mainWindow->statusBar()->removeWidget(m_bar);
-    m_mainWindow->displayNotice(tr("%1 packages found").arg(count));
+    mainWindow()->onEndOfPaludisAction();
+    m_imp->m_bStart->setText(tr("&start"));
+    m_imp->m_bar->hide();
+    mainWindow()->displayNotice(tr("%1 packages found").arg(count));
 }

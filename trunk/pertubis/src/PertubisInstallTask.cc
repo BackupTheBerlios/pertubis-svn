@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -31,38 +31,16 @@
 #include <QString>
 #include <QStringList>
 
-
-static pertubis::Package*  makeNodePackage(
-    paludis::tr1::shared_ptr<const paludis::PackageID> id,
-    Qt::CheckState install,
-    Qt::CheckState deinstall,
-    const QString & pack,
-    const QString & cat,
-    const QString & version,
-    const QString & repository)
-{
-    using namespace pertubis;
-    QVector<QVariant> data(6);
-    data[pho_install] = install;
-    data[pho_deinstall] = deinstall;
-    data[pho_package] = pack;
-    data[pho_category] = cat;
-    data[pho_repository] = version ;
-    data[pho_installed] = repository;
-    return new Package(id,data,ps_stable,pt_node_only,0);
-}
-
 pertubis::PertubisInstallTask::PertubisInstallTask(QObject* pobj,
-                        paludis::Environment* env,
+                        paludis::tr1::shared_ptr<paludis::Environment> e,
                         const paludis::DepListOptions & options,
                         paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations,
                         Selections* install,
                         Selections* deinstall) :
-                        QThread(pobj),
-                        paludis::InstallTask(env, options, destinations),
+                        ThreadBase(pobj,e),
+                        paludis::InstallTask(e.get(), options, destinations),
                         m_install(install),
-                        m_deinstall(deinstall),
-                        m_firstpass(true)
+                        m_deinstall(deinstall)
 {
     std::fill_n( m_counts, static_cast<int>(last_count), 0);
 }
@@ -112,6 +90,11 @@ void pertubis::PertubisInstallTask::on_display_merge_list_entry(const paludis::D
     makePackage(e, m);
 }
 
+void pertubis::PertubisInstallTask::run()
+{
+    execute();
+}
+
 void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, DisplayMode m)
 {
     using namespace paludis;
@@ -141,8 +124,8 @@ void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, 
     switch (m)
     {
         case normal_entry:
-            if (m_firstpass)
-                return;
+//             if (m_firstpass)
+//                 return;
 
             if ( existing_repo->empty())
             {
@@ -181,11 +164,11 @@ void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, 
 
             if (dlk_block == e.kind)
             {
-                if (m_firstpass)
-                {
-                    m_deinstall->addEntry(e.package_id);
-                    return;
-                }
+//                 if (m_firstpass)
+//                 {
+//                     m_deinstall->addEntry(e.package_id);
+//                     return;
+//                 }
 //                 node->setData(spho_deinstall,Qt::Checked);
                 for (Set<DepTagEntry>::ConstIterator
                      tag(e.tags->begin()),

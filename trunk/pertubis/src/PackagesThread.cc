@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -25,7 +25,6 @@
 #include "Package.hh"
 #include "Selections.hh"
 #include <QList>
-#include <QMutexLocker>
 
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -44,10 +43,10 @@
 
 
 pertubis::PackagesThread::PackagesThread( QObject* pobject,
-    const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+    const paludis::tr1::shared_ptr<paludis::Environment>&  myenv,
     Selections* install,
     Selections* deinstall) :
-    ThreadBase(pobject,env),
+    ThreadBase(pobject,myenv),
     m_install(install),
     m_deinstall(deinstall)
 {
@@ -55,22 +54,20 @@ pertubis::PackagesThread::PackagesThread( QObject* pobject,
 
 pertubis::PackagesThread::~PackagesThread()
 {
+    qDebug() << "~PackagesThread()";
 }
 
-void pertubis::PackagesThread::start(QString str)
+void pertubis::PackagesThread::setup(QString str)
 {
     m_query = str;
-    QThread::start();
 }
 
-/// \TODO implement better progressbar usage
 void pertubis::PackagesThread::run()
 {
-    QMutexLocker locker(&m_paludisAccess);
     using namespace paludis;
     CategoryNamePart cat(m_query.toLatin1().data());
     const tr1::shared_ptr< const PackageIDSequence > packageIds(
-        m_env->package_database()->query(
+        env()->package_database()->query(
                 query::Category(cat) &
                 query::SupportsAction<InstallAction>(),
                 qo_order_by_version));
@@ -109,23 +106,24 @@ void pertubis::PackagesThread::run()
             old_qpn = (*vstart)->name();
             ++count;
             emit addPackage(p_item);
+//             qDebug() << "emit addPackage()";
         }
 
-        if (m_stopExec)
+        if (!execMode())
             return;
         QStringList vReasons;
         for (paludis::PackageID::MasksConstIterator m((*vstart)->begin_masks()), m_end((*vstart)->end_masks()) ;
                 m != m_end ; ++m)
         {
-            vReasons.push_back(stringify((*m)->description()).c_str());
+            vReasons.push_back(QString::fromStdString(stringify((*m)->description())));
         }
         pReasons.unite(vReasons.toSet());
 
-        bool vInstalled(installed(m_env,*vstart) );
+        bool vInstalled(installed(env(),*vstart) );
         Package* v_item = makeVersionPackage(*vstart,
-                                    Qt::Unchecked,
-                                    Qt::Unchecked,
-                                    stringify((*vstart)->version()).c_str(),
+                                    m_install->hasEntry(*vstart),
+                                    m_deinstall->hasEntry(*vstart),
+                                    QString::fromStdString(stringify((*vstart)->version())),
                                     QString::fromStdString(stringify((*vstart)->repository()->name())),
                                     (vInstalled ? Qt::Checked : Qt::Unchecked),
                                     (vReasons.isEmpty() ? ps_stable : ps_masked),
@@ -149,6 +147,5 @@ void pertubis::PackagesThread::run()
 
         p_item->prependChild(v_item);
     }
-    emit finished(count);
+    emit resultCount(count);
 }
-

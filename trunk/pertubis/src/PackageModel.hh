@@ -34,8 +34,6 @@ class QAction;
 
 namespace pertubis
 {
-
-
     /*! \brief holds package data fetched from paludis in a tree structure
      *
      * \ingroup PackageModelClass

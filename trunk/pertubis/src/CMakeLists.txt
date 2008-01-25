@@ -40,18 +40,17 @@ SET(PERTUBIS_SRCS
     RepositoryListModel.cc
     SearchPage.cc
     SearchThread.cc
-    SearchWindow.cc
     SelectionModel.cc
     SelectionModelDelegate.cc
     SelectionPage.cc
     Selections.cc
     SetThread.cc
     Settings.cc
-    SyncTask.cc
     SystemReport.cc
     SystemReportPage.cc
     text_matcher.cc
     ThreadBase.cc
+    TaskQueue.cc
 )
 
 SET(PERTUBIS_MOC_HDRS
@@ -71,30 +70,25 @@ SET(PERTUBIS_MOC_HDRS
     PackageFilterModel.hh
     Package.hh
     Page.hh
-    PackageModelDelegate.hh
     PackageModel.hh
     PackagesThread.hh
     PertubisDeinstallTask.hh
     PertubisInstallTask.hh
     QuerySettings.hh
     RepositoryPage.hh
-    ReportModelDelegate.hh
     ReportPackageModel.hh
     RepositoryInfoModel.hh
     RepositoryListModel.hh
     SearchPage.hh
     SearchThread.hh
-    SearchWindow.hh
-    SelectionModelDelegate.hh
     SelectionModel.hh
     SelectionPage.hh
-    Selections.hh
     SetThread.hh
     Settings.hh
-    SyncTask.hh
     SystemReport.hh
     SystemReportPage.hh
     ThreadBase.hh
+    TaskQueue.hh
 )
 
 EXEC_PROGRAM("/bin/sh"

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl.
+/* Copyright (C) 2007-2008 Stefan Koegl.
 *
 * This file is part of pertubis.
 *
@@ -43,10 +43,15 @@ namespace pertubis
     {
         Q_OBJECT
         public:
-            RepositoryInfoThread(QObject* pobj,
-                                 const paludis::tr1::shared_ptr<paludis::Environment>&  env) : ThreadBase(pobj,env) {}
 
-            void start(const QString& name);
+            /// std constructor
+            RepositoryInfoThread(QObject* pobj,
+                const paludis::tr1::shared_ptr<paludis::Environment>&  myenv) :
+                ThreadBase(pobj,myenv)
+            {
+            }
+
+            void setup(const QString& name);
 
         protected:
 
@@ -85,6 +90,8 @@ namespace pertubis
 
         void setHorizontalHeaderLabels ( const QStringList & labels );
 
+        void clear();
+
     public slots:
 
         void slotResult(const QList<QVariantList>& list);
@@ -97,6 +104,3 @@ namespace pertubis
 }
 
 #endif
-
-
-

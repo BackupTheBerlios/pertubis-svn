@@ -22,39 +22,26 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_PACKAGE_BROWSING_PAGE_H 1
 
 #include "Page.hh"
-
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/environment-fwd.hh>
+
+
 #include <QString>
 
-
 class QModelIndex;
-class QSplitter;
-class QTextBrowser;
-class QString;
-class QTableView;
-class QTreeView;
 
 
 namespace pertubis
 {
-    class CategoryFilterModel;
-    class CategoryModel;
-    class PackageFilterModel;
-    class Package;
-    class PackagesThread;
-    class CategoryItem;
     class MainWindow;
-    class CategoryThread;
-    class SetThread;
-    class PackageModel;
 
     class PackageBrowsingPage : public Page
     {
         Q_OBJECT
         public:
 
-            PackageBrowsingPage(QWidget* pobj, MainWindow * mainWindow);
+            PackageBrowsingPage(MainWindow * mainWindow);
             ~PackageBrowsingPage();
 
         public slots:
@@ -71,35 +58,24 @@ namespace pertubis
 
             void displayCategoryChanged();
 
-            void onRefreshPage();
+            void refreshPage();
 
              /// displayes item details
             void displayDetails(QString text);
 
+            void clearPage();
+
         private:
+
+            struct PackageBrowsingPagePrivate;
+
+            void details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id);
             void loadSettings();
             void saveSettings();
             void changeCategory();
+            void getCategories();
 
-            QString                 m_currentCat;
-            CategoryFilterModel*    m_categoryFilterModel;
-            CategoryModel*          m_catModel;
-            CategoryThread*         m_categoryThread;
-            PackageFilterModel*     m_packageFilterModel;
-            Package*                m_current;
-            PackageModel*           m_packageModel;
-            PackagesThread*         m_packageViewThread;
-            CategoryFilterModel*    m_setFilterModel;
-            CategoryModel*          m_setModel;
-            SetThread*              m_setThread;
-            QTextBrowser*           m_details;
-            QSplitter*              m_hSplit;
-            QSplitter*              m_vSplit;
-            QSplitter*              m_lSplit;
-            QTableView*             m_categoryView;
-            QTableView*             m_setView;
-            QTreeView*              m_packageView;
-
+            PackageBrowsingPagePrivate* const m_imp;
     };
 }
 

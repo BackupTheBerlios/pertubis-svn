@@ -310,4 +310,3 @@ namespace pertubis
 QDebug operator<<(QDebug dbg, const pertubis::Package &c);
 
 #endif
-

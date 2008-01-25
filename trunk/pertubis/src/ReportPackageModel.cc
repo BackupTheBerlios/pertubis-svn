@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -30,12 +30,6 @@
 pertubis::ReportPackageModel::ReportPackageModel(QObject* pobj) : PackageModel(pobj)
 {
     clear();
-}
-
-pertubis::ReportPackageModel::~ReportPackageModel()
-{
-    if (m_root)
-        delete m_root;
 }
 
 QVariant pertubis::ReportPackageModel::data ( const QModelIndex & ix, int role) const

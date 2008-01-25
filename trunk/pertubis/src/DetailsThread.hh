@@ -33,8 +33,11 @@ namespace pertubis
     class DatabaseView;
 
     /*! \brief this thread asks pertubis for package details and returns preformatted text.
-    *
-    */
+     *
+     * \ingroup PaludisAdapter
+     * \ingroup Threads
+     * \see TaskQueue, ThreadBase, CategoryThread, PackagesThread, SearchThread, SetThread
+     */
     class DetailsThread : public ThreadBase
     {
         Q_OBJECT
@@ -45,7 +48,7 @@ namespace pertubis
                       const paludis::tr1::shared_ptr<paludis::Environment>&  env);
         ~DetailsThread();
 
-        void start(paludis::tr1::shared_ptr<const paludis::PackageID> id);
+        void setup(paludis::tr1::shared_ptr<const paludis::PackageID> id);
 
         void appendOutput(const std::string& row) { m_text.append(QString::fromStdString(row)); }
 

@@ -22,52 +22,92 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_SELECTION_PAGE_H 1
 
 #include "Page.hh"
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/package_id-fwd.hh>
+
 
 class QModelIndex;
-class QTreeView;
-class QTextBrowser;
-class QSplitter;
+
+
 
 namespace pertubis
 {
-    class SelectionModel;
+    struct SelectionPagePrivate;
 
+    /*! \brief Displays user selections and handles tasks
+     *
+     * \see InstallSelections, DeinstallSelections, PertubisInstallTask, PertubisDeinstallTask
+     * \ingroup Selection
+     * \ingroup Page
+     * \warning interface is not freezed
+     */
     class SelectionPage : public Page
     {
         Q_OBJECT
 
         public:
 
-            SelectionPage(QWidget* pobj, MainWindow * mainWindow);
-            virtual ~SelectionPage();
+            /// std constructor
+            SelectionPage(MainWindow * mainWindow);
 
-            SelectionModel*         m_selectionModel;
+            /// std destructor
+            virtual ~SelectionPage();
 
         public slots:
 
-            /// the work to do when a user clicks on the selection display
-            void onSelectionViewUserInteraction(const QModelIndex & mix);
-
+            /// do something when the user switches to this paage
             void activatePage();
 
-             /// displayes item details
+            /// refreshes the information displayed by this page
+            void refreshPage();
+
+            /// clears all information, saves memory
+            void clearPage();
+
+        private slots:
+
+            /// clears all user selections
+            void unselectAll();
+
+            /// handles internal tasks after install tasks
+            void installTaskFinished();
+
+            /// handles internal tasks after deinstall tasks
+            void deinstallTaskFinished();
+
+            /// provide all neccessary information the install task needs
+            void setupInstallTask(bool pretend, QString target ="");
+
+            /// provide all neccessary information the deinstall task needs
+            void setupDeinstallTask(bool pretend);
+
+             /// displays item details
             void displayDetails(QString text);
 
-            /// start selection tasks
-            void onShowSelections();
+            /// show the packages and acute issues for packages a user selected for all tasks
+            void startPretend();
 
-            void onStart();
+            void details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id);
 
-            void onRefreshPage();
+            /** \brief starts silently all tasks.
+             *
+             * \todo Users must be warned about what there will happen to their system, but provide some logic
+             */
+            void start();
+
+            /// the work to do when a user clicks on the selection display
+            void selectionViewUserInteraction(const QModelIndex & mix);
 
         private:
 
+            /// loads user settings
             void loadSettings();
+
+            /// saves user settings
             void saveSettings();
 
-            QTreeView*              m_selectionView;
-            QSplitter*              m_hSplit;
-            QTextBrowser*           m_details;
+            /// implementation ptr
+            SelectionPagePrivate* const     m_imp;
     };
 }
 

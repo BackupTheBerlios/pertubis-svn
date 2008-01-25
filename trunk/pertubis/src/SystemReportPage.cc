@@ -1,6 +1,6 @@
 
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -29,6 +29,7 @@
 #include "GLSAParser.hh"
 #include "InstallSelections.hh"
 #include "DeinstallSelections.hh"
+#include "TaskQueue.hh"
 #include <QModelIndex>
 #include <QFile>
 #include <QPushButton>
@@ -39,37 +40,51 @@
 #include <QFont>
 #include <QTextBrowser>
 
-pertubis::SystemReportPage::SystemReportPage(QWidget* pobj, MainWindow * mainWindow) :
-        Page(pobj,mainWindow),
-        m_reportThread(0)
+namespace pertubis
 {
-    m_reportModel = new ReportPackageModel(this);
-    m_reportModel->setHorizontalHeaderLabels(QStringList() <<
+    struct SystemReportPagePrivate
+    {
+        SystemReportPagePrivate()
+        {
+        }
+        QSplitter*              m_hSplit;
+        QTextBrowser*           m_details;
+        QTreeView*              m_reportView;
+        ReportPackageModel*     m_reportModel;
+    };
+}
+
+pertubis::SystemReportPage::SystemReportPage(MainWindow * main) :
+        Page(main),
+        m_imp(new SystemReportPagePrivate)
+{
+    m_imp->m_reportModel = new ReportPackageModel(this);
+    m_imp->m_reportModel->setHorizontalHeaderLabels(QStringList() <<
             tr("deinstall") <<
             tr("package") <<
             tr("category") <<
             tr("version"));
 
-    m_reportView = new QTreeView(this);
-    m_reportView->setItemsExpandable(true);
-    m_reportView->setContextMenuPolicy(Qt::CustomContextMenu);
-    m_reportView->setItemDelegateForColumn(rpho_deinstall, new ReportModelDelegate(this));
-    m_reportView->setModel(m_reportModel);
-    m_reportView->header()->setVisible(true);
-    m_reportView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_reportView->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_reportView->header()->setResizeMode(QHeaderView::ResizeToContents);
+    m_imp->m_reportView = new QTreeView(this);
+    m_imp->m_reportView->setItemsExpandable(true);
+    m_imp->m_reportView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_imp->m_reportView->setItemDelegateForColumn(rpho_deinstall, new ReportModelDelegate(this));
+    m_imp->m_reportView->setModel(m_imp->m_reportModel);
+    m_imp->m_reportView->header()->setVisible(true);
+    m_imp->m_reportView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_imp->m_reportView->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_imp->m_reportView->header()->setResizeMode(QHeaderView::ResizeToContents);
 
-    QFont myfont(m_reportView->font());
+    QFont myfont(m_imp->m_reportView->font());
     myfont.setBold(true);
-    m_reportView->setFont(myfont);
+    m_imp->m_reportView->setFont(myfont);
 
-    m_details = new QTextBrowser(this);
-    m_details->setOpenLinks(false);
+    m_imp->m_details = new QTextBrowser(this);
+    m_imp->m_details->setOpenLinks(false);
 
-    m_hSplit = new QSplitter(Qt::Horizontal,pobj);
-    m_hSplit->addWidget(m_reportView);
-    m_hSplit->addWidget(m_details);
+    m_imp->m_hSplit = new QSplitter(Qt::Horizontal,this);
+    m_imp->m_hSplit->addWidget(m_imp->m_reportView);
+    m_imp->m_hSplit->addWidget(m_imp->m_details);
 
     QPushButton* b(new QPushButton(tr("&Check"),this));
 
@@ -77,34 +92,27 @@ pertubis::SystemReportPage::SystemReportPage(QWidget* pobj, MainWindow * mainWin
     blayout->addStretch();
     blayout->addWidget(b);
 
+    QHBoxLayout* hlayout(new QHBoxLayout);
+    hlayout->addWidget(m_imp->m_hSplit);
+
     connect(b,
             SIGNAL(pressed()),
             this,
             SLOT(onSystemReport()));
 
-    connect(m_mainWindow->m_detailsThread,
-            SIGNAL(sendResult(QString)),
-            this,
-            SLOT(displayDetails(QString)));
-
     QVBoxLayout* mylayout(new QVBoxLayout);
     mylayout->addLayout(blayout);
-    mylayout->addWidget(m_hSplit);
+    mylayout->addLayout(hlayout);
     setLayout(mylayout);
+    show();
 
-    qDebug() << "pertubis::SystemReportPage::SystemReportPage()" << pobj;
+    qDebug() << "pertubis::SystemReportPage::SystemReportPage() end";
 }
 
 pertubis::SystemReportPage::~SystemReportPage()
 {
     qDebug() << "pertubis::SearchPage::~SearchPage()";
-    if (0 != m_reportThread &&
-        !m_reportThread->isFinished())
-    {
-        m_reportThread->stopExec();
-        m_reportThread->wait();
-    }
-    delete m_reportThread;
+    delete m_imp;
     qDebug() << "pertubis::SearchPage::~SearchPage() done";
 }
 
@@ -120,9 +128,9 @@ void pertubis::SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
     if (rpho_deinstall == column &&
         tk_normal == package->tag())
     {
-        int mystate(m_mainWindow->m_deinstallSelections->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
-        m_mainWindow->m_deinstallSelections->changeStates(package, mystate,rpho_deinstall);
-        m_reportModel->onUpdateModel();
+        int mystate(mainWindow()->deinstallSelections()->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
+        mainWindow()->deinstallSelections()->changeStates(package, mystate,rpho_deinstall);
+        m_imp->m_reportModel->onUpdateModel();
     }
     else if ( tk_glsa == package->tag() )
     {
@@ -131,69 +139,85 @@ void pertubis::SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
             return;
         QXmlInputSource inputSource(&file);
         QXmlSimpleReader reader;
-        GlsaParser handler(m_details);
+        GlsaParser handler(m_imp->m_details);
         reader.setContentHandler(&handler);
         reader.setErrorHandler(&handler);
         reader.parse(inputSource);
     }
     else
-        m_mainWindow->showDetails(package->ID());
+        details(package->ID());
 }
 
 void pertubis::SystemReportPage::displaySystemReportFinished(int total, int count)
 {
-    m_mainWindow->onEndOfPaludisAction();
-    m_reportView->expandAll();
-    m_mainWindow->displayNotice(tr("%1 installed packages processed, %2 issues found").arg(total).arg(count));
+    mainWindow()->onEndOfPaludisAction();
+    m_imp->m_reportView->expandAll();
+    mainWindow()->displayNotice(tr("%1 installed packages processed, %2 issues found").arg(total).arg(count));
 }
 
 void pertubis::SystemReportPage::activatePage()
 {
-    if (m_dirty)
-        onRefreshPage();
+    if (used() && outOfDate())
+        refreshPage();
 }
 
-void pertubis::SystemReportPage::onRefreshPage()
+void pertubis::SystemReportPage::refreshPage()
 {
     onSystemReport();
-    m_dirty=false;
+    setOutOfDate(false);
+}
+
+void pertubis::SystemReportPage::clearPage()
+{
+    m_imp->m_reportModel->clear();
+    m_imp->m_details->clear();
+    setUsed(false);
+    setOutOfDate(false);
 }
 
 void pertubis::SystemReportPage::onSystemReport()
 {
-    m_reportModel->clear();
-    if (m_reportThread != 0)
-    {
-        m_reportThread->stopExec();
-        m_reportThread->wait();
-        delete m_reportThread;
-        m_reportThread = 0;
-    }
-    m_reportThread = new SystemReport(this,m_mainWindow->m_env,m_mainWindow->m_deinstallSelections);
+    m_imp->m_reportModel->clear();
 
-    connect(m_reportView,
+    SystemReport* t(new SystemReport(this,mainWindow()->env(),mainWindow()->deinstallSelections()));
+
+    connect(m_imp->m_reportView,
             SIGNAL(clicked( const QModelIndex&)),
             this,
             SLOT(onViewUserInteraction( const QModelIndex& )) );
 
-    connect(m_reportThread,
+    connect(t,
             SIGNAL(appendPackage(Package*)),
-            m_reportModel,
+            m_imp->m_reportModel,
             SLOT(appendPackage(Package*)));
 
-    connect(m_reportThread,
+    connect(t,
             SIGNAL(finished(int,int)),
             this,
             SLOT(displaySystemReportFinished(int,int)));
 
-    m_mainWindow->onStartOfPaludisAction();
-    m_reportThread->start();
+    mainWindow()->onStartOfPaludisAction();
+    mainWindow()->taskQueue()->enqueue(t,true);
+    setUsed(true);
 }
 
-void pertubis::SystemReportPage::displayDetails(QString details)
+void pertubis::SystemReportPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
 {
-    if (details.isEmpty())
+    DetailsThread* t(new DetailsThread(this,mainWindow()->env()));
+    mainWindow()->onStartOfPaludisAction();
+    connect(t,
+            SIGNAL(sendResult(QString)),
+            this,
+            SLOT(displayDetails(QString)));
+    t->setup(id);
+    mainWindow()->taskQueue()->enqueue(t,true);
+}
+
+void pertubis::SystemReportPage::displayDetails(QString mydetails)
+{
+    if (mydetails.isEmpty() ||
+        this != mainWindow()->currentPage())
         return;
-    m_details->setText(details);
-    m_mainWindow->onEndOfPaludisAction();
+    m_imp->m_details->setText(mydetails);
+    mainWindow()->onEndOfPaludisAction();
 }

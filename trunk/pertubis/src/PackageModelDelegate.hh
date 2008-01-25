@@ -37,7 +37,7 @@ namespace pertubis
     */
     class PackageModelDelegate : public QItemDelegate
     {
-        Q_OBJECT
+//         Q_OBJECT
 
     public:
 
@@ -62,4 +62,3 @@ namespace pertubis
 }
 
 #endif
-

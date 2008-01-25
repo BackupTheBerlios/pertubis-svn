@@ -19,6 +19,7 @@
 */
 
 #include "GeneralSettings.hh"
+#include "MessageOutput.hh"
 
 #include <QComboBox>
 #include <QDir>
@@ -26,6 +27,7 @@
 #include <QGridLayout>
 #include <QSpinBox>
 #include <QGroupBox>
+#include <QCheckBox>
 #include <QMessageBox>
 #include <QFontComboBox>
 #include <QFont>
@@ -77,7 +79,7 @@ void pertubis::GeneralSettingsModel::loadSettings()
     qDebug() << "pertubis::GeneralSettingsModel::loadSettings()";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup( "GeneralSettingsModel" );
-    // use only ts files without the file extension!
+    // use ts files only without file extensions!
     m_currentLanguage=settings.value("language",":i18n/pertubis-en").toString();
     settings.endGroup();
 }
@@ -96,6 +98,7 @@ pertubis::GeneralSettingsView::GeneralSettingsView(QWidget *pobj,GeneralSettings
         m_model(model)
 {
     // for translators: translate this into the name of your language in your language
+    // e.g. for german take "Deutsch"
     tr("english");
 
     QGroupBox *languageGroup = new QGroupBox(tr("Language Settings"));
@@ -136,13 +139,14 @@ pertubis::GeneralSettingsView::GeneralSettingsView(QWidget *pobj,GeneralSettings
     m_fontSize->setSuffix("px");
     QLabel *fontLabel(new QLabel(tr("Font"),m_fonts));
 
+    m_vt100Mode = new QCheckBox(tr("vt100 mode (slow but with colors)"), this);
+
     QGridLayout* messageLayout(new QGridLayout);
-    messageLayout->setColumnStretch(0,4);
-    messageLayout->setColumnStretch(1,1);
-    messageLayout->setColumnStretch(2,1);
+//     messageLayout->setColumnStretch(2,1);
     messageLayout->addWidget(fontLabel,0,0);
-    messageLayout->addWidget(m_fonts,0,1);
-    messageLayout->addWidget(m_fontSize,0,2);
+    messageLayout->addWidget(m_vt100Mode,1,0);
+    messageLayout->addWidget(m_fonts,0,2);
+    messageLayout->addWidget(m_fontSize,0,3);
     messageGroup->setLayout(messageLayout);
 
     QVBoxLayout *mainLayout(new QVBoxLayout);

@@ -44,7 +44,7 @@ namespace pertubis
 
             ReportPackageModel(QObject* parent);
 
-            virtual ~ReportPackageModel();
+            virtual ~ReportPackageModel() {}
 
             ///@name Content information
             ///@{

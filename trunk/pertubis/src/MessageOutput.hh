@@ -26,13 +26,12 @@
 
 #include <QTextCharFormat>
 #include <QTextCursor>
+#include <QChar>
+#include <QTextEdit>
 #include <QThread>
 #include <QColor>
 #include "Page.hh"
 #include <paludis/util/tr1_memory.hh>
-
-class QTextEdit;
-
 
 namespace paludis
 {
@@ -41,9 +40,6 @@ namespace paludis
 
 namespace pertubis
 {
-    /*! \brief transfering status messages from paludis api to pertubis
-     * \ingroup Thread
-     */
 
     enum TERM_COLOR
     {
@@ -56,19 +52,25 @@ namespace pertubis
         tc_pink=35
     };
 
+    /*! \brief messages transport thread
+     * \ingroup Thread
+     *
+     * We only have to start this thread while performing tasks.
+     * Otherwise we will not see any output from paludis, gcc, etc
+     *
+     */
     class MessageThread : public QThread
     {
         Q_OBJECT
-        public:
-            MessageThread(QObject* pobj,  int fd) :
-                QThread(pobj),
-                        m_fd(fd),
-                             m_atwork(false)
-                             {
-                             }
 
-                             void setAtWork(bool t) { m_atwork = t;}
-                             bool atWork() const { return m_atwork;}
+        public:
+
+            MessageThread(QObject* pobj, int fd);
+            ~MessageThread();
+
+            /// starts the message polling and transport
+            void setPolling(bool on);
+            bool polling() const { return m_polling;}
 
         protected:
 
@@ -80,36 +82,37 @@ namespace pertubis
 
         private:
 
-            int         m_fd;
-            bool        m_atwork;
+            int         m_master_fd;
+            bool        m_polling;
     };
 
-    /*! \brief output window for messages from paludis
+    class MessagePage;
+
+    /** \brief a non-interactive vt102 display
      *
+     * that's only an non-interactive vt102 display and shows colored paludis task output as you are used to see on your terminal.
+     * It parses the raw text input from paludis and proccesses the terminal escape codes.
+     *
+     * We are using some modified parsing logic from kde4 konsole in this class, so thanks to the kde4 konsole from me (hotshelf),
      */
-    class MessagePage : public Page
+    class Vt102Display :
+        public QTextEdit
     {
         Q_OBJECT
 
         public:
 
-            MessagePage(QWidget* mywidget, MainWindow * );
-            ~MessagePage();
-
-            void redirectOutput();
-            void setPollingOn();
-            void setPollingOff();
-
-            paludis::tr1::shared_ptr<paludis::FDOutputStream>   messages_stream;
+            Vt102Display(MessagePage* page);
+            ~Vt102Display();
 
         public slots:
 
-            void activatePage() {}
-            void clear();
-            void append(QString text);
             void appendRawText(QString text);
 
-            void onRefreshPage() {};
+            void setFont(const QFont &);
+            void setFontSize(int);
+            void setParserMode(int mode);
+            void initSlots();
 
         private:
 
@@ -121,21 +124,39 @@ namespace pertubis
                 RE_REVERSE
             };
 
+//             struct Character
+//             {
+//                 QTextCharFormat _f;
+//                 QChar _c;
+            //
+//                 Character() {}
+//                 Character(const QTextCharFormat & f,QChar c) : _f(f),_c(c) {}
+//             };
+
+            void loadSettings();
+            void saveSettings();
+
+            void receiveChar(int chr);
+
             void setRendition(RENDITION r);
 
+            void newline();
+
             void setDefaultRendition();
+
+//             void addRealText(const Character & c);
 
             void moveUp(int value);
             void moveDown(int value);
             void moveLeft(int value);
             void moveRight(int value);
 
-            void receiveChar(int chr);
             void tau(int, int, int);
             void addDigit(int dig);
             void addArgument();
-            void loadSettings();
-            void saveSettings();
+
+            void addText(QString s);
+
             void initTokenizer();
             void resetToken();
             void pushToToken(int);
@@ -144,25 +165,54 @@ namespace pertubis
             void setCursorX(int value);
             void setCursorY(int value);
             void setCursorXY(int x, int y);
-            void setFont(const QFont &);
-            void setFontSize(int);
 
-            QFont                                               m_currentFont;
-            QTextCharFormat                                     m_format;
-            QTextCursor                                         m_cursor;
+//             QList<Character>                    m_cbuf;
+            QFont                               m_currentFont;
+            QTextCharFormat                     m_format;
+            QTextCursor                         m_cursor;
 
-            QTextEdit*                                          m_output;
-            MessageThread*                                      m_thread;
-            int                                                 m_tbl[256];
-            int                                                 m_argv[MAXARGS];
-            int                                                 m_pbuf[MAXPBUF];
-            int                                                 m_argc;
+            MessagePage*                        m_page;
+
+            int                                 m_tbl[256];
+            int                                 m_pbuf[MAXPBUF];
+            int                                 m_argv[MAXARGS];
+            int                                 m_argc;
+            int                                 m_currentColor;
+            int                                 m_fontSize;
+            int                                 m_ppos;
+            Qt::CheckState                      m_parserOn;
+    };
+
+    /*! \brief output window for messages from paludis
+     *
+     */
+    class MessagePage : public Page
+    {
+        friend class Vt102Display;
+        Q_OBJECT
+
+        public:
+
+            MessagePage(MainWindow * );
+            ~MessagePage();
+
+            void setPolling(bool on);
+            void postCreate();
+
+        public slots:
+
+            void activatePage();
+            void refreshPage();
+            void clearPage();
+            void appendRawText(QString text);
+
+        private:
+
+            paludis::tr1::shared_ptr<paludis::FDOutputStream>   m_stream;
             int                                                 m_master_fd;
             int                                                 m_slave_fd;
-            int                                                 m_currentColor;
-            int                                                 m_newColor;
-            int                                                 m_fontSize;
-            int                                                 m_ppos;
+            Vt102Display*                                       m_display;
+            MessageThread*                                      m_thread;
     };
 }
 

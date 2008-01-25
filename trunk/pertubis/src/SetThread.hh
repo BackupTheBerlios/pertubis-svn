@@ -33,6 +33,9 @@ namespace pertubis
 
     /*! \brief thread for fetching categories from repositories and returns a list of names
      *
+     * \ingroup PaludisAdapter
+     * \ingroup Threads
+     * \see TaskQueue, ThreadBase, CategoryThread, DetailsThread, PacackagesThread, SearchThread, SetThread
      */
     class SetThread : public ThreadBase
     {

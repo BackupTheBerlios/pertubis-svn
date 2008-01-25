@@ -34,7 +34,8 @@
 #include <QStringList>
 
 pertubis::SetThread::SetThread(QObject* pobj,
-                                         const paludis::tr1::shared_ptr<paludis::Environment>&  env) : ThreadBase(pobj,env)
+    const paludis::tr1::shared_ptr<paludis::Environment>&  myenv) :
+    ThreadBase(pobj,myenv)
 {
 }
 
@@ -43,7 +44,7 @@ void pertubis::SetThread::run()
     using namespace paludis;
     QMap<QString, QSet<QString> > result;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
-         r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
+         r(env()->package_database()->begin_repositories()), r_end(env()->package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
         RepositorySetsInterface * const i(r->sets_interface);

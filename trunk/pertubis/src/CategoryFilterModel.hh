@@ -36,7 +36,7 @@ namespace pertubis
      */
     class CategoryFilterModel : public QSortFilterProxyModel
     {
-        Q_OBJECT
+
         public:
 
             ///@name Constructors

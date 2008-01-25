@@ -32,13 +32,13 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 
-bool pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
+bool pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                          const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
     using namespace paludis;
     tr1::shared_ptr<const PackageIDSequence> ipacks(
-        m_env->package_database()->query(
-            query::InstalledAtRoot(m_env->root()) &
+        env->package_database()->query(
+            query::InstalledAtRoot(env->root()) &
             query::Matches(make_package_dep_spec()
                 .package(id->name())
                 .slot(id->slot())

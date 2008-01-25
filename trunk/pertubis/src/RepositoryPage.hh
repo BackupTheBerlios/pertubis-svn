@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -27,23 +27,16 @@
 
 class QModelIndex;
 
-class QTableView;
-class QSplitter;
-
 namespace pertubis
 {
-    class RepositoryListThread;
-    class RepositoryInfoThread;
-    class RepositoryListModel;
-    class RepositoryInfoModel;
-    class PertubisSyncTask;
+    struct RepositoryPagePrivate;
 
     class RepositoryPage : public Page
     {
         Q_OBJECT
         public:
 
-            RepositoryPage(QWidget* pobj, MainWindow * mainWindow);
+            RepositoryPage(MainWindow * mainWindow);
             virtual ~RepositoryPage();
 
         signals:
@@ -52,16 +45,17 @@ namespace pertubis
 
         public slots:
 
-            /// shows a succcessful search
+            void activatePage();
+
+            void clearPage();
+
+            void refreshPage();
+
             void onRepositoryChanged( const QModelIndex& index );
 
             void displaySyncFinished();
 
-            void activatePage();
-
             void restartFilters();
-
-            void onRefreshPage();
 
             void onSync();
 
@@ -69,14 +63,7 @@ namespace pertubis
             void loadSettings();
             void saveSettings();
 
-            QTableView*             m_repoListView;
-            QTableView*             m_repoInfoView;
-            RepositoryListThread*   m_repoListThread;
-            RepositoryInfoThread*   m_repoInfoThread;
-            RepositoryListModel*    m_repoListModel;
-            RepositoryInfoModel*    m_repoInfoModel;
-            PertubisSyncTask*       m_syncTask;
-            QSplitter*              m_hSplit;
+            RepositoryPagePrivate* const m_imp;
     };
 }
 

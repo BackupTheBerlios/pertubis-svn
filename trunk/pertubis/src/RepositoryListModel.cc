@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -31,7 +31,6 @@
 #include <QList>
 #include <QSettings>
 #include <QString>
-#include <QMutexLocker>
 #include <QDebug>
 #include <QColor>
 #include <QBrush>
@@ -58,10 +57,9 @@ bool pertubis::RepositoryListItem::setData(int col,const QVariant& value)
 void pertubis::RepositoryListThread::run()
 {
     using namespace paludis;
-    QMutexLocker locker(&m_paludisAccess);
     QStringList list;
     for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-         r((*m_env).package_database()->begin_repositories()), r_end((*m_env).package_database()->end_repositories()) ;
+         r((*env()).package_database()->begin_repositories()), r_end((*env()).package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
         list << QString::fromStdString(paludis::stringify(r->name()));
@@ -76,9 +74,15 @@ pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj,bool firstrun) 
 
 pertubis::RepositoryListModel::~RepositoryListModel()
 {
+    clear();
+    saveSettings();
+}
+
+void pertubis::RepositoryListModel::clear()
+{
     qDeleteAll(m_data);
     m_data.clear();
-    saveSettings();
+    emit layoutChanged();
 }
 
 Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const

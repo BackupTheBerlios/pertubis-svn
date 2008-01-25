@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -22,24 +22,31 @@
 #define _PERTUBIS_ENTRY_PROTECTOR_SYSTEM_REPORT_PAGE_H 1
 
 #include "Page.hh"
-#include "SystemReport-fwd.hh"
+#include <paludis/package_id-fwd.hh>
+#include <paludis/util/tr1_memory.hh>
 
 class QModelIndex;
-class QTreeView;
-class QSplitter;
-class QTextBrowser;
 
 namespace pertubis
 {
-    class ReportPackageModel;
+    struct SystemReportPagePrivate;
 
+    /*! \brief Displays the result of an system report
+     *
+     * \see SystemReport
+     * \ingroup Page
+     * \warning interface is not freezed
+     */
     class SystemReportPage : public Page
     {
         Q_OBJECT
 
         public:
 
-            SystemReportPage(QWidget* pobj, MainWindow * mainWindow);
+            /// std constructor
+            SystemReportPage(MainWindow * mainWindow);
+
+            /// destructor
             virtual ~SystemReportPage();
 
         public slots:
@@ -55,23 +62,27 @@ namespace pertubis
             /// handles user input
             void onViewUserInteraction(const QModelIndex & mix);
 
+            /// starts a system report equal to paludis --report
             void onSystemReport();
 
+            /// shows package metadata
             void displayDetails(QString details);
 
-            void onRefreshPage();
+            /// redo a system report
+            void refreshPage();
+
+            /// clears all information and packages
+            void clearPage();
+
+            /// fetches package metadata
+            void details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id);
 
         private:
 
             void loadSettings();
             void saveSettings();
 
-            QSplitter*              m_hSplit;
-            QTextBrowser*           m_details;
-            QTreeView*              m_reportView;
-            ReportPackageModel*     m_reportModel;
-            SystemReport*           m_reportThread;
-
+            SystemReportPagePrivate* m_imp;
     };
 }
 

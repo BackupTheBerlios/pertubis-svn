@@ -36,7 +36,7 @@ namespace pertubis
     */
     class ReportModelDelegate : public QItemDelegate
     {
-        Q_OBJECT
+//         Q_OBJECT
 
     public:
 

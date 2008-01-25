@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -33,10 +33,9 @@
 #include <QDebug>
 #include <QSet>
 #include <QStringList>
-#include <QMutexLocker>
 
 pertubis::CategoryThread::CategoryThread(QObject* pobj,
-                                         const paludis::tr1::shared_ptr<paludis::Environment>&  env) : ThreadBase(pobj,env)
+                                         const paludis::tr1::shared_ptr<paludis::Environment>&  myenv) : ThreadBase(pobj,myenv)
 {
 }
 
@@ -44,10 +43,10 @@ void pertubis::CategoryThread::run()
 {
     using namespace paludis;
     qDebug() << "pertubis::CategoryThread::run() start";
-    QMutexLocker locker(&m_paludisAccess);
+
     QMap<QString, QSet<QString> > cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
-         r(m_env->package_database()->begin_repositories()), r_end(m_env->package_database()->end_repositories()) ;
+         r(env()->package_database()->begin_repositories()), r_end(env()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
         paludis::tr1::shared_ptr<const paludis::CategoryNamePartSet> cat_names(r->category_names());
@@ -60,3 +59,4 @@ void pertubis::CategoryThread::run()
     emit sendCategory(cats);
     qDebug() << "pertubis::CategoryThread::run() done";
 }
+

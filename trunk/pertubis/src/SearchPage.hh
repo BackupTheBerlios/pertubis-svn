@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -25,27 +25,21 @@
 #include <QString>
 #include <QSet>
 
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/package_id-fwd.hh>
+
 class QModelIndex;
-class QTreeView;
-class QLineEdit;
-class QProgressBar;
-class QPushButton;
-class QTextBrowser;
-class QSplitter;
 
 namespace pertubis
 {
-    class SearchWindow;
-    class SearchThread;
-    class PackageModel;
-    class PackageFilterModel;
+    struct SearchPagePrivate;
 
     class SearchPage : public Page
     {
         Q_OBJECT
         public:
 
-            SearchPage(QWidget* pobj, MainWindow * mainWindow);
+            SearchPage(MainWindow * main);
             virtual ~SearchPage();
 
         public slots:
@@ -66,7 +60,11 @@ namespace pertubis
 
             void activatePage();
 
-            void onRefreshPage() {m_dirty=false;}
+            void refreshPage() {setOutOfDate(false);}
+
+            void details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id);
+
+            void clearPage();
 
             void restartFilters(const QSet<QString> & set);
 
@@ -74,16 +72,7 @@ namespace pertubis
             void loadSettings();
             void saveSettings();
 
-            QProgressBar*           m_bar;
-            PackageModel*           m_searchModel;
-            QTreeView*              m_searchView;
-
-            QTextBrowser*           m_details;
-            SearchThread*           m_searchThread;
-            QLineEdit*              m_line;
-            QPushButton*            m_bStart;
-            QSplitter*              m_hSplit;
-            PackageFilterModel*     m_searchFilterModel;
+            SearchPagePrivate* const m_imp;
     };
 }
 

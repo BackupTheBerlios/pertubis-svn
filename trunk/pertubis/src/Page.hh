@@ -23,6 +23,8 @@
 
 #include <QWidget>
 
+struct PagePrivate;
+
 namespace pertubis
 {
     class MainWindow;
@@ -31,15 +33,9 @@ namespace pertubis
     {
         Q_OBJECT
         public:
-            Page(QWidget* pobj, MainWindow* main) :
-                QWidget(pobj),
-                m_mainWindow(main),
-                m_dirty(false)
-                {}
+            Page(MainWindow* main);
 
             virtual ~Page();
-
-            void setDirty() { m_dirty=true;}
 
         signals:
 
@@ -50,14 +46,32 @@ namespace pertubis
 
             virtual void activatePage() = 0;
 
-            virtual void onRefreshPage() = 0;
+            /** \brief save memory when needed
+             *
+             * This is a prototype for a method which should actualize all temporary information stored in
+             * and accociated with this page
+             */
+            virtual void refreshPage() = 0;
+
+            /** \brief save memory when needed
+             *
+             * This is a prototype for a method which should clear all temporary information stored in
+             * and accociated with this page
+             */
+            virtual void clearPage() = 0;
+
+            bool used();
+            bool outOfDate();
+
+            void setUsed(bool b);
+            void setOutOfDate(bool b);
 
         protected:
 
-            MainWindow*     m_mainWindow;
-            bool            m_dirty;
+            MainWindow* mainWindow();
+
+            PagePrivate* const    m_imp;
     };
 }
 
 #endif
-

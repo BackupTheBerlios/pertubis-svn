@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -36,7 +36,7 @@ pertubis::PackageModel::PackageModel(QObject* pobj) :
 
 pertubis::PackageModel::~PackageModel()
 {
-    if (m_root)
+    if (m_root != 0)
         delete m_root;
 }
 
@@ -181,6 +181,7 @@ void pertubis::PackageModel::clear()
 
 void pertubis::PackageModel::appendPackage(Package* package)
 {
+//     qDebug() << "appendPackage()";
     Q_ASSERT(m_root != 0);
     Q_ASSERT(package != 0);
     m_root->appendChild(package);
@@ -189,6 +190,7 @@ void pertubis::PackageModel::appendPackage(Package* package)
 
 void pertubis::PackageModel::prependPackage(Package* package)
 {
+//     qDebug() << "prependPackage()";
     Q_ASSERT(m_root != 0);
     Q_ASSERT(package != 0);
     m_root->prependChild(package);
@@ -263,5 +265,3 @@ pertubis::Package* pertubis::makeVersionPackage(paludis::tr1::shared_ptr<const p
     pack->setData(pho_mask_reasons,mask_reasons);
     return pack;
 }
-
-

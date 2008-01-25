@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -84,13 +84,12 @@ namespace pertubis
         Q_OBJECT
         public:
 
-            ///@name Constructors
-            ///@{
-
             /// std constructor
             RepositoryListThread(QObject* pobj,
-                                 paludis::tr1::shared_ptr<paludis::Environment>  env) : ThreadBase(pobj,env) {}
-            ///@}
+                paludis::tr1::shared_ptr<paludis::Environment>  myenv) :
+                ThreadBase(pobj,myenv)
+            {
+            }
 
             /// overloaded from QThread
             void run();
@@ -135,6 +134,8 @@ namespace pertubis
 
             /// sets displayable column data at QModelIndex index
             bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+
+            void clear();
             ///@}
 
             ///@name Content information

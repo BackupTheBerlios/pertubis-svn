@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -48,7 +48,7 @@ namespace pertubis
             ///@{
 
             /// std constructor
-            SettingsPage(QWidget* parent,MainWindow* main);
+            SettingsPage(MainWindow* main);
             ///@}
 
             ~SettingsPage();
@@ -84,7 +84,9 @@ namespace pertubis
 
             void activatePage();
 
-            void onRefreshPage() {}
+            void clearPage() {}
+
+            void refreshPage() {}
 
         private:
 

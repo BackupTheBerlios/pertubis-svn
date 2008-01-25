@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -49,7 +49,6 @@
 #include <QTableWidgetItem>
 #include <QComboBox>
 #include <QVariant>
-#include <QMutexLocker>
 #include <QStringList>
 #include <set>
 
@@ -133,11 +132,11 @@ void set_id(
 }
 
 pertubis::SearchThread::SearchThread(QObject* pobj,
-                                     paludis::tr1::shared_ptr<paludis::Environment>  env,
+                                     paludis::tr1::shared_ptr<paludis::Environment>  myenv,
                                      QuerySettingsModel* querySettings,
                                      Selections* install,
                                      Selections* deinstall) :
-        ThreadBase(pobj,env),
+        ThreadBase(pobj,myenv),
         m_querySettings(querySettings),
         m_install(install),
         m_deinstall(deinstall)
@@ -147,25 +146,20 @@ pertubis::SearchThread::SearchThread(QObject* pobj,
 pertubis::SearchThread::~SearchThread()
 {
     qDebug() << "SearchThread::~SearchThread() 1";
-    m_stopExec=true;
+    setExecMode(false);
     wait();
 }
 
-void pertubis::SearchThread::start(const QString& str)
+void pertubis::SearchThread::setup(const QString& str)
 {
     m_query = str;
-    m_stopExec=false;
-    QThread::start();
 }
 
 void pertubis::SearchThread::run()
 {
     using namespace paludis;
     qDebug() << "SearchThread:.run() 1";
-    if (m_stopExec)
-        return;
-    QMutexLocker locker(&m_paludisAccess);
-    if (m_stopExec)
+    if (! execMode() )
         return;
     qDebug() << "SearchThread:.run() 2";
     std::list<tr1::shared_ptr<Matcher> > matchers;
@@ -182,11 +176,11 @@ void pertubis::SearchThread::run()
         qDebug() << "using RegexMatcher";
         matchers.push_back( tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data()) ));
     }
-    extractors.push_back(tr1::shared_ptr<NameDescriptionExtractor>( new NameDescriptionExtractor(m_env.get())));
+    extractors.push_back(tr1::shared_ptr<NameDescriptionExtractor>( new NameDescriptionExtractor(env().get())));
 
     std::list<tr1::shared_ptr<const Repository> > repos;
-    for (PackageDatabase::RepositoryConstIterator r(m_env->package_database()->begin_repositories()),
-         r_end(m_env->package_database()->end_repositories()) ;
+    for (PackageDatabase::RepositoryConstIterator r(env()->package_database()->begin_repositories()),
+         r_end(env()->package_database()->end_repositories()) ;
          r != r_end ; ++r)
     {
         if (m_querySettings->m_kindModel==0)
@@ -203,7 +197,7 @@ void pertubis::SearchThread::run()
     }
     emit progress(10);
 
-    if (m_stopExec)
+    if (! execMode() )
         return;
     std::set<CategoryNamePart> cats;
     for (std::list<tr1::shared_ptr<const paludis::Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
@@ -214,13 +208,13 @@ void pertubis::SearchThread::run()
     }
 
     emit progress(30);
-    if (m_stopExec)
+    if (! execMode() )
         return;
     std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > ids;
     for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
          r != r_end ; ++r)
     {
-        if (m_stopExec)
+        if (!execMode() )
             return;
         for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
              c != c_end ; ++c)
@@ -235,27 +229,27 @@ void pertubis::SearchThread::run()
     }
 
     emit progress(50);
-    if (m_stopExec)
+    if (! execMode() )
         return;
 
     Matches matches(matchers,extractors);
 
-    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*m_env), tr1::cref(repos), tr1::placeholders::_1, matches));
+    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*env()), tr1::cref(repos), tr1::placeholders::_1, matches));
     emit progress(90);
 
-    if (m_stopExec)
+    if (! execMode() )
         return;
     int count(0);
     for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
          i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
     {
-        if (m_stopExec)
+        if (! execMode() )
             return;
         if (! i->second)
             continue;
 
         const tr1::shared_ptr< const PackageIDSequence > versionIds(
-                m_env->package_database()->query(
+                env()->package_database()->query(
                 query::Matches(make_package_dep_spec()
                 .package(i->first)) &
                 query::SupportsAction<InstallAction>(),
@@ -289,10 +283,10 @@ void pertubis::SearchThread::run()
                 vReasons.insert(QString::fromStdString(stringify((*m)->description())));
             }
             QStringList tmp(vReasons.toList());
-            Qt::CheckState iState(installed(m_env,*vstart) ? Qt::Checked : Qt::Unchecked);
+            Qt::CheckState iState(installed(env(),*vstart) ? Qt::Checked : Qt::Unchecked);
             Package* v_item = makeVersionPackage(*vstart,
-                    Qt::Unchecked,
-                    Qt::Unchecked,
+                    m_install->hasEntry(*vstart),
+                    m_deinstall->hasEntry(*vstart),
                     QString::fromStdString(stringify((*vstart)->version())),
                     QString::fromStdString(stringify((*vstart)->repository()->name())),
                     iState,
@@ -327,4 +321,3 @@ void pertubis::SearchThread::run()
     emit progress(100);
     emit finished(count);
 }
-

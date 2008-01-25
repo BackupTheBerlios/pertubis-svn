@@ -28,7 +28,7 @@
 #include <QAction>
 
 pertubis::Selections::Selections(QObject* pobj,
-                    QString myname) :
+                    const QString & myname) :
                     QObject(pobj),
                     m_name(myname)
 {
@@ -36,34 +36,34 @@ pertubis::Selections::Selections(QObject* pobj,
 
 void pertubis::Selections::addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
-//     qDebug() << "pertubis::Selections::addEntry()" << id->canonical_form(paludis::idcf_full).c_str();
+    Q_ASSERT(id);
     m_data.insert(id);
+    Q_ASSERT(m_data.end() != m_data.find(id));
 }
 
 void pertubis::Selections::deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
 //     qDebug() << "pertubis::Selections::deleteEntry()" << id->canonical_form(paludis::idcf_full).c_str();
     m_data.erase(id);
+    Q_ASSERT(m_data.end() == m_data.find(id));
 }
 
 Qt::CheckState pertubis::Selections::hasEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) const
 {
 //     qDebug() << "pertubis::Selections::hasEntry()" << id->canonical_form(paludis::idcf_full).c_str();
+    Q_ASSERT(id);
     return m_data.find(id) != m_data.end() ? Qt::Checked : Qt::Unchecked;
 }
 
 void pertubis::Selections::changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id,bool mystate)
 {
 //     qDebug() << "pertubis::Selections::changeEntry()" << id->canonical_form(paludis::idcf_full).c_str() << mystate;
+    Q_ASSERT(id);
     (mystate) ? addEntry(id) : deleteEntry(id);
 }
 
 void pertubis::Selections::clear()
 {
-    for (paludis::PackageIDSet::ConstIterator i(m_data.begin()), i_end(m_data.end());
-         i != i_end ; ++i)
-    {
-        m_data.erase(*i);
-    }
+    m_data.clear();
     Q_ASSERT(m_data.empty());
 }

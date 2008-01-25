@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -23,50 +23,30 @@
 #include "Selections.hh"
 #include "SelectionModel-fwd.hh"
 #include "FormatterUtils.hh"
+#include <paludis/action.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/package_database.hh>
 #include <paludis/uninstall_list.hh>
-#include <paludis/util/tr1_memory.hh>
-
 #include <paludis/util/log.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <iostream>
 
 using std::cout;
 using std::endl;
 
-static pertubis::Package*  makeNodePackage(
-    paludis::tr1::shared_ptr<const paludis::PackageID> id,
-    Qt::CheckState install,
-    Qt::CheckState deinstall,
-    const QString & pack,
-    const QString & cat,
-    const QString & version,
-    const QString & repository)
-{
-    using namespace pertubis;
-    QVector<QVariant> data(6);
-    data[pho_install] = install;
-    data[pho_deinstall] = deinstall;
-    data[pho_package] = pack;
-    data[pho_category] = cat;
-    data[pho_repository] = version ;
-    data[pho_installed] = repository;
-    return new Package(id,data,ps_stable,pt_node_only,0);
-}
-
 void pertubis::PertubisDeinstallTask::on_build_unmergelist_pre()
 {
-    emit message("Building unmerge list... ");
+    cout << ("Building unmerge list... ") << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_build_unmergelist_post()
 {
-    emit message("done... ");
+    cout << ("done... ") << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_display_unmerge_list_pre()
 {
-    emit message(color( QString("These packages will be uninstalled:"),QString("green")));
+    cout << "\e[32;1m" << "These packages will be uninstalled:" << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_display_unmerge_list_post()
@@ -156,7 +136,7 @@ void pertubis::PertubisDeinstallTask::on_uninstall_pre(const paludis::UninstallL
     std::string msg("(" + stringify(++m_current_count) + " of " +
             stringify(m_count) + ") Uninstalling " + stringify(*d.package_id));
 
-    emit message(QString::fromStdString(color(msg,"green")));
+    cout << "\e[0;0m" << msg << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_uninstall_post(const paludis::UninstallListEntry &)
@@ -169,31 +149,43 @@ void pertubis::PertubisDeinstallTask::on_uninstall_all_post()
 
 void pertubis::PertubisDeinstallTask::on_not_continuing_due_to_errors()
 {
-    *m_stream << endl << "Cannot continue with uninstall due to the errors indicated above" << "\e[0;0m" << endl;
+    cout << "Cannot continue with uninstall due to the errors indicated above" << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_update_world_pre()
 {
-    *m_stream << endl << endl << "\e[35;1m" << "Updating world file" << "\e[0;0m" << endl;
+    cout << endl << "\e[35;1m" << "Updating world file" << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_update_world(const paludis::PackageDepSpec & a)
 {
     if (a.package_ptr())
-        *m_stream << endl << "\e[31;1m" << "* removing " <<  paludis::stringify(*a.package_ptr()) << "\e[0;0m" << endl;
+        cout << "\e[31;1m" << "* removing " <<  paludis::stringify(*a.package_ptr()) << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_update_world(const paludis::SetName & a)
 {
-    *m_stream << endl << "\e[32;1m" << "* removing color(paludis::stringify(a)" << "\e[0;0m" << endl;
+    cout << "\e[32;1m" << "* removing color(paludis::stringify(a)" << "\e[0;0m" << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_update_world_post()
 {
-    *m_stream << endl << endl;
+    cout << endl;
 }
 
 void pertubis::PertubisDeinstallTask::on_preserve_world()
 {
-    *m_stream << endl << "\e[32;1m" << "Updating world file\n* --preserve-world was specified, skipping world changes" << "\e[0;0m" << endl;
+    cout << endl << "\e[32;1m" << "Updating world file\n* --preserve-world was specified, skipping world changes" << "\e[0;0m" << endl;
+}
+
+void pertubis::PertubisDeinstallTask::run()
+{
+    try
+    {
+        execute();
+    }
+    catch(paludis::UninstallActionError & e)
+    {
+        cout << endl << e.what() << endl  << e.message() << endl << e.backtrace("\n") << endl;
+    }
 }

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
 *
 * This file is part of pertubis
 *
@@ -35,7 +35,8 @@ namespace pertubis
     /*! \brief this thread is used in conjunction with SearchWindow. Returns a complete item tree.
      *
      * \ingroup PaludisAdapter
-     * \ingroup Thread
+     * \ingroup Threads
+     * \see TaskQueue, ThreadBase, CategoryThread, DetailsThread, PackagesThread, SetThread
      */
     class SearchThread : public ThreadBase
     {
@@ -62,7 +63,7 @@ namespace pertubis
         /*! @brief fills the search with data and starts the execution
          * @param query the string to query for
          */
-        void start(const QString& query);
+        void setup(const QString& query);
         ///@}
 
         /// overloaded from QThread

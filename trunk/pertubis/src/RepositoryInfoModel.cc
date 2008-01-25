@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl.
+/* Copyright (C) 2007-2008 Stefan Koegl.
 *
 * This file is part of pertubis.
 *
@@ -21,7 +21,6 @@
 #include "HtmlFormatter.hh"
 #include <QHeaderView>
 #include <QDebug>
-#include <QMutexLocker>
 #include <paludis/repository.hh>
 #include <paludis/name.hh>
 #include <paludis/util/indirect_iterator.hh>
@@ -70,7 +69,7 @@ namespace
 
             void visit(const MetadataStringKey & k)
             {
-                m_thread->append(k.human_name().c_str(),k.value().c_str());
+                m_thread->append(QString::fromStdString(k.human_name()),QString::fromStdString(k.value()));
             }
 
             void visit(const MetadataFSEntryKey & k)
@@ -135,45 +134,50 @@ namespace
             void visit(const MetadataCollectionKey<FSEntrySequence> & k)
             {
                 pertubis::HtmlFormatter f;
-                m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
+                m_thread->append(QString::fromStdString(k.human_name()), QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<PackageIDSequence> & k)
             {
                 pertubis::HtmlFormatter f;
-                m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
+                m_thread->append(QString::fromStdString(k.human_name()), QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<KeywordNameSet> & k)
             {
                 pertubis::HtmlFormatter f;
-                m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
+                m_thread->append(QString::fromStdString(k.human_name()), QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<IUseFlagSet> & k)
             {
                 pertubis::HtmlFormatter f;
-                m_thread->append(k.human_name().c_str(),k.pretty_print_flat(f).c_str());
+                m_thread->append(QString::fromStdString(k.human_name()),QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
             {
                 pertubis::HtmlFormatter f;
-                m_thread->append(k.human_name().c_str(), k.pretty_print_flat(f).c_str());
+                m_thread->append(QString::fromStdString(k.human_name()), QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<Set<std::string> > & k)
             {
                 pertubis::HtmlFormatter f;
-                m_thread->append(k.human_name().c_str() , k.pretty_print_flat(f).c_str());
+                m_thread->append(QString::fromStdString(k.human_name()) , QString::fromStdString(k.pretty_print_flat(f)));
             }
     };
 }
 
-void pertubis::RepositoryInfoThread::start(const QString& name)
+void pertubis::RepositoryInfoThread::setup(const QString& name)
 {
     m_repName = name;
-    ThreadBase::start();
+}
+
+void pertubis::RepositoryInfoModel::clear()
+{
+    m_data.clear();
+    emit layoutChanged();
 }
 
 pertubis::RepositoryInfoModel::RepositoryInfoModel(QObject* pobj) : QAbstractTableModel(pobj)
@@ -191,11 +195,10 @@ QVariant pertubis::RepositoryInfoModel::headerData(int section, Qt::Orientation 
 void pertubis::RepositoryInfoThread ::run()
 {
     using namespace paludis;
-    QMutexLocker locker(&m_paludisAccess);
     m_list.clear();
 
     RepositoryName repoName(m_repName.toStdString());
-    tr1::shared_ptr<Repository> repo = m_env->package_database()->fetch_repository(repoName);
+    tr1::shared_ptr<Repository> repo = env()->package_database()->fetch_repository(repoName);
 
     std::set<tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(),repo->end_metadata());
     InfoDisplayer i(this);

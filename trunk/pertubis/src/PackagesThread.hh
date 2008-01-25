@@ -35,6 +35,7 @@ namespace pertubis
     /*! \brief this thread fetches all packages in a specified category. Returns a complete item tree.
      * \ingroup PaludisAdapter
      * \ingroup Threads
+     * \see TaskQueue, ThreadBase, CategoryThread, DetailsThread, SearchThread, SetThread
      */
     class PackagesThread : public ThreadBase
     {
@@ -43,7 +44,7 @@ namespace pertubis
         public:
 
             PackagesThread(QObject* parent,
-                        const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+                        const paludis::tr1::shared_ptr<paludis::Environment>&  myenv,
                         Selections* install,
                         Selections* deinstall);
 
@@ -51,13 +52,13 @@ namespace pertubis
 
             void run();
 
-            void start(QString str);
+            void setup(QString str);
 
         signals:
 
             void addPackage(Package* package);
             void changeInCat(QString);
-            void finished(int count);
+            void resultCount(int count);
 
         private:
 
@@ -66,5 +67,5 @@ namespace pertubis
             Selections*                                m_deinstall;
     };
 }
-#endif
 
+#endif

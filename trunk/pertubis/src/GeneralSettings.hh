@@ -26,6 +26,7 @@
 #include <QMap>
 
 class QSpinBox;
+class QCheckBox;
 class QFontComboBox;
 
 namespace pertubis
@@ -90,6 +91,7 @@ namespace pertubis
             GeneralSettingsModel*   m_model;
             QFontComboBox*          m_fonts;
             QSpinBox*               m_fontSize;
+            QCheckBox*              m_vt100Mode;
 
         private slots:
 
