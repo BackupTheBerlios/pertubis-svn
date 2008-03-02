@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -23,19 +23,23 @@
 #include <paludis/package_id.hh>
 #include <QDebug>
 
-pertubis::InstallSelections::InstallSelections(QObject* pobject,
+using namespace pertubis;
+
+InstallSelections::InstallSelections(QObject* pobject,
         QString tname) : Selections(pobject,tname)
 {
 }
 
-bool pertubis::InstallSelections::available(Package* item, int) const
+bool
+InstallSelections::available(Package* item, int) const
 {
     return item->available();
 }
 
-bool pertubis::InstallSelections::changeStates(Package* item, int newState, int position)
+bool
+InstallSelections::changeStates(Package* item, int newState, int position)
 {
-//     qDebug() << "pertubis::InstallSelections::changeStates()" << *item << newState;
+//     qDebug() << "InstallSelections::changeStates()" << *item << newState;
     Package::PackageIterator iStart;
     Package::PackageIterator iEnd;
     Package::PackageIterator piStart;
@@ -80,7 +84,7 @@ bool pertubis::InstallSelections::changeStates(Package* item, int newState, int 
                     item->setData(position,Qt::Unchecked);
                     while(piStart != piEnd)
                     {
-                        if ( Qt::Unchecked != (*piStart)->data(position).toInt() )
+                        if (Qt::Unchecked != (*piStart)->data(position).toInt())
                             ++i;
                         ++piStart;
                     }
@@ -96,7 +100,7 @@ bool pertubis::InstallSelections::changeStates(Package* item, int newState, int 
                     while(piStart != piEnd)
                     {
                         int mystate();
-                        if ( Qt::Unchecked != (*piStart)->data(position).toInt() )
+                        if (Qt::Unchecked != (*piStart)->data(position).toInt())
                             ++i;
                         ++piStart;
                     }

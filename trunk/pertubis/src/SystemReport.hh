@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *

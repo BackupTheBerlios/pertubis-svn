@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -22,17 +22,18 @@
 #include "RegexMatcher.hh"
 
 
-pertubis::RegexMatcher::RegexMatcher(const std::string& pattern) : m_regex(QString::fromStdString(pattern) )
+using namespace pertubis;
+
+RegexMatcher::RegexMatcher(const std::string& pattern) : m_regex(QString::fromStdString(pattern))
 {
 }
 
-bool pertubis::RegexMatcher::operator() (const std::string & s) const
+RegexMatcher::~RegexMatcher()
+{
+}
+
+bool
+RegexMatcher::operator() (const std::string & s) const
 {
     return m_regex.indexIn(QString::fromStdString(s)) != -1;
 }
-
-pertubis::RegexMatcher::~RegexMatcher()
-{
-}
-
-

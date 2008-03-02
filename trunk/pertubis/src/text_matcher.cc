@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -21,15 +21,18 @@
 #include "text_matcher.hh"
 #include <string.h>
 
-pertubis::TextMatcher::TextMatcher(const std::string & s) : m_pattern(s)
+using namespace pertubis;
+
+TextMatcher::TextMatcher(const std::string & s) : m_pattern(s)
 {
 }
 
-bool pertubis::TextMatcher::operator() (const std::string & s) const
+bool
+TextMatcher::operator() (const std::string & s) const
 {
     return 0 != strcasestr(s.c_str(), m_pattern.c_str());
 }
 
-pertubis::TextMatcher::~TextMatcher()
+TextMatcher::~TextMatcher()
 {
 }

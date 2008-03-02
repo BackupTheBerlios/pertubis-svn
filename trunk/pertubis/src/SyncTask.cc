@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -23,6 +23,10 @@
 #include <paludis/syncer.hh>
 #include <iostream>
 #include <string>
+
+using namespace pertubis;
+
+using namespace pertubis;
 
 /*! \brief syncing repositories
  * \ingroup PaludisAdapter
@@ -55,43 +59,43 @@ namespace pertubis
             ///@name Callback methods
             ///@{
             /// overloaded from paludis::SyncTask
-            void pertubis::PertubisSyncTask::on_sync_all_pre()
+            void PertubisSyncTask::on_sync_all_pre()
             {
             }
 
-            void pertubis::PertubisSyncTask::on_sync_pre(const paludis::RepositoryName & r)
+            void PertubisSyncTask::on_sync_pre(const paludis::RepositoryName & r)
             {
                 std::cout << "Sync " << "\e[35;1m" << stringify(r) << "\e[0;0m" << std::endl;
             }
 
-            void pertubis::PertubisSyncTask::on_sync_post(const paludis::RepositoryName &r)
+            void PertubisSyncTask::on_sync_post(const paludis::RepositoryName &r)
             {
                 std::cout << "Sync " << "\e[35;1m" << stringify(r) << "\e[0;0m" << " finished" << std::endl;
             }
 
-            void pertubis::PertubisSyncTask::on_sync_skip(const paludis::RepositoryName & r)
+            void PertubisSyncTask::on_sync_skip(const paludis::RepositoryName & r)
             {
                 std::cout << "Sync " << "\e[35;1m" << stringify(r) << "\e[0;0m" << " skipped" << std::endl;
             }
 
-            void pertubis::PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
+            void PertubisSyncTask::on_sync_succeed(const paludis::RepositoryName & r)
             {
                 std::cout << "Sync "<< "\e[35;1m" << stringify(r) << "\e[0;0m" << " completed" << std::endl;
             }
 
-            void pertubis::PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
+            void PertubisSyncTask::on_sync_fail(const paludis::RepositoryName & /*r*/, const paludis::SyncFailedError & e)
             {
                 std::cout << "\e[31;1m" << "Sync error " << e.backtrace("<br>  * ") << e.message() << std::endl;
             }
 
-            void pertubis::PertubisSyncTask::on_sync_all_post()
+            void PertubisSyncTask::on_sync_all_post()
             {
                 std::cout << "Sync complete" << std::endl;
             }
 
             ///@}
 
-            void pertubis::PertubisSyncTask::setup(const QSet<QString>& repos)
+            void PertubisSyncTask::setup(const QSet<QString>& repos)
             {
                 for (QSet<QString>::const_iterator rStart(repos.constBegin()),rEnd(repos.constEnd());
                      rStart != rEnd; ++rStart)
@@ -107,7 +111,7 @@ namespace pertubis
         protected:
 
             /// overloaded from QThread
-            void pertubis::PertubisSyncTask::run()
+            void PertubisSyncTask::run()
             {
                 execute();
             }

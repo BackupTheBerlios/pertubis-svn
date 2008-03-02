@@ -1,6 +1,5 @@
 
-
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -40,6 +39,8 @@
 #include <QFont>
 #include <QTextBrowser>
 
+using namespace pertubis;
+
 namespace pertubis
 {
     struct SystemReportPagePrivate
@@ -54,7 +55,7 @@ namespace pertubis
     };
 }
 
-pertubis::SystemReportPage::SystemReportPage(MainWindow * main) :
+SystemReportPage::SystemReportPage(MainWindow * main) :
         Page(main),
         m_imp(new SystemReportPagePrivate)
 {
@@ -106,18 +107,19 @@ pertubis::SystemReportPage::SystemReportPage(MainWindow * main) :
     setLayout(mylayout);
     show();
 
-    qDebug() << "pertubis::SystemReportPage::SystemReportPage() end";
+    qDebug() << "SystemReportPage::SystemReportPage() end";
 }
 
-pertubis::SystemReportPage::~SystemReportPage()
+SystemReportPage::~SystemReportPage()
 {
-    qDebug() << "pertubis::SearchPage::~SearchPage()";
+    qDebug() << "SearchPage::~SearchPage()";
     delete m_imp;
-    qDebug() << "pertubis::SearchPage::~SearchPage() done";
+    qDebug() << "SearchPage::~SearchPage() done";
 }
 
 
-void pertubis::SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
+void
+SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
 {
     if (! ix.isValid())
         return;
@@ -132,10 +134,10 @@ void pertubis::SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
         mainWindow()->deinstallSelections()->changeStates(package, mystate,rpho_deinstall);
         m_imp->m_reportModel->onUpdateModel();
     }
-    else if ( tk_glsa == package->tag() )
+    else if (tk_glsa == package->tag())
     {
         QFile file((package->data(rpho_last).toString()));
-        if (! file.exists() )
+        if (! file.exists())
             return;
         QXmlInputSource inputSource(&file);
         QXmlSimpleReader reader;
@@ -148,26 +150,30 @@ void pertubis::SystemReportPage::onViewUserInteraction(const QModelIndex & ix)
         details(package->ID());
 }
 
-void pertubis::SystemReportPage::displaySystemReportFinished(int total, int count)
+void
+SystemReportPage::displaySystemReportFinished(int total, int count)
 {
     mainWindow()->onEndOfPaludisAction();
     m_imp->m_reportView->expandAll();
     mainWindow()->displayNotice(tr("%1 installed packages processed, %2 issues found").arg(total).arg(count));
 }
 
-void pertubis::SystemReportPage::activatePage()
+void
+SystemReportPage::activatePage()
 {
     if (used() && outOfDate())
         refreshPage();
 }
 
-void pertubis::SystemReportPage::refreshPage()
+void
+SystemReportPage::refreshPage()
 {
     onSystemReport();
     setOutOfDate(false);
 }
 
-void pertubis::SystemReportPage::clearPage()
+void
+SystemReportPage::clearPage()
 {
     m_imp->m_reportModel->clear();
     m_imp->m_details->clear();
@@ -175,16 +181,17 @@ void pertubis::SystemReportPage::clearPage()
     setOutOfDate(false);
 }
 
-void pertubis::SystemReportPage::onSystemReport()
+void
+SystemReportPage::onSystemReport()
 {
     m_imp->m_reportModel->clear();
 
     SystemReport* t(new SystemReport(this,mainWindow()->env(),mainWindow()->deinstallSelections()));
 
     connect(m_imp->m_reportView,
-            SIGNAL(clicked( const QModelIndex&)),
+            SIGNAL(clicked(const QModelIndex&)),
             this,
-            SLOT(onViewUserInteraction( const QModelIndex& )) );
+            SLOT(onViewUserInteraction(const QModelIndex&)));
 
     connect(t,
             SIGNAL(appendPackage(Package*)),
@@ -201,7 +208,8 @@ void pertubis::SystemReportPage::onSystemReport()
     setUsed(true);
 }
 
-void pertubis::SystemReportPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
+void
+SystemReportPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
 {
     DetailsThread* t(new DetailsThread(this,mainWindow()->env()));
     mainWindow()->onStartOfPaludisAction();
@@ -213,7 +221,8 @@ void pertubis::SystemReportPage::details(const paludis::tr1::shared_ptr<const pa
     mainWindow()->taskQueue()->enqueue(t,true);
 }
 
-void pertubis::SystemReportPage::displayDetails(QString mydetails)
+void
+SystemReportPage::displayDetails(QString mydetails)
 {
     if (mydetails.isEmpty() ||
         this != mainWindow()->currentPage())

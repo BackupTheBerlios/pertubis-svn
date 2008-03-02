@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -34,10 +34,12 @@
 
 #include "version.hh"
 
+#include <paludis/metadata_key.hh>
 #include <paludis/environment_maker.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/environment.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
 #include <iostream>
 #include <QApplication>
@@ -54,10 +56,12 @@
 #include <QStatusBar>
 #include <QTabWidget>
 
+using namespace pertubis;
+
 static bool
 rootTest(const QString& message)
 {
-    if (0 != getuid() )
+    if (0 != getuid())
     {
         if (!message.isEmpty())
             QMessageBox::critical(0,
@@ -68,7 +72,7 @@ rootTest(const QString& message)
         else
             QMessageBox::critical(0,
                                 QObject::tr("unpriviledged mode"),
-                                QObject::tr("You are a normal user. Some features will only work for administrators ( root )"),
+                                QObject::tr("You are a normal user. Some features will only work for administrators (root)"),
                                 QMessageBox::Ok,
                                 QMessageBox::Ok);
         return false;
@@ -91,10 +95,10 @@ namespace
     protected:
 
         /// filters out release events
-        bool eventFilter( QObject *o, QEvent *e )
+        bool eventFilter(QObject *o, QEvent *e)
         {
             Q_UNUSED(o);
-            if ( e->type() == QEvent::KeyRelease || e->type() == QEvent::MouseButtonRelease)
+            if (e->type() == QEvent::KeyRelease || e->type() == QEvent::MouseButtonRelease)
             {
                 return true;
             }
@@ -104,7 +108,46 @@ namespace
             }
         }
     };
+
+//     struct UseConfigDisplayer :
+//         paludis::ConstVisitor<paludis::MutableMetadataKeyVisitorTypes>
+//     {
+//         void visit(const paludis::MutableMetadataSectionKey & k)
+//         {
+//             qDebug() << "mutable metadata section:" << QString::fromStdString(paludis::stringify(k.raw_name())) <<
+//                     QString::fromStdString(paludis::stringify(k.human_name())) << "\n";
+//             UseConfigDisplayer w;
+//             std::for_each(indirect_iterator(k.begin_metadata()), indirect_iterator(k.end_metadata()),
+//                     accept_visitor(w));
+//         }
+//
+//         void visit(const paludis::MutableMetadataFSEntryKey & k)
+//         {
+//             qDebug() << "\t" << QString::fromStdString(paludis::stringify(k.value()));
+//         }
+//
+//         void visit(const paludis::MutableMetadataStringKey & k)
+//         {
+//             qDebug() << "\t" << QString::fromStdString(paludis::stringify(k.value()));
+//         }
+//
+//         void visit(const paludis::MutableMetadataCollectionKey<paludis::IUseFlagSet> & k)
+//         {
+//             qDebug() << "use config entry:" << QString::fromStdString(paludis::stringify(k.raw_name())) <<
+//                     QString::fromStdString(paludis::stringify(k.human_name()));
+//             for (paludis::IUseFlagSet::ConstIterator i(k.value()->begin()), i_end(k.value()->end()) ;
+//                  i != i_end ; ++i)
+//             {
+//                 qDebug() << "\t" << QString::fromStdString(paludis::stringify(*i));
+//             }
+//         }
+//
+//         void visit(const paludis::MutableMetadataCollectionKey<paludis::KeywordNameSet> &)
+//         {
+//         }
+//     };
 }
+
 
 namespace pertubis
 {
@@ -145,40 +188,40 @@ namespace pertubis
     };
 }
 
-pertubis::MainWindow::MainWindow(bool firstrun) :
-        m_imp(new MainWindowPrivate(firstrun) )
+MainWindow::MainWindow(bool firstrun) :
+        m_imp(new MainWindowPrivate(firstrun))
 {
-    if (rootTest("") )
+    if (rootTest(""))
         onQuit();
     initGUI();
     loadSettings();
 }
 
-pertubis::MainWindow::~MainWindow()
+MainWindow::~MainWindow()
 {
-    qDebug() << "pertubis::MainWindow::~MainWindow() - start";
+    qDebug() << "MainWindow::~MainWindow() - start";
     saveSettings();
     delete m_imp;
-    qDebug() << "pertubis::MainWindow::~MainWindow() - done";
+    qDebug() << "MainWindow::~MainWindow() - done";
 }
 
 void
-pertubis::MainWindow::initGUI()
+MainWindow::initGUI()
 {
 //     qRegisterMetaType<QList<RepositoryListItem*> >("QList<RepositoryListItem*>");
 //     qRegisterMetaType<QList<VariantList*> >("QList<QVariantList>");
     qRegisterMetaType<Qt::ToolButtonStyle>("Qt::ToolButtonStyle");
     qRegisterMetaType<QMap<QString, QSet<QString> > >("QMap<QString, QSet<QString> >");
 
-    QAction* acToggleMainWindow = new QAction( QPixmap(":images/logo.png"),tr("main window"),this );
+    QAction* acToggleMainWindow = new QAction(QPixmap(":images/logo.png"),tr("main window"),this);
     acToggleMainWindow->setChecked(true);
     acToggleMainWindow->setCheckable(true);
-    acToggleMainWindow->setToolTip( html_tooltip(tr("show/hide the pertubis main window"),acToggleMainWindow->text() ));
+    acToggleMainWindow->setToolTip(html_tooltip(tr("show/hide the pertubis main window"),acToggleMainWindow->text()));
 
-    QAction* acQuit = new QAction( QPixmap(":images/quit.png"),tr("quit") ,this);
+    QAction* acQuit = new QAction(QPixmap(":images/quit.png"),tr("quit") ,this);
     acQuit->setToolTip(html_tooltip(tr("closing the pertubis suite. All unsaved changes will be lost!"),acQuit->text()));
 
-    QAction* acSearch = new QAction( QPixmap(":images/find.png"),tr("find") ,this);
+    QAction* acSearch = new QAction(QPixmap(":images/find.png"),tr("find") ,this);
     acSearch->setShortcut(tr("CTRL+f"));
     addAction(acSearch);
 
@@ -186,8 +229,8 @@ pertubis::MainWindow::initGUI()
     installEventFilter(filter);
     statusBar()->setVisible(true);
 
-    setWindowTitle( tr("pertubis :: Main Window") );
-    setWindowIcon(QPixmap( ":images/logo.png" ));
+    setWindowTitle(tr("pertubis :: Main Window"));
+    setWindowIcon(QPixmap(":images/logo.png"));
 
     // system tray
     m_imp->m_trayMenu = new QMenu(this);
@@ -201,26 +244,31 @@ pertubis::MainWindow::initGUI()
     m_imp->m_taskQueue = new TaskQueue(this);
     m_imp->m_pages = new QTabWidget(this);
     m_imp->m_messagePage = new MessagePage(this);
+
     m_imp->m_env = paludis::EnvironmentMaker::get_instance()->make_from_spec("");
-//     paludis::tr1::shared_ptr<paludis::ConfigDomains> conf(m_imp->m_env->use_config_key());
+
+//     paludis::tr1::shared_ptr<paludis::MutableMetadataSectionKey> conf(m_imp->m_env->use_config_key());
+
+//     UseConfigDisplayer displayer;
+
+//     std::for_each(indirect_iterator(conf->begin_metadata()), indirect_iterator(conf->end_metadata()), accept_visitor(displayer));
+
     m_imp->m_settingsPage = new SettingsPage(this);
     m_imp->m_messagePage->postCreate();
-    m_imp->m_installSelections = new InstallSelections( this,tr("install"));
-    m_imp->m_deinstallSelections = new DeinstallSelections( this,tr("deinstall"));
+    m_imp->m_installSelections = new InstallSelections(this,tr("install"));
+    m_imp->m_deinstallSelections = new DeinstallSelections(this,tr("deinstall"));
     m_imp->m_packageBrowsingPage = new PackageBrowsingPage(this);
     m_imp->m_searchPage = new SearchPage(this);
     m_imp->m_repositoryPage = new RepositoryPage(this);
     m_imp->m_systemReportPage = new SystemReportPage(this);
     m_imp->m_selectionsPage = new SelectionPage(this);
-    m_imp->m_pages->addTab(m_imp->m_packageBrowsingPage, QPixmap(":images/packages.png"), tr("Package Browsing") );
-    m_imp->m_pages->addTab(m_imp->m_searchPage, QPixmap(":images/find.png"), tr("Search") );
-    m_imp->m_pages->addTab(m_imp->m_repositoryPage, QPixmap(":images/repobar.png"), tr("RepositoryPage") );
-    m_imp->m_pages->addTab(m_imp->m_systemReportPage, QPixmap(":images/system_report.png"), tr("System Report") );
-    m_imp->m_pages->addTab(m_imp->m_selectionsPage, QPixmap(":images/selections.png"), tr("Selections") );
-    m_imp->m_pages->addTab(m_imp->m_messagePage, QPixmap(":images/messages.png"), tr("Messages") );
-    m_imp->m_pages->addTab(m_imp->m_settingsPage, QPixmap(":images/settings.png"), tr("Settings") );
-
-
+    m_imp->m_pages->addTab(m_imp->m_packageBrowsingPage, QPixmap(":images/packages.png"), tr("Package Browsing"));
+    m_imp->m_pages->addTab(m_imp->m_searchPage, QPixmap(":images/find.png"), tr("Search"));
+    m_imp->m_pages->addTab(m_imp->m_repositoryPage, QPixmap(":images/repobar.png"), tr("RepositoryPage"));
+    m_imp->m_pages->addTab(m_imp->m_systemReportPage, QPixmap(":images/system_report.png"), tr("System Report"));
+    m_imp->m_pages->addTab(m_imp->m_selectionsPage, QPixmap(":images/selections.png"), tr("Selections"));
+    m_imp->m_pages->addTab(m_imp->m_messagePage, QPixmap(":images/messages.png"), tr("Messages"));
+    m_imp->m_pages->addTab(m_imp->m_settingsPage, QPixmap(":images/settings.png"), tr("Settings"));
 
     setCentralWidget(m_imp->m_pages);
     show();
@@ -257,10 +305,10 @@ pertubis::MainWindow::initGUI()
 }
 
 void
-pertubis::MainWindow::loadSettings()
+MainWindow::loadSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "MainWindow" );
+    settings.beginGroup("MainWindow");
         resize(settings.value("size",QVariant(QSize(800,600))).toSize());
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
         QByteArray tmp(settings.value("mystate",true).toByteArray());
@@ -269,53 +317,53 @@ pertubis::MainWindow::loadSettings()
 }
 
 void
-pertubis::MainWindow::saveSettings()
+MainWindow::saveSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "MainWindow" );
-        settings.setValue("mystate", saveState() );
-        settings.setValue("size", size() );
+    settings.beginGroup("MainWindow");
+        settings.setValue("mystate", saveState());
+        settings.setValue("size", size());
         settings.setValue("pos", pos());
     settings.endGroup();
-    qDebug() << "pertubis::MainWindow::saveSettings() - done";
+    qDebug() << "MainWindow::saveSettings() - done";
 }
 
 void
-pertubis::MainWindow::displayNotice(const QString & notice)
+MainWindow::displayNotice(const QString & notice)
 {
     statusBar()->showMessage(notice);
 }
 
 
 void
-pertubis::MainWindow::setPage(QWidget* page)
+MainWindow::setPage(QWidget* page)
 {
     Q_ASSERT(m_imp->m_pages != 0);
     m_imp->m_pages->setCurrentWidget(page);
 }
 
 void
-pertubis::MainWindow::closeEvent(QCloseEvent* ev)
+MainWindow::closeEvent(QCloseEvent* ev)
 {
     hide();
     ev->ignore();
 }
 
 QWidget*
-pertubis::MainWindow::currentPage()
+MainWindow::currentPage()
 {
     return m_imp->m_pages->currentWidget();
 }
 
 void
-pertubis::MainWindow::onEndOfPaludisAction()
+MainWindow::onEndOfPaludisAction()
 {
     QApplication::restoreOverrideCursor();
     m_imp->m_messagePage->setPolling(false);
 }
 
 void
-pertubis::MainWindow::onInvalidate()
+MainWindow::onInvalidate()
 {
     using namespace paludis;
     for (PackageDatabase::RepositoryConstIterator r(m_imp->m_env->package_database()->begin_repositories()),
@@ -327,27 +375,27 @@ pertubis::MainWindow::onInvalidate()
 }
 
 void
-pertubis::MainWindow::onStartOfPaludisAction()
+MainWindow::onStartOfPaludisAction()
 {
     QApplication::setOverrideCursor(QCursor(Qt::BusyCursor));
     m_imp->m_messagePage->setPolling(true);
 }
 
 void
-pertubis::MainWindow::onQuit()
+MainWindow::onQuit()
 {
     QApplication::instance()->quit();
 }
 
 void
-pertubis::MainWindow::setAllPagesDirty()
+MainWindow::setAllPagesDirty()
 {
     for (int i(0),iEnd(m_imp->m_pages->count());i<iEnd;i++)
         qobject_cast<Page*>(m_imp->m_pages->widget(i))->setOutOfDate(true);
 }
 
 void
-pertubis::MainWindow::pageChanged(int widget_index)
+MainWindow::pageChanged(int widget_index)
 {
     Page* page(static_cast<Page*>(m_imp->m_pages->widget(widget_index)));
     if (page != 0)
@@ -355,7 +403,7 @@ pertubis::MainWindow::pageChanged(int widget_index)
 }
 
 void
-pertubis::MainWindow::toggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
+MainWindow::toggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason)
     {
@@ -368,55 +416,55 @@ pertubis::MainWindow::toggleTrayIcon(QSystemTrayIcon::ActivationReason reason)
 }
 
 void
-pertubis::MainWindow::goToSearch()
+MainWindow::goToSearch()
 {
     m_imp->m_pages->setCurrentWidget(m_imp->m_searchPage);
 }
 
-pertubis::SettingsPage*
-pertubis::MainWindow::settingsPage()
+SettingsPage*
+MainWindow::settingsPage()
 {
     return m_imp->m_settingsPage;
 }
 
-pertubis::MessagePage*
-pertubis::MainWindow::messagePage()
+MessagePage*
+MainWindow::messagePage()
 {
     return m_imp->m_messagePage;
 }
 
-pertubis::InstallSelections*
-pertubis::MainWindow::installSelections()
+InstallSelections*
+MainWindow::installSelections()
 {
     return m_imp->m_installSelections;
 }
 
-pertubis::DeinstallSelections*
-pertubis::MainWindow::deinstallSelections()
+DeinstallSelections*
+MainWindow::deinstallSelections()
 {
     return m_imp->m_deinstallSelections;
 }
 
-pertubis::TaskQueue*
-pertubis::MainWindow::taskQueue()
+TaskQueue*
+MainWindow::taskQueue()
 {
     return m_imp->m_taskQueue;
 }
 
-pertubis::DetailsThread*
-pertubis::MainWindow::detailsThread()
+DetailsThread*
+MainWindow::detailsThread()
 {
     return m_imp->m_detailsThread;
 }
 
 bool
-pertubis::MainWindow::firstRun()
+MainWindow::firstRun()
 {
     return m_imp->m_firstrun;
 }
 
 paludis::tr1::shared_ptr<paludis::Environment>
-pertubis::MainWindow::env()
+MainWindow::env()
 {
     return m_imp->m_env;
 }

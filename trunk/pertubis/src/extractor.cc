@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -20,11 +20,13 @@
 
 #include "extractor.hh"
 
-pertubis::Extractor::Extractor(const paludis::Environment * const env) : m_env(env)
+using namespace pertubis;
+
+Extractor::Extractor(const paludis::Environment * const env) : m_env(env)
 {
 }
 
-pertubis::Extractor::~Extractor()
+Extractor::~Extractor()
 {
 }
 

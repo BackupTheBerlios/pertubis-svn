@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -31,7 +31,9 @@
 #include <QString>
 #include <QStringList>
 
-pertubis::PertubisInstallTask::PertubisInstallTask(QObject* pobj,
+using namespace pertubis;
+
+PertubisInstallTask::PertubisInstallTask(QObject* pobj,
                         paludis::tr1::shared_ptr<paludis::Environment> e,
                         const paludis::DepListOptions & options,
                         paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations,
@@ -42,14 +44,16 @@ pertubis::PertubisInstallTask::PertubisInstallTask(QObject* pobj,
                         m_install(install),
                         m_deinstall(deinstall)
 {
-    std::fill_n( m_counts, static_cast<int>(last_count), 0);
+    std::fill_n(m_counts, static_cast<int>(last_count), 0);
 }
 
-void pertubis::PertubisInstallTask::on_installed_paludis()
+void
+PertubisInstallTask::on_installed_paludis()
 {
 }
 
-void pertubis::PertubisInstallTask::on_display_merge_list_entry(const paludis::DepListEntry& e)
+void
+PertubisInstallTask::on_display_merge_list_entry(const paludis::DepListEntry& e)
 {
     using namespace paludis;
     DisplayMode m;
@@ -90,15 +94,17 @@ void pertubis::PertubisInstallTask::on_display_merge_list_entry(const paludis::D
     makePackage(e, m);
 }
 
-void pertubis::PertubisInstallTask::run()
+void
+PertubisInstallTask::run()
 {
     execute();
 }
 
-void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, DisplayMode m)
+void
+PertubisInstallTask::makePackage(const paludis::DepListEntry& e, DisplayMode m)
 {
     using namespace paludis;
-    qDebug() << "on_display_merge_list_entry()";
+    qDebug() << "PertubisInstallTask::makePackage()";
     QVector<QVariant> vdata(spho_last);
     QStringList tags;
     Package* node(new Package(e.package_id,QVector<QVariant>(spho_last),ps_stable,pt_parent,0));
@@ -127,17 +133,17 @@ void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, 
 //             if (m_firstpass)
 //                 return;
 
-            if ( existing_repo->empty())
+            if (existing_repo->empty())
             {
                 node->setData(spho_new_version,QString::fromStdString(stringify(e.package_id->version())));
                 node->setData(spho_change_sign, "N");
             }
-            else if ( existing_slot_repo->empty())
+            else if (existing_slot_repo->empty())
             {
                 node->setData(spho_change_sign,"S");
                 node->setData(spho_new_version,QString::fromStdString(stringify(e.package_id->version())));
             }
-            else if ( (*existing_slot_repo->last())->version() < e.package_id->version())
+            else if ((*existing_slot_repo->last())->version() < e.package_id->version())
             {
                 node->setData(spho_old_version,QString::fromStdString(stringify((*existing_slot_repo->last())->version())));
                 node->setData(spho_change_sign, "U");
@@ -193,7 +199,8 @@ void pertubis::PertubisInstallTask::makePackage(const paludis::DepListEntry& e, 
     }
 }
 
-void pertubis::PertubisInstallTask::display_merge_list_post_counts()
+void
+PertubisInstallTask::display_merge_list_post_counts()
 {
     QString text;
     text.append(tr("Total") + " " + count<max_count>());
@@ -202,30 +209,30 @@ void pertubis::PertubisInstallTask::display_merge_list_post_counts()
     {
         if (count<new_count>())
         {
-            text.append(tr("new") + " " + count<new_count>() );
+            text.append(tr("new") + " " + count<new_count>());
         }
         if (count<upgrade_count>())
         {
-            text.append(tr("upgrade(s)") + " " + count<upgrade_count>() );
+            text.append(tr("upgrade(s)") + " " + count<upgrade_count>());
         }
         if (count<downgrade_count>())
         {
-            text.append(tr("downgrade(s)") + " " + count<downgrade_count>() );
+            text.append(tr("downgrade(s)") + " " + count<downgrade_count>());
         }
         if (count<new_slot_count>())
         {
-            text.append(tr("new slot(s)") + " " + count<new_slot_count>() );
+            text.append(tr("new slot(s)") + " " + count<new_slot_count>());
         }
         if (count<rebuild_count>())
         {
-            text.append(tr("rebuild(s)") + " " + count<rebuild_count>() );
+            text.append(tr("rebuild(s)") + " " + count<rebuild_count>());
         }
     }
 
     if (count<error_count>())
-        text.append(tr("error(s)") + " " + count<error_count>() );
+        text.append(tr("error(s)") + " " + count<error_count>());
 
     if (count<suggested_count>())
-        text.append(tr("suggestion(s)") + " " + count<suggested_count>() );
+        text.append(tr("suggestion(s)") + " " + count<suggested_count>());
     emit depListResult(text);
 }

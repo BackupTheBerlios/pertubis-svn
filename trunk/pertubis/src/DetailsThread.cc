@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -33,6 +33,8 @@
 
 #include <QDebug>
 
+using namespace pertubis;
+
 namespace
 {
     class Displayer :
@@ -40,13 +42,13 @@ namespace
     {
         private:
             const paludis::tr1::shared_ptr<const paludis::PackageID> id;
-            pertubis::DetailsThread* thread;
+            DetailsThread* thread;
             const paludis::Environment * const env;
             const paludis::MetadataKeyType type;
 
         public:
             Displayer(const paludis::tr1::shared_ptr<const paludis::PackageID> & i,
-                    pertubis::DetailsThread *  t,
+                    DetailsThread *  t,
                     const paludis::Environment * const e,
                     const paludis::MetadataKeyType k) :
                     id(i),
@@ -60,7 +62,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),paludis::join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -68,7 +70,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -76,8 +78,8 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.pretty_print_flat(formatter)),std::string("bgcolor=\"#ddddff\"")));
+                    HtmlFormatter formatter;
+                    thread->appendOutput(make_row(k.human_name(),paludis::stringify(k.pretty_print_flat(formatter)),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -85,7 +87,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),join(k.value()->begin(), k.value()->end(), "<br>"),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -93,8 +95,8 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(k.human_name() + ":",k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
+                    HtmlFormatter formatter;
+                    thread->appendOutput(make_row(k.human_name() + ":",k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -102,8 +104,8 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print(formatter),std::string("bgcolor=\"#ddddff\"")));
+                    HtmlFormatter formatter;
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),k.pretty_print(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -111,9 +113,9 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
+                    HtmlFormatter formatter;
                     thread->appendOutput(
-                            pertubis::make_row( paludis::stringify(k.human_name()),
+                            make_row(paludis::stringify(k.human_name()),
                             k.pretty_print(formatter) ,std::string("bgcolor=\"#ddddff\"")));                }
             }
 
@@ -121,10 +123,10 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
+                    HtmlFormatter formatter;
                     thread->appendOutput(
-                        pertubis::make_row( paludis::stringify(k.human_name()),
-                                            pertubis::link(k.pretty_print_flat(formatter),k.pretty_print_flat(formatter)),std::string("bgcolor=\"#ddddff\"") ));
+                        make_row(paludis::stringify(k.human_name()),
+                                            link(k.pretty_print_flat(formatter),k.pretty_print_flat(formatter)),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -132,8 +134,8 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
+                    HtmlFormatter formatter;
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -141,8 +143,8 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
+                    HtmlFormatter formatter;
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -150,7 +152,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(k.pretty_print()),std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),paludis::stringify(k.pretty_print()),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -158,8 +160,8 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
+                    HtmlFormatter formatter;
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -167,22 +169,22 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    pertubis::HtmlFormatter formatter;
-                    thread->appendOutput(pertubis::make_row(k.human_name(),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
+                    HtmlFormatter formatter;
+                    thread->appendOutput(make_row(k.human_name(),k.pretty_print_flat(formatter),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
             void visit(const paludis::MetadataPackageIDKey & k)
             {
                 if (k.type() == type)
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(*k.value()),std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),paludis::stringify(*k.value()),std::string("bgcolor=\"#ddddff\"")));
             }
 
             void visit(const paludis::MetadataStringKey & k)
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(paludis::stringify(k.human_name()),paludis::stringify(k.value()),std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(make_row(paludis::stringify(k.human_name()),paludis::stringify(k.value()),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
@@ -190,7 +192,7 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    thread->appendOutput(pertubis::make_row(k.human_name() + ":","",std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(make_row(k.human_name() + ":","",std::string("bgcolor=\"#ddddff\"")));
 
                     Displayer v(id, thread, env, type);
                     std::for_each(paludis::indirect_iterator(k.begin_metadata()), paludis::indirect_iterator(k.end_metadata()),
@@ -208,14 +210,14 @@ namespace
                 char buf[255];
                 if (strftime(buf, 254, "%c", gmtime(&t)))
                 {
-                    thread->appendOutput(pertubis::make_row(std::string("time"),std::string(buf),std::string("bgcolor=\"#ddddff\"")));
+                    thread->appendOutput(make_row(std::string("time"),std::string(buf),std::string("bgcolor=\"#ddddff\"")));
                 }
             }
 
             void visit(const paludis::MetadataRepositoryMaskInfoKey &)
             {
 //                 if (k.type() == type)
-//                     thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()->mask_file),std::string("bgcolor=\"#ddddff\"")));
+//                     thread->appendOutput(make_row(k.human_name(),paludis::stringify(k.value()->mask_file),std::string("bgcolor=\"#ddddff\"")));
             }
 
             void visit(const paludis::MetadataContentsKey &)
@@ -225,27 +227,29 @@ namespace
             void visit(const paludis::MetadataFSEntryKey &)
             {
 //                 if (k.type() == type)
-//                     thread->appendOutput(pertubis::make_row(k.human_name(),paludis::stringify(k.value()),std::string("bgcolor=\"#ddddff\"")));
+//                     thread->appendOutput(make_row(k.human_name(),paludis::stringify(k.value()),std::string("bgcolor=\"#ddddff\"")));
             }
     };
 }
 
-pertubis::DetailsThread::DetailsThread(QObject* pobj,
+DetailsThread::DetailsThread(QObject* pobj,
                                         const paludis::tr1::shared_ptr<paludis::Environment>&  myenv) : ThreadBase(pobj,myenv)
 {
 }
 
-pertubis::DetailsThread::~DetailsThread()
+DetailsThread::~DetailsThread()
 {
-    qDebug() << "pertubis::DetailsThread::~DetailsThread()";
+    qDebug() << "DetailsThread::~DetailsThread()";
 }
 
-void pertubis::DetailsThread::setup( paludis::tr1::shared_ptr<const paludis::PackageID> id)
+void
+DetailsThread::setup(paludis::tr1::shared_ptr<const paludis::PackageID> id)
 {
     m_id = id;
 }
 
-void pertubis::DetailsThread::run()
+void
+DetailsThread::run()
 {
     m_text = QString("<html><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"10\">\
     <colgroup><col width=\"30%\"><col width=\"70%\"></colgroup><tr><th bgcolor=\"#5a3aca\"></th><th bgcolor=\"#000000\" align=\"left\"><font color=\"#ffffff\">%1-%2</font></th>\n</tr><tbody>\n")

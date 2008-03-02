@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -35,16 +35,19 @@
 #include <QColor>
 #include <QBrush>
 
-pertubis::RepositoryListItem::RepositoryListItem() : m_data(QList<QVariant>() << "" << Qt::Checked)
+using namespace pertubis;
+
+RepositoryListItem::RepositoryListItem() : m_data(QList<QVariant>() << "" << Qt::Checked)
 {
 }
 
-pertubis::RepositoryListItem::RepositoryListItem(const QString& name, Qt::CheckState state) :
+RepositoryListItem::RepositoryListItem(const QString& name, Qt::CheckState state) :
         m_data(QVariantList() << name << state)
 {
 }
 
-bool pertubis::RepositoryListItem::setData(int col,const QVariant& value)
+bool
+RepositoryListItem::setData(int col,const QVariant& value)
 {
     if (m_data.count() > col)
     {
@@ -54,7 +57,8 @@ bool pertubis::RepositoryListItem::setData(int col,const QVariant& value)
     return false;
 }
 
-void pertubis::RepositoryListThread::run()
+void
+RepositoryListThread::run()
 {
     using namespace paludis;
     QStringList list;
@@ -67,25 +71,27 @@ void pertubis::RepositoryListThread::run()
     emit sendNames(list);
 }
 
-pertubis::RepositoryListModel::RepositoryListModel(QObject* pobj,bool firstrun) : QAbstractTableModel(pobj) , m_firstrun(firstrun)
+RepositoryListModel::RepositoryListModel(QObject* pobj,bool firstrun) : QAbstractTableModel(pobj) , m_firstrun(firstrun)
 {
     loadSettings();
 }
 
-pertubis::RepositoryListModel::~RepositoryListModel()
+RepositoryListModel::~RepositoryListModel()
 {
     clear();
     saveSettings();
 }
 
-void pertubis::RepositoryListModel::clear()
+void
+RepositoryListModel::clear()
 {
     qDeleteAll(m_data);
     m_data.clear();
     emit layoutChanged();
 }
 
-Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const
+Qt::ItemFlags
+RepositoryListModel::flags(const QModelIndex &mix) const
 {
     switch (mix.column())
     {
@@ -98,7 +104,8 @@ Qt::ItemFlags pertubis::RepositoryListModel::flags(const QModelIndex &mix) const
     return 0;
 }
 
-bool pertubis::RepositoryListModel::setData ( const QModelIndex & ix, const QVariant & value, int /*role*/ )
+bool
+RepositoryListModel::setData (const QModelIndex & ix, const QVariant & value, int /*role*/)
 {
     if (!ix.isValid() || ix.column() != rlmho_on)
         return false;
@@ -108,7 +115,8 @@ bool pertubis::RepositoryListModel::setData ( const QModelIndex & ix, const QVar
     return true;
 }
 
-void pertubis::RepositoryListModel::changeActiveRepos(const QString& name)
+void
+RepositoryListModel::changeActiveRepos(const QString& name)
 {
     QSet<QString>::iterator it(m_activeRepos.find(name));
     if (it == m_activeRepos.end())
@@ -117,12 +125,14 @@ void pertubis::RepositoryListModel::changeActiveRepos(const QString& name)
         m_activeRepos.erase(it);
 }
 
-void pertubis::RepositoryListModel::setHorizontalHeaderLabels ( const QStringList & labels )
+void
+RepositoryListModel::setHorizontalHeaderLabels (const QStringList & labels)
 {
     m_header = labels;
 }
 
-QVariant pertubis::RepositoryListModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant
+RepositoryListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole ||
         orientation == Qt::Vertical ||
@@ -131,7 +141,8 @@ QVariant pertubis::RepositoryListModel::headerData(int section, Qt::Orientation 
     return *(m_header.begin() + section);
 }
 
-void pertubis::RepositoryListModel::slotResult(QStringList list)
+void
+RepositoryListModel::slotResult(QStringList list)
 {
     QSet<QString> tmp;
     for (QStringList::const_iterator iter(list.constBegin()),iEnd(list.constEnd());iter != iEnd;++iter)
@@ -141,7 +152,7 @@ void pertubis::RepositoryListModel::slotResult(QStringList list)
         {
             changeActiveRepos(*iter);
         }
-        RepositoryListItem* item(new RepositoryListItem(*iter,( m_activeRepos.contains(*iter)  ? Qt::Checked : Qt::Unchecked) ));
+        RepositoryListItem* item(new RepositoryListItem(*iter,(m_activeRepos.contains(*iter)  ? Qt::Checked : Qt::Unchecked)));
         m_data.push_back(item);
     }
 
@@ -151,17 +162,20 @@ void pertubis::RepositoryListModel::slotResult(QStringList list)
     reset();
 }
 
-int pertubis::RepositoryListModel::rowCount( const QModelIndex & pobj ) const
+int
+RepositoryListModel::rowCount(const QModelIndex & pobj) const
 {
     return pobj.isValid() ? 0 : m_data.count();
 }
 
-int pertubis::RepositoryListModel::columnCount( const QModelIndex & pobj ) const
+int
+RepositoryListModel::columnCount(const QModelIndex & pobj) const
 {
     return pobj.isValid() ? 0 : m_header.count();
 }
 
-QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int role) const
+QVariant
+RepositoryListModel::data (const QModelIndex & m_index, int role) const
 {
 //     qDebug() << "RepositoryListModel::data()";
     if (!m_index.isValid())
@@ -185,30 +199,32 @@ QVariant pertubis::RepositoryListModel::data ( const QModelIndex & m_index, int 
     return QVariant();
 }
 
-const QSet<QString>&  pertubis::RepositoryListModel::activeRepositories() const
+const QSet<QString>
+RepositoryListModel::activeRepositories() const
 {
     return m_activeRepos;
 }
 
-void pertubis::RepositoryListModel::loadSettings()
+void
+RepositoryListModel::loadSettings()
 {
-    qDebug() << "pertubis::RepositoryListModel::loadSettings() - start";
+    qDebug() << "RepositoryListModel::loadSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "RepositoryListModel" );
+    settings.beginGroup("RepositoryListModel");
     QVariantList selected(settings.value("activeRepositories",QVariantList()).toList());
     settings.endGroup();
     // here we injecting all repository names despite its availability since at
     for (QVariantList::const_iterator it(selected.constBegin()),iEnd(selected.constEnd());
          it != iEnd;++it)
     {
-        m_activeRepos.insert( (*it).toString());
+        m_activeRepos.insert((*it).toString());
     }
-    qDebug() << "pertubis::RepositoryListModel::loadSettings() - done";
+    qDebug() << "RepositoryListModel::loadSettings() - done";
 }
 
-void pertubis::RepositoryListModel::saveSettings()
+void RepositoryListModel::saveSettings()
 {
-    qDebug() << "pertubis::RepositoryListModel::saveSettings() - start";
+    qDebug() << "RepositoryListModel::saveSettings() - start";
     QVariantList selected;
     for (QSet<QString>::const_iterator it(m_activeRepos.constBegin()),iEnd(m_activeRepos.constEnd());
          it != iEnd;++it)

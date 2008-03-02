@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -34,15 +34,18 @@
 #include <QSet>
 #include <QStringList>
 
-pertubis::CategoryThread::CategoryThread(QObject* pobj,
+using namespace pertubis;
+
+CategoryThread::CategoryThread(QObject* pobj,
                                          const paludis::tr1::shared_ptr<paludis::Environment>&  myenv) : ThreadBase(pobj,myenv)
 {
 }
 
-void pertubis::CategoryThread::run()
+void
+CategoryThread::run()
 {
     using namespace paludis;
-    qDebug() << "pertubis::CategoryThread::run() start";
+    qDebug() << "CategoryThread::run() start";
 
     QMap<QString, QSet<QString> > cats;
     for (paludis::IndirectIterator<paludis::PackageDatabase::RepositoryConstIterator, const paludis::Repository>
@@ -57,6 +60,5 @@ void pertubis::CategoryThread::run()
     }
 
     emit sendCategory(cats);
-    qDebug() << "pertubis::CategoryThread::run() done";
+    qDebug() << "CategoryThread::run() done";
 }
-

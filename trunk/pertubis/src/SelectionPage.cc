@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -49,6 +49,7 @@
 #include <QFont>
 #include <QTextBrowser>
 
+using namespace pertubis;
 
 namespace pertubis
 {
@@ -74,7 +75,7 @@ namespace pertubis
     };
 }
 
-pertubis::SelectionPage::SelectionPage(MainWindow * main) :
+SelectionPage::SelectionPage(MainWindow * main) :
         Page(main),
         m_imp(new SelectionPagePrivate)
 {
@@ -135,9 +136,9 @@ pertubis::SelectionPage::SelectionPage(MainWindow * main) :
     setLayout(mainLayout);
 
     connect(m_imp->m_selectionView,
-            SIGNAL(clicked( const QModelIndex&)),
+            SIGNAL(clicked(const QModelIndex&)),
             this,
-            SLOT(selectionViewUserInteraction( const QModelIndex& )) );
+            SLOT(selectionViewUserInteraction(const QModelIndex&)));
 
     connect(acShow,
             SIGNAL(pressed()),
@@ -156,37 +157,40 @@ pertubis::SelectionPage::SelectionPage(MainWindow * main) :
 
     loadSettings();
     show();
-    qDebug() << "pertubis::SystemReportPage::SelectionPage() end";
+    qDebug() << "SystemReportPage::SelectionPage() end";
 }
 
-pertubis::SelectionPage::~SelectionPage()
+SelectionPage::~SelectionPage()
 {
-    qDebug() << "pertubis::SelectionPage::~SelectionPage()";
+    qDebug() << "SelectionPage::~SelectionPage()";
     saveSettings();
     delete m_imp;
 }
 
-void pertubis::SelectionPage::loadSettings()
+void
+SelectionPage::loadSettings()
 {
-    qDebug() << "pertubis::SelectionPage::loadSettings() - start";
+    qDebug() << "SelectionPage::loadSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "SelectionPage" );
+    settings.beginGroup("SelectionPage");
     m_imp->m_hSplit->restoreState(settings.value("hSplit").toByteArray());
     settings.endGroup();
-    qDebug() << "pertubis::SelectionPage::doneSettings() - done";
+    qDebug() << "SelectionPage::doneSettings() - done";
 }
 
-void pertubis::SelectionPage::saveSettings()
+void
+SelectionPage::saveSettings()
 {
-    qDebug() << "pertubis::SelectionPage::saveSettings() - start";
+    qDebug() << "SelectionPage::saveSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "SelectionPage" );
+    settings.beginGroup("SelectionPage");
     settings.setValue("hSplit", m_imp->m_hSplit->saveState());
     settings.endGroup();
-    qDebug() << "pertubis::SelectionPage::saveSettings() - done";
+    qDebug() << "SelectionPage::saveSettings() - done";
 }
 
-void pertubis::SelectionPage::selectionViewUserInteraction(const QModelIndex & ix)
+void
+SelectionPage::selectionViewUserInteraction(const QModelIndex & ix)
 {
     if (! ix.isValid())
         return;
@@ -194,17 +198,17 @@ void pertubis::SelectionPage::selectionViewUserInteraction(const QModelIndex & i
 
     Q_ASSERT(package != 0);
     int column(ix.column());
-    if (spho_install == column )
+    if (spho_install == column)
     {
         int mystate(mainWindow()->installSelections()->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
         if (mainWindow()->installSelections()->available(package,-1))
             mainWindow()->installSelections()->changeStates(package,mystate,spho_install);
         m_imp->m_selectionModel->onUpdateModel();
     }
-    else if (spho_deinstall == column )
+    else if (spho_deinstall == column)
     {
         int mystate(mainWindow()->deinstallSelections()->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
-        if (mainWindow()->deinstallSelections()->available(package,spho_installed) )
+        if (mainWindow()->deinstallSelections()->available(package,spho_installed))
             mainWindow()->deinstallSelections()->changeStates(package, mystate, spho_deinstall);
         m_imp->m_selectionModel->onUpdateModel();
     }
@@ -214,13 +218,15 @@ void pertubis::SelectionPage::selectionViewUserInteraction(const QModelIndex & i
     }
 }
 
-void pertubis::SelectionPage::activatePage()
+void
+SelectionPage::activatePage()
 {
     if (used() && outOfDate())
         refreshPage();
 }
 
-void pertubis::SelectionPage::clearPage()
+void
+SelectionPage::clearPage()
 {
     m_imp->m_selectionModel->clear();
     m_imp->m_details->clear();
@@ -230,7 +236,8 @@ void pertubis::SelectionPage::clearPage()
     setOutOfDate(false);
 }
 
-void pertubis::SelectionPage::unselectAll()
+void
+SelectionPage::unselectAll()
 {
     mainWindow()->installSelections()->clear();
     mainWindow()->deinstallSelections()->clear();
@@ -242,18 +249,20 @@ void pertubis::SelectionPage::unselectAll()
     }
 }
 
-void pertubis::SelectionPage::refreshPage()
+void
+SelectionPage::refreshPage()
 {
-    qDebug() << "pertubis::SelectionPage::refreshPage()";
+    qDebug() << "SelectionPage::refreshPage()";
     m_imp->m_selectionModel->clear();
     m_imp->m_details->clear();
     setOutOfDate(false);
     setUsed(false);
 }
 
-void pertubis::SelectionPage::setupDeinstallTask(bool pretend)
+void
+SelectionPage::setupDeinstallTask(bool pretend)
 {
-    qDebug() << "pertubis::SelectionPage::setupDeinstallTask() - start";
+    qDebug() << "SelectionPage::setupDeinstallTask() - start";
 
     if (0 < mainWindow()->deinstallSelections()->entryCount())
     {
@@ -270,7 +279,7 @@ void pertubis::SelectionPage::setupDeinstallTask(bool pretend)
         m_imp->m_deinstallTask->set_with_unused_dependencies(mainWindow()->settingsPage()->m_deinstallView->m_model->m_unusedDeps);
         m_imp->m_deinstallTask->set_with_dependencies(mainWindow()->settingsPage()->m_deinstallView->m_model->m_deps);
         m_imp->m_deinstallTask->set_check_safety(! mainWindow()->settingsPage()->m_deinstallView->m_model->m_unsafeUninstall);
-        m_imp->m_deinstallTask->set_all_versions( mainWindow()->settingsPage()->m_deinstallView->m_model->m_allVersions);
+        m_imp->m_deinstallTask->set_all_versions(mainWindow()->settingsPage()->m_deinstallView->m_model->m_allVersions);
         m_imp->m_deinstallTask->set_pretend(pretend);
 
         connect(m_imp->m_deinstallTask,
@@ -291,14 +300,15 @@ void pertubis::SelectionPage::setupDeinstallTask(bool pretend)
         }
         mainWindow()->taskQueue()->enqueue(m_imp->m_deinstallTask,true);
     }
-    qDebug() << "pertubis::SelectionPage::setupDeinstallTask() - done";
+    qDebug() << "SelectionPage::setupDeinstallTask() - done";
 }
 
-void pertubis::SelectionPage::setupInstallTask(bool pretend, QString target)
+void
+SelectionPage::setupInstallTask(bool pretend, QString target)
 {
-    qDebug() << "pertubis::SelectionPage::setupInstallTask()";
+    qDebug() << "SelectionPage::setupInstallTask()";
 
-    if (! target.isEmpty() ||
+    if (!target.isEmpty() ||
           0 < mainWindow()->installSelections()->entryCount())
     {
         if (m_imp->m_installTask != 0 &&
@@ -324,7 +334,7 @@ void pertubis::SelectionPage::setupInstallTask(bool pretend, QString target)
                 this,
                 SLOT(installTaskFinished()));
 
-        if ( !target.isEmpty() )
+        if (!target.isEmpty())
         {
             try
             {
@@ -335,7 +345,7 @@ void pertubis::SelectionPage::setupInstallTask(bool pretend, QString target)
             {
             }
         }
-        else if (0 < mainWindow()->installSelections()->entryCount() )
+        else if (0 < mainWindow()->installSelections()->entryCount())
         {
             for (paludis::PackageIDSet::ConstIterator i(mainWindow()->installSelections()->entriesBegin()), i_end(mainWindow()->installSelections()->entriesEnd());
                  i != i_end ; ++i)
@@ -345,11 +355,12 @@ void pertubis::SelectionPage::setupInstallTask(bool pretend, QString target)
             mainWindow()->taskQueue()->enqueue(m_imp->m_installTask,true);
         }
     }
-    qDebug() << "pertubis::SelectionPage::setupInstallTask() - done";
+    qDebug() << "SelectionPage::setupInstallTask() - done";
 }
 
 
-void pertubis::SelectionPage::startPretend()
+void
+SelectionPage::startPretend()
 {
     m_imp->m_selectionModel->clear();
     mainWindow()->messagePage()->clearPage();
@@ -357,7 +368,8 @@ void pertubis::SelectionPage::startPretend()
     setupInstallTask(true,"");
 }
 
-void pertubis::SelectionPage::start()
+void
+SelectionPage::start()
 {
     m_imp->m_selectionModel->clear();
     mainWindow()->messagePage()->clearPage();
@@ -367,7 +379,7 @@ void pertubis::SelectionPage::start()
     setUsed(true);
 }
 
-// void pertubis::SelectionPage::taskFinished()
+// void SelectionPage::taskFinished()
 // {
 //     QMessageBox q(QMessageBox::NoIcon,
 //                 tr("Finished"),
@@ -380,17 +392,20 @@ void pertubis::SelectionPage::start()
 //     mainWindow()->onInvalidate();
 // }
 
-void pertubis::SelectionPage::installTaskFinished()
+void
+SelectionPage::installTaskFinished()
 {
     mainWindow()->installSelections()->clear();
 }
 
-void pertubis::SelectionPage::deinstallTaskFinished()
+void
+SelectionPage::deinstallTaskFinished()
 {
     mainWindow()->deinstallSelections()->clear();
 }
 
-void pertubis::SelectionPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
+void
+SelectionPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
 {
     DetailsThread* t(new DetailsThread(this,mainWindow()->env()));
     mainWindow()->onStartOfPaludisAction();
@@ -402,7 +417,8 @@ void pertubis::SelectionPage::details(const paludis::tr1::shared_ptr<const palud
     mainWindow()->taskQueue()->enqueue(t,true);
 }
 
-void pertubis::SelectionPage::displayDetails(QString mydetails)
+void
+SelectionPage::displayDetails(QString mydetails)
 {
     if (mydetails.isEmpty() ||
         this != mainWindow()->currentPage())

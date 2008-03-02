@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -26,21 +26,25 @@
 #include <QColor>
 #include <QBrush>
 
-bool CategoryItemSorter(pertubis::CategoryItem* a,pertubis::CategoryItem* b)
+using namespace pertubis;
+
+bool
+CategoryItemSorter(CategoryItem* a,CategoryItem* b)
 {
     return a->name() < b->name();
 }
 
-pertubis::CategoryModel::CategoryModel(QObject* pobj) : QAbstractTableModel(pobj)
+CategoryModel::CategoryModel(QObject* pobj) : QAbstractTableModel(pobj)
 {
 }
 
-pertubis::CategoryModel::~CategoryModel()
+CategoryModel::~CategoryModel()
 {
     qDeleteAll(m_data);
     m_data.clear();
 }
-int pertubis::CategoryModel::indexOf ( const QString & text )
+int
+CategoryModel::indexOf (const QString & text)
 {
     for (QList<CategoryItem*>::const_iterator iStart(m_data.constBegin()),iEnd(m_data.constEnd());
         iStart != iEnd;++iStart)
@@ -51,14 +55,16 @@ int pertubis::CategoryModel::indexOf ( const QString & text )
     return -1;
 }
 
-QVariant pertubis::CategoryModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant
+CategoryModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count() )
+    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count())
         return QVariant();
     return *(m_header.begin() + section);
 }
 
-void pertubis::CategoryModel::appendCategory(QMap<QString, QSet<QString> > cats)
+void
+CategoryModel::appendCategory(QMap<QString, QSet<QString> > cats)
 {
     for(QMap<QString,QSet<QString> >::const_iterator cStart(cats.constBegin()),
             end(cats.constEnd());
@@ -72,26 +78,30 @@ void pertubis::CategoryModel::appendCategory(QMap<QString, QSet<QString> > cats)
     emit layoutChanged();
 }
 
-void pertubis::CategoryModel::appendCategory(CategoryItem* item)
+void
+CategoryModel::appendCategory(CategoryItem* item)
 {
     m_data.push_back(item);
     emit layoutChanged();
 }
 
-int pertubis::CategoryModel::rowCount( const QModelIndex & pobj ) const
+int
+CategoryModel::rowCount(const QModelIndex & pobj) const
 {
     return pobj.isValid() ? 0 : m_data.count();
 }
 
-int pertubis::CategoryModel::columnCount( const QModelIndex & pobj ) const
+int
+CategoryModel::columnCount(const QModelIndex & pobj) const
 {
     return pobj.isValid() ? 0 : m_header.count();
 }
 
-void pertubis::CategoryModel::slotChangeInCat( QString cat)
+void
+CategoryModel::slotChangeInCat(QString cat)
 {
     CategoryItem* item;
-    foreach ( item,m_data)
+    foreach (item,m_data)
     {
         if (item->name() == cat)
         {
@@ -102,7 +112,8 @@ void pertubis::CategoryModel::slotChangeInCat( QString cat)
     }
 }
 
-QVariant pertubis::CategoryModel::data ( const QModelIndex & mix, int role) const
+QVariant
+CategoryModel::data (const QModelIndex & mix, int role) const
 {
     if (!mix.isValid())
          return QVariant();
@@ -126,7 +137,8 @@ QVariant pertubis::CategoryModel::data ( const QModelIndex & mix, int role) cons
     return QVariant();
 }
 
-QModelIndex pertubis::CategoryModel::index(int row, int column, const QModelIndex &parentIndex) const
+QModelIndex
+CategoryModel::index(int row, int column, const QModelIndex &parentIndex) const
 {
     if (!hasIndex(row, column, parentIndex))
         return QModelIndex();
@@ -138,10 +150,10 @@ QModelIndex pertubis::CategoryModel::index(int row, int column, const QModelInde
         return QModelIndex();
 }
 
-void pertubis::CategoryModel::clear()
+void
+CategoryModel::clear()
 {
     qDeleteAll(m_data);
     m_data.clear();
     emit layoutChanged();
 }
-

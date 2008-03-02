@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -43,8 +43,9 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
+using namespace pertubis;
 
-pertubis::SettingsPage::SettingsPage(MainWindow* main) : Page(main),
+SettingsPage::SettingsPage(MainWindow* main) : Page(main),
         m_generalView(new GeneralSettingsView(this,new GeneralSettingsModel(this))),
         m_installView(new InstallSettingsView(this,new InstallSettingsModel(this))),
         m_deinstallView(new DeinstallSettingsView(this,new DeinstallSettingsModel(this))),
@@ -112,11 +113,12 @@ pertubis::SettingsPage::SettingsPage(MainWindow* main) : Page(main),
     setWindowTitle(tr("pertubis :: settings"));
 }
 
-void pertubis::SettingsPage::activatePage()
+void
+SettingsPage::activatePage()
 {
 }
 
-pertubis::SettingsPage::~SettingsPage()
+SettingsPage::~SettingsPage()
 {
     qDebug("SettingsPage::~SettingsPage() - start");
     saveSettings();
@@ -128,7 +130,8 @@ pertubis::SettingsPage::~SettingsPage()
     qDebug("SettingsPage::~SettingsPage() - done");
 }
 
-void pertubis::SettingsPage::changePage(QListWidgetItem *current, QListWidgetItem *previous)
+void
+SettingsPage::changePage(QListWidgetItem *current, QListWidgetItem *previous)
 {
     if (!current)
         current = previous;
@@ -136,11 +139,12 @@ void pertubis::SettingsPage::changePage(QListWidgetItem *current, QListWidgetIte
     m_pagesStore->setCurrentIndex(m_pagesView->row(current));
 }
 
-void pertubis::SettingsPage::loadSettings()
+void
+SettingsPage::loadSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "SettingsPage" );
-    setVisible(settings.value( "visible",false).toBool());
+    settings.beginGroup("SettingsPage");
+    setVisible(settings.value("visible",false).toBool());
     resize(settings.value("size",QVariant(QSize(320,600))).toSize());
     move(settings.value("pos",QVariant(QPoint(481,143))).toPoint());
     m_pagesStore->setCurrentIndex(settings.value("store",0).toInt());
@@ -148,12 +152,13 @@ void pertubis::SettingsPage::loadSettings()
     settings.endGroup();
 }
 
-void pertubis::SettingsPage::saveSettings()
+void
+SettingsPage::saveSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "SettingsPage" );
-    settings.setValue("visible", isVisible() );
-    settings.setValue("size", size() );
+    settings.beginGroup("SettingsPage");
+    settings.setValue("visible", isVisible());
+    settings.setValue("size", size());
     settings.setValue("pos", pos());
     settings.setValue("store", m_pagesStore->currentIndex());
     settings.setValue("view", m_pagesView->currentRow());

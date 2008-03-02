@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -27,16 +27,19 @@
 #include <QDebug>
 #include <QStringList>
 
-pertubis::ReportPackageModel::ReportPackageModel(QObject* pobj) : PackageModel(pobj)
+using namespace pertubis;
+
+ReportPackageModel::ReportPackageModel(QObject* pobj) : PackageModel(pobj)
 {
     clear();
 }
 
-QVariant pertubis::ReportPackageModel::data ( const QModelIndex & ix, int role) const
+QVariant
+ReportPackageModel::data (const QModelIndex & ix, int role) const
 {
     if (!ix.isValid())
         return QVariant();
-    if (rpho_last <= ix.column() )
+    if (rpho_last <= ix.column())
         return QVariant();
     ReportPackage* item = static_cast<ReportPackage*>(ix.internalPointer());
     if (role == Qt::BackgroundRole)
@@ -47,7 +50,7 @@ QVariant pertubis::ReportPackageModel::data ( const QModelIndex & ix, int role) 
     else if (role == Qt::ForegroundRole)
     {
         if (tk_normal != item->tag()
-            || rpho_deinstall == ix.column() )
+            || rpho_deinstall == ix.column())
             return QBrush(QColor(255,0,0));
         else
             return QBrush(QColor(0,0,0));
@@ -67,9 +70,10 @@ QVariant pertubis::ReportPackageModel::data ( const QModelIndex & ix, int role) 
     return QVariant();
 }
 
-void pertubis::ReportPackageModel::unselectAll()
+void
+ReportPackageModel::unselectAll()
 {
-    qDebug() << "pertubis::ReportPackageModel::unselectAll()";
+    qDebug() << "ReportPackageModel::unselectAll()";
     for (ReportPackage::PackageIterator iStart(m_root->childBegin()),
          iEnd(m_root->childEnd());
          iStart != iEnd;
@@ -83,10 +87,11 @@ void pertubis::ReportPackageModel::unselectAll()
     emit layoutChanged();
 }
 
-void pertubis::ReportPackageModel::clear()
+void
+ReportPackageModel::clear()
 {
-    qDebug() << "pertubis::ReportPackageModel::clear() start";
+    qDebug() << "ReportPackageModel::clear() start";
     m_root = new ReportPackage(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                                    QVector<QVariant>(rpho_last), tk_normal);
-    qDebug() << "pertubis::ReportPackageModel::clear() done";
+    qDebug() << "ReportPackageModel::clear() done";
 }

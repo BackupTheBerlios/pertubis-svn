@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -30,7 +30,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int main( int argc, char **argv )
+int
+main(int argc, char **argv)
 {
     Q_INIT_RESOURCE(pertubis);
 
@@ -40,12 +41,12 @@ int main( int argc, char **argv )
         bool first_start(!config.exists());
         qDebug() << "first_start ?" << first_start;
         QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-        settings.beginGroup( "GeneralSettingsModel" );
+        settings.beginGroup("GeneralSettingsModel");
         QString lang = settings.value("language",":i18n/pertubis-en").toString();
         settings.endGroup();
         QTranslator t;
         t.load(lang);
-        QApplication a( argc, argv );
+        QApplication a(argc, argv);
         a.setApplicationName("pertubis");
         a.setOrganizationName("pertubis");
         a.installTranslator(&t);
@@ -57,7 +58,7 @@ int main( int argc, char **argv )
 
     if (argc == 2 && strcmp(argv[1],"-v") == 0)
     {
-        if ( !QString(PERTUBIS_REVISION_NUMBER).isEmpty())
+        if (!QString(PERTUBIS_REVISION_NUMBER).isEmpty())
             printf("revision:\t%s\n",PERTUBIS_REVISION_NUMBER);
         else
             printf("version:\t%d.%d.%d\n",MAJOR_VERSION_NUMBER, MINOR_VERSION_NUMBER, PATCH_VERSION_NUMBER);

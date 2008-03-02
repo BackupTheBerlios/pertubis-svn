@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -23,37 +23,41 @@
 
 #include "GLSAParser.hh"
 
-static QString sign(QString op)
+using namespace pertubis;
+
+static QString
+sign(QString op)
 {
-    if ( op == "le")
+    if (op == "le")
         return "&lt;=";
-    else if ( op == "lt")
+    else if (op == "lt")
         return "&lt;";
-    else if ( op == "eq")
+    else if (op == "eq")
         return "=";
-    else if ( op == "gt")
+    else if (op == "gt")
         return "&gt;";
-    else if ( op == "ge")
+    else if (op == "ge")
         return "&gt;=";
-    else if ( op == "rlt")
+    else if (op == "rlt")
         return "revision &lt;";
-    else if ( op == "rle")
+    else if (op == "rle")
         return "revision &lt;=";
-    else if ( op == "rgt")
+    else if (op == "rgt")
         return "revision &gt;";
-    else if ( op == "rge")
+    else if (op == "rge")
         return "revision &gt;=";
     else
         return "";
 }
 
-pertubis::GlsaParser::GlsaParser(QTextBrowser *browser) : m_browser(browser),m_putInTable(false), m_dontUse(false), m_isUnaffected(false),m_isVulnerable(false)
+GlsaParser::GlsaParser(QTextBrowser *browser) : m_browser(browser),m_putInTable(false), m_dontUse(false), m_isUnaffected(false),m_isVulnerable(false)
 {
     m_html ="<html><head><link title=\"new\" rel=\"stylesheet\" type=\"text/css\" href=\"/usr/lib/pertubis/glsa.css\"></head><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\"><colgroup><col width=\"100%\"></colgroup><tbody><tr><td>\n";
     m_table = "<table class=\"ntable\" border=\"0\"><tbody >\n";
 }
 
-bool pertubis::GlsaParser::startElement(const QString & /* namespaceURI */,
+bool
+GlsaParser::startElement(const QString & /* namespaceURI */,
                               const QString & /* localName */,
                               const QString &qName,
                               const QXmlAttributes &attributes)
@@ -64,35 +68,35 @@ bool pertubis::GlsaParser::startElement(const QString & /* namespaceURI */,
     }
     else if (qName == "title")
     {
-        m_currentElement.append( "<h1>");
+        m_currentElement.append("<h1>");
     }
     else if (qName == "resolution")
     {
-        m_currentElement.append( "<h1>resolution</h1>");
+        m_currentElement.append("<h1>resolution</h1>");
     }
     else if (qName == "product")
     {
         m_putInTable=true;
-        m_currentElement.append( "<tr><td class=\"infohead\">Advisory Reference</td><td class=\"tableinfo\">Glsa " + m_id + " / " );
+        m_currentElement.append("<tr><td class=\"infohead\">Advisory Reference</td><td class=\"tableinfo\">Glsa " + m_id + " / ");
     }
     else if (qName == "background")
     {
-        m_currentElement.append( "<h2>background</h2>");
+        m_currentElement.append("<h2>background</h2>");
     }
     else if (qName == "access")
     {
         m_putInTable=true;
-        m_currentElement.append( "<tr><td class=\"infohead\">Exploitale</td><td class=\"tableinfo\">");
+        m_currentElement.append("<tr><td class=\"infohead\">Exploitale</td><td class=\"tableinfo\">");
     }
     else if (qName == "bug")
     {
         m_putInTable=true;
-        m_currentElement.append( "<tr><td class=\"infohead\">bug:</td><td class=\"tableinfo\">");
+        m_currentElement.append("<tr><td class=\"infohead\">bug:</td><td class=\"tableinfo\">");
     }
     else if (qName == "announced")
     {
         m_putInTable=true;
-        m_currentElement.append( "<tr><td class=\"infohead\">Release Date</td><td class=\"tableinfo\">");
+        m_currentElement.append("<tr><td class=\"infohead\">Release Date</td><td class=\"tableinfo\">");
     }
     else if (qName == "metadata")
     {
@@ -100,29 +104,29 @@ bool pertubis::GlsaParser::startElement(const QString & /* namespaceURI */,
     }
     else if (qName == "uri")
     {
-        m_currentElement.append( "<p><a href=\""+ attributes.value("link") + "\">");
+        m_currentElement.append("<p><a href=\""+ attributes.value("link") + "\">");
     }
     else if (qName == "revised")
     {
         m_putInTable=true;
-        m_currentElement.append( "<tr><td class=\"infohead\">Latest Revision</td><td class=\"tableinfo\">");
+        m_currentElement.append("<tr><td class=\"infohead\">Latest Revision</td><td class=\"tableinfo\">");
     }
     else if (qName == "references")
     {
-        m_currentElement.append( "<h2>references:</h2>");
+        m_currentElement.append("<h2>references:</h2>");
     }
     else if (qName == "impact")
     {
-        m_table.append("<tr><td class=\"infohead\">Impact</td><td class=\"tableinfo\">"+attributes.value("type") + "</td></tr>" );
-        m_currentElement.append( "<h2>Impact:</h2>");
+        m_table.append("<tr><td class=\"infohead\">Impact</td><td class=\"tableinfo\">"+attributes.value("type") + "</td></tr>");
+        m_currentElement.append("<h2>Impact:</h2>");
     }
     else if (qName == "workaround")
     {
-        m_currentElement.append( "<h2>workaround:</h2>");
+        m_currentElement.append("<h2>workaround:</h2>");
     }
     else if (qName == "affected")
     {
-        m_currentElement.append( "<table class=\"ntable\"><tbody><tr><td class=\"infohead\">package</td><td class=\"infohead\">architectures</td><td class=\"infohead\">unaffected</td><td class=\"infohead\">vulnerable</td></tr>\n");
+        m_currentElement.append("<table class=\"ntable\"><tbody><tr><td class=\"infohead\">package</td><td class=\"infohead\">architectures</td><td class=\"infohead\">unaffected</td><td class=\"infohead\">vulnerable</td></tr>\n");
     }
     else if (qName == "package")
     {
@@ -140,24 +144,25 @@ bool pertubis::GlsaParser::startElement(const QString & /* namespaceURI */,
     }
     else if (qName == "description")
     {
-        m_currentElement.append( "<h2>description:</h2>");
+        m_currentElement.append("<h2>description:</h2>");
     }
     else if (qName == "code")
     {
-        m_currentElement.append( "<pre>");
+        m_currentElement.append("<pre>");
     }
     else if (qName == "synopsis")
     {
-        m_currentElement.append( "<h2>synopsis: </h2><p>");
+        m_currentElement.append("<h2>synopsis: </h2><p>");
     }
     else if (qName == "p")
     {
-        m_currentElement.append( "<p>");
+        m_currentElement.append("<p>");
     }
     return true;
 }
 
-bool pertubis::GlsaParser::characters(const QString &str)
+bool
+GlsaParser::characters(const QString &str)
 {
     if (m_dontUse)
         return true;
@@ -177,7 +182,8 @@ bool pertubis::GlsaParser::characters(const QString &str)
     return true;
 }
 
-bool pertubis::GlsaParser::endElement(const QString & /* namespaceURI */,
+bool
+GlsaParser::endElement(const QString & /* namespaceURI */,
                             const QString & /* localName */,
                             const QString &qName)
 {
@@ -194,59 +200,59 @@ bool pertubis::GlsaParser::endElement(const QString & /* namespaceURI */,
     }
     else if (qName == "p")
     {
-        m_currentElement.append( "</p>\n");
+        m_currentElement.append("</p>\n");
     }
     else if (qName == "product")
     {
-        m_currentElement.append( "</td></tr>\n");
+        m_currentElement.append("</td></tr>\n");
     }
     else if (qName == "revised")
     {
-        m_currentElement.append( "</td></tr>\n");
+        m_currentElement.append("</td></tr>\n");
     }
     else if (qName == "affected")
     {
-        m_currentElement.append( "</tbody></table>\n");
+        m_currentElement.append("</tbody></table>\n");
     }
     else if (qName == "package")
     {
-        m_currentElement.append( QString("<td class=\"tableinfo\" >%1</td><td class=\"tableinfo\" >%2</td></tr>\n").arg(m_unaffected).arg(m_vulnerable));
+        m_currentElement.append(QString("<td class=\"tableinfo\" >%1</td><td class=\"tableinfo\" >%2</td></tr>\n").arg(m_unaffected).arg(m_vulnerable));
     }
     else if (qName == "access")
     {
-        m_currentElement.append( "</td></tr>\n");
+        m_currentElement.append("</td></tr>\n");
     }
     else if (qName == "bug")
     {
-        m_currentElement.append( "</td></tr>\n");
+        m_currentElement.append("</td></tr>\n");
     }
     else if (qName == "uri")
     {
-        m_currentElement.append( "</a></p>\n");
+        m_currentElement.append("</a></p>\n");
     }
     else if (qName == "vulnerable")
     {
-        m_vulnerable.append( " ");
+        m_vulnerable.append(" ");
     }
     else if (qName == "unaffected")
     {
-        m_unaffected.append( " ");
+        m_unaffected.append(" ");
     }
     else if (qName == "announced")
     {
-        m_currentElement.append( "</td></tr>");
+        m_currentElement.append("</td></tr>");
     }
     else if (qName == "synopsis")
     {
-        m_currentElement.append( "</p>\n");
+        m_currentElement.append("</p>\n");
     }
     else if (qName == "title")
     {
-        m_currentElement.append( "</h1>%1\n");
+        m_currentElement.append("</h1>%1\n");
     }
     else if (qName == "code")
     {
-        m_currentElement.append( "</pre>\n");
+        m_currentElement.append("</pre>\n");
     }
 
     if (m_putInTable)
@@ -262,12 +268,14 @@ bool pertubis::GlsaParser::endElement(const QString & /* namespaceURI */,
     return true;
 }
 
-bool pertubis::GlsaParser::fatalError(const QXmlParseException &)
+bool
+GlsaParser::fatalError(const QXmlParseException &)
 {
     return false;
 }
 
-bool pertubis::GlsaParser::endDocument()
+bool
+GlsaParser::endDocument()
 {
     m_table.append("</tbody></table>");
     QString text(m_html.arg(m_table));

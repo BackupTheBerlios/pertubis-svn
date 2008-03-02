@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -89,21 +89,24 @@ typedef  void (QTextFormat::*color_func)(const QBrush &);
 #define TY_CSI_PG(A  )  TY_CONSTR(9,A,0)
 #define TY_CSI_PE(A  )  TY_CONSTR(10,A,0)
 
-pertubis::MessageThread::MessageThread(QObject* pobj, int fd) :
+using namespace pertubis;
+
+MessageThread::MessageThread(QObject* pobj, int fd) :
         QThread(pobj),
         m_master_fd(fd),
         m_polling(false)
 {
 }
 
-pertubis::MessageThread::~MessageThread()
+MessageThread::~MessageThread()
 {
     paludis::Log::get_instance()->set_log_stream(&std::cerr);
 }
 
-void pertubis::MessageThread::setPolling(bool on)
+void
+MessageThread::setPolling(bool on)
 {
-//     qDebug() << "pertubis::MessageThread::setPolling()";
+//     qDebug() << "MessageThread::setPolling()";
     if (on)
     {
         m_polling = true;
@@ -116,7 +119,8 @@ void pertubis::MessageThread::setPolling(bool on)
     }
 }
 
-void pertubis::MessageThread::run()
+void
+MessageThread::run()
 {
     char buf[512];
     while (m_polling)
@@ -130,7 +134,7 @@ void pertubis::MessageThread::run()
     }
 }
 
-pertubis::Vt102Display::Vt102Display(MessagePage* page) :
+Vt102Display::Vt102Display(MessagePage* page) :
         QTextEdit(page),
         m_page(page),
         m_parserOn(Qt::Unchecked)
@@ -160,7 +164,7 @@ pertubis::Vt102Display::Vt102Display(MessagePage* page) :
 //     file.close();
 }
 
-pertubis::Vt102Display::~Vt102Display()
+Vt102Display::~Vt102Display()
 {
     saveSettings();
 //     QFile file("output.log");
@@ -170,9 +174,10 @@ pertubis::Vt102Display::~Vt102Display()
 //     out << document()->toPlainText();
 }
 
-void pertubis::Vt102Display::loadSettings()
+void
+Vt102Display::loadSettings()
 {
-    qDebug() << "pertubis::MessagePage::loadSettings() - start";
+    qDebug() << "MessagePage::loadSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup("Vt102Display");
     m_currentFont.fromString(settings.value("font","Monospace,-1,13,5,50,0,0,0,0,0").toString());
@@ -181,19 +186,21 @@ void pertubis::Vt102Display::loadSettings()
     settings.endGroup();
 }
 
-void pertubis::Vt102Display::saveSettings()
+void
+Vt102Display::saveSettings()
 {
-    qDebug() << "pertubis::Vt102Display::saveSettings() - start";
+    qDebug() << "Vt102Display::saveSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
     settings.beginGroup("Vt102Display");
     settings.setValue("font", m_currentFont.toString());
     settings.setValue("vt100", m_parserOn);
     settings.setValue("fontSize", m_fontSize);
     settings.endGroup();
-    qDebug() << "pertubis::Vt102Display::saveSettings() - done";
+    qDebug() << "Vt102Display::saveSettings() - done";
 }
 
-void pertubis::Vt102Display::setFont(const QFont & myfont)
+void
+Vt102Display::setFont(const QFont & myfont)
 {
     m_currentFont = myfont;
     m_currentFont.setPixelSize(m_fontSize);
@@ -201,13 +208,15 @@ void pertubis::Vt102Display::setFont(const QFont & myfont)
     QTextEdit::setFont(m_currentFont);
 }
 
-void pertubis::Vt102Display::setParserMode(int mode)
+void
+Vt102Display::setParserMode(int mode)
 {
-    m_parserOn = (Qt::CheckState) mode;
     qDebug() << "setParserMode()" << m_parserOn;
+    m_parserOn = (mode == Qt::Unchecked ? Qt::Unchecked : Qt::Checked);
 }
 
-void pertubis::Vt102Display::moveUp(int value)
+void
+Vt102Display::moveUp(int value)
 {
     int old(m_cursor.position());
     m_cursor.movePosition(QTextCursor::Up,QTextCursor::MoveAnchor,value);
@@ -215,7 +224,8 @@ void pertubis::Vt102Display::moveUp(int value)
     qDebug()<<  "moveUp()" << old << start;
 }
 
-void pertubis::Vt102Display::setCursorX(int value)
+void
+Vt102Display::setCursorX(int value)
 {
     int length(m_cursor.block().length());
     if (value > length)
@@ -230,49 +240,57 @@ void pertubis::Vt102Display::setCursorX(int value)
 //     qDebug() << "setCursorX()" << lineBegin << end << newPos << m_cursor.position();
 }
 
-void pertubis::Vt102Display::newline()
+void
+Vt102Display::newline()
 {
     qDebug() << "newline";
     m_cursor.insertText("\n",m_format);
     ensureCursorVisible();
 }
 
-void pertubis::Vt102Display::setCursorY(int value)
+void
+Vt102Display::setCursorY(int value)
 {
     m_cursor.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
     m_cursor.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor,value);
 }
 
-void pertubis::Vt102Display::setCursorXY(int vx, int vy)
+void
+Vt102Display::setCursorXY(int vx, int vy)
 {
     m_cursor.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
     moveDown(vy);
     setCursorX(vx);
 }
 
-void pertubis::Vt102Display::moveDown(int value)
+void
+Vt102Display::moveDown(int value)
 {
     m_cursor.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor,value);
 }
 
-void pertubis::Vt102Display::moveLeft(int value)
+void
+Vt102Display::moveLeft(int value)
 {
     m_cursor.movePosition(QTextCursor::Left,QTextCursor::MoveAnchor,value);
 }
 
-void pertubis::Vt102Display::moveRight(int value)
+void
+Vt102Display::moveRight(int value)
 {
     m_cursor.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,value);
 }
 
-void pertubis::Vt102Display::setFontSize(int mysize)
+void
+Vt102Display::setFontSize(int mysize)
 {
     m_fontSize = mysize;
     m_currentFont.setPixelSize(m_fontSize);
     QTextEdit::setFont(m_currentFont);
 }
 
-void pertubis::Vt102Display::appendRawText(QString text)
+void
+Vt102Display::appendRawText(QString text)
 {
     // parse for terminal control sequences
     if (!m_parserOn)
@@ -292,7 +310,8 @@ void pertubis::Vt102Display::appendRawText(QString text)
     qApp->processEvents();
 }
 
-void pertubis::Vt102Display::setRendition(RENDITION r)
+void
+Vt102Display::setRendition(RENDITION r)
 {
     switch (r)
     {
@@ -311,7 +330,8 @@ void pertubis::Vt102Display::setRendition(RENDITION r)
 
 #include <cstring>
 
-void pertubis::Vt102Display::initTokenizer()
+void
+Vt102Display::initTokenizer()
 {
     int i;
     quint8* s;
@@ -336,7 +356,8 @@ void pertubis::Vt102Display::initTokenizer()
     resetToken();
 }
 
-void pertubis::Vt102Display::receiveChar(int cc)
+void
+Vt102Display::receiveChar(int cc)
 {
     int i;
 
@@ -520,44 +541,50 @@ void pertubis::Vt102Display::receiveChar(int cc)
     // qDebug() << "20";
 }
 
-void pertubis::Vt102Display::resetToken()
+void
+Vt102Display::resetToken()
 {
-//     qDebug() << "pertubis::Vt102Display::resetToken()";
+//     qDebug() << "Vt102Display::resetToken()";
     m_ppos = 0;
     m_argc = 0;
     m_argv[0] = 0;
     m_argv[1] = 0;
 }
 
-void pertubis::Vt102Display::pushToToken(int cc)
+void
+Vt102Display::pushToToken(int cc)
 {
-//     qDebug() << "pertubis::Vt102Display::pushToToken()";
+//     qDebug() << "Vt102Display::pushToToken()";
     m_pbuf[m_ppos] = cc;
     m_ppos = qMin(m_ppos+1,MAXPBUF-1);
 }
 
-void pertubis::Vt102Display::addDigit(int dig)
+void
+Vt102Display::addDigit(int dig)
 {
     m_argv[m_argc] = 10*m_argv[m_argc] + dig;
 //     qDebug() << "addDigit()" << m_argv[m_argc] << m_argc;
 }
 
-void pertubis::Vt102Display::addArgument()
+void
+Vt102Display::addArgument()
 {
     m_argc = qMin(m_argc+1,MAXARGS-1);
 //     qDebug() << "addArgument()" << m_argv[m_argc] << m_argc;
 }
 
-void pertubis::Vt102Display::setDefaultRendition()
+void
+Vt102Display::setDefaultRendition()
 {
     m_format.setFontWeight(QFont::Normal);
     m_format.setForeground(Qt::white);
     m_format.setBackground(Qt::black);
 }
 
-void pertubis::Vt102Display::tau( int token, int p, int q )
+void
+Vt102Display::tau( int token, int p, int q )
 {
-//     qDebug() << "pertubis::Vt102Display::tau() 1";
+//     qDebug() << "Vt102Display::tau() 1";
     switch (token)
     {
         case TY_CHR():
@@ -762,10 +789,11 @@ void pertubis::Vt102Display::tau( int token, int p, int q )
 //             qDebug() << " unhandled char" << token << p << q;
             break;
     };
-//     qDebug() << "pertubis::Vt102Display::tau() 2";
+//     qDebug() << "Vt102Display::tau() 2";
 }
 
-void pertubis::Vt102Display::setColor(int termColor, bool fg)
+void
+Vt102Display::setColor(int termColor, bool fg)
 {
     color_func func;
     QColor col;
@@ -805,7 +833,8 @@ void pertubis::Vt102Display::setColor(int termColor, bool fg)
     }
 }
 
-void pertubis::Vt102Display::initSlots()
+void
+Vt102Display::initSlots()
 {
     QFontComboBox* box(m_page->mainWindow()->settingsPage()->m_generalView->m_fonts);
     int count(box->count());
@@ -833,16 +862,14 @@ void pertubis::Vt102Display::initSlots()
             SLOT(setParserMode(int)));
 }
 
-pertubis::MessagePage::MessagePage(MainWindow* main) :
+MessagePage::MessagePage(MainWindow* main) :
         Page(main),
         m_thread(0)
 {
-    qDebug() << "pertubis::MessagePage::MessagePage()";
+    qDebug() << "MessagePage::MessagePage()";
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name("pertubis");
-    qDebug() << "pertubis::MessagePage::MessagePage() 2";
     m_display = new Vt102Display(this);
-    qDebug() << "pertubis::MessagePage::MessagePage() 3";
     QVBoxLayout* mylayout = new QVBoxLayout;
     mylayout->addWidget(m_display);
     mylayout->setMargin(0);
@@ -855,11 +882,9 @@ pertubis::MessagePage::MessagePage(MainWindow* main) :
     m_stream.reset(new paludis::FDOutputStream(m_slave_fd));
     paludis::set_run_command_stdout_fds(m_slave_fd, m_master_fd);
     paludis::set_run_command_stderr_fds(m_slave_fd, m_master_fd);
-
-    fcntl(m_master_fd,F_SETFL,fcntl(m_master_fd,F_GETFL) | O_NONBLOCK);
     paludis::Log::get_instance()->set_log_stream(m_stream.get());
-    m_thread = new MessageThread(this, m_master_fd);
-    qDebug() << "pertubis::MessagePage::MessagePage() 3";
+    fcntl(m_master_fd,F_SETFL,fcntl(m_master_fd,F_GETFL) | O_NONBLOCK);
+    m_thread = new MessageThread(this, m_master_fd );
 
     connect(m_thread,
             SIGNAL(sendMessage(QString)),
@@ -868,10 +893,9 @@ pertubis::MessagePage::MessagePage(MainWindow* main) :
 
 //     dup2(m_slave_fd,1);
     show();
-    qDebug() << "pertubis::MessagePage::MessagePage() end";
 }
 
-pertubis::MessagePage::~MessagePage()
+MessagePage::~MessagePage()
 {
     ::close(m_master_fd);
     ::close(m_slave_fd);
@@ -883,33 +907,39 @@ pertubis::MessagePage::~MessagePage()
     }
 }
 
-void pertubis::MessagePage::postCreate()
+void
+MessagePage::postCreate()
 {
     m_display->initSlots();
 }
 
-void pertubis::MessagePage::appendRawText(QString text)
+void
+MessagePage::appendRawText(QString text)
 {
     m_display->appendRawText(text);
 }
 
-void pertubis::MessagePage::activatePage()
+void
+MessagePage::activatePage()
 {
 //     if (m_dirty)
 //         onRefreshPage();
 }
 
-void pertubis::MessagePage::clearPage()
+void
+MessagePage::clearPage()
 {
     m_display->clear();
 }
 
-void pertubis::MessagePage::refreshPage()
+void
+MessagePage::refreshPage()
 {
 }
 
-void pertubis::MessagePage::setPolling(bool on)
+void
+MessagePage::setPolling(bool on)
 {
-//     qDebug() << "pertubis::MessagePage::setPolling()";
+//     qDebug() << "MessagePage::setPolling()";
     m_thread->setPolling(on);
 }

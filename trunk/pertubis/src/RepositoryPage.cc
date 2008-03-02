@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -17,8 +17,6 @@
 * with this program; if not, write to the Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-
-
 
 #include "FormatterUtils.hh"
 #include "MainWindow.hh"
@@ -52,6 +50,8 @@
 
 #include <iostream>
 
+using namespace pertubis;
+
 namespace pertubis
 {
     struct RepositoryPagePrivate
@@ -73,7 +73,7 @@ namespace pertubis
 namespace
 {
     class PertubisSyncTask :
-        public pertubis::ThreadBase,
+        public ThreadBase,
         public paludis::SyncTask
     {
         public:
@@ -137,7 +137,7 @@ namespace
 }
 
 
-pertubis::RepositoryPage::RepositoryPage(MainWindow * main) :
+RepositoryPage::RepositoryPage(MainWindow * main) :
         Page(main),
         m_imp(new RepositoryPagePrivate)
 {
@@ -145,7 +145,7 @@ pertubis::RepositoryPage::RepositoryPage(MainWindow * main) :
     m_imp->m_repoListModel->setHorizontalHeaderLabels(QStringList() <<
             tr("repository") << tr("filter on"));
 
-    qDebug() << "pertubis::MainWindow::createRepositoryView() 1";
+    qDebug() << "MainWindow::createRepositoryView() 1";
 
     m_imp->m_repoListView = new QTableView(this);
     m_imp->m_repoListView->setModel(m_imp->m_repoListModel);
@@ -160,7 +160,7 @@ pertubis::RepositoryPage::RepositoryPage(MainWindow * main) :
     QPushButton* acSync = new QPushButton(QPixmap(":images/sync0.png"),tr("sync"),this);
     acSync->setToolTip(html_tooltip(tr("To get the latest releases and bugfixes it is neccessary to update the package database.<br><br>It is sufficient to sync your repositories once a day"),acSync->text()));
 
-    qDebug() << "pertubis::MainWindow::createRepositoryView()";
+    qDebug() << "MainWindow::createRepositoryView()";
     m_imp->m_repoInfoModel = new RepositoryInfoModel(this);
     m_imp->m_repoInfoModel->setHorizontalHeaderLabels(QStringList() <<
             tr("name") <<
@@ -178,7 +178,7 @@ pertubis::RepositoryPage::RepositoryPage(MainWindow * main) :
     p.setColor(QPalette::Base,QColor(170,170,170)); // background color  = black
     m_imp->m_repoInfoView->setPalette(p);
 
-    qDebug() << "pertubis::MainWindow::createRepositoryView() 2";
+    qDebug() << "MainWindow::createRepositoryView() 2";
 
     m_imp->m_repoListView->verticalHeader()->setVisible(false);
     m_imp->m_repoListView->setShowGrid(false);
@@ -205,51 +205,55 @@ pertubis::RepositoryPage::RepositoryPage(MainWindow * main) :
             SLOT(onSync()));
 
     connect(m_imp->m_repoListView,
-            SIGNAL(clicked( const QModelIndex&)),
+            SIGNAL(clicked(const QModelIndex&)),
             this,
-            SLOT(onRepositoryChanged( const QModelIndex& )) );
+            SLOT(onRepositoryChanged(const QModelIndex&)));
 
     loadSettings();
     show();
     refreshPage();
 
-    qDebug() << "pertubis::SystemReportPage::RepositoryPage()" << this;
+    qDebug() << "SystemReportPage::RepositoryPage()" << this;
 }
 
-pertubis::RepositoryPage::~RepositoryPage()
+RepositoryPage::~RepositoryPage()
 {
-    qDebug() << "pertubis::RepositoryPage::~RepositoryPage()";
+    qDebug() << "RepositoryPage::~RepositoryPage()";
     saveSettings();
     delete m_imp;
 }
 
-void pertubis::RepositoryPage::loadSettings()
+void
+RepositoryPage::loadSettings()
 {
-    qDebug() << "pertubis::RepositoryPage::loadSettings() - start";
+    qDebug() << "RepositoryPage::loadSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "RepositoryPage" );
+    settings.beginGroup("RepositoryPage");
     m_imp->m_hSplit->restoreState(settings.value("hSplit").toByteArray());
     settings.endGroup();
-    qDebug() << "pertubis::RepositoryPage::doneSettings() - done";
+    qDebug() << "RepositoryPage::doneSettings() - done";
 }
 
-void pertubis::RepositoryPage::saveSettings()
+void
+RepositoryPage::saveSettings()
 {
-    qDebug() << "pertubis::RepositoryPage::saveSettings() - start";
+    qDebug() << "RepositoryPage::saveSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "RepositoryPage" );
+    settings.beginGroup("RepositoryPage");
     settings.setValue("hSplit", m_imp->m_hSplit->saveState());
     settings.endGroup();
-    qDebug() << "pertubis::RepositoryPage::saveSettings() - done";
+    qDebug() << "RepositoryPage::saveSettings() - done";
 }
 
-void pertubis::RepositoryPage::activatePage()
+void
+RepositoryPage::activatePage()
 {
-    if (used() && outOfDate() )
+    if (used() && outOfDate())
         refreshPage();
 }
 
-void pertubis::RepositoryPage::refreshPage()
+void
+RepositoryPage::refreshPage()
 {
     m_imp->m_repoInfoModel->clear();
     m_imp->m_repoListModel->clear();
@@ -266,23 +270,26 @@ void pertubis::RepositoryPage::refreshPage()
     setOutOfDate(false);
 }
 
-void pertubis::RepositoryPage::clearPage()
+void
+RepositoryPage::clearPage()
 {
     m_imp->m_repoListModel->clear();
     m_imp->m_repoInfoModel->clear();
 }
 
-void pertubis::RepositoryPage::restartFilters()
+void
+RepositoryPage::restartFilters()
 {
-    qDebug() << "pertubis::RepositoryPage::restartFilters()" << m_imp->m_repoListModel->activeRepositories();
+    qDebug() << "RepositoryPage::restartFilters()" << m_imp->m_repoListModel->activeRepositories();
     emit sendFilters(m_imp->m_repoListModel->activeRepositories());
 }
 
-void pertubis::RepositoryPage::displaySyncFinished()
+void
+RepositoryPage::displaySyncFinished()
 {
     mainWindow()->onEndOfPaludisAction();
 //     m_timer->stop();
-//     mainWindow()->m_sysTray->setIcon( QPixmap(":images/logo.png"));
+//     mainWindow()->m_sysTray->setIcon(QPixmap(":images/logo.png"));
     QMessageBox q(QMessageBox::NoIcon,
                 tr("information"),
                 tr("syncing repositories finished"),
@@ -293,15 +300,16 @@ void pertubis::RepositoryPage::displaySyncFinished()
     q.exec();
 }
 
-void pertubis::RepositoryPage::onRepositoryChanged( const QModelIndex& index )
+void
+RepositoryPage::onRepositoryChanged(const QModelIndex& index)
 {
-    if ( !index.isValid())
+    if (!index.isValid())
         return;
 
     if (rlmho_on == index.column())
     {
         int state = m_imp->m_repoListModel->data(index,Qt::CheckStateRole).toInt();
-        m_imp->m_repoListModel->setData(index, (state == Qt::Checked ) ? Qt::Unchecked :Qt::Checked);
+        m_imp->m_repoListModel->setData(index, (state == Qt::Checked) ? Qt::Unchecked :Qt::Checked);
         restartFilters();
 //         statusBar()->showMessage(tr("%1 packages found").arg(m_packageFilterModel->rowCount()));
     }
@@ -321,7 +329,8 @@ void pertubis::RepositoryPage::onRepositoryChanged( const QModelIndex& index )
     }
 }
 
-void pertubis::RepositoryPage::onSync()
+void
+RepositoryPage::onSync()
 {
     QSet<QString> repos(m_imp->m_repoListModel->activeRepositories());
     QString text;

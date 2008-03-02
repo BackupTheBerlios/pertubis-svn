@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -22,6 +22,8 @@
 #include <paludis/environment.hh>
 #include <QDebug>
 
+using namespace pertubis;
+
 namespace pertubis
 {
     struct ThreadBasePrivate
@@ -38,30 +40,33 @@ namespace pertubis
     };
 }
 
-pertubis::ThreadBase::ThreadBase(QObject* pobj,
+ThreadBase::ThreadBase(QObject* pobj,
         const paludis::tr1::shared_ptr<paludis::Environment>&  myenv) :
         QThread(pobj),
         m_imp(new ThreadBasePrivate(myenv))
 {
 }
 
-pertubis::ThreadBase::~ThreadBase()
+ThreadBase::~ThreadBase()
 {
     delete m_imp;
 }
 
-paludis::tr1::shared_ptr<paludis::Environment> pertubis::ThreadBase::env()
+paludis::tr1::shared_ptr<paludis::Environment>
+ThreadBase::env()
 {
     return m_imp->m_env;
 }
 
-bool pertubis::ThreadBase::execMode()
+bool
+ThreadBase::execMode()
 {
     return m_imp->m_execMode;
 }
 
-void pertubis::ThreadBase::setExecMode(bool mode)
+void
+ThreadBase::setExecMode(bool mode)
 {
-    qDebug() << "setExecMode()" << mode;
+    qDebug() << "ThreadBase::setExecMode()" << mode;
     m_imp->m_execMode=mode;
 }

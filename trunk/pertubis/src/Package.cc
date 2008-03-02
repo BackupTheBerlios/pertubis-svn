@@ -1,6 +1,5 @@
 
-
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -23,7 +22,9 @@
 #include <QDebug>
 #include <paludis/package_id.hh>
 
-pertubis::Package::Package(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+using namespace pertubis;
+
+Package::Package(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                     const QVector<QVariant> & dats,
                     PackageState mystate,
                     PackageType itype,
@@ -37,84 +38,95 @@ pertubis::Package::Package(paludis::tr1::shared_ptr<const paludis::PackageID> id
 {
 }
 
-pertubis::Package::~Package()
+Package::~Package()
 {
     m_parent=0;
     qDeleteAll(m_children);
     m_children.clear();
 }
 
-pertubis::Package* pertubis::Package::child(int rindex) const
+Package* Package::child(int rindex) const
 {
     return m_children.value(rindex,0);
 }
 
-int pertubis::Package::childCount() const
+int
+Package::childCount() const
 {
     return m_children.count();
 }
 
-int pertubis::Package::columnCount() const
+int
+Package::columnCount() const
 {
     return m_data.count();
 }
 
-QVariant pertubis::Package::data(int column) const
+QVariant
+Package::data(int column) const
 {
     return m_data.value(column);
 }
 
-pertubis::Package* pertubis::Package::parent() const
+Package* Package::parent() const
 {
     return m_parent;
 }
 
-bool pertubis::Package::available() const
+bool
+Package::available() const
 {
     return (m_state != ps_masked);
 }
 
-pertubis::PackageState pertubis::Package::state() const
+PackageState Package::state() const
 {
     return m_state;
 }
 
-void pertubis::Package::appendChild(Package *item)
+void
+Package::appendChild(Package *item)
 {
     m_children.append(item);
     item->setParent(this);
 }
 
-void pertubis::Package::prependChild(Package *item)
+void
+Package::prependChild(Package *item)
 {
     m_children.prepend(item);
     item->setParent(this);
 }
 
-void pertubis::Package::setBestChild(Package *item)
+void
+Package::setBestChild(Package *item)
 {
     m_bestChild = item;
 }
 
-void pertubis::Package::setData(int column, QVariant dats)
+void
+Package::setData(int column, QVariant dats)
 {
-    if (column < m_data.count() )
+    if (column < m_data.count())
     {
         m_data.replace(column, dats);
     }
 }
 
-void pertubis::Package::setParent(Package* pitem)
+void
+Package::setParent(Package* pitem)
 {
     m_parent=pitem;
 }
 
-void pertubis::Package::setPackageState(PackageState s)
+void
+Package::setPackageState(PackageState s)
 {
      m_state = s;
 }
 
-paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Package::ID() const
+paludis::tr1::shared_ptr<const paludis::PackageID>
+Package::ID() const
 {
     if (m_bestChild != 0)
         return m_bestChild->ID();
@@ -122,7 +134,8 @@ paludis::tr1::shared_ptr<const paludis::PackageID> pertubis::Package::ID() const
 }
 
 
-bool pertubis::Package::bestChildTest()
+bool
+Package::bestChildTest()
 {
     return bestChild() != 0;
 }
@@ -130,16 +143,17 @@ bool pertubis::Package::bestChildTest()
 
 
 #ifndef QT_NO_DEBUG
-QDebug operator<<(QDebug dbg, const pertubis::Package &item)
+QDebug
+operator<<(QDebug dbg, const Package &item)
 {
     dbg.space() << "\n Package(" <<
-            "install" << item.data(pertubis::pho_install).toInt() << "\n" <<
-            "deinstall" << item.data(pertubis::pho_deinstall).toInt() << "\n" <<
-            "package" << item.data(pertubis::pho_package).toString() << "\n" <<
-            "cat" << item.data(pertubis::pho_category).toString() << "\n" <<
-            "repository" << item.data(pertubis::pho_repository).toString() << "\n" <<
-            "installed" << item.data(pertubis::pho_installed).toString() << "\n" <<
-            "mask_reasons" << item.data(pertubis::pho_mask_reasons).toString() << "\n" <<
+            "install" << item.data(pho_install).toInt() << "\n" <<
+            "deinstall" << item.data(pho_deinstall).toInt() << "\n" <<
+            "package" << item.data(pho_package).toString() << "\n" <<
+            "cat" << item.data(pho_category).toString() << "\n" <<
+            "repository" << item.data(pho_repository).toString() << "\n" <<
+            "installed" << item.data(pho_installed).toString() << "\n" <<
+            "mask_reasons" << item.data(pho_mask_reasons).toString() << "\n" <<
             "state" << item.state() << "\n" <<
             "itemType" << item.itemType() << ")";
     return dbg.space();

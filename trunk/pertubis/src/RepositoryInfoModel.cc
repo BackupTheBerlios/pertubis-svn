@@ -34,7 +34,7 @@
 #include <paludis/util/stringify.hh>
 #include <set>
 
-
+using namespace pertubis;
 using namespace paludis;
 
 struct MetadataKeyComparator
@@ -56,10 +56,10 @@ namespace
     class InfoDisplayer :
             public paludis::ConstVisitor<paludis::MetadataKeyVisitorTypes>
     {
-        pertubis::RepositoryInfoThread* m_thread;
+        RepositoryInfoThread* m_thread;
         public:
 
-            InfoDisplayer(pertubis::RepositoryInfoThread* thread) : m_thread(thread)
+            InfoDisplayer(RepositoryInfoThread* thread) : m_thread(thread)
             {
             }
 
@@ -133,66 +133,70 @@ namespace
 
             void visit(const MetadataCollectionKey<FSEntrySequence> & k)
             {
-                pertubis::HtmlFormatter f;
+                HtmlFormatter f;
                 m_thread->append(QString::fromStdString(k.human_name()), QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<PackageIDSequence> & k)
             {
-                pertubis::HtmlFormatter f;
+                HtmlFormatter f;
                 m_thread->append(QString::fromStdString(k.human_name()), QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<KeywordNameSet> & k)
             {
-                pertubis::HtmlFormatter f;
+                HtmlFormatter f;
                 m_thread->append(QString::fromStdString(k.human_name()), QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<IUseFlagSet> & k)
             {
-                pertubis::HtmlFormatter f;
+                HtmlFormatter f;
                 m_thread->append(QString::fromStdString(k.human_name()),QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
             {
-                pertubis::HtmlFormatter f;
+                HtmlFormatter f;
                 m_thread->append(QString::fromStdString(k.human_name()), QString::fromStdString(k.pretty_print_flat(f)));
             }
 
             void visit(const MetadataCollectionKey<Set<std::string> > & k)
             {
-                pertubis::HtmlFormatter f;
+                HtmlFormatter f;
                 m_thread->append(QString::fromStdString(k.human_name()) , QString::fromStdString(k.pretty_print_flat(f)));
             }
     };
 }
 
-void pertubis::RepositoryInfoThread::setup(const QString& name)
+void
+RepositoryInfoThread::setup(const QString& name)
 {
     m_repName = name;
 }
 
-void pertubis::RepositoryInfoModel::clear()
+void
+RepositoryInfoModel::clear()
 {
     m_data.clear();
     emit layoutChanged();
 }
 
-pertubis::RepositoryInfoModel::RepositoryInfoModel(QObject* pobj) : QAbstractTableModel(pobj)
+RepositoryInfoModel::RepositoryInfoModel(QObject* pobj) : QAbstractTableModel(pobj)
 {
 
 }
 
-QVariant pertubis::RepositoryInfoModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant
+RepositoryInfoModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count() )
+    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count())
         return QVariant();
     return *(m_header.begin() + section);
 }
 
-void pertubis::RepositoryInfoThread ::run()
+void
+RepositoryInfoThread ::run()
 {
     using namespace paludis;
     m_list.clear();
@@ -207,23 +211,26 @@ void pertubis::RepositoryInfoThread ::run()
     emit sendResult(m_list);
 }
 
-void pertubis::RepositoryInfoThread::append(QString a,QString b)
+void
+RepositoryInfoThread::append(QString a,QString b)
 {
     m_list.push_back(QVariantList() << a << b);
 }
 
-void pertubis::RepositoryInfoModel::slotResult(const QList<QVariantList>& list)
+void
+RepositoryInfoModel::slotResult(const QList<QVariantList>& list)
 {
     m_data = list;
     reset();
 }
 
-QVariant pertubis::RepositoryInfoModel::data ( const QModelIndex & ix, int role) const
+QVariant
+RepositoryInfoModel::data (const QModelIndex & ix, int role) const
 {
     if (!ix.isValid())
         return QVariant();
 
-    if (role == Qt::DisplayRole )
+    if (role == Qt::DisplayRole)
     {
         return m_data.value(ix.row()).value(ix.column());
     }
@@ -233,17 +240,20 @@ QVariant pertubis::RepositoryInfoModel::data ( const QModelIndex & ix, int role)
     return QVariant();
 }
 
-void pertubis::RepositoryInfoModel::setHorizontalHeaderLabels ( const QStringList & labels )
+void
+RepositoryInfoModel::setHorizontalHeaderLabels (const QStringList & labels)
 {
     m_header = labels;
 }
 
-int pertubis::RepositoryInfoModel::rowCount(const QModelIndex& /*pmi*/) const
+int
+RepositoryInfoModel::rowCount(const QModelIndex& /*pmi*/) const
 {
     return m_data.count();
 }
 
-int pertubis::RepositoryInfoModel::columnCount ( const QModelIndex& /*parent*/ ) const
+int
+RepositoryInfoModel::columnCount (const QModelIndex& /*parent*/) const
 {
     return 2;
 }

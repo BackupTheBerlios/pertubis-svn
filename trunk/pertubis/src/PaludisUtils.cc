@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -32,7 +32,8 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 
-bool pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+bool
+pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                          const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
     using namespace paludis;
@@ -42,12 +43,13 @@ bool pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  
             query::Matches(make_package_dep_spec()
                 .package(id->name())
                 .slot(id->slot())
-                .version_requirement(VersionRequirement( VersionOperator(vo_equal), id->version()))),
+                .version_requirement(VersionRequirement(VersionOperator(vo_equal), id->version()))),
             qo_order_by_version));
     return (ipacks->begin() != ipacks->end());
 }
 
-bool pertubis::hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
+bool
+pertubis::hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
                                 const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
     using namespace paludis;

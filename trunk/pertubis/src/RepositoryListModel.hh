@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -145,7 +145,7 @@ namespace pertubis
             QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
             /// returns the set of active repositories
-            const QSet<QString>& activeRepositories() const;
+            const QSet<QString> activeRepositories() const;
 
             /// returns the display properties for the given QModelIndex
             Qt::ItemFlags flags(const QModelIndex &mix) const;

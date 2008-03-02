@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -24,7 +24,9 @@
 #include <paludis/name.hh>
 #include "FormatterUtils.hh"
 
-pertubis::HtmlFormatter::HtmlFormatter() :
+using namespace pertubis;
+
+HtmlFormatter::HtmlFormatter() :
         new_use_flag_names(new paludis::UseFlagNameSet),
         changed_use_flag_names(new paludis::UseFlagNameSet),
         use_flag_names(new paludis::UseFlagNameSet),
@@ -32,35 +34,36 @@ pertubis::HtmlFormatter::HtmlFormatter() :
 {
 }
 
-pertubis::HtmlFormatter::~HtmlFormatter()
+HtmlFormatter::~HtmlFormatter()
 {
 }
 
 const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet>
-pertubis::HtmlFormatter::seen_new_use_flag_names() const
+HtmlFormatter::seen_new_use_flag_names() const
 {
     return new_use_flag_names;
 }
 
 const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet>
-pertubis::HtmlFormatter::seen_changed_use_flag_names() const
+HtmlFormatter::seen_changed_use_flag_names() const
 {
     return changed_use_flag_names;
 }
 
 const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet>
-pertubis::HtmlFormatter::seen_use_flag_names() const
+HtmlFormatter::seen_use_flag_names() const
 {
     return use_flag_names;
 }
 
 const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet>
-pertubis::HtmlFormatter::seen_use_expand_prefixes() const
+HtmlFormatter::seen_use_expand_prefixes() const
 {
     return use_expand_prefixes;
 }
 
-std::string pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Plain &) const
+std::string
+HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Plain &) const
 {
     use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
@@ -83,7 +86,7 @@ std::string pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const p
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Enabled &) const
+HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Enabled &) const
 {
     use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
@@ -106,7 +109,7 @@ pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::form
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Disabled &) const
+HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Disabled &) const
 {
     use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
@@ -129,7 +132,7 @@ pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::form
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Forced &) const
+HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Forced &) const
 {
     use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
@@ -152,7 +155,7 @@ pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::form
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Masked &) const
+HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::format::Masked &) const
 {
     use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
@@ -171,240 +174,243 @@ pertubis::HtmlFormatter::format(const paludis::IUseFlag & f, const paludis::form
         }
     }
 
-    return h + color( "(-" + g + ")","red");
+    return h + color("(-" + g + ")","red");
 }
 
 std::string
-pertubis::HtmlFormatter::decorate(const paludis::IUseFlag & i, const std::string & f, const paludis::format::Added &) const
+HtmlFormatter::decorate(const paludis::IUseFlag & i, const std::string & f, const paludis::format::Added &) const
 {
     new_use_flag_names->insert(i.flag);
     return f + "+";
 }
 
 std::string
-pertubis::HtmlFormatter::decorate(const paludis::IUseFlag & i, const std::string & f, const paludis::format::Changed &) const
+HtmlFormatter::decorate(const paludis::IUseFlag & i, const std::string & f, const paludis::format::Changed &) const
 {
     changed_use_flag_names->insert(i.flag);
     return f + "*";
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Enabled &) const
+HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Enabled &) const
 {
     return color(paludis::stringify(f) +" (on)" ,"green");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Disabled &) const
+HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Disabled &) const
 {
-    return color( "-" + stringify(f)+" (off)" ,"red");
+    return color("-" + stringify(f)+" (off)" ,"red");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Forced &) const
+HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Forced &) const
 {
-    return color( "(" + stringify(f) + " (forced) " +")","green");
+    return color("(" + stringify(f) + " (forced) " +")","green");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Masked &) const
+HtmlFormatter::format(const paludis::UseFlagName & f, const paludis::format::Masked &) const
 {
-    return color( "(-" + stringify(f) + ")","red");
+    return color("(-" + stringify(f) + ")","red");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Enabled &) const
+HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Enabled &) const
 {
     return color(paludis::stringify(f),"green");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Disabled &) const
+HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Disabled &) const
 {
     return color(paludis::stringify(f),"red");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Forced &) const
+HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Forced &) const
 {
     return color("(" + stringify(f) + ")","green");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Masked &) const
+HtmlFormatter::format(const paludis::UseDepSpec & f, const paludis::format::Masked &) const
 {
     return color("(" + stringify(f) + ")","red");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis::format::Installed &) const
+HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis::format::Installed &) const
 {
-    return color( bold(paludis::stringify(f)),"blue").append(color(std::string(" (installed)"),std::string("green")));
+    return color(bold(paludis::stringify(f)),"blue").append(color(std::string(" (installed)"),std::string("green")));
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis::format::Installable &) const
+HtmlFormatter::format(const paludis::PackageDepSpec & f, const paludis::format::Installable &) const
 {
-    return color( paludis::stringify(f),"blue").append(color(std::string(" (installable)"),std::string("green")));
+    return color(paludis::stringify(f),"blue").append(color(std::string(" (installable)"),std::string("green")));
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PlainTextDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::PlainTextDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PlainTextDepSpec & f, const paludis::format::Accepted &) const
+HtmlFormatter::format(const paludis::PlainTextDepSpec & f, const paludis::format::Accepted &) const
 {
     return color(paludis::stringify(f),"green");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PlainTextDepSpec & f, const paludis::format::Unaccepted &) const
+HtmlFormatter::format(const paludis::PlainTextDepSpec & f, const paludis::format::Unaccepted &) const
 {
     return color(paludis::stringify(f),"red");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::KeywordName & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::KeywordName & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::KeywordName & f, const paludis::format::Accepted &) const
+HtmlFormatter::format(const paludis::KeywordName & f, const paludis::format::Accepted &) const
 {
     return color(paludis::stringify(f),"green");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::KeywordName & f, const paludis::format::Unaccepted &) const
+HtmlFormatter::format(const paludis::KeywordName & f, const paludis::format::Unaccepted &) const
 {
     return color(paludis::stringify(f),"red");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Accepted &) const
+HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Accepted &) const
 {
     return color(paludis::stringify(f),"green");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Unaccepted &) const
+HtmlFormatter::format(const paludis::LicenseDepSpec & f, const paludis::format::Unaccepted &) const
 {
     return color(paludis::stringify(f),"red");
 }
 
 
 std::string
-pertubis::HtmlFormatter::format(const std::string & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const std::string & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::URILabelsDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::URILabelsDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::DependencyLabelsDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::DependencyLabelsDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::FetchableURIDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::FetchableURIDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::SimpleURIDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::SimpleURIDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::BlockDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::BlockDepSpec & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::NamedSetDepSpec & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::NamedSetDepSpec & f, const paludis::format::Plain &) const
 {
     return stringify(f);
 }
 
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PackageID & f, const paludis::format::Plain &) const
+HtmlFormatter::format(const paludis::PackageID & f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PackageID & f, const paludis::format::Installed &) const
+HtmlFormatter::format(const paludis::PackageID & f, const paludis::format::Installed &) const
 {
     return color(bold(paludis::stringify(f)+" installed"),"blue");
 }
 
 std::string
-pertubis::HtmlFormatter::format(const paludis::PackageID & f, const paludis::format::Installable &) const
+HtmlFormatter::format(const paludis::PackageID & f, const paludis::format::Installable &) const
 {
     return color(paludis::stringify(f)+" installable","blue");
 }
 
-std::string pertubis::HtmlFormatter::format(const paludis::FSEntry &f, const paludis::format::Plain &) const
-{
-    return paludis::stringify(f);
-}
-
-std::string pertubis::HtmlFormatter::format(const paludis::FSEntry &f, const paludis::format::Installed &) const
-{
-    return paludis::stringify(f);
-}
-
-std::string pertubis::HtmlFormatter::format(const paludis::FSEntry &f, const paludis::format::Installable &) const
+std::string
+HtmlFormatter::format(const paludis::FSEntry &f, const paludis::format::Plain &) const
 {
     return paludis::stringify(f);
 }
 
 std::string
-pertubis::HtmlFormatter::newline() const
+HtmlFormatter::format(const paludis::FSEntry &f, const paludis::format::Installed &) const
+{
+    return paludis::stringify(f);
+}
+
+std::string
+HtmlFormatter::format(const paludis::FSEntry &f, const paludis::format::Installable &) const
+{
+    return paludis::stringify(f);
+}
+
+std::string
+HtmlFormatter::newline() const
 {
     return "<br>";
 }
 
 std::string
-pertubis::HtmlFormatter::indent(const int i) const
+HtmlFormatter::indent(const int i) const
 {
     return std::string(4 * i, ' ');
 }

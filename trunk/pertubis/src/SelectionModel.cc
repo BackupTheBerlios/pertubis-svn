@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -24,12 +24,15 @@
 #include <QBrush>
 #include <QVariant>
 
-pertubis::SelectionModel::SelectionModel(QObject* pobj) : PackageModel(pobj)
+using namespace pertubis;
+
+SelectionModel::SelectionModel(QObject* pobj) : PackageModel(pobj)
 {
     clear();
 }
 
-QVariant pertubis::SelectionModel::data ( const QModelIndex & ix, int role) const
+QVariant
+SelectionModel::data (const QModelIndex & ix, int role) const
 {
     if (!ix.isValid())
         return QVariant();
@@ -38,23 +41,23 @@ QVariant pertubis::SelectionModel::data ( const QModelIndex & ix, int role) cons
 
     if (role == Qt::BackgroundRole)
     {
-        if ( pt_child == item->itemType() ||
-             0 != item->childCount() )
+        if (pt_child == item->itemType() ||
+             0 != item->childCount())
             return QBrush(QColor(255,200,200));
     }
 
     if (role == Qt::ForegroundRole)
     {
-        if ( pho_installed == ix.column())
+        if (pho_installed == ix.column())
             return QBrush(QColor(0,0,255));
-        if ( pt_child == item->itemType())
+        if (pt_child == item->itemType())
         {
             return QBrush(QColor(255,0,0));
         }
         return QBrush(QColor(0,0,0));
     }
 
-    if (role == Qt::CheckStateRole )
+    if (role == Qt::CheckStateRole)
     {
         switch (ix.column())
         {
@@ -67,7 +70,7 @@ QVariant pertubis::SelectionModel::data ( const QModelIndex & ix, int role) cons
         }
     }
 
-    if (role == Qt::DisplayRole )
+    if (role == Qt::DisplayRole)
     {
         switch (ix.column())
         {
@@ -83,7 +86,8 @@ QVariant pertubis::SelectionModel::data ( const QModelIndex & ix, int role) cons
     return QVariant();
 }
 
-void pertubis::SelectionModel::clear()
+void
+SelectionModel::clear()
 {
     if (m_root != 0)
     {

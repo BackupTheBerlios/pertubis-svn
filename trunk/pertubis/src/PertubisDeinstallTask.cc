@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -31,25 +31,30 @@
 #include <paludis/util/tr1_memory.hh>
 #include <iostream>
 
+using namespace pertubis;
 using std::cout;
 using std::endl;
 
-void pertubis::PertubisDeinstallTask::on_build_unmergelist_pre()
+void
+PertubisDeinstallTask::on_build_unmergelist_pre()
 {
     cout << ("Building unmerge list... ") << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_build_unmergelist_post()
+void
+PertubisDeinstallTask::on_build_unmergelist_post()
 {
     cout << ("done... ") << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_display_unmerge_list_pre()
+void
+PertubisDeinstallTask::on_display_unmerge_list_pre()
 {
     cout << "\e[32;1m" << "These packages will be uninstalled:" << "\e[0;0m" << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_display_unmerge_list_post()
+void
+PertubisDeinstallTask::on_display_unmerge_list_post()
 {
     if (m_error_count)
     {
@@ -61,7 +66,8 @@ void pertubis::PertubisDeinstallTask::on_display_unmerge_list_post()
     }
 }
 
-void pertubis::PertubisDeinstallTask::on_display_unmerge_list_entry(const paludis::UninstallListEntry & e)
+void
+PertubisDeinstallTask::on_display_unmerge_list_entry(const paludis::UninstallListEntry & e)
 {
     QVector<QVariant> data(spho_last);
     QVector<QVariant> vData(spho_last);
@@ -126,11 +132,13 @@ void pertubis::PertubisDeinstallTask::on_display_unmerge_list_entry(const paludi
     }
 }
 
-void pertubis::PertubisDeinstallTask::on_uninstall_all_pre()
+void
+PertubisDeinstallTask::on_uninstall_all_pre()
 {
 }
 
-void pertubis::PertubisDeinstallTask::on_uninstall_pre(const paludis::UninstallListEntry & d)
+void
+PertubisDeinstallTask::on_uninstall_pre(const paludis::UninstallListEntry & d)
 {
     using namespace paludis;
     std::string msg("(" + stringify(++m_current_count) + " of " +
@@ -139,46 +147,55 @@ void pertubis::PertubisDeinstallTask::on_uninstall_pre(const paludis::UninstallL
     cout << "\e[0;0m" << msg << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_uninstall_post(const paludis::UninstallListEntry &)
+void
+PertubisDeinstallTask::on_uninstall_post(const paludis::UninstallListEntry &)
 {
 }
 
-void pertubis::PertubisDeinstallTask::on_uninstall_all_post()
+void
+PertubisDeinstallTask::on_uninstall_all_post()
 {
 }
 
-void pertubis::PertubisDeinstallTask::on_not_continuing_due_to_errors()
+void
+PertubisDeinstallTask::on_not_continuing_due_to_errors()
 {
     cout << "Cannot continue with uninstall due to the errors indicated above" << "\e[0;0m" << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_update_world_pre()
+void
+PertubisDeinstallTask::on_update_world_pre()
 {
     cout << endl << "\e[35;1m" << "Updating world file" << "\e[0;0m" << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_update_world(const paludis::PackageDepSpec & a)
+void
+PertubisDeinstallTask::on_update_world(const paludis::PackageDepSpec & a)
 {
     if (a.package_ptr())
         cout << "\e[31;1m" << "* removing " <<  paludis::stringify(*a.package_ptr()) << "\e[0;0m" << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_update_world(const paludis::SetName & a)
+void
+PertubisDeinstallTask::on_update_world(const paludis::SetName &)
 {
     cout << "\e[32;1m" << "* removing color(paludis::stringify(a)" << "\e[0;0m" << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_update_world_post()
+void
+PertubisDeinstallTask::on_update_world_post()
 {
     cout << endl;
 }
 
-void pertubis::PertubisDeinstallTask::on_preserve_world()
+void
+PertubisDeinstallTask::on_preserve_world()
 {
     cout << endl << "\e[32;1m" << "Updating world file\n* --preserve-world was specified, skipping world changes" << "\e[0;0m" << endl;
 }
 
-void pertubis::PertubisDeinstallTask::run()
+void
+PertubisDeinstallTask::run()
 {
     try
     {

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -28,7 +28,9 @@
 #include <QPen>
 #include <QSortFilterProxyModel>
 
-pertubis::PackageModelDelegate::PackageModelDelegate(QWidget *pobj,
+using namespace pertubis;
+
+PackageModelDelegate::PackageModelDelegate(QWidget *pobj,
     QSortFilterProxyModel* proxy,
     int install,
     int deinstall,
@@ -41,7 +43,8 @@ pertubis::PackageModelDelegate::PackageModelDelegate(QWidget *pobj,
 {
 }
 
-void pertubis::PackageModelDelegate::PackageModelDelegate::paint(QPainter* painter,
+void
+PackageModelDelegate::PackageModelDelegate::paint(QPainter* painter,
                                         const QStyleOptionViewItem& option,
                                         const QModelIndex& mix) const
 {
@@ -63,7 +66,7 @@ void pertubis::PackageModelDelegate::PackageModelDelegate::paint(QPainter* paint
     Package* item = static_cast<Package*>(index.internalPointer());
     Q_ASSERT(item != 0);
     QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    int ypos( option.rect.y()+ (option.rect.height()-12) /2 );
+    int ypos(option.rect.y()+ (option.rect.height()-12) /2);
     painter->save();
     painter->setPen(pen);
 
@@ -71,7 +74,7 @@ void pertubis::PackageModelDelegate::PackageModelDelegate::paint(QPainter* paint
         item->state() != ps_masked)
     {
         painter->drawRect(option.rect.x(),ypos,12,12);
-        if (Qt::Checked == item->data(m_installColumn).toInt() )
+        if (Qt::Checked == item->data(m_installColumn).toInt())
             painter->fillRect(option.rect.x()+2,ypos+2,9,9,QBrush(QColor(0,255,0)));
     }
     else if (m_deinstallColumn == column &&

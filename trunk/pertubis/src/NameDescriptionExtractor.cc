@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -25,11 +25,14 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/metadata_key.hh>
 
-pertubis::NameDescriptionExtractor::NameDescriptionExtractor(const paludis::Environment * const env) : Extractor(env)
+using namespace pertubis;
+
+NameDescriptionExtractor::NameDescriptionExtractor(const paludis::Environment * const env) : Extractor(env)
 {
 }
 
-bool pertubis::NameDescriptionExtractor::operator() (const Matcher& m, const paludis::PackageID& id) const
+bool
+NameDescriptionExtractor::operator() (const Matcher& m, const paludis::PackageID& id) const
 {
     if (m(paludis::stringify(id.name())))
         return true;

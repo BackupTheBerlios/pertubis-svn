@@ -27,6 +27,7 @@ SET(PERTUBIS_SRCS
     PackageModelDelegate.cc
     PackagesThread.cc
     Page.cc
+    make_package.cc
     PaludisUtils.cc
     PertubisDeinstallTask.cc
     PertubisInstallTask.cc

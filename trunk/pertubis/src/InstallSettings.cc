@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -36,19 +36,22 @@
 #include <paludis/dep_list.hh>
 #include <paludis/action-fwd.hh>
 
-pertubis::InstallSettingsModel::InstallSettingsModel(QObject *pobj) :
+using namespace pertubis;
+
+InstallSettingsModel::InstallSettingsModel(QObject *pobj) :
         QObject(pobj)
 {
     loadSettings();
 }
 
-pertubis::InstallSettingsModel::~InstallSettingsModel()
+InstallSettingsModel::~InstallSettingsModel()
 {
-    qDebug() << "pertubis::InstallSettingsModel::~InstallSettingsModel()";
+    qDebug() << "InstallSettingsModel::~InstallSettingsModel()";
     saveSettings();
 }
 
-void pertubis::InstallSettingsModel::populate_install_task(const paludis::Environment * /*env*/, paludis::InstallTask &task) const
+void
+InstallSettingsModel::populate_install_task(const paludis::Environment * /*env*/, paludis::InstallTask &task) const
 {
     task.set_no_config_protect(m_config);
     task.set_fetch_only(m_fetch);
@@ -56,7 +59,7 @@ void pertubis::InstallSettingsModel::populate_install_task(const paludis::Enviro
     task.set_preserve_world(m_preserve);
     task.set_safe_resume(m_noSafeResume);
 
-    if ( ! m_worldSpec.isEmpty() )
+    if (! m_worldSpec.isEmpty())
         task.set_add_to_world_spec(m_worldSpec.toStdString());
 
     if (m_debug == 0)
@@ -94,10 +97,11 @@ void pertubis::InstallSettingsModel::populate_install_task(const paludis::Enviro
     }
 }
 
-void pertubis::InstallSettingsModel::loadSettings()
+void
+InstallSettingsModel::loadSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "InstallSettingsModel" );
+    settings.beginGroup("InstallSettingsModel");
     m_debug = settings.value("debug_build",1).toInt();
     m_fetch = settings.value("fetch",false).toBool();
     m_config = settings.value("no_config_protect",false).toBool();
@@ -109,10 +113,11 @@ void pertubis::InstallSettingsModel::loadSettings()
     settings.endGroup();
 }
 
-void pertubis::InstallSettingsModel::saveSettings()
+void
+InstallSettingsModel::saveSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "InstallSettingsModel" );
+    settings.beginGroup("InstallSettingsModel");
     settings.setValue("debug",m_debug);
     settings.setValue("fetch",m_fetch);
     settings.setValue("no_config_protect",m_config);
@@ -124,27 +129,27 @@ void pertubis::InstallSettingsModel::saveSettings()
     settings.endGroup();
 }
 
-pertubis::InstallSettingsView::InstallSettingsView(QWidget *pobj,InstallSettingsModel* model) :
+InstallSettingsView::InstallSettingsView(QWidget *pobj,InstallSettingsModel* model) :
         QWidget(pobj),
         m_model(model)
 {
     QCheckBox* fetch(new QCheckBox(tr("fetch"),pobj));
-    fetch->setToolTip( tr("Only fetch sources; don't install anything") );
+    fetch->setToolTip(tr("Only fetch sources; don't install anything"));
     fetch->setChecked(model->m_fetch);
 
     QCheckBox* noConfigProtection(new QCheckBox(tr("no-config-protection"),pobj));
     noConfigProtection->setToolTip(tr("Disable config file protection (dangerous)"));
     noConfigProtection->setChecked(model->m_config);
     QCheckBox* noSafeResume(new QCheckBox(tr("no-safe-resume"),pobj));
-    noSafeResume->setToolTip( tr("Do not allow interrupted downloads to be resumed"));
+    noSafeResume->setToolTip(tr("Do not allow interrupted downloads to be resumed"));
     noSafeResume->setChecked(model->m_noSafeResume);
 
     QCheckBox* pretend(new QCheckBox(tr("pretend"),pobj));
-    pretend->setToolTip( tr("Pretend only") );
+    pretend->setToolTip(tr("Pretend only"));
     pretend->setChecked(model->m_pretend);
 
     QCheckBox* preserveWorld(new QCheckBox(tr("preserve world"),pobj));
-    preserveWorld->setToolTip( tr("Whether to preserve the world file when (un)installing packages") );
+    preserveWorld->setToolTip(tr("Whether to preserve the world file when (un)installing packages"));
     preserveWorld->setChecked(model->m_preserve);
 
     QComboBox* checks(new QComboBox(pobj));
@@ -153,10 +158,10 @@ pertubis::InstallSettingsView::InstallSettingsView(QWidget *pobj,InstallSettings
     checks->addItem("always");
 
     QComboBox* debug(new QComboBox(pobj));
-    debug->setToolTip( tr("debug build") );
-    debug->addItem( tr("none") );
-    debug->addItem( tr("split") );
-    debug->addItem( tr("internal") );
+    debug->setToolTip(tr("debug build"));
+    debug->addItem(tr("none"));
+    debug->addItem(tr("split"));
+    debug->addItem(tr("internal"));
     debug->setCurrentIndex(model->m_debug);
 
     QComboBox* continueOnFailure(new QComboBox(pobj));
@@ -265,6 +270,6 @@ pertubis::InstallSettingsView::InstallSettingsView(QWidget *pobj,InstallSettings
             SLOT(setText(const QString &)));
 }
 
-pertubis::InstallSettingsView::~InstallSettingsView()
+InstallSettingsView::~InstallSettingsView()
 {
 }

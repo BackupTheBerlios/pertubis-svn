@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -23,12 +23,14 @@
 #include <QSet>
 #include <QModelIndex>
 
-pertubis::CategoryFilterModel::CategoryFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj)
+using namespace pertubis;
+
+CategoryFilterModel::CategoryFilterModel(QObject * pobj) : QSortFilterProxyModel(pobj)
 {
 }
 
-bool pertubis::CategoryFilterModel::filterAcceptsRow(int sourceRow,
-        const QModelIndex &sourceParent) const
+bool
+CategoryFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex ix1 = sourceModel()->index(sourceRow,0,sourceParent);
     CategoryItem* p_item = static_cast<CategoryItem*>(ix1.internalPointer());

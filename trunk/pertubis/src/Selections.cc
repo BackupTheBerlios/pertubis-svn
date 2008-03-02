@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -27,42 +27,49 @@
 #include <QDebug>
 #include <QAction>
 
-pertubis::Selections::Selections(QObject* pobj,
-                    const QString & myname) :
-                    QObject(pobj),
-                    m_name(myname)
+using namespace pertubis;
+
+Selections::Selections(QObject* pobj,
+    const QString & myname) :
+    QObject(pobj),
+    m_name(myname)
 {
 }
 
-void pertubis::Selections::addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
+void
+Selections::addEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
     Q_ASSERT(id);
     m_data.insert(id);
     Q_ASSERT(m_data.end() != m_data.find(id));
 }
 
-void pertubis::Selections::deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
+void
+Selections::deleteEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
-//     qDebug() << "pertubis::Selections::deleteEntry()" << id->canonical_form(paludis::idcf_full).c_str();
+//     qDebug() << "Selections::deleteEntry()" << id->canonical_form(paludis::idcf_full).c_str();
     m_data.erase(id);
     Q_ASSERT(m_data.end() == m_data.find(id));
 }
 
-Qt::CheckState pertubis::Selections::hasEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) const
+Qt::CheckState
+Selections::hasEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id) const
 {
-//     qDebug() << "pertubis::Selections::hasEntry()" << id->canonical_form(paludis::idcf_full).c_str();
+//     qDebug() << "Selections::hasEntry()" << id->canonical_form(paludis::idcf_full).c_str();
     Q_ASSERT(id);
     return m_data.find(id) != m_data.end() ? Qt::Checked : Qt::Unchecked;
 }
 
-void pertubis::Selections::changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id,bool mystate)
+void
+Selections::changeEntry(const paludis::tr1::shared_ptr<const paludis::PackageID>& id,bool mystate)
 {
-//     qDebug() << "pertubis::Selections::changeEntry()" << id->canonical_form(paludis::idcf_full).c_str() << mystate;
+//     qDebug() << "Selections::changeEntry()" << id->canonical_form(paludis::idcf_full).c_str() << mystate;
     Q_ASSERT(id);
     (mystate) ? addEntry(id) : deleteEntry(id);
 }
 
-void pertubis::Selections::clear()
+void
+Selections::clear()
 {
     m_data.clear();
     Q_ASSERT(m_data.empty());

@@ -1,6 +1,5 @@
 
-
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -30,47 +29,51 @@
 #include <QSettings>
 #include <QStringList>
 
-pertubis::QuerySettingsModel::QuerySettingsModel(QObject *pobj) :
+using namespace pertubis;
+
+QuerySettingsModel::QuerySettingsModel(QObject *pobj) :
         QObject(pobj),
         m_kindModel(-1),
         m_matcherModel(-1)
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "Query" );
+    settings.beginGroup("Query");
     m_matcherModel = settings.value("matcher",0).toInt();
     m_kindModel  = settings.value("kind", 0).toInt();
     settings.endGroup();
 }
 
-pertubis::QuerySettingsModel::~QuerySettingsModel()
+QuerySettingsModel::~QuerySettingsModel()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "Query" );
+    settings.beginGroup("Query");
     settings.setValue("matcher",m_matcherModel);
     settings.setValue("kind",m_kindModel);
     settings.endGroup();
 }
 
-void pertubis::QuerySettingsModel::onKindChanged(int value)
+void
+QuerySettingsModel::onKindChanged(int value)
 {
     if (m_kindModel != value)
         emit kindChanged(value);
     m_kindModel = value;
 }
 
-void pertubis::QuerySettingsModel::onMatcherChanged(int value)
+void
+QuerySettingsModel::onMatcherChanged(int value)
 {
     if (m_matcherModel != value)
         emit matcherChanged(value);
     m_matcherModel = value;
 }
 
-pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel* model) :
+QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel* model) :
         QWidget(pobj),
         m_model(model)
 {
     QGroupBox* matcherGroup(new QGroupBox(tr("matcher")));
-    matcherGroup->setToolTip( tr("Which match algorithm to use") );
+    matcherGroup->setToolTip(tr("Which match algorithm to use"));
     QRadioButton* mRadio1 = new QRadioButton(tr("text"));
     mRadio1->setToolTip(tr("simple text match"));
     QRadioButton* mRadio2 = new QRadioButton(tr("regex"));
@@ -138,13 +141,15 @@ pertubis::QuerySettingsView::QuerySettingsView(QWidget *pobj,QuerySettingsModel*
             SLOT(setMatcher(int)));
 }
 
-void pertubis::QuerySettingsView::setKind(int value)
+void
+QuerySettingsView::setKind(int value)
 {
     QAbstractButton* button(m_kindButtonGroup->button(value));
     button->setChecked(!button->isChecked());
 }
 
-void pertubis::QuerySettingsView::setMatcher(int button)
+void
+QuerySettingsView::setMatcher(int button)
 {
     QAbstractButton* mybutton(m_matcherButtonGroup->button(button));
     mybutton->setChecked(!mybutton->isChecked());

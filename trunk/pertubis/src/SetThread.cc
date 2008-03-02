@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -33,13 +33,16 @@
 #include <QSet>
 #include <QStringList>
 
-pertubis::SetThread::SetThread(QObject* pobj,
+using namespace pertubis;
+
+SetThread::SetThread(QObject* pobj,
     const paludis::tr1::shared_ptr<paludis::Environment>&  myenv) :
     ThreadBase(pobj,myenv)
 {
 }
 
-void pertubis::SetThread::run()
+void
+SetThread::run()
 {
     using namespace paludis;
     QMap<QString, QSet<QString> > result;

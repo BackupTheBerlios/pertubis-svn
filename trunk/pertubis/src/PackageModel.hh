@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -101,38 +101,6 @@ namespace pertubis
 
         QStringList     m_header;
     };
-
-    /** \brief creates a node to diplay a package, can have version subnodes
-     * \ingroup PackageModelClass
-     *
-     */
-    Package* makePackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
-                         Qt::CheckState install,
-                         Qt::CheckState deinstall,
-                         QString pack,
-                         QString cat,
-                         Qt::CheckState isInstalled,
-                         PackageState mystate,
-                         Package* myparent,
-                         QString mask_reasons);
-
-    /** \brief creates a subnode to display a version
-     * \ingroup PackageModelClass
-     *
-     */
-    Package* makeVersionPackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
-                                Qt::CheckState install,
-                                Qt::CheckState deinstall,
-                                QString version,
-                                QString rep,
-                                Qt::CheckState isInstalled,
-                                PackageState mystate,
-                                Package* pitem,
-                                QString mask_reasons);
-
-    Package* makeRootPackage();
-
-
 }
 
 #endif

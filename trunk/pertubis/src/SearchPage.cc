@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -49,6 +49,7 @@
 #include <QSettings>
 #include <QTreeView>
 
+using namespace pertubis;
 
 namespace pertubis
 {
@@ -73,7 +74,7 @@ namespace pertubis
     };
 }
 
-pertubis::SearchPage::SearchPage(MainWindow * main) :
+SearchPage::SearchPage(MainWindow * main) :
         Page(main),
         m_imp(new SearchPagePrivate)
 {
@@ -139,9 +140,9 @@ pertubis::SearchPage::SearchPage(MainWindow * main) :
     m_imp->m_bar->hide();
 
     connect(m_imp->m_searchView,
-            SIGNAL(clicked( const QModelIndex&)),
+            SIGNAL(clicked(const QModelIndex&)),
             this,
-            SLOT(onViewUserInteraction( const QModelIndex& )) );
+            SLOT(onViewUserInteraction(const QModelIndex&)));
 
     connect(m_imp->m_bStart,
             SIGNAL(clicked()),
@@ -155,50 +156,55 @@ pertubis::SearchPage::SearchPage(MainWindow * main) :
 
     loadSettings();
     show();
-    qDebug() << "pertubis::SystemReportPage::SearchPage()" << this;
+    qDebug() << "SystemReportPage::SearchPage()" << this;
 }
 
-pertubis::SearchPage::~SearchPage()
+SearchPage::~SearchPage()
 {
     saveSettings();
     delete m_imp;
-    qDebug() << "pertubis::SearchPage::~SearchPage() start";
+    qDebug() << "SearchPage::~SearchPage() start";
 }
 
-void pertubis::SearchPage::loadSettings()
+void
+SearchPage::loadSettings()
 {
-    qDebug() << "pertubis::SearchPage::loadSettings() - start";
+    qDebug() << "SearchPage::loadSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "SearchPage" );
+    settings.beginGroup("SearchPage");
     m_imp->m_hSplit->restoreState(settings.value("hSplit").toByteArray());
     settings.endGroup();
-    qDebug() << "pertubis::SearchPage::doneSettings() - done";
+    qDebug() << "SearchPage::doneSettings() - done";
 }
 
-void pertubis::SearchPage::saveSettings()
+void
+SearchPage::saveSettings()
 {
-    qDebug() << "pertubis::SearchPage::saveSettings() - start";
+    qDebug() << "SearchPage::saveSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "SearchPage" );
+    settings.beginGroup("SearchPage");
     settings.setValue("hSplit", m_imp->m_hSplit->saveState());
     settings.endGroup();
-    qDebug() << "pertubis::SearchPage::saveSettings() - done";
+    qDebug() << "SearchPage::saveSettings() - done";
 }
 
-void pertubis::SearchPage::restartFilters(const QSet<QString> & set)
+void
+SearchPage::restartFilters(const QSet<QString> & set)
 {
     m_imp->m_searchFilterModel->setFilter(set);
     m_imp->m_searchFilterModel->invalidate();
 }
 
-void pertubis::SearchPage::activatePage()
+void
+SearchPage::activatePage()
 {
     m_imp->m_line->setFocus(Qt::ActiveWindowFocusReason);
     if (outOfDate())
         refreshPage();
 }
 
-void pertubis::SearchPage::onViewUserInteraction(const QModelIndex & mix)
+void
+SearchPage::onViewUserInteraction(const QModelIndex & mix)
 {
     QModelIndex ix(m_imp->m_searchFilterModel->mapToSource(mix));
     if (! ix.isValid())
@@ -207,17 +213,17 @@ void pertubis::SearchPage::onViewUserInteraction(const QModelIndex & mix)
     Package* package = static_cast<Package*>(ix.internalPointer());
     Q_ASSERT(package != 0);
     int column(ix.column());
-    if (pho_install == column )
+    if (pho_install == column)
     {
         int mystate(mainWindow()->installSelections()->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
         if (mainWindow()->installSelections()->available(package,-1))
             mainWindow()->installSelections()->changeStates(package,mystate,pho_install);
         m_imp->m_searchModel->onUpdateModel();
     }
-    else if (pho_deinstall == column )
+    else if (pho_deinstall == column)
     {
         int mystate(mainWindow()->deinstallSelections()->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
-        if (mainWindow()->deinstallSelections()->available(package,pho_installed) )
+        if (mainWindow()->deinstallSelections()->available(package,pho_installed))
             mainWindow()->deinstallSelections()->changeStates(package, mystate,pho_deinstall);
         m_imp->m_searchModel->onUpdateModel();
     }
@@ -227,13 +233,15 @@ void pertubis::SearchPage::onViewUserInteraction(const QModelIndex & mix)
     }
 }
 
-void pertubis::SearchPage::clearPage()
+void
+SearchPage::clearPage()
 {
     m_imp->m_searchModel->clear();
     m_imp->m_details->clear();
 }
 
-void pertubis::SearchPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
+void
+SearchPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
 {
     DetailsThread* t(new DetailsThread(this,mainWindow()->env()));
     mainWindow()->onStartOfPaludisAction();
@@ -245,7 +253,8 @@ void pertubis::SearchPage::details(const paludis::tr1::shared_ptr<const paludis:
     mainWindow()->taskQueue()->enqueue(t,true);
 }
 
-void pertubis::SearchPage::displayDetails(QString mydetails)
+void
+SearchPage::displayDetails(QString mydetails)
 {
     if (mydetails.isEmpty() ||
         this != mainWindow()->currentPage())
@@ -254,7 +263,8 @@ void pertubis::SearchPage::displayDetails(QString mydetails)
     mainWindow()->onEndOfPaludisAction();
 }
 
-void pertubis::SearchPage::onSearch()
+void
+SearchPage::onSearch()
 {
     QString query(m_imp->m_line->text().trimmed());
     if (query.isEmpty())
@@ -287,10 +297,11 @@ void pertubis::SearchPage::onSearch()
     m_imp->m_searchModel->clear();
     mainWindow()->taskQueue()->enqueue(searchThread,true);
     m_imp->m_bar->show();
-    mainWindow()->displayNotice(QString(tr("searching for %1...")).arg(query) );
+    mainWindow()->displayNotice(QString(tr("searching for %1...")).arg(query));
 }
 
-void pertubis::SearchPage::onSearchStopped()
+void
+SearchPage::onSearchStopped()
 {
     mainWindow()->displayNotice(tr("Search stopped"));
     mainWindow()->onEndOfPaludisAction();
@@ -298,7 +309,8 @@ void pertubis::SearchPage::onSearchStopped()
     m_imp->m_bar->hide();
 }
 
-void pertubis::SearchPage::displaySearchFinished(int count)
+void
+SearchPage::displaySearchFinished(int count)
 {
     mainWindow()->onEndOfPaludisAction();
     m_imp->m_bStart->setText(tr("&start"));

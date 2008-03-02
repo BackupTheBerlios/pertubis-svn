@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -24,7 +24,7 @@
 #include "PackageModel.hh"
 #include "Package.hh"
 #include "Selections.hh"
-#include <QList>
+#include "make_package.hh"
 
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -41,8 +41,11 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 
+#include <QList>
 
-pertubis::PackagesThread::PackagesThread( QObject* pobject,
+using namespace pertubis;
+
+PackagesThread::PackagesThread(QObject* pobject,
     const paludis::tr1::shared_ptr<paludis::Environment>&  myenv,
     Selections* install,
     Selections* deinstall) :
@@ -52,17 +55,19 @@ pertubis::PackagesThread::PackagesThread( QObject* pobject,
 {
 }
 
-pertubis::PackagesThread::~PackagesThread()
+PackagesThread::~PackagesThread()
 {
     qDebug() << "~PackagesThread()";
 }
 
-void pertubis::PackagesThread::setup(QString str)
+void
+PackagesThread::setup(QString str)
 {
     m_query = str;
 }
 
-void pertubis::PackagesThread::run()
+void
+PackagesThread::run()
 {
     using namespace paludis;
     CategoryNamePart cat(m_query.toLatin1().data());
@@ -80,7 +85,7 @@ void pertubis::PackagesThread::run()
          vstart != vend;
          ++vstart)
     {
-        if (old_qpn != (*vstart)->name() )
+        if (old_qpn != (*vstart)->name())
         {
             if (p_item != 0)
             {
@@ -119,7 +124,7 @@ void pertubis::PackagesThread::run()
         }
         pReasons.unite(vReasons.toSet());
 
-        bool vInstalled(installed(env(),*vstart) );
+        bool vInstalled(installed(env(),*vstart));
         Package* v_item = makeVersionPackage(*vstart,
                                     m_install->hasEntry(*vstart),
                                     m_deinstall->hasEntry(*vstart),
@@ -135,7 +140,7 @@ void pertubis::PackagesThread::run()
             p_item->setData(pho_installed,Qt::Checked);
         }
 
-        if (!v_item->available() )
+        if (!v_item->available())
         {
             ++maskedVersionCount;
         }

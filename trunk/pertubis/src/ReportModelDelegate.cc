@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -29,22 +29,25 @@
 #include <QPen>
 #include <QSortFilterProxyModel>
 
-pertubis::ReportModelDelegate::ReportModelDelegate(QWidget *pobj) :
+using namespace pertubis;
+
+ReportModelDelegate::ReportModelDelegate(QWidget *pobj) :
     QItemDelegate(pobj)
 {
 }
 
-void pertubis::ReportModelDelegate::ReportModelDelegate::paint(QPainter* painter,
-                                        const QStyleOptionViewItem& option,
-                                        const QModelIndex& mix) const
+void
+ReportModelDelegate::ReportModelDelegate::paint(QPainter* painter,
+    const QStyleOptionViewItem& option,
+    const QModelIndex& mix) const
 {
     Package* item = static_cast<Package*>(mix.internalPointer());
     Q_ASSERT(item != 0);
-    int ypos( option.rect.y() + (option.rect.height()-12) /2 );
+    int ypos(option.rect.y() + (option.rect.height()-12) /2);
     painter->save();
     painter->setPen(QPen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
-    if (Qt::Checked == item->data(rpho_deinstall).toInt() )
+    if (Qt::Checked == item->data(rpho_deinstall).toInt())
     {
         painter->drawRect(option.rect.x(),ypos,12,12);
         painter->fillRect(option.rect.x()+2,ypos+2,9,9,QBrush(QColor(255,0,0)));

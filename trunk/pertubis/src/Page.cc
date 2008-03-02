@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -21,16 +21,18 @@
 #include "Page.hh"
 #include "MainWindow.hh"
 
+using namespace pertubis;
+
 struct PagePrivate
 {
-    PagePrivate(pertubis::MainWindow* main) :
+    PagePrivate(MainWindow* main) :
         m_mainWindow(main),
         m_outOfDate(false),
         m_used(false)
     {
     }
 
-    pertubis::MainWindow*     m_mainWindow;
+    MainWindow*     m_mainWindow;
     bool            m_outOfDate;
 
     /** \brief displays this page information to the user or not
@@ -40,38 +42,43 @@ struct PagePrivate
     bool                  m_used;
 };
 
-pertubis::Page::Page(MainWindow* main) :
-        QWidget( qobject_cast<QWidget*>(main) ),
+Page::Page(MainWindow* main) :
+        QWidget(qobject_cast<QWidget*>(main)),
         m_imp(new PagePrivate(main))
 {
 }
 
-pertubis::Page::~Page()
+Page::~Page()
 {
     delete m_imp;
 }
 
-pertubis::MainWindow* pertubis::Page::mainWindow()
+MainWindow *
+Page::mainWindow()
 {
     return m_imp->m_mainWindow;
 }
 
-bool pertubis::Page::used()
+bool
+Page::used()
 {
     return m_imp->m_used;
 }
 
-bool pertubis::Page::outOfDate()
+bool
+Page::outOfDate()
 {
     return m_imp->m_outOfDate;
 }
 
-void pertubis::Page::setUsed(bool b)
+void
+Page::setUsed(bool b)
 {
     m_imp->m_used = b;
 }
 
-void pertubis::Page::setOutOfDate(bool b)
+void
+Page::setOutOfDate(bool b)
 {
     m_imp->m_outOfDate = b;
 }

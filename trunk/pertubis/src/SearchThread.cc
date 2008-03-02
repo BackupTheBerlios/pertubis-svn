@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -27,6 +27,7 @@
 #include "SearchThread.hh"
 #include "Selections.hh"
 #include "text_matcher.hh"
+#include "make_package.hh"
 
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -52,16 +53,18 @@
 #include <QStringList>
 #include <set>
 
+using namespace pertubis;
+
 struct Matches
 {
     typedef bool result;
 
-    const std::list<paludis::tr1::shared_ptr<pertubis::Matcher> > & matchers;
-    const std::list<paludis::tr1::shared_ptr<pertubis::Extractor> > & extractors;
+    const std::list<paludis::tr1::shared_ptr<Matcher> > & matchers;
+    const std::list<paludis::tr1::shared_ptr<Extractor> > & extractors;
 
     Matches(
-            const std::list<paludis::tr1::shared_ptr<pertubis::Matcher> > & m,
-            const std::list<paludis::tr1::shared_ptr<pertubis::Extractor> > & e) :
+            const std::list<paludis::tr1::shared_ptr<Matcher> > & m,
+            const std::list<paludis::tr1::shared_ptr<Extractor> > & e) :
             matchers(m),
             extractors(e)
     {
@@ -69,9 +72,9 @@ struct Matches
 
     bool operator() (const paludis::PackageID & id) const
     {
-        for (std::list<paludis::tr1::shared_ptr<pertubis::Extractor> >::const_iterator e(extractors.begin()), e_end(extractors.end()) ;
+        for (std::list<paludis::tr1::shared_ptr<Extractor> >::const_iterator e(extractors.begin()), e_end(extractors.end()) ;
             e != e_end ; ++e)
-            for (std::list<paludis::tr1::shared_ptr<pertubis::Matcher> >::const_iterator m(matchers.begin()), m_end(matchers.end()) ;
+            for (std::list<paludis::tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()), m_end(matchers.end()) ;
                 m != m_end ; ++m)
                 if ((**e)(**m, id))
                     return true;
@@ -80,7 +83,8 @@ struct Matches
     }
 };
 
-paludis::tr1::shared_ptr<const paludis::PackageID> fetch_id(
+paludis::tr1::shared_ptr<const paludis::PackageID>
+fetch_id(
     const paludis::Environment & env,
     const paludis::tr1::shared_ptr<const paludis::Repository> & r,
     const paludis::QualifiedPackageName & q,
@@ -104,7 +108,8 @@ paludis::tr1::shared_ptr<const paludis::PackageID> fetch_id(
     }
 }
 
-void set_id(
+void
+set_id(
             const paludis::Environment & env,
             const std::list<paludis::tr1::shared_ptr<const paludis::Repository> > & repos,
             std::pair<const paludis::QualifiedPackageName, paludis::tr1::shared_ptr<const paludis::PackageID> > & q,
@@ -131,7 +136,7 @@ void set_id(
     q.second = best_id;
 }
 
-pertubis::SearchThread::SearchThread(QObject* pobj,
+SearchThread::SearchThread(QObject* pobj,
                                      paludis::tr1::shared_ptr<paludis::Environment>  myenv,
                                      QuerySettingsModel* querySettings,
                                      Selections* install,
@@ -143,40 +148,40 @@ pertubis::SearchThread::SearchThread(QObject* pobj,
 {
 }
 
-pertubis::SearchThread::~SearchThread()
+SearchThread::~SearchThread()
 {
     qDebug() << "SearchThread::~SearchThread() 1";
     setExecMode(false);
     wait();
 }
 
-void pertubis::SearchThread::setup(const QString& str)
+void
+SearchThread::setup(const QString& str)
 {
     m_query = str;
 }
 
-void pertubis::SearchThread::run()
+void
+SearchThread::run()
 {
     using namespace paludis;
-    qDebug() << "SearchThread:.run() 1";
-    if (! execMode() )
+
+    if (! execMode())
         return;
-    qDebug() << "SearchThread:.run() 2";
+
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
     emit progress(0);
 
     if (m_querySettings->m_matcherModel==0)
     {
-        qDebug() << "using TextMatcher";
-        matchers.push_back( tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data()) ));
+        matchers.push_back(tr1::shared_ptr<TextMatcher>(new TextMatcher(m_query.toLatin1().data())));
     }
     else
     {
-        qDebug() << "using RegexMatcher";
-        matchers.push_back( tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data()) ));
+        matchers.push_back(tr1::shared_ptr<RegexMatcher>(new RegexMatcher(m_query.toLatin1().data())));
     }
-    extractors.push_back(tr1::shared_ptr<NameDescriptionExtractor>( new NameDescriptionExtractor(env().get())));
+    extractors.push_back(tr1::shared_ptr<NameDescriptionExtractor>(new NameDescriptionExtractor(env().get())));
 
     std::list<tr1::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(env()->package_database()->begin_repositories()),
@@ -197,7 +202,7 @@ void pertubis::SearchThread::run()
     }
     emit progress(10);
 
-    if (! execMode() )
+    if (! execMode())
         return;
     std::set<CategoryNamePart> cats;
     for (std::list<tr1::shared_ptr<const paludis::Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
@@ -208,13 +213,13 @@ void pertubis::SearchThread::run()
     }
 
     emit progress(30);
-    if (! execMode() )
+    if (! execMode())
         return;
     std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > ids;
     for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
          r != r_end ; ++r)
     {
-        if (!execMode() )
+        if (!execMode())
             return;
         for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
              c != c_end ; ++c)
@@ -229,7 +234,7 @@ void pertubis::SearchThread::run()
     }
 
     emit progress(50);
-    if (! execMode() )
+    if (! execMode())
         return;
 
     Matches matches(matchers,extractors);
@@ -237,13 +242,13 @@ void pertubis::SearchThread::run()
     std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(*env()), tr1::cref(repos), tr1::placeholders::_1, matches));
     emit progress(90);
 
-    if (! execMode() )
+    if (! execMode())
         return;
     int count(0);
     for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
          i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
     {
-        if (! execMode() )
+        if (! execMode())
             return;
         if (! i->second)
             continue;
@@ -298,11 +303,11 @@ void pertubis::SearchThread::run()
             {
                 piState = Qt::Checked;
             }
-            if (ps_masked == v_item->state() )
+            if (ps_masked == v_item->state())
             {
                 ++mp;
             }
-            else if (0 == p_item->bestChild() )
+            else if (0 == p_item->bestChild())
                 p_item->setBestChild(v_item);
 
             p_item->prependChild(v_item);
@@ -310,7 +315,7 @@ void pertubis::SearchThread::run()
         QStringList ptmp(pReasons.toList());
         p_item->setData(pho_mask_reasons,ptmp.join(", "));
 
-        if ( 0 < ip )
+        if (0 < ip)
             p_item->setData(pho_installed,Qt::Checked);
         if (mp == p_item->childCount())
             p_item->setPackageState(ps_masked);

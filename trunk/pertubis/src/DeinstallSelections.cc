@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -26,17 +26,21 @@
 
 #include <QDebug>
 
-bool pertubis::DeinstallSelections::available(Package* item, int column) const
+using namespace pertubis;
+
+bool
+DeinstallSelections::available(Package* item, int column) const
 {
     // TODO what about the other packages' header order?
     bool res(item->available() && item->data(column).toInt() == Qt::Checked);
-    qDebug() << "pertubis::DeinstallSelections::available()" << res;
+    qDebug() << "DeinstallSelections::available()" << res;
     return res;
 }
 
-bool pertubis::DeinstallSelections::changeStates(Package* item, int newState, int position)
+bool
+DeinstallSelections::changeStates(Package* item, int newState, int position)
 {
-    qDebug() << "pertubis::DeinstallSelections::changeStates()" << *item << newState;
+    qDebug() << "DeinstallSelections::changeStates()" << *item << newState;
     Package::PackageIterator iStart;
     Package::PackageIterator iEnd;
     Package::PackageIterator piStart;
@@ -45,13 +49,13 @@ bool pertubis::DeinstallSelections::changeStates(Package* item, int newState, in
     switch (item->itemType())
     {
         case pt_parent:
-            qDebug() << "pertubis::DeinstallSelections::changeStates() 1 parent";
+            qDebug() << "DeinstallSelections::changeStates() 1 parent";
             iStart = item->childBegin();
             iEnd = item->childEnd();
             switch (newState)
             {
                 case Qt::Unchecked:
-                    qDebug() << "pertubis::DeinstallSelections::changeStates() 1 parent unchecked";
+                    qDebug() << "DeinstallSelections::changeStates() 1 parent unchecked";
                     item->setData(position,Qt::Unchecked);
                     while(iStart != iEnd)
                     {
@@ -62,7 +66,7 @@ bool pertubis::DeinstallSelections::changeStates(Package* item, int newState, in
                     break;
                 case Qt::PartiallyChecked:
                 case Qt::Checked:
-                    qDebug() << "pertubis::DeinstallSelections::changeStates() 1 parent checked";
+                    qDebug() << "DeinstallSelections::changeStates() 1 parent checked";
                     changeEntry(item->ID(),true);
                     item->setData(position,Qt::Checked);
                     if (item->bestChild() != 0)
@@ -73,7 +77,7 @@ bool pertubis::DeinstallSelections::changeStates(Package* item, int newState, in
             }
             break;
         case pt_child:
-            qDebug() << "pertubis::DeinstallSelections::changeStates() 1 child";
+            qDebug() << "DeinstallSelections::changeStates() 1 child";
             if (item->data(pho_installed).toInt() == Qt::Unchecked)
                 return false;
             piStart = item->parent()->childBegin();
@@ -85,7 +89,7 @@ bool pertubis::DeinstallSelections::changeStates(Package* item, int newState, in
                     item->setData(position,Qt::Unchecked);
                     while(piStart != piEnd)
                     {
-                        if ( Qt::Unchecked != (*piStart)->data(pho_deinstall).toInt() )
+                        if (Qt::Unchecked != (*piStart)->data(pho_deinstall).toInt())
                         {
                             ++i;
                             break;
@@ -103,11 +107,11 @@ bool pertubis::DeinstallSelections::changeStates(Package* item, int newState, in
                     item->setData(position,Qt::Checked);
                     while(piStart != piEnd)
                     {
-                        if ( Qt::Unchecked != (*piStart)->data(pho_deinstall).toInt() )
+                        if (Qt::Unchecked != (*piStart)->data(pho_deinstall).toInt())
                             ++i;
                         ++piStart;
                     }
-                    if (i > 0 )
+                    if (i > 0)
                         item->parent()->setData(position,Qt::Checked);
                     break;
                 default:
@@ -115,7 +119,7 @@ bool pertubis::DeinstallSelections::changeStates(Package* item, int newState, in
             }
             break;
         case pt_node_only:
-            qDebug() << "pertubis::DeinstallSelections::changeStates() 1 node";
+            qDebug() << "DeinstallSelections::changeStates() 1 node";
             switch (newState)
             {
                 case Qt::Unchecked:

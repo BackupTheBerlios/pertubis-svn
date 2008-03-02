@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -28,7 +28,9 @@
 #include <QPen>
 #include <QSortFilterProxyModel>
 
-pertubis::SelectionModelDelegate::SelectionModelDelegate(QWidget *pobj,
+using namespace pertubis;
+
+SelectionModelDelegate::SelectionModelDelegate(QWidget *pobj,
     int install,
     int deinstall,
     int installed) :
@@ -39,9 +41,10 @@ pertubis::SelectionModelDelegate::SelectionModelDelegate(QWidget *pobj,
 {
 }
 
-void pertubis::SelectionModelDelegate::SelectionModelDelegate::paint(QPainter* painter,
-                                        const QStyleOptionViewItem& option,
-                                        const QModelIndex& mix) const
+void
+SelectionModelDelegate::SelectionModelDelegate::paint(QPainter* painter,
+    const QStyleOptionViewItem& option,
+    const QModelIndex& mix) const
 {
     // custom paint if this is a selection column, otherwise use the std layout
     int column(mix.column());
@@ -56,13 +59,13 @@ void pertubis::SelectionModelDelegate::SelectionModelDelegate::paint(QPainter* p
     Package* item = static_cast<Package*>(mix.internalPointer());
     Q_ASSERT(item != 0);
     QPen pen(Qt::gray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    int ypos( option.rect.y()+ (option.rect.height()-12) /2 );
+    int ypos(option.rect.y()+ (option.rect.height()-12) /2);
     painter->save();
     painter->setPen(pen);
 
     if (m_installColumn == column &&
         item->state() != ps_masked &&
-        Qt::Checked == item->data(m_installColumn).toInt() )
+        Qt::Checked == item->data(m_installColumn).toInt())
     {
         painter->drawRect(option.rect.x(),ypos,12,12);
         painter->fillRect(option.rect.x()+2,ypos+2,9,9,QBrush(QColor(0,255,0)));

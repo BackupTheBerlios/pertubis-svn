@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -35,7 +35,10 @@
 #include <QSettings>
 #include <QTranslator>
 
-static QStringList findTranslationFiles()
+using namespace pertubis;
+
+static QStringList
+findTranslationFiles()
 {
     QDir dir(":i18n");
     QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files,
@@ -46,14 +49,15 @@ static QStringList findTranslationFiles()
     {
         QFileInfo info(*i);
         QString tmp(dir.filePath(info.baseName()));
-        qDebug() << "pertubis::findTranslationFiles() - found" << tmp;
+        qDebug() << "findTranslationFiles() - found" << tmp;
         *i = tmp;
     }
 
     return fileNames;
 }
 
-static QString languageName(const QString &qmFile)
+static QString
+languageName(const QString &qmFile)
 {
     QTranslator translator;
     translator.load(qmFile);
@@ -61,41 +65,43 @@ static QString languageName(const QString &qmFile)
     return translator.translate("MainWindow", "English");
 }
 
-pertubis::GeneralSettingsModel::GeneralSettingsModel(QObject *pobj) :
+GeneralSettingsModel::GeneralSettingsModel(QObject *pobj) :
         QObject(pobj)
 {
     loadSettings();
 }
 
-pertubis::GeneralSettingsModel::~GeneralSettingsModel()
+GeneralSettingsModel::~GeneralSettingsModel()
 {
-    qDebug() << "pertubis::GeneralSettingsModel::~GeneralSettingsModel() start";
+    qDebug() << "GeneralSettingsModel::~GeneralSettingsModel() start";
     saveSettings();
-    qDebug() << "pertubis::GeneralSettingsModel::~GeneralSettingsModel() done";
+    qDebug() << "GeneralSettingsModel::~GeneralSettingsModel() done";
 }
 
-void pertubis::GeneralSettingsModel::loadSettings()
+void
+GeneralSettingsModel::loadSettings()
 {
-    qDebug() << "pertubis::GeneralSettingsModel::loadSettings()";
+    qDebug() << "GeneralSettingsModel::loadSettings()";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "GeneralSettingsModel" );
+    settings.beginGroup("GeneralSettingsModel");
     // use ts files only without file extensions!
     m_currentLanguage=settings.value("language",":i18n/pertubis-en").toString();
     settings.endGroup();
 }
 
-void pertubis::GeneralSettingsModel::saveSettings()
+void
+GeneralSettingsModel::saveSettings()
 {
-    qDebug() << "pertubis::GeneralSettingsModel::saveSettings()";
+    qDebug() << "GeneralSettingsModel::saveSettings()";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "GeneralSettingsModel" );
+    settings.beginGroup("GeneralSettingsModel");
     settings.setValue("language",m_currentLanguage);
     settings.endGroup();
 }
 
-pertubis::GeneralSettingsView::GeneralSettingsView(QWidget *pobj,GeneralSettingsModel* model) :
-        QWidget(pobj),
-        m_model(model)
+GeneralSettingsView::GeneralSettingsView(QWidget *pobj,GeneralSettingsModel* model) :
+    QWidget(pobj),
+    m_model(model)
 {
     // for translators: translate this into the name of your language in your language
     // e.g. for german take "Deutsch"
@@ -157,12 +163,13 @@ pertubis::GeneralSettingsView::GeneralSettingsView(QWidget *pobj,GeneralSettings
     setLayout(mainLayout);
 }
 
-void pertubis::GeneralSettingsView::languageChanged(const QString& language)
+void
+GeneralSettingsView::languageChanged(const QString& language)
 {
     m_model->m_currentLanguage=m_model->m_languageToTranslation[language];
     QMessageBox::information(this,tr("pertubis info"),tr("language setting changes will be applied after a restart"));
 }
 
-pertubis::GeneralSettingsView::~GeneralSettingsView()
+GeneralSettingsView::~GeneralSettingsView()
 {
 }

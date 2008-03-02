@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -21,40 +21,44 @@
 #include "PackageModel.hh"
 #include "Package.hh"
 #include "SystemReport-fwd.hh"
-
+#include "make_package.hh"
 #include <QColor>
 #include <QBrush>
 #include <QVariant>
 #include <QDebug>
 #include <QStringList>
 
-pertubis::PackageModel::PackageModel(QObject* pobj) :
-                                    QAbstractItemModel(pobj),
-                                    m_root(makeRootPackage())
+using namespace pertubis;
+
+PackageModel::PackageModel(QObject* pobj) :
+    QAbstractItemModel(pobj),
+    m_root(makeRootPackage())
 {
 }
 
-pertubis::PackageModel::~PackageModel()
+PackageModel::~PackageModel()
 {
     if (m_root != 0)
         delete m_root;
 }
 
-QVariant pertubis::PackageModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant
+PackageModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count() )
+    if (role != Qt::DisplayRole || orientation == Qt::Vertical || section >= m_header.count())
         return QVariant();
     return *(m_header.begin() + section);
 }
 
-QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
+QVariant
+PackageModel::data (const QModelIndex & ix, int role) const
 {
     if (!ix.isValid())
         return QVariant();
 
     Package* item = static_cast<Package*>(ix.internalPointer());
 
-    if (role == Qt::DisplayRole )
+    if (role == Qt::DisplayRole)
     {
         switch (ix.column())
         {
@@ -80,7 +84,7 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
         }
     }
 
-    else if (role == Qt::CheckStateRole )
+    else if (role == Qt::CheckStateRole)
     {
         switch (ix.column())
         {
@@ -97,7 +101,8 @@ QVariant pertubis::PackageModel::data ( const QModelIndex & ix, int role) const
     return QVariant();
 }
 
-QModelIndex pertubis::PackageModel::index(int row, int column, const QModelIndex &parentIndex) const
+QModelIndex
+PackageModel::index(int row, int column, const QModelIndex &parentIndex) const
 {
     if (!hasIndex(row, column, parentIndex))
         return QModelIndex();
@@ -116,7 +121,8 @@ QModelIndex pertubis::PackageModel::index(int row, int column, const QModelIndex
         return QModelIndex();
 }
 
-QModelIndex pertubis::PackageModel::parent(const QModelIndex &mix) const
+QModelIndex
+PackageModel::parent(const QModelIndex &mix) const
 {
     if (!mix.isValid())
         return QModelIndex();
@@ -132,7 +138,8 @@ QModelIndex pertubis::PackageModel::parent(const QModelIndex &mix) const
     return QAbstractItemModel::createIndex(parentItem->row(), 0, parentItem);
 }
 
-int pertubis::PackageModel::rowCount(const QModelIndex &pmi) const
+int
+PackageModel::rowCount(const QModelIndex &pmi) const
 {
     Package *parentItem;
     if (pmi.column() > 0)
@@ -146,7 +153,8 @@ int pertubis::PackageModel::rowCount(const QModelIndex &pmi) const
     return parentItem->childCount();
 }
 
-int pertubis::PackageModel::columnCount(const QModelIndex &pmi) const
+int
+PackageModel::columnCount(const QModelIndex &pmi) const
 {
     if (pmi.isValid())
         return static_cast<Package*>(pmi.internalPointer())->columnCount();
@@ -157,10 +165,11 @@ int pertubis::PackageModel::columnCount(const QModelIndex &pmi) const
 }
 
 
-bool pertubis::PackageModel::setData( const QModelIndex & ix, const QVariant & value, int)
+bool
+PackageModel::setData(const QModelIndex & ix, const QVariant & value, int)
 {
     qDebug() << "setData()" << ix << value;
-    if (! ix.isValid() )
+    if (! ix.isValid())
         return false;
 
     Package * package(static_cast<Package*>(ix.internalPointer()));
@@ -169,7 +178,8 @@ bool pertubis::PackageModel::setData( const QModelIndex & ix, const QVariant & v
     return true;
 }
 
-void pertubis::PackageModel::clear()
+void
+PackageModel::clear()
 {
     if (m_root != 0)
     {
@@ -179,7 +189,8 @@ void pertubis::PackageModel::clear()
     }
 }
 
-void pertubis::PackageModel::appendPackage(Package* package)
+void
+PackageModel::appendPackage(Package* package)
 {
 //     qDebug() << "appendPackage()";
     Q_ASSERT(m_root != 0);
@@ -188,7 +199,8 @@ void pertubis::PackageModel::appendPackage(Package* package)
     layoutChanged();
 }
 
-void pertubis::PackageModel::prependPackage(Package* package)
+void
+PackageModel::prependPackage(Package* package)
 {
 //     qDebug() << "prependPackage()";
     Q_ASSERT(m_root != 0);
@@ -197,14 +209,16 @@ void pertubis::PackageModel::prependPackage(Package* package)
     layoutChanged();
 }
 
-void pertubis::PackageModel::setHorizontalHeaderLabels ( const QStringList & labels )
+void
+PackageModel::setHorizontalHeaderLabels (const QStringList & labels)
 {
-    qDebug() << "pertubis::PackageModel::setHorizontalHeaderLabels()" << labels;
+    qDebug() << "PackageModel::setHorizontalHeaderLabels()" << labels;
     m_header = labels;
     emit headerDataChanged(Qt::Horizontal,0,labels.count() -1);
 }
 
-bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role)
+bool
+PackageModel::setHeaderData (int section, Qt::Orientation orientation, const QVariant & value, int role)
 {
     if (section >= 0 && orientation == Qt::Horizontal && section < m_header.count() && role == Qt::EditRole)
     {
@@ -213,55 +227,4 @@ bool pertubis::PackageModel::setHeaderData ( int section, Qt::Orientation orient
         return true;
     }
     return false;
-}
-
-pertubis::Package* pertubis::makePackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
-                                        Qt::CheckState install,
-                                        Qt::CheckState deinstall,
-                                        QString package,
-                                        QString cat,
-                                        Qt::CheckState isInstalled,
-                                        PackageState mystate,
-                                        Package* pitem,
-                                        QString mask_reasons)
-{
-    Package* pack(new Package(id,QVector<QVariant>(pho_last),mystate,pt_parent,pitem));
-    pack->setData(pho_install,install);
-    pack->setData(pho_deinstall,deinstall);
-    pack->setData(pho_package,package);
-    pack->setData(pho_category,cat);
-    pack->setData(pho_repository, "");
-    pack->setData(pho_installed,QVariant(static_cast<int>(isInstalled)));
-    pack->setData(pho_mask_reasons,mask_reasons);
-    return pack;
-}
-
-pertubis::Package* pertubis::makeRootPackage()
-{
-    return new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
-                       QVector<QVariant>(pho_last),
-                       ps_stable,
-                       pt_parent,
-                       0);
-}
-
-pertubis::Package* pertubis::makeVersionPackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
-        Qt::CheckState install,
-        Qt::CheckState deinstall,
-        QString version,
-        QString rep,
-        Qt::CheckState isInstalled,
-        PackageState mystate,
-        Package* pitem,
-        QString mask_reasons)
-{
-    Package* pack(new Package(id,QVector<QVariant>(pho_last),mystate,pt_child,pitem));
-    pack->setData(pho_install,install);
-    pack->setData(pho_deinstall,deinstall);
-    pack->setData(pho_package,version);
-    pack->setData(pho_category,"");
-    pack->setData(pho_repository, rep);
-    pack->setData(pho_installed,QVariant(static_cast<int>(isInstalled)));
-    pack->setData(pho_mask_reasons,mask_reasons);
-    return pack;
 }

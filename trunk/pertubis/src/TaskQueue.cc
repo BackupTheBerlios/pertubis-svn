@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -24,6 +24,8 @@
 #include <QDebug>
 #include <QThread>
 
+using namespace pertubis;
+
 namespace pertubis
 {
     struct TaskQueuePrivate
@@ -32,19 +34,20 @@ namespace pertubis
     };
 }
 
-pertubis::TaskQueue::TaskQueue(QObject* pobj) :
+TaskQueue::TaskQueue(QObject* pobj) :
     QObject(pobj),
     m_imp(new TaskQueuePrivate)
 {
 
 }
 
-pertubis::TaskQueue::~TaskQueue()
+TaskQueue::~TaskQueue()
 {
     delete m_imp;
 }
 
-void pertubis::TaskQueue::enqueue(QThread* task, bool start)
+void
+TaskQueue::enqueue(QThread* task, bool start)
 {
     m_imp->m_taskQueue.enqueue(task);
     connect(task,
@@ -55,7 +58,8 @@ void pertubis::TaskQueue::enqueue(QThread* task, bool start)
         next();
 }
 
-void pertubis::TaskQueue::dequeue()
+void
+TaskQueue::dequeue()
 {
     qDebug() << "TaskQueue::dequeue()";
     QThread* t(m_imp->m_taskQueue.dequeue());
@@ -63,7 +67,8 @@ void pertubis::TaskQueue::dequeue()
     t = 0;
 }
 
-void pertubis::TaskQueue::next()
+void
+TaskQueue::next()
 {
     if (!m_imp->m_taskQueue.isEmpty())
     {
@@ -75,16 +80,17 @@ void pertubis::TaskQueue::next()
     }
 }
 
-bool pertubis::TaskQueue::running()
+bool
+TaskQueue::running()
 {
-    return ( !m_imp->m_taskQueue.isEmpty() &&
+    return (!m_imp->m_taskQueue.isEmpty() &&
             m_imp->m_taskQueue.head()->isRunning());
 }
 
-void pertubis::TaskQueue::process()
+void
+TaskQueue::process()
 {
     if (!m_imp->m_taskQueue.isEmpty())
         dequeue();
     next();
 }
-

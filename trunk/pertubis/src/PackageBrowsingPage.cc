@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -50,6 +50,8 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
 
+using namespace pertubis;
+
 namespace pertubis
 {
     struct PackageBrowsingPage::PackageBrowsingPagePrivate
@@ -72,10 +74,10 @@ namespace pertubis
     };
 }
 
-// pertubis::PackagesThread*           m_packageViewThread;
-// pertubis::SetThread*                m_setThread;
+// PackagesThread*           m_packageViewThread;
+// SetThread*                m_setThread;
 
-pertubis::PackageBrowsingPage::PackageBrowsingPage(MainWindow * main) :
+PackageBrowsingPage::PackageBrowsingPage(MainWindow * main) :
         Page(main),
         m_imp(new PackageBrowsingPagePrivate)
 {
@@ -137,7 +139,7 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(MainWindow * main) :
     m_imp->m_setView->setShowGrid(false);
     m_imp->m_setView->setFont(myfont);
 
-    qDebug() << "pertubis::PackageBrowsingPage::PackageBrowsingPage 1";
+    qDebug() << "PackageBrowsingPage::PackageBrowsingPage 1";
 
     QAction* acRefresh(new QAction(tr("refresh"),this));
     acRefresh->setShortcut(tr("F5"));
@@ -170,14 +172,14 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(MainWindow * main) :
             SLOT(refreshPage()));
 
     connect(m_imp->m_categoryView,
-            SIGNAL(clicked( const QModelIndex&)),
+            SIGNAL(clicked(const QModelIndex&)),
             this,
-            SLOT(onCategoryChanged( const QModelIndex& )) );
+            SLOT(onCategoryChanged(const QModelIndex&)));
 
     connect(m_imp->m_packageView,
-            SIGNAL(clicked( const QModelIndex&)),
+            SIGNAL(clicked(const QModelIndex&)),
             this,
-            SLOT(onViewUserInteraction( const QModelIndex& )) );
+            SLOT(onViewUserInteraction(const QModelIndex&)));
 
 
 //     connect(m_imp->m_setThread,
@@ -186,62 +188,66 @@ pertubis::PackageBrowsingPage::PackageBrowsingPage(MainWindow * main) :
 //             SLOT(appendCategory(QMap<QString, QSet<QString> >)));
 
 //     connect(m_setView,
-//             SIGNAL(clicked( const QModelIndex&)),
+//             SIGNAL(clicked(const QModelIndex&)),
 //             this,
-//             SLOT(onStartSetInstallTask( const QModelIndex& )) );
+//             SLOT(onStartSetInstallTask(const QModelIndex&)));
     loadSettings();
     show();
     QTimer::singleShot(100,this,SLOT(refreshPage()));
 }
 
-pertubis::PackageBrowsingPage::~PackageBrowsingPage()
+PackageBrowsingPage::~PackageBrowsingPage()
 {
-    qDebug() << "pertubis::PackageBrowsingPage::~PackageBrowsingPage() - start";
+    qDebug() << "PackageBrowsingPage::~PackageBrowsingPage() - start";
     saveSettings();
     delete m_imp;
-    qDebug() << "pertubis::PackageBrowsingPage::~PackageBrowsingPage() - done";
+    qDebug() << "PackageBrowsingPage::~PackageBrowsingPage() - done";
 }
 
-void pertubis::PackageBrowsingPage::activatePage()
+void
+PackageBrowsingPage::activatePage()
 {
-    if (used() && outOfDate() )
+    if (used() && outOfDate())
         refreshPage();
 }
 
-// void pertubis::PackageBrowsingPage::onShowSetTask(const QModelIndex & model)
+// void PackageBrowsingPage::onShowSetTask(const QModelIndex & model)
 // {
 //     m_setModel->data(ix).toString().toStdString();
 //     m_main->
 // }
 
 
-void pertubis::PackageBrowsingPage::loadSettings()
+void
+PackageBrowsingPage::loadSettings()
 {
-    qDebug() << "pertubis::PackageBrowsingPage::loadSettings() - start";
+    qDebug() << "PackageBrowsingPage::loadSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "PackageBrowsingPage" );
+    settings.beginGroup("PackageBrowsingPage");
     m_imp->m_currentCat = settings.value("currentCategory","").toString();
     m_imp->m_hSplit->restoreState(settings.value("hSplit").toByteArray());
     m_imp->m_vSplit->restoreState(settings.value("vSplit").toByteArray());
     m_imp->m_lSplit->restoreState(settings.value("lSplit").toByteArray());
     settings.endGroup();
-    qDebug() << "pertubis::PackageBrowsingPage::doneSettings() - done";
+    qDebug() << "PackageBrowsingPage::doneSettings() - done";
 }
 
-void pertubis::PackageBrowsingPage::saveSettings()
+void
+PackageBrowsingPage::saveSettings()
 {
-    qDebug() << "pertubis::PackageBrowsingPage::saveSettings() - start";
+    qDebug() << "PackageBrowsingPage::saveSettings() - start";
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "PackageBrowsingPage" );
+    settings.beginGroup("PackageBrowsingPage");
     settings.setValue("hSplit", m_imp->m_hSplit->saveState());
     settings.setValue("vSplit", m_imp->m_vSplit->saveState());
     settings.setValue("lSplit", m_imp->m_lSplit->saveState());
     settings.setValue("currentCategory", m_imp->m_currentCat);
     settings.endGroup();
-    qDebug() << "pertubis::PackageBrowsingPage::saveSettings() - done";
+    qDebug() << "PackageBrowsingPage::saveSettings() - done";
 }
 
-void pertubis::PackageBrowsingPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
+void
+PackageBrowsingPage::details(const paludis::tr1::shared_ptr<const paludis::PackageID> & id)
 {
     DetailsThread* t(new DetailsThread(this,mainWindow()->env()));
     mainWindow()->onStartOfPaludisAction();
@@ -253,7 +259,8 @@ void pertubis::PackageBrowsingPage::details(const paludis::tr1::shared_ptr<const
     mainWindow()->taskQueue()->enqueue(t,true);
 }
 
-void pertubis::PackageBrowsingPage::displayDetails(QString mydetails)
+void
+PackageBrowsingPage::displayDetails(QString mydetails)
 {
     if (mydetails.isEmpty() ||
         this != mainWindow()->currentPage())
@@ -263,7 +270,8 @@ void pertubis::PackageBrowsingPage::displayDetails(QString mydetails)
     setUsed(true);
 }
 
-void pertubis::PackageBrowsingPage::restartFilters(const QSet<QString> & set)
+void
+PackageBrowsingPage::restartFilters(const QSet<QString> & set)
 {
     m_imp->m_packageFilterModel->setFilter(set);
     m_imp->m_packageFilterModel->invalidate();
@@ -274,7 +282,8 @@ void pertubis::PackageBrowsingPage::restartFilters(const QSet<QString> & set)
 }
 
 
-void pertubis::PackageBrowsingPage::getCategories()
+void
+PackageBrowsingPage::getCategories()
 {
     CategoryThread* categoryThread(new CategoryThread(this,mainWindow()->env()));
 
@@ -285,16 +294,18 @@ void pertubis::PackageBrowsingPage::getCategories()
     mainWindow()->taskQueue()->enqueue(categoryThread,true);
 }
 
-void pertubis::PackageBrowsingPage::onCategoryChanged( const QModelIndex &)
+void
+PackageBrowsingPage::onCategoryChanged(const QModelIndex &)
 {
     QModelIndex origIndex(m_imp->m_categoryFilterModel->mapToSource(m_imp->m_categoryView->currentIndex()));
-    if ( !origIndex.isValid() || 0 != origIndex.column())
+    if (!origIndex.isValid() || 0 != origIndex.column())
         return;
     m_imp->m_currentCat = m_imp->m_catModel->data(origIndex).toString();
     changeCategory();
 }
 
-void pertubis::PackageBrowsingPage::refreshPage()
+void
+PackageBrowsingPage::refreshPage()
 {
     qDebug() << "onRefreshCategory()";
     getCategories();
@@ -303,7 +314,8 @@ void pertubis::PackageBrowsingPage::refreshPage()
     setOutOfDate(false);
 }
 
-void pertubis::PackageBrowsingPage::clearPage()
+void
+PackageBrowsingPage::clearPage()
 {
     m_imp->m_catModel->clear();
     m_imp->m_details->clear();
@@ -311,7 +323,8 @@ void pertubis::PackageBrowsingPage::clearPage()
     setUsed(false);
 }
 
-void pertubis::PackageBrowsingPage::changeCategory()
+void
+PackageBrowsingPage::changeCategory()
 {
     PackagesThread* packageViewThread = new PackagesThread(this,mainWindow()->env(),mainWindow()->installSelections(),mainWindow()->deinstallSelections());
 
@@ -334,7 +347,8 @@ void pertubis::PackageBrowsingPage::changeCategory()
     setUsed(true);
 }
 
-void pertubis::PackageBrowsingPage::onViewUserInteraction(const QModelIndex & mix)
+void
+PackageBrowsingPage::onViewUserInteraction(const QModelIndex & mix)
 {
     QModelIndex ix(m_imp->m_packageFilterModel->mapToSource(mix));
     if (! ix.isValid())
@@ -343,7 +357,7 @@ void pertubis::PackageBrowsingPage::onViewUserInteraction(const QModelIndex & mi
     Package* package = static_cast<Package*>(ix.internalPointer());
     Q_ASSERT(package != 0);
     int column(ix.column());
-    if (pho_install == column )
+    if (pho_install == column)
     {
         if (mainWindow()->installSelections()->available(package,-1))
         {
@@ -352,9 +366,9 @@ void pertubis::PackageBrowsingPage::onViewUserInteraction(const QModelIndex & mi
         }
         m_imp->m_packageModel->onUpdateModel();
     }
-    else if (pho_deinstall == column )
+    else if (pho_deinstall == column)
     {
-        if (mainWindow()->deinstallSelections()->available(package,pho_installed) )
+        if (mainWindow()->deinstallSelections()->available(package,pho_installed))
         {
             int mystate(mainWindow()->deinstallSelections()->hasEntry(package->ID()) ? Qt::Unchecked : Qt::Checked);
             mainWindow()->deinstallSelections()->changeStates(package, mystate, pho_deinstall);
@@ -367,7 +381,8 @@ void pertubis::PackageBrowsingPage::onViewUserInteraction(const QModelIndex & mi
     }
 }
 
-void pertubis::PackageBrowsingPage::displayCategoryChanged()
+void
+PackageBrowsingPage::displayCategoryChanged()
 {
     mainWindow()->displayNotice(tr("%1 packages found").arg(m_imp->m_packageFilterModel->rowCount()));
     mainWindow()->onEndOfPaludisAction();

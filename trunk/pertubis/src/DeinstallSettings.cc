@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -30,7 +30,9 @@
 
 #include <paludis/dep_list.hh>
 
-pertubis::DeinstallSettingsModel::DeinstallSettingsModel(QObject *pobj) :
+using namespace pertubis;
+
+DeinstallSettingsModel::DeinstallSettingsModel(QObject *pobj) :
         QObject(pobj),
         m_deps(false),
         m_unusedDeps(false),
@@ -41,16 +43,17 @@ pertubis::DeinstallSettingsModel::DeinstallSettingsModel(QObject *pobj) :
 }
 
 
-pertubis::DeinstallSettingsModel::~DeinstallSettingsModel()
+DeinstallSettingsModel::~DeinstallSettingsModel()
 {
-    qDebug() << "pertubis::DeinstallSettingsModel::~DeinstallSettingsModel()";
+    qDebug() << "DeinstallSettingsModel::~DeinstallSettingsModel()";
     saveSettings();
 }
 
-void pertubis::DeinstallSettingsModel::loadSettings()
+void
+DeinstallSettingsModel::loadSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "DeinstallSettingsModel" );
+    settings.beginGroup("DeinstallSettingsModel");
     m_deps = settings.value("deps",false).toBool();
     m_unusedDeps = settings.value("unusedDeps",true).toBool();
     m_allVersions = settings.value("allVersions",false).toBool();
@@ -58,10 +61,11 @@ void pertubis::DeinstallSettingsModel::loadSettings()
     settings.endGroup();
 }
 
-void pertubis::DeinstallSettingsModel::saveSettings()
+void
+DeinstallSettingsModel::saveSettings()
 {
     QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
-    settings.beginGroup( "DeinstallSettingsModel" );
+    settings.beginGroup("DeinstallSettingsModel");
     settings.setValue("deps",m_deps);
     settings.setValue("unusedDeps",m_unusedDeps);
     settings.setValue("allVersions",m_allVersions);
@@ -69,7 +73,7 @@ void pertubis::DeinstallSettingsModel::saveSettings()
     settings.endGroup();
 }
 
-pertubis::DeinstallSettingsView::DeinstallSettingsView(QWidget *pobj,DeinstallSettingsModel* model) :
+DeinstallSettingsView::DeinstallSettingsView(QWidget *pobj,DeinstallSettingsModel* model) :
         QWidget(pobj),
         m_model(model),
         m_deps(new QCheckBox(tr("with deps"),pobj)),
@@ -79,13 +83,13 @@ pertubis::DeinstallSettingsView::DeinstallSettingsView(QWidget *pobj,DeinstallSe
 {
     QGroupBox* group(new QGroupBox(tr("Deinstallation Settings"),pobj));
     setToolTip(tr("Options which are relevant for deinstallation."));
-    m_deps->setToolTip( tr("Also uninstall packages that depend upon the target") );
+    m_deps->setToolTip(tr("Also uninstall packages that depend upon the target"));
     m_deps->setChecked(m_model->m_deps);
-    m_unusedDeps->setToolTip( tr("Also uninstall any dependencies of the target that are no longer used") );
+    m_unusedDeps->setToolTip(tr("Also uninstall any dependencies of the target that are no longer used"));
     m_unusedDeps->setChecked(m_model->m_unusedDeps);
     m_allVersions->setToolTip(tr("Uninstall all versions of a package"));
     m_allVersions->setChecked(m_model->m_allVersions);
-    m_unsafeUninstall->setToolTip( tr("Allow deinstallation of packagess, which are dependencies of other packages"));
+    m_unsafeUninstall->setToolTip(tr("Allow deinstallation of packagess, which are dependencies of other packages"));
     m_unsafeUninstall->setChecked(m_model->m_unsafeUninstall);
 
     QGridLayout *groupLayout = new QGridLayout;
@@ -142,7 +146,7 @@ pertubis::DeinstallSettingsView::DeinstallSettingsView(QWidget *pobj,DeinstallSe
             SLOT(setChecked(bool)));
 }
 
-pertubis::DeinstallSettingsView::~DeinstallSettingsView()
+DeinstallSettingsView::~DeinstallSettingsView()
 {
     qDebug("DeinstallSettingsView::~DeinstallSettingsView() - start");
     qDebug("DeinstallSettingsView::~DeinstallSettingsView() - done");

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2007-2008 Stefan Koegl <hotshelf@users.berlios.de>
+/* Copyright (C) 2007-2008 Stefan Koegl
 *
 * This file is part of pertubis
 *
@@ -31,51 +31,58 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/config_file.hh>
 
-void pertubis::SystemReport::on_report_all_pre()
+using namespace pertubis;
+
+void
+SystemReport::on_report_all_pre()
 {
-    // qDebug() << "pertubis::SystemReport::on_report_all_pre()";
+    // qDebug() << "SystemReport::on_report_all_pre()";
 }
 
-void pertubis::SystemReport::on_report_check_package_pre(const QualifiedPackageName &)
+void
+SystemReport::on_report_check_package_pre(const QualifiedPackageName &)
 {
-    // qDebug() << "pertubis::SystemReport::on_report_check_package_pre()";
+    // qDebug() << "SystemReport::on_report_check_package_pre()";
 }
 
-void pertubis::SystemReport::on_report_package_success(const tr1::shared_ptr<const PackageID> &)
+void
+SystemReport::on_report_package_success(const tr1::shared_ptr<const PackageID> &)
 {
-    // qDebug() << "pertubis::SystemReport::on_report_package_success()";
+    // qDebug() << "SystemReport::on_report_package_success()";
 }
 
-void pertubis::SystemReport::run()
+void
+SystemReport::run()
 {
-    // qDebug() << "pertubis::SystemReport::run start";
-    if (!execMode() )
+    // qDebug() << "SystemReport::run start";
+    if (!execMode())
         return;
-    if (!execMode() )
+    if (!execMode())
         return;
     try
     {
-        // qDebug() << "pertubis::SystemReport::run() 1";
+        // qDebug() << "SystemReport::run() 1";
         execute();
-        // qDebug() << "pertubis::SystemReport::run() 2";
+        // qDebug() << "SystemReport::run() 2";
     }
     catch(const paludis::ConfigFileError& h)
     {
-        // qDebug() << "pertubis::SystemReport::run() error";
+        // qDebug() << "SystemReport::run() error";
         // qDebug() << h.message().c_str() << QString(h.what());
         emit finished(0,0);
     }
     catch(...)
     {
-        // qDebug() << "pertubis::SystemReport::run() error";
+        // qDebug() << "SystemReport::run() error";
         qFatal("uncatched error");
     }
-    // qDebug() << "pertubis::SystemReport::run() done";
+    // qDebug() << "SystemReport::run() done";
 }
 
-void pertubis::SystemReport::on_report_package_failure_pre(const tr1::shared_ptr<const PackageID> & id)
+void
+SystemReport::on_report_package_failure_pre(const tr1::shared_ptr<const PackageID> & id)
 {
-    // qDebug() << "pertubis::SystemReport::on_report_package_failure_pre() start";
+    // qDebug() << "SystemReport::on_report_package_failure_pre() start";
     QVector<QVariant> data(rpho_last+1);
     data[rpho_deinstall] = Qt::Checked;
     data[rpho_package] = QString::fromStdString(paludis::stringify(id->name().package));
@@ -84,18 +91,19 @@ void pertubis::SystemReport::on_report_package_failure_pre(const tr1::shared_ptr
     m_node = new ReportPackage(id,data,tk_normal);
     m_dSelections->addEntry(id);
     emit appendPackage(m_node);
-    // qDebug() << "pertubis::SystemReport::on_report_package_failure_pre() done";
+    // qDebug() << "SystemReport::on_report_package_failure_pre() done";
 }
 
-void pertubis::SystemReport::on_report_package_is_masked(const tr1::shared_ptr<const PackageID> &id,
+void
+SystemReport::on_report_package_is_masked(const tr1::shared_ptr<const PackageID> &id,
         const tr1::shared_ptr<const PackageID> & origin)
 {
-    // qDebug() << "pertubis::SystemReport::on_report_package_is_masked() start";
+    // qDebug() << "SystemReport::on_report_package_is_masked() start";
     QString tmp;
     for (PackageID::MasksConstIterator m(origin->begin_masks()), m_end(origin->end_masks()) ;
          m != m_end ; ++m)
     {
-        tmp+= stringify( (*m)->description()).c_str();
+        tmp+= stringify((*m)->description()).c_str();
     }
     QVector<QVariant> data(3);
     data[rpho_deinstall] = Qt::Unchecked;
@@ -103,17 +111,19 @@ void pertubis::SystemReport::on_report_package_is_masked(const tr1::shared_ptr<c
     data[rpho_category] = tmp;
     m_node->appendChild(new ReportPackage(id,data,tk_masked));
     ++m_errorCount;
-    // qDebug() << "pertubis::SystemReport::on_report_package_is_masked() done";
+    // qDebug() << "SystemReport::on_report_package_is_masked() done";
 }
 
-void pertubis::SystemReport::on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> &)
+void
+SystemReport::on_report_package_is_vulnerable_pre(const tr1::shared_ptr<const PackageID> &)
 {
-    // qDebug() << "pertubis::SystemReport::on_report_package_is_vulnerable_pre() done";
+    // qDebug() << "SystemReport::on_report_package_is_vulnerable_pre() done";
 }
 
-void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &id, const GLSADepTag & tag)
+void
+SystemReport::on_report_package_is_vulnerable(const tr1::shared_ptr<const PackageID> &id, const GLSADepTag & tag)
 {
-//     // qDebug() << "pertubis::SystemReport::on_report_package_is_vulnerable() start";
+//     // qDebug() << "SystemReport::on_report_package_is_vulnerable() start";
     // last column will not be visible so it's a good place to put the glsa file path
     QVector<QVariant> data(rpho_last+1);
     data[rpho_deinstall] = Qt::Unchecked;
@@ -123,49 +133,55 @@ void pertubis::SystemReport::on_report_package_is_vulnerable(const tr1::shared_p
     m_node->appendChild(new ReportPackage(id,data,tk_glsa));
 //     emit notifyAboutGLSA(QString::fromStdString(tag.short_text()),QString::fromStdString(paludis::stringify(tag.glsa_file())));
     ++m_errorCount;
-//     // qDebug() << "pertubis::SystemReport::on_report_package_is_vulnerable() start";
+//     // qDebug() << "SystemReport::on_report_package_is_vulnerable() start";
 }
 
-void pertubis::SystemReport::on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> &)
+void
+SystemReport::on_report_package_is_vulnerable_post(const tr1::shared_ptr<const PackageID> &)
 {
 }
 
-void pertubis::SystemReport::on_report_package_is_missing(const tr1::shared_ptr<const PackageID> &id,
+void
+SystemReport::on_report_package_is_missing(const tr1::shared_ptr<const PackageID> &id,
         const RepositoryName & repo_name)
 {
-    // // qDebug() << "pertubis::SystemReport::on_report_package_is_missing() start";
+    // // qDebug() << "SystemReport::on_report_package_is_missing() start";
     QVector<QVariant> data(rpho_last+1);
     data[rpho_deinstall] = Qt::Unchecked;
     data[rpho_package] = tr("deleted in repository");
     data[rpho_category] = QString::fromStdString(paludis::stringify(repo_name));
     m_node->appendChild(new ReportPackage(id,data,tk_error));
     ++m_errorCount;
-    // qDebug() << "pertubis::SystemReport::on_report_package_is_missing() start";
+    // qDebug() << "SystemReport::on_report_package_is_missing() start";
 }
 
-void pertubis::SystemReport::on_report_package_is_unused(const tr1::shared_ptr<const PackageID> &id)
+void
+SystemReport::on_report_package_is_unused(const tr1::shared_ptr<const PackageID> &id)
 {
-    // qDebug() << "pertubis::SystemReport::on_report_package_is_unused() start";
+    // qDebug() << "SystemReport::on_report_package_is_unused() start";
     QVector<QVariant> data(rpho_last+1);
     data[rpho_deinstall] = Qt::Unchecked;
     data[rpho_package] = tr("package is unused");
     m_node->appendChild(new ReportPackage(id,data,tk_error));
     ++m_errorCount;
-    // qDebug() << "pertubis::SystemReport::on_report_package_is_unused() done";
+    // qDebug() << "SystemReport::on_report_package_is_unused() done";
 }
 
-void pertubis::SystemReport::on_report_package_failure_post(const tr1::shared_ptr<const PackageID> &)
+void
+SystemReport::on_report_package_failure_post(const tr1::shared_ptr<const PackageID> &)
 {
 }
 
-void pertubis::SystemReport::on_report_check_package_post(const QualifiedPackageName &)
+void
+SystemReport::on_report_check_package_post(const QualifiedPackageName &)
 {
     ++m_totalCount;
 }
 
-void pertubis::SystemReport::on_report_all_post()
+void
+SystemReport::on_report_all_post()
 {
-    // qDebug() << "pertubis::SystemReport::on_report_all_post() start";
-    emit finished( m_totalCount, m_errorCount);
-    // qDebug() << "pertubis::SystemReport::on_report_all_post() done";
+    // qDebug() << "SystemReport::on_report_all_post() start";
+    emit finished(m_totalCount, m_errorCount);
+    // qDebug() << "SystemReport::on_report_all_post() done";
 }
