@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -32,31 +32,31 @@
 #include <paludis/package_id-fwd.hh>
 
 
-/** \enum pertubis::ReportPackage::ReportPackageHeaderOrder
- * The order of clolumns in pertubis::ReportPackage::m_data and column order in the package view
+/** \enum perturbis::ReportPackage::ReportPackageHeaderOrder
+ * The order of clolumns in perturbis::ReportPackage::m_data and column order in the package view
  */
 
-/** \enum pertubis::ReportPackage::ReportPackageHeaderOrder pertubis::ReportPackage::ro_deinstall
+/** \enum perturbis::ReportPackage::ReportPackageHeaderOrder perturbis::ReportPackage::ro_deinstall
  * QVariant<int>. add to deinstall task
  */
 
-/** \enum pertubis::ReportPackage::ReportPackageHeaderOrder pertubis::ReportPackage::ro_package
+/** \enum perturbis::ReportPackage::ReportPackageHeaderOrder perturbis::ReportPackage::ro_package
  * QVariant<QString>. paludis::PackagePartName
  */
 
-/** \enum pertubis::ReportPackage::ReportPackageHeaderOrder pertubis::ReportPackage::ro_category
+/** \enum perturbis::ReportPackage::ReportPackageHeaderOrder perturbis::ReportPackage::ro_category
  * QVariant<QString>. paludis::CategoryPartName
  */
 
-/** \enum pertubis::ReportPackage::ReportPackageHeaderOrder pertubis::ReportPackage::ro_version
+/** \enum perturbis::ReportPackage::ReportPackageHeaderOrder perturbis::ReportPackage::ro_version
  * QVariant<QString>. paludis::Version
  */
 
-/** \enum pertubis::ReportPackage::ReportPackageHeaderOrder pertubis::ReportPackage::ro_last
+/** \enum perturbis::ReportPackage::ReportPackageHeaderOrder perturbis::ReportPackage::ro_last
  * number of named columns
  */
 
-namespace pertubis
+namespace perturbis
 {
     /** \brief package information / metadata storage
      *
@@ -113,6 +113,6 @@ namespace pertubis
     };
 }
 
-QDebug operator<<(QDebug dbg, const pertubis::ReportPackage &c);
+QDebug operator<<(QDebug dbg, const perturbis::ReportPackage &c);
 
 #endif
