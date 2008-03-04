@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class QSpinBox;
 class QCheckBox;
 class QFontComboBox;
 
-namespace pertubis
+namespace perturbis
 {
     class GeneralSettingsModel : public QObject
     {
