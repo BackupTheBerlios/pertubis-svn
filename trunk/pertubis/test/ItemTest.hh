@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include <QtCore>
 #include <QtGui>
 
-namespace pertubis
+namespace perturbis
 {
 	class TaskBox;
 
