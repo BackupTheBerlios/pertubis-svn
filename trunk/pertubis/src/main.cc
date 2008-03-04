@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -33,24 +33,24 @@
 int
 main(int argc, char **argv)
 {
-    Q_INIT_RESOURCE(pertubis);
+    Q_INIT_RESOURCE(perturbis);
 
     if (argc == 1)
     {
-        QFile config("/etc/pertubis/pertubis.conf");
+        QFile config("/etc/perturbis/perturbis.conf");
         bool first_start(!config.exists());
         qDebug() << "first_start ?" << first_start;
-        QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+        QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
         settings.beginGroup("GeneralSettingsModel");
-        QString lang = settings.value("language",":i18n/pertubis-en").toString();
+        QString lang = settings.value("language",":i18n/perturbis-en").toString();
         settings.endGroup();
         QTranslator t;
         t.load(lang);
         QApplication a(argc, argv);
-        a.setApplicationName("pertubis");
-        a.setOrganizationName("pertubis");
+        a.setApplicationName("perturbis");
+        a.setOrganizationName("perturbis");
         a.installTranslator(&t);
-        pertubis::MainWindow p(first_start);
+        perturbis::MainWindow p(first_start);
         a.setActiveWindow(&p);
         p.show();
         return a.exec();
