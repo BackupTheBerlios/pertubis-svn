@@ -23,7 +23,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::DeinstallSettingsView</name>
+    <name>perturbis::DeinstallSettingsView</name>
     <message>
         <location filename="../src/DeinstallSettings.cc" line="75"/>
         <source>with deps</source>
@@ -76,7 +76,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::DepListSettingsView</name>
+    <name>perturbis::DepListSettingsView</name>
     <message>
         <location filename="../src/DepListSettings.cc" line="457"/>
         <source>Dependency List Settings</source>
@@ -374,7 +374,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::GeneralSettingsView</name>
+    <name>perturbis::GeneralSettingsView</name>
     <message>
         <location filename="../src/GeneralSettings.cc" line="115"/>
         <source>General Settings</source>
@@ -432,8 +432,8 @@
     </message>
     <message>
         <location filename="../src/GeneralSettings.cc" line="240"/>
-        <source>pertubis info</source>
-        <translation>pertubis Informationen</translation>
+        <source>perturbis info</source>
+        <translation>perturbis Informationen</translation>
     </message>
     <message>
         <location filename="../src/GeneralSettings.cc" line="240"/>
@@ -452,7 +452,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::InstallSettingsView</name>
+    <name>perturbis::InstallSettingsView</name>
     <message>
         <location filename="../src/InstallSettings.cc" line="131"/>
         <source>fetch</source>
@@ -555,11 +555,11 @@
     </message>
 </context>
 <context>
-    <name>pertubis::MainWindow</name>
+    <name>perturbis::MainWindow</name>
     <message>
         <location filename="../src/MainWindow.cc" line="182"/>
-        <source>pertubis :: Main Window</source>
-        <translation>pertubis :: Hauptfenster</translation>
+        <source>perturbis :: Main Window</source>
+        <translation>perturbis :: Hauptfenster</translation>
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="211"/>
@@ -573,7 +573,7 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="173"/>
-        <source>show/hide the pertubis main window</source>
+        <source>show/hide the perturbis main window</source>
         <translation>Hauptfenster ein/aus</translation>
     </message>
     <message>
@@ -593,8 +593,8 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="176"/>
-        <source>closing the pertubis suite. All unsaved changes will be lost!</source>
-        <translation>Schliesst die pertubis Anwendung. Alle ungespeicherten Änderungen werden verloren gehen!</translation>
+        <source>closing the perturbis suite. All unsaved changes will be lost!</source>
+        <translation>Schliesst die perturbis Anwendung. Alle ungespeicherten Änderungen werden verloren gehen!</translation>
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="194"/>
@@ -628,7 +628,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::PackageBrowsingPage</name>
+    <name>perturbis::PackageBrowsingPage</name>
     <message>
         <location filename="../src/PackageBrowsingPage.cc" line="73"/>
         <source>category</source>
@@ -676,7 +676,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::PertubisInstallTask</name>
+    <name>perturbis::PertubisInstallTask</name>
     <message>
         <location filename="../src/PertubisInstallTask.cc" line="203"/>
         <source>block</source>
@@ -724,7 +724,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::QuerySettingsView</name>
+    <name>perturbis::QuerySettingsView</name>
     <message>
         <location filename="../src/QuerySettings.cc" line="72"/>
         <source>matcher</source>
@@ -807,7 +807,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::RepositoryPage</name>
+    <name>perturbis::RepositoryPage</name>
     <message>
         <location filename="../src/RepositoryPage.cc" line="52"/>
         <source>repository</source>
@@ -868,7 +868,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SearchPage</name>
+    <name>perturbis::SearchPage</name>
     <message>
         <location filename="../src/SearchPage.cc" line="57"/>
         <source>+</source>
@@ -946,7 +946,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SearchWindow</name>
+    <name>perturbis::SearchWindow</name>
     <message>
         <location filename="../src/SearchWindow.cc" line="42"/>
         <source>&amp;Find</source>
@@ -974,7 +974,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SelectionPage</name>
+    <name>perturbis::SelectionPage</name>
     <message>
         <location filename="../src/SelectionPage.cc" line="46"/>
         <source>+</source>
@@ -1032,7 +1032,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SettingsPage</name>
+    <name>perturbis::SettingsPage</name>
     <message>
         <location filename="../src/Settings.cc" line="72"/>
         <source>General</source>
@@ -1065,12 +1065,12 @@
     </message>
     <message>
         <location filename="../src/Settings.cc" line="122"/>
-        <source>pertubis :: settings</source>
-        <translation>pertubis :: Einstellungen</translation>
+        <source>perturbis :: settings</source>
+        <translation>perturbis :: Einstellungen</translation>
     </message>
 </context>
 <context>
-    <name>pertubis::SystemReport</name>
+    <name>perturbis::SystemReport</name>
     <message>
         <location filename="../src/SystemReport.cc" line="153"/>
         <source>package is unused</source>
@@ -1093,7 +1093,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SystemReportPage</name>
+    <name>perturbis::SystemReportPage</name>
     <message>
         <location filename="../src/SystemReportPage.cc" line="49"/>
         <source>deinstall</source>
