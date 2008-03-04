@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -30,99 +30,99 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
 
-/** \enum pertubis::Package::PackageState
+/** \enum perturbis::Package::PackageState
  * An Package can be stable, unstable and masked. This is a higher level view on packages
  */
 
-/** \enum pertubis::Package::PackageState pertubis::Package::ps_stable
+/** \enum perturbis::Package::PackageState perturbis::Package::ps_stable
  * means this package (version) is stable
  */
 
-/** \enum pertubis::Package::PackageState pertubis::Package::ps_unstable
+/** \enum perturbis::Package::PackageState perturbis::Package::ps_unstable
  * means this package (version) is unstable
  */
 
-/** \enum pertubis::Package::PackageState pertubis::Package::ps_masked
+/** \enum perturbis::Package::PackageState perturbis::Package::ps_masked
  * means this package (version) is masked
  */
 
-/** \enum pertubis::Package::PackageState pertubis::Package::ps_last
+/** \enum perturbis::Package::PackageState perturbis::Package::ps_last
  * number of package states
  */
 
-/** \enum pertubis::Package::PackageOrder
- * The order of information in pertubis::Package::m_data and column order in the package view
+/** \enum perturbis::Package::PackageOrder
+ * The order of information in perturbis::Package::m_data and column order in the package view
  */
 
-/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_selected
+/** \enum perturbis::Package::PackageOrder* perturbis::Package::po_selected
  * QVariant<QVariantList>. Stores the task selection states
  */
 
-/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_package
+/** \enum perturbis::Package::PackageOrder* perturbis::Package::po_package
  * QVariant<QString>. paludis::PackagePartName
  */
 
-/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_category
+/** \enum perturbis::Package::PackageOrder* perturbis::Package::po_category
  * QVariant<QString>. paludis::CategoryPartName
  */
 
-/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_repository
+/** \enum perturbis::Package::PackageOrder* perturbis::Package::po_repository
  * QVariant<QString>. paludis::RepositoryName
  */
 
-/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_installed
+/** \enum perturbis::Package::PackageOrder* perturbis::Package::po_installed
  * QVariant<bool>. true if the package is installed
  */
 
-/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_mask_reasons
+/** \enum perturbis::Package::PackageOrder* perturbis::Package::po_mask_reasons
  * QVariant<QString>. paludis::MaskReasons
  */
 
-/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_change
+/** \enum perturbis::Package::PackageOrder* perturbis::Package::po_change
  * QVariant<QString>. shows if an packages best version is not the installed version, e.g. upgrade or downgrade
  */
 
-/** \enum pertubis::Package::PackageOrder* pertubis::Package::po_last
+/** \enum perturbis::Package::PackageOrder* perturbis::Package::po_last
  * number of named columns
  */
 
-/** \enum pertubis::Package::PackageType
+/** \enum perturbis::Package::PackageType
  * The package overview uses this Package class for storing the information about the package it represents. In which direction we want model updates
  */
 
-/** \enum pertubis::Package::PackageType* pertubis::Package::pt_nothing
+/** \enum perturbis::Package::PackageType* perturbis::Package::pt_nothing
  * This value is only used when the default constructor was called
  */
 
-/** \enum pertubis::Package::PackageType* pertubis::Package::pt_parent
+/** \enum perturbis::Package::PackageType* perturbis::Package::pt_parent
  * update this parent node and all child nodes ( down )
  */
 
-/** \enum pertubis::Package::PackageType* pertubis::Package::pt_child
+/** \enum perturbis::Package::PackageType* perturbis::Package::pt_child
  * update from parent and all child nodes, including this child node ( up )
  */
 
-/** \enum pertubis::Package::PackageType* pertubis::Package::pt_node_full
+/** \enum perturbis::Package::PackageType* perturbis::Package::pt_node_full
  * The item can have childs, and an parent Package.
  * when manipulated parent of this node, all childs and the node itself will be updated ( up and down )
  */
 
-/** \enum pertubis::Package::PackageType* pertubis::Package::pt_node_only
+/** \enum perturbis::Package::PackageType* perturbis::Package::pt_node_only
  * The item will have any childs, and maybe any parent.
  * when manipulated only this node will be updated
  */
 
-/** \enum pertubis::Package::PackageType* pertubis::Package::pt_last
+/** \enum perturbis::Package::PackageType* perturbis::Package::pt_last
  * number of package types
  */
 
-namespace pertubis
+namespace perturbis
 {
     /** \brief package information / metadata storage
      *
      * \ingroup PackageModelClass
      * The package overview uses this Package class for storing the information about the package it represents.
-     * Packages are node classes, and pertubis can use many hundreds of it as a tree structures.
+     * Packages are node classes, and perturbis can use many hundreds of it as a tree structures.
      * We are showing the packages of a category as a tree with a "meta item" or package item with version items or child items
      */
     class Package : public QObject
@@ -264,12 +264,12 @@ namespace pertubis
             Package(const Package& other);
     };
 
-    inline PackageType pertubis::Package::itemType() const
+    inline PackageType perturbis::Package::itemType() const
     {
         return m_itemType;
     }
 
-    inline Package* pertubis::Package::bestChild() const
+    inline Package* perturbis::Package::bestChild() const
     {
         return m_bestChild;
     }
@@ -286,27 +286,27 @@ namespace pertubis
         return 0;
     }
 
-    inline Package::ConstPackageIterator pertubis::Package::constChildBegin() const
+    inline Package::ConstPackageIterator perturbis::Package::constChildBegin() const
     {
         return m_children.begin();
     }
 
-    inline Package::PackageIterator pertubis::Package::childBegin()
+    inline Package::PackageIterator perturbis::Package::childBegin()
     {
         return m_children.begin();
     }
 
-    inline Package::ConstPackageIterator pertubis::Package::constChildEnd() const
+    inline Package::ConstPackageIterator perturbis::Package::constChildEnd() const
     {
         return m_children.end();
     }
 
-    inline Package::PackageIterator pertubis::Package::childEnd()
+    inline Package::PackageIterator perturbis::Package::childEnd()
     {
         return m_children.end();
     }
 }
 
-QDebug operator<<(QDebug dbg, const pertubis::Package &c);
+QDebug operator<<(QDebug dbg, const perturbis::Package &c);
 
 #endif
