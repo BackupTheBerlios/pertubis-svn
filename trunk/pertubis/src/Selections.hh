@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/environment-fwd.hh>
 
-namespace pertubis
+namespace perturbis
 {
     class Settings;
     class SelectionModel;
@@ -148,27 +148,27 @@ namespace pertubis
 
 }
 
-inline int pertubis::Selections::entryCount() const
+inline int perturbis::Selections::entryCount() const
 {
     return m_data.size();
 }
 
-inline bool pertubis::Selections::hasEntries()
+inline bool perturbis::Selections::hasEntries()
 {
     return !m_data.empty() ;
 }
 
-inline QString pertubis::Selections::name() const
+inline QString perturbis::Selections::name() const
 {
     return m_name;
 }
 
-inline paludis::PackageIDSet::ConstIterator pertubis::Selections::entriesBegin()
+inline paludis::PackageIDSet::ConstIterator perturbis::Selections::entriesBegin()
 {
     return m_data.begin();
 }
 
-inline paludis::PackageIDSet::ConstIterator pertubis::Selections::entriesEnd()
+inline paludis::PackageIDSet::ConstIterator perturbis::Selections::entriesEnd()
 {
     return m_data.end();
 }
