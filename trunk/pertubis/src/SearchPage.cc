@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -49,9 +49,9 @@
 #include <QSettings>
 #include <QTreeView>
 
-using namespace pertubis;
+using namespace perturbis;
 
-namespace pertubis
+namespace perturbis
 {
     struct SearchPagePrivate
     {
@@ -171,7 +171,7 @@ void
 SearchPage::loadSettings()
 {
     qDebug() << "SearchPage::loadSettings() - start";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("SearchPage");
     m_imp->m_hSplit->restoreState(settings.value("hSplit").toByteArray());
     settings.endGroup();
@@ -182,7 +182,7 @@ void
 SearchPage::saveSettings()
 {
     qDebug() << "SearchPage::saveSettings() - start";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("SearchPage");
     settings.setValue("hSplit", m_imp->m_hSplit->saveState());
     settings.endGroup();
