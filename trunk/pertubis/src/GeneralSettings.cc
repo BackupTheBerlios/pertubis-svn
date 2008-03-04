@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #include <QSettings>
 #include <QTranslator>
 
-using namespace pertubis;
+using namespace perturbis;
 
 static QStringList
 findTranslationFiles()
@@ -82,10 +82,10 @@ void
 GeneralSettingsModel::loadSettings()
 {
     qDebug() << "GeneralSettingsModel::loadSettings()";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("GeneralSettingsModel");
     // use ts files only without file extensions!
-    m_currentLanguage=settings.value("language",":i18n/pertubis-en").toString();
+    m_currentLanguage=settings.value("language",":i18n/perturbis-en").toString();
     settings.endGroup();
 }
 
@@ -93,7 +93,7 @@ void
 GeneralSettingsModel::saveSettings()
 {
     qDebug() << "GeneralSettingsModel::saveSettings()";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("GeneralSettingsModel");
     settings.setValue("language",m_currentLanguage);
     settings.endGroup();
@@ -167,7 +167,7 @@ void
 GeneralSettingsView::languageChanged(const QString& language)
 {
     m_model->m_currentLanguage=m_model->m_languageToTranslation[language];
-    QMessageBox::information(this,tr("pertubis info"),tr("language setting changes will be applied after a restart"));
+    QMessageBox::information(this,tr("perturbis info"),tr("language setting changes will be applied after a restart"));
 }
 
 GeneralSettingsView::~GeneralSettingsView()
