@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include "Package-fwd.hh"
 #include <paludis/install_task.hh>
 
-namespace pertubis
+namespace perturbis
 {
 
     class Selections;
@@ -139,7 +139,7 @@ namespace pertubis
 
         signals:
 
-            /*! \brief after updating paludis we must rebuild pertubis
+            /*! \brief after updating paludis we must rebuild perturbis
             *
             */
             void rebuildMyself(const QString& message);
