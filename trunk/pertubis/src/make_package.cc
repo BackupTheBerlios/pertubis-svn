@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
 #include "make_package.hh"
 #include "Package.hh"
 
-pertubis::Package*
-pertubis::makePackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+perturbis::Package*
+perturbis::makePackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
                                         Qt::CheckState install,
                                         Qt::CheckState deinstall,
                                         QString package,
@@ -44,8 +44,8 @@ pertubis::makePackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
     return pack;
 }
 
-pertubis::Package*
-pertubis::makeRootPackage()
+perturbis::Package*
+perturbis::makeRootPackage()
 {
     return new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                        QVector<QVariant>(pho_last),
@@ -54,8 +54,8 @@ pertubis::makeRootPackage()
                        0);
 }
 
-pertubis::Package*
-pertubis::makeVersionPackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
+perturbis::Package*
+perturbis::makeVersionPackage(paludis::tr1::shared_ptr<const paludis::PackageID> id,
         Qt::CheckState install,
         Qt::CheckState deinstall,
         QString version,
