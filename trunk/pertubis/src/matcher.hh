@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include <string>
 
-namespace pertubis
+namespace perturbis
 {
     /*! \brief abstract base class of a class that tests strings for some conditions
      * \ingroup PaludisAdapter
