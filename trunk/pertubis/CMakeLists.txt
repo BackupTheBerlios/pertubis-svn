@@ -18,7 +18,7 @@ SET(PERTUBIS_SU_TOOL
     CACHE STRING
     "use this to determine the desktop su tool")
 
-SET(PERTUBIS_DOC_PATH /usr/share/doc/pertubis-scm/
+SET(PERTUBIS_DOC_PATH /usr/share/doc/perturbis-scm/
     CACHE STRING
     "set this to the appropriate doc path")
 
@@ -63,7 +63,7 @@ FIND_LIBRARY(PALUDIS_LIB NAMES paludis
 
 SET(PERTUBIS_CFLAGS "${PALUDIS_CFLAGS} -Wall -Wextra -Wold-style-cast -Wredundant-decls -Wstrict-null-sentinel -Wmissing-noreturn -Woverloaded-virtual -Winit-self -Wunused -Wunused-function -Wshadow -Wwrite-strings"
     CACHE INTERNAL
-    "combines your CXXFLAGS paludis and pertubis flags"
+    "combines your CXXFLAGS paludis and perturbis flags"
     FORCE)
 
 SET(CMAKE_CXX_FLAGS_DEBUG "${PERTUBIS_CFLAGS} -ggdb"
