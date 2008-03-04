@@ -28,8 +28,8 @@
 #include "MainWindow.hh"
 #include "MessageOutput.hh"
 #include "Package.hh"
-#include "PertubisDeinstallTask.hh"
-#include "PertubisInstallTask.hh"
+#include "PerturbisDeinstallTask.hh"
+#include "PerturbisInstallTask.hh"
 #include "SelectionModelDelegate.hh"
 #include "SelectionModel.hh"
 #include "SelectionPage.hh"
@@ -70,8 +70,8 @@ namespace perturbis
         QTreeView*                m_selectionView;
         QSplitter*                m_hSplit;
         QTextBrowser*             m_details;
-        PertubisInstallTask*      m_installTask;
-        PertubisDeinstallTask*    m_deinstallTask;
+        PerturbisInstallTask*      m_installTask;
+        PerturbisDeinstallTask*    m_deinstallTask;
     };
 }
 
@@ -272,7 +272,7 @@ SelectionPage::setupDeinstallTask(bool pretend)
         if (m_imp->m_deinstallTask != 0)
             delete m_imp->m_deinstallTask;
 
-        m_imp->m_deinstallTask = new PertubisDeinstallTask(this,mainWindow()->env(),mainWindow()->installSelections(),mainWindow()->deinstallSelections());
+        m_imp->m_deinstallTask = new PerturbisDeinstallTask(this,mainWindow()->env(),mainWindow()->installSelections(),mainWindow()->deinstallSelections());
         m_imp->m_deinstallTask->set_pretend(mainWindow()->settingsPage()->m_installView->m_model->m_pretend);
         m_imp->m_deinstallTask->set_no_config_protect(mainWindow()->settingsPage()->m_installView->m_model->m_config);
         m_imp->m_deinstallTask->set_preserve_world(mainWindow()->settingsPage()->m_installView->m_model->m_preserve);
@@ -321,7 +321,7 @@ SelectionPage::setupInstallTask(bool pretend, QString target)
 
         paludis::DepListOptions options;
         mainWindow()->settingsPage()->m_depListView->populate_dep_list_options(mainWindow()->env().get(),options);
-        m_imp->m_installTask = new PertubisInstallTask(this,mainWindow()->env(),options,mainWindow()->env()->default_destinations(),mainWindow()->installSelections(),mainWindow()->deinstallSelections());
+        m_imp->m_installTask = new PerturbisInstallTask(this,mainWindow()->env(),options,mainWindow()->env()->default_destinations(),mainWindow()->installSelections(),mainWindow()->deinstallSelections());
         mainWindow()->settingsPage()->m_installView->m_model->populate_install_task(mainWindow()->env().get(),*m_imp->m_installTask);
         mainWindow()->settingsPage()->m_depListView->populate_install_task(mainWindow()->env().get(),*m_imp->m_installTask);
         m_imp->m_installTask->set_pretend(pretend);
