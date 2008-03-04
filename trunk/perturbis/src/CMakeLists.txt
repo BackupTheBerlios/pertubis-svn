@@ -29,8 +29,8 @@ SET(PERTUBIS_SRCS
     Page.cc
     make_package.cc
     PaludisUtils.cc
-    PertubisDeinstallTask.cc
-    PertubisInstallTask.cc
+    PerturbisDeinstallTask.cc
+    PerturbisInstallTask.cc
     QuerySettings.cc
     RegexMatcher.cc
     ReportModelDelegate.cc
@@ -73,8 +73,8 @@ SET(PERTUBIS_MOC_HDRS
     Page.hh
     PackageModel.hh
     PackagesThread.hh
-    PertubisDeinstallTask.hh
-    PertubisInstallTask.hh
+    PerturbisDeinstallTask.hh
+    PerturbisInstallTask.hh
     QuerySettings.hh
     RepositoryPage.hh
     ReportPackageModel.hh
