@@ -18,7 +18,7 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "PertubisInstallTask.hh"
+#include "PerturbisInstallTask.hh"
 #include "Package.hh"
 #include "Selections.hh"
 #include "SelectionModel-fwd.hh"
@@ -33,7 +33,7 @@
 
 using namespace perturbis;
 
-PertubisInstallTask::PertubisInstallTask(QObject* pobj,
+PerturbisInstallTask::PerturbisInstallTask(QObject* pobj,
                         paludis::tr1::shared_ptr<paludis::Environment> e,
                         const paludis::DepListOptions & options,
                         paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations,
@@ -48,12 +48,12 @@ PertubisInstallTask::PertubisInstallTask(QObject* pobj,
 }
 
 void
-PertubisInstallTask::on_installed_paludis()
+PerturbisInstallTask::on_installed_paludis()
 {
 }
 
 void
-PertubisInstallTask::on_display_merge_list_entry(const paludis::DepListEntry& e)
+PerturbisInstallTask::on_display_merge_list_entry(const paludis::DepListEntry& e)
 {
     using namespace paludis;
     DisplayMode m;
@@ -95,16 +95,16 @@ PertubisInstallTask::on_display_merge_list_entry(const paludis::DepListEntry& e)
 }
 
 void
-PertubisInstallTask::run()
+PerturbisInstallTask::run()
 {
     execute();
 }
 
 void
-PertubisInstallTask::makePackage(const paludis::DepListEntry& e, DisplayMode m)
+PerturbisInstallTask::makePackage(const paludis::DepListEntry& e, DisplayMode m)
 {
     using namespace paludis;
-    qDebug() << "PertubisInstallTask::makePackage()";
+    qDebug() << "PerturbisInstallTask::makePackage()";
     QVector<QVariant> vdata(spho_last);
     QStringList tags;
     Package* node(new Package(e.package_id,QVector<QVariant>(spho_last),ps_stable,pt_parent,0));
@@ -200,7 +200,7 @@ PertubisInstallTask::makePackage(const paludis::DepListEntry& e, DisplayMode m)
 }
 
 void
-PertubisInstallTask::display_merge_list_post_counts()
+PerturbisInstallTask::display_merge_list_post_counts()
 {
     QString text;
     text.append(tr("Total") + " " + count<max_count>());
