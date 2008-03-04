@@ -2,19 +2,19 @@
 
 cd $1
 
-echo "<!DOCTYPE RCC><RCC version=\"1.0\">"  > pertubis.qrc
-echo "  <qresource>" >> pertubis.qrc
+echo "<!DOCTYPE RCC><RCC version=\"1.0\">"  > perturbis.qrc
+echo "  <qresource>" >> perturbis.qrc
 
 for i in images/*; do
-	echo "    <file>${i}</file>" >> pertubis.qrc;
+	echo "    <file>${i}</file>" >> perturbis.qrc;
 done
 
 for i in i18n/*.qm; do
-	echo "    <file>${i}</file>" >> pertubis.qrc
+	echo "    <file>${i}</file>" >> perturbis.qrc
 done
 
-echo "  </qresource>" >> pertubis.qrc
-echo "</RCC>" >> pertubis.qrc
+echo "  </qresource>" >> perturbis.qrc
+echo "</RCC>" >> perturbis.qrc
 
 p=`pwd`
-echo "${p}/pertubis.qrc"
+echo "${p}/perturbis.qrc"
