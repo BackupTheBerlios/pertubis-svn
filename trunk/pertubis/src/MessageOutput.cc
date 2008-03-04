@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ typedef  void (QTextFormat::*color_func)(const QBrush &);
 #define TY_CSI_PG(A  )  TY_CONSTR(9,A,0)
 #define TY_CSI_PE(A  )  TY_CONSTR(10,A,0)
 
-using namespace pertubis;
+using namespace perturbis;
 
 MessageThread::MessageThread(QObject* pobj, int fd) :
         QThread(pobj),
@@ -178,7 +178,7 @@ void
 Vt102Display::loadSettings()
 {
     qDebug() << "MessagePage::loadSettings() - start";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("Vt102Display");
     m_currentFont.fromString(settings.value("font","Monospace,-1,13,5,50,0,0,0,0,0").toString());
     m_fontSize = settings.value("fontSize",13).toInt();
@@ -190,7 +190,7 @@ void
 Vt102Display::saveSettings()
 {
     qDebug() << "Vt102Display::saveSettings() - start";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("Vt102Display");
     settings.setValue("font", m_currentFont.toString());
     settings.setValue("vt100", m_parserOn);
@@ -868,7 +868,7 @@ MessagePage::MessagePage(MainWindow* main) :
 {
     qDebug() << "MessagePage::MessagePage()";
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
-    paludis::Log::get_instance()->set_program_name("pertubis");
+    paludis::Log::get_instance()->set_program_name("perturbis");
     m_display = new Vt102Display(this);
     QVBoxLayout* mylayout = new QVBoxLayout;
     mylayout->addWidget(m_display);
