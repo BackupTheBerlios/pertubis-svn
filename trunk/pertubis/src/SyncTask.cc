@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -24,15 +24,15 @@
 #include <iostream>
 #include <string>
 
-using namespace pertubis;
+using namespace perturbis;
 
-using namespace pertubis;
+using namespace perturbis;
 
 /*! \brief syncing repositories
  * \ingroup PaludisAdapter
  * \ingroup Thread
  */
-namespace pertubis
+namespace perturbis
 {
     class PertubisSyncTask :
         public ThreadBase,
