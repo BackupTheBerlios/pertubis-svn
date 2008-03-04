@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 #include <QListWidgetItem>
 #include <QSettings>
 
-using namespace pertubis;
+using namespace perturbis;
 
 static paludis::DepListDepsOption
 getOptionArg(int arg)
@@ -394,7 +394,7 @@ void
 DepListSettingsModel::loadSettings()
 {
     qDebug() << "DepListSettingsModel::loadSettings()";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("DepListSettings");
         m_dlDepsDefault = settings.value("depsDefault",0).toInt();
         m_dlInstalledDepsPre = settings.value("idepsPre",0).toInt();
@@ -426,7 +426,7 @@ DepListSettingsModel::loadSettings()
 void
 DepListSettingsModel::saveSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("DepListSettings");
     settings.setValue("depsDefault",m_dlDepsDefault);
     settings.setValue("idepsPre",m_dlInstalledDepsPre);
