@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <paludis/version_requirements.hh>
 
 bool
-pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  env,
+perturbis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  env,
                          const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
     using namespace paludis;
@@ -49,7 +49,7 @@ pertubis::installed(const paludis::tr1::shared_ptr<paludis::Environment>&  env,
 }
 
 bool
-pertubis::hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
+perturbis::hasVersionChange(const paludis::tr1::shared_ptr<paludis::Environment>&  m_env,
                                 const paludis::tr1::shared_ptr<const paludis::PackageID>& id)
 {
     using namespace paludis;
