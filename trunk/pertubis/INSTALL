@@ -1,15 +1,15 @@
-pertubis installation description
+perturbis installation description
 ##################################
 
-You can build pertubis manual via cmake or using the ebuild we provide.
+You can build perturbis manual via cmake or using the ebuild we provide.
 For now I only provide an "scm" ebuild, that's a development ebuild which
-builds the actual svn pertubis /trunk snapshot. Later versioned ebuilds will
+builds the actual svn perturbis /trunk snapshot. Later versioned ebuilds will
 arrive.
 
-pertubis dependencies
+perturbis dependencies
 ##################################
 
-Below you see the packages you need to build and run pertubis.
+Below you see the packages you need to build and run perturbis.
 
     * gentoo linux
     * subversion
@@ -25,12 +25,12 @@ proceed as usual. Don't forget to change to "</path/to/your/overlay>"
 to your needs!:
 
 cd
-svn co svn://svn.berlios.de/pertubis/trunk/overlay/sys-apps/pertubis \
-    pertubis-ebuilds
-mkdir -p </path/to/your/overlay>/sys-apps/pertubis
-cp pertubis-ebuilds/pertubis-scm.ebuild \
-    </path/to/your/overlay>/sys-apps/pertubis/
-paludis -i pertubis
+svn co svn://svn.berlios.de/perturbis/trunk/overlay/sys-apps/perturbis \
+    perturbis-ebuilds
+mkdir -p </path/to/your/overlay>/sys-apps/perturbis
+cp perturbis-ebuilds/perturbis-scm.ebuild \
+    </path/to/your/overlay>/sys-apps/perturbis/
+paludis -i perturbis
 
 manual installation method:
 ##################################
@@ -39,9 +39,9 @@ Don't forget to change <YOUR_CPU> to your processor type
 and <NUM_CORES> to the number of your cores +1.
 
 export CXXFLAGS="-march=<YOUR_CPU> -O2 -pipe"
-svn co svn://svn.berlios.de/pertubis/trunk/pertubis pertubis
-mkdir -p pertubis/build/debug
-cd pertubis/build/debug
+svn co svn://svn.berlios.de/perturbis/trunk/perturbis perturbis
+mkdir -p perturbis/build/debug
+cd perturbis/build/debug
 cmake ../.. -DCMAKE_BUILD_TYPE=debug -DPERTUBIS_BUILD_DOCS=ON
 make -j <NUM_CORES>
 
@@ -49,7 +49,7 @@ installation ( as root user )
 
 make install
 
-cmake options that affect pertubis with default values
+cmake options that affect perturbis with default values
 ##################################
 
 CMAKE_BUILD_TYPE:STRING=release
@@ -62,7 +62,7 @@ PERTUBIS_BUILD_DOCS:BOOL=OFF
     OFF: don't build doxygen api documentation
     ON: build doxygen api documentation
 
-PERTUBIS_DOC_PATH:STRING=/usr/share/doc/pertubis
+PERTUBIS_DOC_PATH:STRING=/usr/share/doc/perturbis
 
     if you set PERTUBIS_BUILD_DOCS=ON this is the path for installing the docs
 
