@@ -4,13 +4,13 @@ kde_tool=`which kdesu`
 gnome_tool=`which gksu`
 
 if  [[ -n ${KDE_SESSION_UID} && -n ${kde_tool} ]];then
-    ${kde_tool} -t -i pertubis.png /usr/lib/pertubis/pertubis
+    ${kde_tool} -t -i perturbis.png /usr/lib/perturbis/perturbis
 elif [[ -n ${GNOME_SESSION_ID} && -n ${gnome_tool} ]];then
-    ${gnome_tool} -t /usr/lib/pertubis/pertubis
+    ${gnome_tool} -t /usr/lib/perturbis/perturbis
 elif [ -n ${gnome_tool} ]; then
-    ${gnome_tool} /usr/lib/pertubis/pertubis
+    ${gnome_tool} /usr/lib/perturbis/perturbis
 elif [  -n ${kde_tool} ];then
-    ${kde_tool} /usr/lib/pertubis/pertubis
+    ${kde_tool} /usr/lib/perturbis/perturbis
 else
-    /usr/lib/pertubis
+    /usr/lib/perturbis
 fi
