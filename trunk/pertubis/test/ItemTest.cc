@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include "ItemTest.hh"
 #include "../src/Package.hh"
 
-void pertubis::ItemTest::setTaskState()
+void perturbis::ItemTest::setTaskState()
 {
     QVariantList selections;
     selections << Qt::Unchecked << Qt::Unchecked;
@@ -52,7 +52,7 @@ void pertubis::ItemTest::setTaskState()
     delete pitem;
 }
 
-void pertubis::ItemTest::setState()
+void perturbis::ItemTest::setState()
 {
     Package* pitem = new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                            QVariantList(),
@@ -66,7 +66,7 @@ void pertubis::ItemTest::setState()
     delete pitem;
 }
 
-void pertubis::ItemTest::available()
+void perturbis::ItemTest::available()
 {
     Package* pitem = new Package(paludis::tr1::shared_ptr<const paludis::PackageID>(),
                            QVariantList(),
@@ -81,7 +81,7 @@ void pertubis::ItemTest::available()
     delete pitem;
 }
 
-void pertubis::ItemTest::appendChild()
+void perturbis::ItemTest::appendChild()
 {
     Package* pitem = new Package();
     Package* vitem1 = new Package();
@@ -99,7 +99,7 @@ void pertubis::ItemTest::appendChild()
     delete pitem;
 }
 
-void pertubis::ItemTest::prependChild()
+void perturbis::ItemTest::prependChild()
 {
     Package* pitem = new Package();
     Package* vitem1 = new Package();
@@ -117,7 +117,7 @@ void pertubis::ItemTest::prependChild()
     delete pitem;
 }
 
-void pertubis::ItemTest::setBestChild()
+void perturbis::ItemTest::setBestChild()
 {
     Package* pitem = new Package();
     Package* vitem1 = new Package();
@@ -131,7 +131,7 @@ void pertubis::ItemTest::setBestChild()
     delete pitem;
 }
 
-void pertubis::ItemTest::setID()
+void perturbis::ItemTest::setID()
 {
     Package* pitem = new Package();
     paludis::tr1::shared_ptr<const paludis::PackageID> id;
@@ -140,4 +140,4 @@ void pertubis::ItemTest::setID()
     delete pitem;
 }
 
-QTEST_MAIN(pertubis::ItemTest)
+QTEST_MAIN(perturbis::ItemTest)
