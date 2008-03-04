@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = pertubis
+PROJECT_NAME           = perturbis
 PROJECT_NUMBER         =
 OUTPUT_DIRECTORY       = @doxygen_BINARY_DIR@
 CREATE_SUBDIRS         = NO
