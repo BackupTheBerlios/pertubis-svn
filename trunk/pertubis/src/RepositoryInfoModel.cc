@@ -1,14 +1,14 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl.
 *
-* This file is part of pertubis.
+* This file is part of perturbis.
 *
-* pertubis is free software; you can redistribute it and/or modify
+* perturbis is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 3 of the License, or
 * (at your option) any later version.
 *
-* pertubis is distributed in the hope that it will be useful,
+* perturbis is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
@@ -34,7 +34,7 @@
 #include <paludis/util/stringify.hh>
 #include <set>
 
-using namespace pertubis;
+using namespace perturbis;
 using namespace paludis;
 
 struct MetadataKeyComparator
