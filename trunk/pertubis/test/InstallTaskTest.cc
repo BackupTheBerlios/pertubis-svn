@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl <hotshelf@users.berlios.de>
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 #include "../src/InstallTask.hh"
 #include "../src/TaskBox.hh"
 
-void pertubis::InstallTaskTest::getSetTaskid()
+void perturbis::InstallTaskTest::getSetTaskid()
 {
     InstallTask* install = new InstallTask();
 //     install->setTaskid(0);
@@ -44,7 +44,7 @@ void pertubis::InstallTaskTest::getSetTaskid()
     delete install;
 }
 
-void pertubis::InstallTaskTest::addEntry()
+void perturbis::InstallTaskTest::addEntry()
 {
     paludis::Log::get_instance()->set_log_level(paludis::ll_qa);
     paludis::Log::get_instance()->set_program_name("test-ItemTest");
@@ -95,4 +95,4 @@ void pertubis::InstallTaskTest::addEntry()
     delete install;
 }
 
-QTEST_MAIN(pertubis::InstallTaskTest)
+QTEST_MAIN(perturbis::InstallTaskTest)
