@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include "GLSAParser.hh"
 
-using namespace pertubis;
+using namespace perturbis;
 
 static QString
 sign(QString op)
@@ -52,7 +52,7 @@ sign(QString op)
 
 GlsaParser::GlsaParser(QTextBrowser *browser) : m_browser(browser),m_putInTable(false), m_dontUse(false), m_isUnaffected(false),m_isVulnerable(false)
 {
-    m_html ="<html><head><link title=\"new\" rel=\"stylesheet\" type=\"text/css\" href=\"/usr/lib/pertubis/glsa.css\"></head><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\"><colgroup><col width=\"100%\"></colgroup><tbody><tr><td>\n";
+    m_html ="<html><head><link title=\"new\" rel=\"stylesheet\" type=\"text/css\" href=\"/usr/lib/perturbis/glsa.css\"></head><body><table border=\"0\" summary=\"\" width=\"100%\" height=\"100%\" cellpadding=\"25\"><colgroup><col width=\"100%\"></colgroup><tbody><tr><td>\n";
     m_table = "<table class=\"ntable\" border=\"0\"><tbody >\n";
 }
 
