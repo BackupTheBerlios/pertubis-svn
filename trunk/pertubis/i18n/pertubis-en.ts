@@ -23,7 +23,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::DepListSettingsView</name>
+    <name>perturbis::DepListSettingsView</name>
     <message>
         <location filename="../src/DepListSettings.cc" line="455"/>
         <source>Dependency List Settings</source>
@@ -321,7 +321,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::GeneralSettingsView</name>
+    <name>perturbis::GeneralSettingsView</name>
     <message>
         <location filename="../src/GeneralSettings.cc" line="111"/>
         <source>General Settings</source>
@@ -380,7 +380,7 @@
     </message>
     <message>
         <location filename="../src/GeneralSettings.cc" line="236"/>
-        <source>pertubis info</source>
+        <source>perturbis info</source>
         <translation></translation>
     </message>
     <message>
@@ -400,7 +400,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::InstallSettingsView</name>
+    <name>perturbis::InstallSettingsView</name>
     <message>
         <location filename="../src/InstallSettings.cc" line="130"/>
         <source>fetch</source>
@@ -503,10 +503,10 @@
     </message>
 </context>
 <context>
-    <name>pertubis::MainWindow</name>
+    <name>perturbis::MainWindow</name>
     <message>
         <location filename="../src/MainWindow.cc" line="806"/>
-        <source>pertubis :: Main Window</source>
+        <source>perturbis :: Main Window</source>
         <translation></translation>
     </message>
     <message>
@@ -516,7 +516,7 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="204"/>
-        <source>show/hide the pertubis main window</source>
+        <source>show/hide the perturbis main window</source>
         <translation></translation>
     </message>
     <message>
@@ -551,7 +551,7 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="217"/>
-        <source>configure pertubis</source>
+        <source>configure perturbis</source>
         <translation></translation>
     </message>
     <message>
@@ -626,8 +626,8 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="242"/>
-        <source>closing the pertubis suite. All unsaved changes will be lost!</source>
-        <translation>closing the pertubis suite. All unsaved changes will be lost!</translation>
+        <source>closing the perturbis suite. All unsaved changes will be lost!</source>
+        <translation>closing the perturbis suite. All unsaved changes will be lost!</translation>
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="293"/>
@@ -641,7 +641,7 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="248"/>
-        <source>about pertubis</source>
+        <source>about perturbis</source>
         <translation></translation>
     </message>
     <message>
@@ -736,7 +736,7 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="347"/>
-        <source>Here you can select the repositories pertubis will use.&lt;/p&gt;&lt;p&gt;Click on a repository to enable/disable filtering by this repository</source>
+        <source>Here you can select the repositories perturbis will use.&lt;/p&gt;&lt;p&gt;Click on a repository to enable/disable filtering by this repository</source>
         <translation></translation>
     </message>
     <message>
@@ -816,7 +816,7 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="506"/>
-        <source>pertubis toolbar</source>
+        <source>perturbis toolbar</source>
         <translation></translation>
     </message>
     <message>
@@ -851,7 +851,7 @@
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="1152"/>
-        <source>pertubis</source>
+        <source>perturbis</source>
         <translation></translation>
     </message>
     <message>
@@ -891,14 +891,14 @@
         <location filename="../src/MainWindow.cc" line="1328"/>
         <source>&lt;html&gt;&lt;body&gt;&lt;table&gt;&lt;colgroup&gt;&lt;col width=&quot;40%&quot;&gt;&lt;col width=&quot;60%&quot;&gt;
 &lt;/colgroup&gt;
-&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;version&lt;/td&gt;&lt;td&gt;%1.%2.%3&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Revision&lt;/td&gt;&lt;td&gt;%4&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;author&lt;/td&gt;&lt;td&gt;&#xa9;2007 by Stefan K&#xf6;gl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;homepage&lt;/td&gt;&lt;td&gt;&lt;a ref=&quot;http://pertubis.berlios.de&quot;&gt;http://pertubis.berlios.de/&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;version&lt;/td&gt;&lt;td&gt;%1.%2.%3&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Revision&lt;/td&gt;&lt;td&gt;%4&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;author&lt;/td&gt;&lt;td&gt;&#xa9;2007 by Stefan K&#xf6;gl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;homepage&lt;/td&gt;&lt;td&gt;&lt;a ref=&quot;http://perturbis.berlios.de&quot;&gt;http://perturbis.berlios.de/&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;body&gt;&lt;table&gt;&lt;colgroup&gt;&lt;col width=&quot;40%&quot;&gt;&lt;col width=&quot;60%&quot;&gt;
 &lt;/colgroup&gt;
-&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;version&lt;/td&gt;&lt;td&gt;%1.%2.%3&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Revision&lt;/td&gt;&lt;td&gt;%4&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;author&lt;/td&gt;&lt;td&gt;©2007 by Stefan Kögl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;homepage&lt;/td&gt;&lt;td&gt;&lt;a ref=&quot;http://pertubis.berlios.de&quot;&gt;http://pertubis.berlios.de/&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;version&lt;/td&gt;&lt;td&gt;%1.%2.%3&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Revision&lt;/td&gt;&lt;td&gt;%4&lt;/td&gt;&lt;td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;author&lt;/td&gt;&lt;td&gt;©2007 by Stefan Kögl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;homepage&lt;/td&gt;&lt;td&gt;&lt;a ref=&quot;http://perturbis.berlios.de&quot;&gt;http://perturbis.berlios.de/&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/MainWindow.cc" line="1341"/>
-        <source>pertubis - an interactive frontend for paludis</source>
+        <source>perturbis - an interactive frontend for paludis</source>
         <translation></translation>
     </message>
     <message>
@@ -923,7 +923,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::PackageInstallTask</name>
+    <name>perturbis::PackageInstallTask</name>
     <message>
         <location filename="../src/ItemInstallTask.cc" line="89"/>
         <source>deinstall</source>
@@ -936,7 +936,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::QuerySettingsView</name>
+    <name>perturbis::QuerySettingsView</name>
     <message>
         <location filename="../src/QuerySettings.cc" line="72"/>
         <source>matcher</source>
@@ -1019,7 +1019,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::ReportPackageModel</name>
+    <name>perturbis::ReportPackageModel</name>
     <message>
         <location filename="../src/ReportPackageModel.cc" line="210"/>
         <source>deinstall</source>
@@ -1027,7 +1027,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SearchThread</name>
+    <name>perturbis::SearchThread</name>
     <message>
         <location filename="../src/SearchThread.cc" line="305"/>
         <source>version change</source>
@@ -1035,7 +1035,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SearchWindow</name>
+    <name>perturbis::SearchWindow</name>
     <message>
         <location filename="../src/SearchWindow.cc" line="44"/>
         <source>&amp;Find</source>
@@ -1073,7 +1073,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SelectionModel</name>
+    <name>perturbis::SelectionModel</name>
     <message>
         <location filename="../src/SelectionModel.cc" line="66"/>
         <source>block</source>
@@ -1086,7 +1086,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::Settings</name>
+    <name>perturbis::Settings</name>
     <message>
         <location filename="../src/Settings.cc" line="108"/>
         <source>Close</source>
@@ -1094,7 +1094,7 @@
     </message>
     <message>
         <location filename="../src/Settings.cc" line="122"/>
-        <source>pertubis :: settings</source>
+        <source>perturbis :: settings</source>
         <translation></translation>
     </message>
     <message>
@@ -1124,7 +1124,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::SystemReport</name>
+    <name>perturbis::SystemReport</name>
     <message>
         <location filename="../src/SystemReport.cc" line="76"/>
         <source>deinstall</source>
@@ -1152,7 +1152,7 @@
     </message>
 </context>
 <context>
-    <name>pertubis::UninstallSettingsView</name>
+    <name>perturbis::UninstallSettingsView</name>
     <message>
         <location filename="../src/UninstallSettings.cc" line="74"/>
         <source>with deps</source>
