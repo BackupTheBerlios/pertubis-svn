@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 #include <paludis/dep_list.hh>
 #include <paludis/action-fwd.hh>
 
-using namespace pertubis;
+using namespace perturbis;
 
 InstallSettingsModel::InstallSettingsModel(QObject *pobj) :
         QObject(pobj)
@@ -100,7 +100,7 @@ InstallSettingsModel::populate_install_task(const paludis::Environment * /*env*/
 void
 InstallSettingsModel::loadSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("InstallSettingsModel");
     m_debug = settings.value("debug_build",1).toInt();
     m_fetch = settings.value("fetch",false).toBool();
@@ -116,7 +116,7 @@ InstallSettingsModel::loadSettings()
 void
 InstallSettingsModel::saveSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("InstallSettingsModel");
     settings.setValue("debug",m_debug);
     settings.setValue("fetch",m_fetch);
