@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@
 #include <QStatusBar>
 #include <QTabWidget>
 
-using namespace pertubis;
+using namespace perturbis;
 
 static bool
 rootTest(const QString& message)
@@ -149,7 +149,7 @@ namespace
 }
 
 
-namespace pertubis
+namespace perturbis
 {
     struct MainWindow::MainWindowPrivate
     {
@@ -216,10 +216,10 @@ MainWindow::initGUI()
     QAction* acToggleMainWindow = new QAction(QPixmap(":images/logo.png"),tr("main window"),this);
     acToggleMainWindow->setChecked(true);
     acToggleMainWindow->setCheckable(true);
-    acToggleMainWindow->setToolTip(html_tooltip(tr("show/hide the pertubis main window"),acToggleMainWindow->text()));
+    acToggleMainWindow->setToolTip(html_tooltip(tr("show/hide the perturbis main window"),acToggleMainWindow->text()));
 
     QAction* acQuit = new QAction(QPixmap(":images/quit.png"),tr("quit") ,this);
-    acQuit->setToolTip(html_tooltip(tr("closing the pertubis suite. All unsaved changes will be lost!"),acQuit->text()));
+    acQuit->setToolTip(html_tooltip(tr("closing the perturbis suite. All unsaved changes will be lost!"),acQuit->text()));
 
     QAction* acSearch = new QAction(QPixmap(":images/find.png"),tr("find") ,this);
     acSearch->setShortcut(tr("CTRL+f"));
@@ -229,7 +229,7 @@ MainWindow::initGUI()
     installEventFilter(filter);
     statusBar()->setVisible(true);
 
-    setWindowTitle(tr("pertubis :: Main Window"));
+    setWindowTitle(tr("perturbis :: Main Window"));
     setWindowIcon(QPixmap(":images/logo.png"));
 
     // system tray
@@ -312,7 +312,7 @@ MainWindow::initGUI()
 void
 MainWindow::loadSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("MainWindow");
         resize(settings.value("size",QVariant(QSize(800,600))).toSize());
         move(settings.value("pos",QVariant(QPoint(341,21))).toPoint());
@@ -324,7 +324,7 @@ MainWindow::loadSettings()
 void
 MainWindow::saveSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("MainWindow");
         settings.setValue("mystate", saveState());
         settings.setValue("size", size());
