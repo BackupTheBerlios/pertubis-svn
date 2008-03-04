@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -29,14 +29,14 @@
 #include <QSettings>
 #include <QStringList>
 
-using namespace pertubis;
+using namespace perturbis;
 
 QuerySettingsModel::QuerySettingsModel(QObject *pobj) :
         QObject(pobj),
         m_kindModel(-1),
         m_matcherModel(-1)
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("Query");
     m_matcherModel = settings.value("matcher",0).toInt();
     m_kindModel  = settings.value("kind", 0).toInt();
@@ -45,7 +45,7 @@ QuerySettingsModel::QuerySettingsModel(QObject *pobj) :
 
 QuerySettingsModel::~QuerySettingsModel()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("Query");
     settings.setValue("matcher",m_matcherModel);
     settings.setValue("kind",m_kindModel);
