@@ -35,7 +35,7 @@ namespace perturbis
      * This class controlls all aspects and steps of installing packages
      * \todo this thread blocks the main application thread and gui. Find the issue!
      */
-    class PertubisInstallTask : public ThreadBase,
+    class PerturbisInstallTask : public ThreadBase,
         public paludis::InstallTask
     {
         Q_OBJECT
@@ -62,13 +62,13 @@ namespace perturbis
                 suggested_entry
             };
 
-            PertubisInstallTask(QObject* pobj,
+            PerturbisInstallTask(QObject* pobj,
                     paludis::tr1::shared_ptr<paludis::Environment> e,
                     const paludis::DepListOptions & options,
                     paludis::tr1::shared_ptr<const paludis::DestinationsSet> destinations,
                     Selections* install,
                     Selections* deinstall);
-            ~PertubisInstallTask() {}
+            ~PerturbisInstallTask() {}
 
             void run();
 
