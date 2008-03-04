@@ -72,12 +72,12 @@ namespace perturbis
 
 namespace
 {
-    class PertubisSyncTask :
+    class PerturbisSyncTask :
         public ThreadBase,
         public paludis::SyncTask
     {
         public:
-            PertubisSyncTask(paludis::tr1::shared_ptr<paludis::Environment> myenv,
+            PerturbisSyncTask(paludis::tr1::shared_ptr<paludis::Environment> myenv,
                 const QSet<QString>& repos,
                 QObject* pobj) :
                 ThreadBase(pobj,paludis::tr1::shared_ptr<paludis::Environment>()),
@@ -350,7 +350,7 @@ RepositoryPage::onSync()
     if (QMessageBox::Cancel == q.exec())
         return;
 
-    PertubisSyncTask* t(new PertubisSyncTask(mainWindow()->env(),repos,this));
+    PerturbisSyncTask* t(new PerturbisSyncTask(mainWindow()->env(),repos,this));
 
     connect(t,
             SIGNAL(finished()),
