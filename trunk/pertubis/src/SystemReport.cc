@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/config_file.hh>
 
-using namespace pertubis;
+using namespace perturbis;
 
 void
 SystemReport::on_report_all_pre()
