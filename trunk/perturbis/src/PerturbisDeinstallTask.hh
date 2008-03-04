@@ -37,7 +37,7 @@ namespace perturbis
      * This class controlls all aspects and steps of deinstalling packages
      * \todo this thread blocks the main application thread and gui. Find the issue!
      */
-    class PertubisDeinstallTask :
+    class PerturbisDeinstallTask :
             public ThreadBase,
             public paludis::UninstallTask
     {
@@ -45,7 +45,7 @@ namespace perturbis
 
 
         public:
-            PertubisDeinstallTask(QObject* pobject,
+            PerturbisDeinstallTask(QObject* pobject,
                 paludis::tr1::shared_ptr<paludis::Environment> e,
                 Selections* install,
                 Selections* deinstall) :
