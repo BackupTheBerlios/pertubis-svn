@@ -70,6 +70,7 @@ TaskQueue::dequeue()
 void
 TaskQueue::next()
 {
+    qDebug() << "TaskQueue::next()";
     if (!m_imp->m_taskQueue.isEmpty())
     {
         m_imp->m_taskQueue.head()->start();
@@ -83,6 +84,7 @@ TaskQueue::next()
 bool
 TaskQueue::running()
 {
+    qDebug() << "TaskQueue::running()";
     return (!m_imp->m_taskQueue.isEmpty() &&
             m_imp->m_taskQueue.head()->isRunning());
 }
@@ -90,6 +92,7 @@ TaskQueue::running()
 void
 TaskQueue::process()
 {
+    qDebug() << "TaskQueue::process()";
     if (!m_imp->m_taskQueue.isEmpty())
         dequeue();
     next();

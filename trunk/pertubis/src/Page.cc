@@ -25,7 +25,7 @@ using namespace pertubis;
 
 struct PagePrivate
 {
-    PagePrivate(MainWindow* main) :
+    Page::PagePrivate(MainWindow* main) :
         m_mainWindow(main),
         m_outOfDate(false),
         m_used(false)

@@ -317,6 +317,8 @@ SelectionPage::setupInstallTask(bool pretend, QString target)
         if (m_imp->m_installTask != 0)
             delete m_imp->m_installTask;
 
+        qDebug() << "SelectionPage::setupInstallTask() 1";
+
         paludis::DepListOptions options;
         mainWindow()->settingsPage()->m_depListView->populate_dep_list_options(mainWindow()->env().get(),options);
         m_imp->m_installTask = new PertubisInstallTask(this,mainWindow()->env(),options,mainWindow()->env()->default_destinations(),mainWindow()->installSelections(),mainWindow()->deinstallSelections());
@@ -324,15 +326,21 @@ SelectionPage::setupInstallTask(bool pretend, QString target)
         mainWindow()->settingsPage()->m_depListView->populate_install_task(mainWindow()->env().get(),*m_imp->m_installTask);
         m_imp->m_installTask->set_pretend(pretend);
 
+        qDebug() << "SelectionPage::setupInstallTask() 2";
+
         connect(m_imp->m_installTask,
                 SIGNAL(appendPackage(Package*)),
                 m_imp->m_selectionModel,
                 SLOT(appendPackage(Package*)));
 
+        qDebug() << "SelectionPage::setupInstallTask() 3";
+
         connect(m_imp->m_installTask,
                 SIGNAL(finished()),
                 this,
                 SLOT(installTaskFinished()));
+
+        qDebug() << "SelectionPage::setupInstallTask() 1";
 
         if (!target.isEmpty())
         {
@@ -374,6 +382,7 @@ SelectionPage::start()
     m_imp->m_selectionModel->clear();
     mainWindow()->messagePage()->clearPage();
     mainWindow()->setPage(mainWindow()->messagePage());
+    mainWindow()->onStartOfPaludisAction();
     setupDeinstallTask(false);
     setupInstallTask(false,"");
     setUsed(true);

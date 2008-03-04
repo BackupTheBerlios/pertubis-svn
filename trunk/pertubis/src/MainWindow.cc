@@ -302,6 +302,11 @@ MainWindow::initGUI()
             SIGNAL(sendFilters(QSet<QString>)),
             m_imp->m_searchPage,
             SLOT(restartFilters(QSet<QString>)));
+
+    connect(m_taskQueue(),
+            SIGNAL(finished()),
+            this,
+            SLOT(onInvalidate()));
 }
 
 void
@@ -372,6 +377,15 @@ MainWindow::onInvalidate()
     {
         (*r)->invalidate();
     }
+    QMessageBox q(QMessageBox::NoIcon,
+                tr("Finished"),
+                tr("all tasks finished"),
+                QMessageBox::Ok,
+                this);
+    q.setIconPixmap(QPixmap(":images/run.png"));
+    q.setDefaultButton(QMessageBox::Ok);
+    q.exec();
+    setAllPagesDirty();
 }
 
 void

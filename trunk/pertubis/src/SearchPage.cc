@@ -161,9 +161,10 @@ SearchPage::SearchPage(MainWindow * main) :
 
 SearchPage::~SearchPage()
 {
+    qDebug() << "SearchPage::~SearchPage()";
     saveSettings();
     delete m_imp;
-    qDebug() << "SearchPage::~SearchPage() start";
+    qDebug() << "SearchPage::~SearchPage() done";
 }
 
 void

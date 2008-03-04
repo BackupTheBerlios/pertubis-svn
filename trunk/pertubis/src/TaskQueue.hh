@@ -25,7 +25,7 @@
 
 namespace pertubis
 {
-    struct TaskQueuePrivate;
+
     class MainWindow;
 
     /** \brief handles and times the execution of tasks, which interface with the paludis api
@@ -90,6 +90,7 @@ namespace pertubis
 
         private:
 
+            struct TaskQueuePrivate;
             TaskQueuePrivate* const      m_imp;
     };
 }

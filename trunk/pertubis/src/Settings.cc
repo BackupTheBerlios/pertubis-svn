@@ -127,6 +127,8 @@ SettingsPage::~SettingsPage()
     delete m_deinstallView;
     delete m_installView;
     delete m_generalView;
+    delete m_pagesStore;
+    delete m_pagesView;
     qDebug("SettingsPage::~SettingsPage() - done");
 }
 

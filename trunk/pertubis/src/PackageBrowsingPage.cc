@@ -256,7 +256,7 @@ PackageBrowsingPage::details(const paludis::tr1::shared_ptr<const paludis::Packa
             this,
             SLOT(displayDetails(QString)));
     t->setup(id);
-    mainWindow()->taskQueue()->enqueue(t,true);
+    mainWindow()->serviceQueue()->enqueue(t,true);
 }
 
 void
@@ -291,7 +291,7 @@ PackageBrowsingPage::getCategories()
             SIGNAL(sendCategory(QMap<QString, QSet<QString> >)),
             m_imp->m_catModel,
             SLOT(appendCategory(QMap<QString, QSet<QString> >)));
-    mainWindow()->taskQueue()->enqueue(categoryThread,true);
+    mainWindow()->serviceQueue()->enqueue(categoryThread,true);
 }
 
 void
@@ -343,7 +343,7 @@ PackageBrowsingPage::changeCategory()
     mainWindow()->onStartOfPaludisAction();
     m_imp->m_packageModel->clear();
     packageViewThread->setup(m_imp->m_currentCat);
-    mainWindow()->taskQueue()->enqueue(packageViewThread,true);
+    mainWindow()->serviceQueue()->enqueue(packageViewThread,true);
     setUsed(true);
 }
 

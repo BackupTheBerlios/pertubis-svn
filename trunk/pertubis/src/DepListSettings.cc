@@ -84,6 +84,7 @@ DepListSettingsModel::~DepListSettingsModel()
 {
     qDebug() << "DepListSettingsModel::~DepListSettingsModel()";
     saveSettings();
+    qDebug() << "DepListSettingsModel::~DepListSettingsModel done()";
 }
 
 void
