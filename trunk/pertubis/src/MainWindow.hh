@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
  *
  * \section intro_sec Introduction
  *
- * pertubis is a graphical frontend for the paludis package manager
+ * perturbis is a graphical frontend for the paludis package manager
  *
- * <a href="http://pertubis.berlios.de">http://pertubis.berlios.de</a>
+ * <a href="http://perturbis.berlios.de">http://perturbis.berlios.de</a>
  *
  * \section install_sec Installation
  *
@@ -46,7 +46,7 @@
 
 /*! \brief these classes knows about paludis
  * \defgroup PaludisAdapter Adapter classes
- * classes accessing the paludis api and/or transfering information from paludis to pertubis
+ * classes accessing the paludis api and/or transfering information from paludis to perturbis
  */
 
 /*! \brief subclasses of qt4 QThread
@@ -68,7 +68,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
-namespace pertubis
+namespace perturbis
 {
     class DetailsThread;
     class SettingsPage;
@@ -81,7 +81,7 @@ namespace pertubis
     /*! \brief Our main window
      * \ingroup Widget
      *
-     * This class is our application configuration. It connects all modules pertubis consists of with
+     * This class is our application configuration. It connects all modules perturbis consists of with
      * the user.
      */
     class MainWindow : public QMainWindow
