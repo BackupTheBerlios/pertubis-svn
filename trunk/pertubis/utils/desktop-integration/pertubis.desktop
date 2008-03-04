@@ -2,9 +2,9 @@
 Encoding=UTF-8
 Value=1.0
 Categories=System
-Name=pertubis
+Name=perturbis
 Type=Application
 GenericName=Package Manager
 StartupNotify=No
-Exec=/usr/bin/pertubis-launcher
-Icon=pertubis.png
+Exec=/usr/bin/perturbis-launcher
+Icon=perturbis.png
