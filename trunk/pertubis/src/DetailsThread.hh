@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@
 #include <string>
 #include <paludis/package_id-fwd.hh>
 
-namespace pertubis
+namespace perturbis
 {
     class DatabaseView;
 
-    /*! \brief this thread asks pertubis for package details and returns preformatted text.
+    /*! \brief this thread asks perturbis for package details and returns preformatted text.
      *
      * \ingroup PaludisAdapter
      * \ingroup Threads
