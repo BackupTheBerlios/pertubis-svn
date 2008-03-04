@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,9 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/package_id-fwd.hh>
 
-using namespace pertubis;
+using namespace perturbis;
 
-namespace pertubis
+namespace perturbis
 {
     struct PackageBrowsingPage::PackageBrowsingPagePrivate
     {
@@ -222,7 +222,7 @@ void
 PackageBrowsingPage::loadSettings()
 {
     qDebug() << "PackageBrowsingPage::loadSettings() - start";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("PackageBrowsingPage");
     m_imp->m_currentCat = settings.value("currentCategory","").toString();
     m_imp->m_hSplit->restoreState(settings.value("hSplit").toByteArray());
@@ -236,7 +236,7 @@ void
 PackageBrowsingPage::saveSettings()
 {
     qDebug() << "PackageBrowsingPage::saveSettings() - start";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("PackageBrowsingPage");
     settings.setValue("hSplit", m_imp->m_hSplit->saveState());
     settings.setValue("vSplit", m_imp->m_vSplit->saveState());
