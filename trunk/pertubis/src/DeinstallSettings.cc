@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 
 #include <paludis/dep_list.hh>
 
-using namespace pertubis;
+using namespace perturbis;
 
 DeinstallSettingsModel::DeinstallSettingsModel(QObject *pobj) :
         QObject(pobj),
@@ -52,7 +52,7 @@ DeinstallSettingsModel::~DeinstallSettingsModel()
 void
 DeinstallSettingsModel::loadSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("DeinstallSettingsModel");
     m_deps = settings.value("deps",false).toBool();
     m_unusedDeps = settings.value("unusedDeps",true).toBool();
@@ -64,7 +64,7 @@ DeinstallSettingsModel::loadSettings()
 void
 DeinstallSettingsModel::saveSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("DeinstallSettingsModel");
     settings.setValue("deps",m_deps);
     settings.setValue("unusedDeps",m_unusedDeps);
