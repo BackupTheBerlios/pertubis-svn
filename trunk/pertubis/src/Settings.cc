@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-using namespace pertubis;
+using namespace perturbis;
 
 SettingsPage::SettingsPage(MainWindow* main) : Page(main),
         m_generalView(new GeneralSettingsView(this,new GeneralSettingsModel(this))),
@@ -110,7 +110,7 @@ SettingsPage::SettingsPage(MainWindow* main) : Page(main),
             SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
 
     loadSettings();
-    setWindowTitle(tr("pertubis :: settings"));
+    setWindowTitle(tr("perturbis :: settings"));
 }
 
 void
@@ -144,7 +144,7 @@ SettingsPage::changePage(QListWidgetItem *current, QListWidgetItem *previous)
 void
 SettingsPage::loadSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("SettingsPage");
     setVisible(settings.value("visible",false).toBool());
     resize(settings.value("size",QVariant(QSize(320,600))).toSize());
@@ -157,7 +157,7 @@ SettingsPage::loadSettings()
 void
 SettingsPage::saveSettings()
 {
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("SettingsPage");
     settings.setValue("visible", isVisible());
     settings.setValue("size", size());
