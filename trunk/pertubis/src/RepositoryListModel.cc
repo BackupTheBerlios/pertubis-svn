@@ -1,7 +1,7 @@
 
 /* Copyright (C) 2007-2008 Stefan Koegl
 *
-* This file is part of pertubis
+* This file is part of perturbis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #include <QColor>
 #include <QBrush>
 
-using namespace pertubis;
+using namespace perturbis;
 
 RepositoryListItem::RepositoryListItem() : m_data(QList<QVariant>() << "" << Qt::Checked)
 {
@@ -209,7 +209,7 @@ void
 RepositoryListModel::loadSettings()
 {
     qDebug() << "RepositoryListModel::loadSettings() - start";
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("RepositoryListModel");
     QVariantList selected(settings.value("activeRepositories",QVariantList()).toList());
     settings.endGroup();
@@ -232,7 +232,7 @@ void RepositoryListModel::saveSettings()
         selected.push_back(*it);
     }
     qDebug() << selected;
-    QSettings settings("/etc/pertubis/pertubis.conf",QSettings::IniFormat);
+    QSettings settings("/etc/perturbis/perturbis.conf",QSettings::IniFormat);
     settings.beginGroup("RepositoryListModel");
     settings.setValue("activeRepositories", selected);
     settings.endGroup();
